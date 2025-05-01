@@ -1,0 +1,21 @@
+.ads_box__inner {
+   width: 100%;
+   display: grid;
+   grid-template-columns: repeat(3, 1fr);
+   grid-template-rows: repeat(2, 1fr);
+   gap: 25px;
+   margin-top: 62px;
+}
+
+.ads__item_box {
+   &_1 {
+      grid-column: 1/3;
+      grid-row: 1/3;
+   }
+}
+
+.ads__item_box {
+   background-position: center;
+   background-size: cover;
+   background-repeat: no-repeat;
+}

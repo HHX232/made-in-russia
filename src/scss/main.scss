@@ -1,0 +1,256 @@
+@import 'variables';
+
+html {
+	font-family: $font-inter;
+	font-size: 15px;
+}
+
+.container {
+	max-width: 1200px;
+	width: 100%;
+	padding: 0 5px;
+	margin: 0 auto;
+}
+
+.fontJaro {
+	font-family: $font-jaro;
+}
+
+.fontInstrument {
+	font-family: $font-instrument-sans;
+
+}
+
+/* Reset CSS (Eric Meyer's Reset v2.0 + modern additions) */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+	font-family: $font-inter;
+	font-size: 15px;
+	line-height: 18px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+	display: block;
+}
+
+body {
+	line-height: 1;
+}
+
+ol,
+ul {
+	list-style: none;
+}
+
+blockquote,
+q {
+	quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+	content: '';
+	content: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* Modern additions */
+* {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	-moz-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+}
+
+a {
+	background-color: transparent;
+	text-decoration: none;
+	color: inherit;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+	font-family: inherit;
+	font-size: 100%;
+	line-height: 1.15;
+	margin: 0;
+	padding: 0;
+}
+
+button,
+input {
+	overflow: visible;
+}
+
+button,
+select {
+	text-transform: none;
+}
+
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+	-webkit-appearance: button;
+	appearance: button;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0;
+}
+
+a {
+	display: contents;
+	color: inherit;
+	-webkit-tap-highlight-color: rgb(0 0 0 / 0%);
+	text-decoration: none;
+	-webkit-touch-callout: none;
+	user-select: none;
+
+	&:focus,
+	&:hover,
+	&:visited,
+	&:link,
+	&:active {
+		outline: none;
+	}
+
+	&:hover {
+		text-decoration: none;
+	}
+}
+
+ul,
+ol {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+button {
+	border: unset;
+	background: transparent;
+	cursor: pointer;
+}
+
+input {
+	outline: none;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	border-style: none;
+}

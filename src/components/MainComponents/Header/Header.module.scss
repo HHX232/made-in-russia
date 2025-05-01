@@ -1,0 +1,91 @@
+.header__top {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+   align-items: center;
+   padding: 16px 0;
+}
+
+.header__top_image_insta {
+   width: 20px;
+   height: 20px;
+}
+
+.header__top_image_telegram {
+   width: 21px;
+   height: 18px;
+}
+
+.header__top_image_telephone {
+   width: 19px;
+   height: 19px;
+}
+
+.header__top_list {
+   display: flex;
+   gap: 50px;
+   align-items: center;
+}
+
+.header__top_item {
+   display: flex;
+   align-items: center;
+   gap: 5px;
+   font-size: 15px;
+   transition: all .15s;
+
+   &:hover {
+      color: #AC2525;
+   }
+}
+
+.middle__header,
+.header__middle_box {
+   width: 100%;
+   display: flex;
+   justify-content: space-between;
+   background-color: #2A2E46;
+   align-items: center;
+
+}
+
+.header__middle_box {
+   padding: 6px !important;
+}
+
+.header__logo_box {
+   display: flex;
+   align-items: center;
+   gap: 6px;
+
+}
+
+.main__middle_content {
+   display: flex;
+   align-items: center;
+   gap: 25px;
+}
+
+.searchBox {
+   width: 100%;
+   max-width: 370px;
+}
+
+.bottom_header {
+   width: 100%;
+   background-color: #EFF1F8;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.bottom__header__inner {
+   display: flex;
+   width: 100%;
+   align-items: center;
+   justify-content: center;
+   gap: 60px;
+   padding: 16px;
+}
+
+.extra_list {
+   width: 100%;
+}

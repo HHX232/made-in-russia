@@ -1,0 +1,46 @@
+.languageButtonUI__box {
+   position: relative;
+   display: flex;
+   background-color: #AC2525;
+   padding: 5px 13px;
+   gap: 3px;
+   color: #fff;
+   border-radius: 20px;
+   cursor: pointer;
+   align-items: center;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.arrow__image {
+   width: 11px;
+   height: 7px;
+}
+
+.dropdown__box {
+   position: absolute;
+   content: '';
+   top: calc(100% + 5px);
+   left: 50%;
+   transform: translateX(-50%);
+   background-color: #EFF1F8;
+   border-radius: 20px;
+   padding: 14px 0;
+   color: #2A2E46;
+   border: 1px solid #2A2E46;
+   // font-family: $font-jaro;
+   font-family: "Jaro", sans-serif;
+}
+
+.language__text {
+   cursor: pointer;
+   padding: 4px 15px;
+   width: 100%;
+   text-align: center;
+   transition: all .3s;
+   font-weight: 400;
+
+   &:hover {
+      background-color: #D9DFFB;
+      border-radius: 15px;
+   }
+}

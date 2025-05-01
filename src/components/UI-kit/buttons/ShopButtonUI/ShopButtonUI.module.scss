@@ -1,0 +1,28 @@
+.basket__box {
+   position: relative;
+   max-height: 26px;
+}
+
+.counter {
+   position: absolute;
+   content: '';
+   top: 0;
+   right: 0;
+   transform: translate(55%, -55%);
+   background-color: #AC2525;
+   font-size: 13px;
+   color: #fff;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 0 4px;
+   border-radius: 50%;
+
+}
+
+.basket_big {
+   padding: 4px !important;
+   aspect-ratio: 1/1 !important;
+   transform: translate(60%, -60%);
+   font-size: 13px;
+}
