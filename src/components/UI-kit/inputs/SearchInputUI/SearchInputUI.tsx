@@ -1,5 +1,5 @@
 'use client'
-import {FC, useRef, ChangeEvent, useCallback, useState} from 'react'
+import {FC, useRef, ChangeEvent, useCallback, useState, useEffect} from 'react'
 import styles from './SearchInputUI.module.scss'
 import loop from '@/assets/images/loop.svg'
 import Image from 'next/image'
@@ -13,6 +13,8 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [inputValue, setInputValue] = useState('')
   const [listIsOpen, setListIsOpen] = useState(false)
+  const boxRef = useRef<HTMLDivElement | null>(null)
+
   const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setListIsOpen(true)
     if (inputRef.current) {
@@ -27,9 +29,23 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
     }
     setInputValue(text)
   }, [])
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (listIsOpen && boxRef.current && !boxRef.current.contains(e.target as Node)) {
+        setListIsOpen(false)
+      }
+    }
 
+    if (listIsOpen) {
+      window.addEventListener('click', handleClickOutside)
+    }
+
+    return () => {
+      window.removeEventListener('click', handleClickOutside)
+    }
+  }, [listIsOpen])
   return (
-    <div className={`${styles.search__box} ${disabled ? styles.search__box_disabled : ''}`}>
+    <div ref={boxRef} className={`${styles.search__box} ${disabled ? styles.search__box_disabled : ''}`}>
       <label htmlFor='inputID' className={styles.search__label}>
         <Image src={loop} width={16} height={16} alt='search icon' className={styles.search__icon} />
         <input
@@ -38,7 +54,7 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
           ref={inputRef}
           onClick={() => setListIsOpen(true)}
           onChange={handleInputChange}
-          placeholder={`${placeholder || 'Write text...'}`}
+          placeholder={`${placeholder || 'Введите текст...'}`}
           disabled={disabled}
           className={styles.search__input}
           autoComplete='off'

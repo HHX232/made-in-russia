@@ -32,9 +32,11 @@
     "next": "15.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-loading-skeleton": "^3.5.0",
     "redux-persist": "^6.0.0",
     "stylelint-config-css-modules": "^4.4.0",
-    "tanstack": "^1.0.0"
+    "tanstack": "^1.0.0",
+    "use-debounce": "^10.0.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

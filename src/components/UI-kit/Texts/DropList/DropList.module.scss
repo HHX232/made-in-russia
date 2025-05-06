@@ -1,5 +1,6 @@
 .list_box {
    position: relative;
+   z-index: 1000;
 }
 
 .list__title_box {
@@ -49,6 +50,7 @@
 .items__list {
    position: absolute;
    content: '';
+   z-index: 1000;
    // Dynamic positioning will be handled by direction and gap classes
    border: 1px solid #2A2E46;
    background-color: #EFF1F8;
@@ -171,6 +173,114 @@
 
    &.direction_right {
       left: calc(100% + 20px);
+   }
+}
+
+.gap_25 {
+   &.direction_bottom {
+      top: calc(100% + 25px);
+   }
+
+   &.direction_top {
+      bottom: calc(100% + 25px);
+   }
+
+   &.direction_left {
+      right: calc(100% + 25px);
+   }
+
+   &.direction_right {
+      left: calc(100% + 25px);
+   }
+}
+
+.gap_30 {
+   &.direction_bottom {
+      top: calc(100% + 30px);
+   }
+
+   &.direction_top {
+      bottom: calc(100% + 30px);
+   }
+
+   &.direction_left {
+      right: calc(100% + 30px);
+   }
+
+   &.direction_right {
+      left: calc(100% + 30px);
+   }
+}
+
+.gap_35 {
+   &.direction_bottom {
+      top: calc(100% + 35px);
+   }
+
+   &.direction_top {
+      bottom: calc(100% + 35px);
+   }
+
+   &.direction_left {
+      right: calc(100% + 35px);
+   }
+
+   &.direction_right {
+      left: calc(100% + 35px);
+   }
+}
+
+.gap_40 {
+   &.direction_bottom {
+      top: calc(100% + 40px);
+   }
+
+   &.direction_top {
+      bottom: calc(100% + 40px);
+   }
+
+   &.direction_left {
+      right: calc(100% + 40px);
+   }
+
+   &.direction_right {
+      left: calc(100% + 40px);
+   }
+}
+
+.gap_45 {
+   &.direction_bottom {
+      top: calc(100% + 45px);
+   }
+
+   &.direction_top {
+      bottom: calc(100% + 45px);
+   }
+
+   &.direction_left {
+      right: calc(100% + 45px);
+   }
+
+   &.direction_right {
+      left: calc(100% + 45px);
+   }
+}
+
+.gap_50 {
+   &.direction_bottom {
+      top: calc(100% + 50px);
+   }
+
+   &.direction_top {
+      bottom: calc(100% + 50px);
+   }
+
+   &.direction_left {
+      right: calc(100% + 50px);
+   }
+
+   &.direction_right {
+      left: calc(100% + 50px);
    }
 }
 

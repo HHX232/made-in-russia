@@ -1,0 +1,43 @@
+.button__box {
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   background-color: #AC2525;
+   border-radius: 10px;
+   padding: 7px 20px;
+   font-size: 15px;
+   line-height: 18px;
+   margin-top: 28px;
+   max-width: 170px;
+   color: #fff;
+   width: 100%;
+   justify-content: space-between;
+   margin: 28px auto 0 auto;
+   border: 2px solid #AC2525;
+}
+
+.add__box {
+   display: flex;
+   margin: 0 auto;
+   gap: 9px;
+   align-items: center;
+   justify-content: space-between;
+}
+
+.count__box {
+   display: flex;
+   width: 100%;
+   align-items: center;
+   justify-content: space-between;
+}
+
+.decrease__text,
+.count__inBox,
+.increase__text {
+   color: #AC2525;
+   font-size: 20px;
+}
+
+.count__active {
+   background-color: #E9D6D7;
+}

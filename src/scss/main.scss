@@ -1,5 +1,51 @@
 @import 'variables';
 
+/* Для Firefox */
+html {
+	scrollbar-width: thin;
+	/* 'auto' или 'thin' */
+	scrollbar-color: #2A2E46 #EFF1F8;
+}
+
+.react-loading-skeleton {
+	width: 1000px !important;
+	max-width: 100%;
+}
+
+/* Для WebKit-браузеров */
+::-webkit-scrollbar {
+	width: 6px !important;
+	/* Толщина вертикального скроллбара */
+	height: 6px !important;
+	/* Толщина горизонтального скроллбара */
+}
+
+::-webkit-scrollbar-track {
+	background: #EFF1F8;
+	border-radius: 3px;
+	margin: 15px 0;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: #2A2E46;
+	border-radius: 3px;
+	border: 1px solid #EFF1F8;
+	/* Граница для лучшего визуального разделения */
+}
+
+/* Принудительное применение стилей */
+body {
+	overflow: overlay;
+	/* Важно! Позволяет скроллбару накладываться на контент */
+}
+
+/* Гарантированное применение стилей */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+	width: 6px !important;
+	height: 6px !important;
+}
+
 html {
 	font-family: $font-inter;
 	font-size: 15px;
@@ -11,6 +57,8 @@ html {
 	padding: 0 5px;
 	margin: 0 auto;
 }
+
+
 
 .fontJaro {
 	font-family: $font-jaro;

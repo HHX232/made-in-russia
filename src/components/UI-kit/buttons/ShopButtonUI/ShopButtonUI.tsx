@@ -1,20 +1,25 @@
 'use client'
-import {FC, useState} from 'react'
+import {FC, useEffect, useState} from 'react'
 import Image from 'next/image'
 import basket from '@/assets/images/basket.svg'
 import styles from './ShopButtonUI.module.scss'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
 
 const ShopButtonUI: FC = () => {
   const [basketCounter, setBasketCounter] = useState(0)
-  const setCounter = () => {
-    setBasketCounter(Number((Math.random() * 50).toFixed(0)))
-  }
+  const {productsInBasket} = useTypedSelector((state) => state.basket)
+
+  useEffect(() => {
+    setBasketCounter(productsInBasket.length)
+  }, [productsInBasket])
 
   return (
     <div className={`${styles.basket__box}`}>
       <div className={`${basketCounter > 9 ? styles.basket_big : ''} ${styles.counter}`}>{basketCounter}</div>
       <Image
-        onClick={setCounter}
+        onClick={() => {
+          console.log('Click')
+        }}
         className={`  ${styles.basket__img}`}
         style={{cursor: 'pointer'}}
         alt='basket image'

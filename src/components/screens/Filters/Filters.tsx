@@ -1,0 +1,137 @@
+'use client'
+import {FC} from 'react'
+import styles from './Filters.module.scss'
+import CheckBoxUI from '@/components/UI-kit/inputs/CheckboxUI/CheckboxUI'
+import DropList from '@/components/UI-kit/Texts/DropList/DropList'
+import RangeInput from '@/components/UI-kit/inputs/RangeInputUI/RangeInputUI'
+import {useQuery} from '@tanstack/react-query'
+import FiltersService from '@/services/filters/Filters.service'
+import Skeleton from 'react-loading-skeleton'
+import {useActions} from '@/hooks/useActions'
+// import {TypeRootState} from '@/store/store'
+// import {selectRangeFilter} from '@/store/Filters/filters.slice'
+
+const Filters: FC = () => {
+  const {data, isLoading} = useQuery({
+    queryKey: ['filters'],
+    queryFn: () => FiltersService.getAll()
+  })
+  const {data: dataDel, isLoading: isDelLoading} = useQuery({
+    queryKey: ['deliveris'],
+    queryFn: () => FiltersService.getDeliveryMethodIds()
+  })
+
+  const {clearFilters} = useActions()
+  const handleFilterChange = (checked: boolean, filterName: string) => {
+    console.log(`Фильтр ${filterName} ${checked ? 'включен' : 'выключен'}`)
+  }
+
+  const handleRangeChange = (min: number, max: number, filterName: string) => {
+    console.log(`Range ${filterName} changed: ${min} - ${max}`)
+  }
+  return (
+    <div className={`${styles.filters__box}`}>
+      <div className={`${styles.titles__box}`}>
+        <h4 className={`${styles.filters__title}`}>Фильтры</h4>
+        <button
+          onClick={() => {
+            clearFilters()
+          }}
+          className={`${styles.clear__filters}`}
+        >
+          сброс
+        </button>
+      </div>
+      <span className={`${styles.span_over}`}>
+        <div className={`${styles.filters__part}`}>
+          <p className={`${styles.filters__part_title}`}>Категории</p>
+          <div className={`${styles.filters__part_checkboxes}`}>
+            {!isLoading &&
+              data?.map((filter) => (
+                <CheckBoxUI
+                  key={filter.id}
+                  title={filter.name}
+                  filterName={filter.id.toString()}
+                  onChange={handleFilterChange}
+                />
+              ))}
+            {isLoading && <Skeleton style={{display: 'flex', gap: '7px', height: '20px'}} count={5} />}
+          </div>
+        </div>
+        <div className={`${styles.part__drop}`}>
+          <div className={`${styles.filters__part_droplists}`}>
+            <RangeInput
+              filterName='priceRange'
+              title='Стоимость'
+              min={0}
+              max={100000}
+              step={10}
+              defaultMin={100}
+              defaultMax={100000}
+              onChange={handleRangeChange}
+              debounceTime={500}
+            />
+          </div>
+        </div>
+        <div className={`${styles.part__drop}`}>
+          <p className={`${styles.filters__part_title_drop}`}>Категории</p>
+          <div className={`${styles.filters__part_droplists}`}>
+            <DropList direction={'right'} gap={'25'} title='Сырье' items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']} />
+            <DropList
+              direction={'right'}
+              gap={'25'}
+              title='Металлургия'
+              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
+            />
+            <DropList
+              direction={'right'}
+              gap={'25'}
+              title='Древесина'
+              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
+            />
+            <DropList direction={'right'} gap={'25'} title='Щебни' items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']} />
+            <DropList direction={'right'} gap={'25'} title='Соли' items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']} />
+            <DropList direction={'right'} gap={'25'} title='Угли' items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']} />
+          </div>
+        </div>
+        <div className={`${styles.end__part}`}>
+          <div className={`${styles.end__part_title}`}>Способы доставки</div>
+          <div className={`${styles.end__part_droplists}`}>
+            {isDelLoading && <Skeleton style={{display: 'flex', gap: '7px', height: '20px'}} count={5} />}
+            {!isDelLoading && (
+              <>
+                {dataDel?.map((el, i) => {
+                  return (
+                    <CheckBoxUI
+                      key={el.name + i}
+                      title={el.name}
+                      filterName='self-pickup'
+                      onChange={handleFilterChange}
+                    />
+                  )
+                })}
+              </>
+            )}
+          </div>
+        </div>
+      </span>
+    </div>
+  )
+}
+
+export default Filters
+
+{
+  /* <div className='active-filters'>
+        <h3>Активные фильтры:</h3>
+        {activeFilters.length > 0 ? (
+          <ul>
+            {activeFilters.map((filter) => (
+              <li key={filter}>{filter}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>Нет активных фильтров</p>
+        )}
+      </div> */
+}
