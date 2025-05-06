@@ -10,7 +10,59 @@ import Skeleton from 'react-loading-skeleton'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 // импорт классический
-import CheckBoxUI from '../../UI-kit/Inputs/CheckBoxUI/CheckBoxUI'
+
+import {CSSProperties, useId, useState} from 'react'
+
+import {useDebouncedCallback} from 'use-debounce'
+
+interface ICheckBoxUIProps {
+  title: string
+  setCheckedOnFirstRender?: boolean
+  extraClass?: string
+  extraStyles?: CSSProperties
+  onChange?: (checked: boolean, title: string) => void
+  debounceTime?: number
+  filterName: string
+}
+
+const CheckBoxUI: FC<ICheckBoxUIProps> = ({
+  title,
+  setCheckedOnFirstRender = false,
+  extraClass,
+  extraStyles,
+  onChange,
+  debounceTime = 1500,
+  filterName
+}) => {
+  const id = useId()
+  const [isChecked, setIsChecked] = useState(setCheckedOnFirstRender)
+
+  const debouncedOnChange = useDebouncedCallback((checked: boolean) => {
+    if (onChange) {
+      onChange(checked, filterName)
+    }
+  }, debounceTime)
+
+  const handleChange = () => {
+    const newCheckedState = !isChecked
+    setIsChecked(newCheckedState)
+    debouncedOnChange(newCheckedState)
+  }
+
+  return (
+    <label style={{...extraStyles}} className={`${styles.checkbox__container} ${extraClass || ''}`} htmlFor={id}>
+      <div className={`${styles.checkbox__visual} ${isChecked ? styles.checkbox__visual_checked : ''}`}></div>
+      <p className={`fontJaro ${styles.input__text || 'input__text'}`}>{title}</p>
+      <input
+        id={id}
+        onChange={handleChange}
+        checked={isChecked}
+        className={`${styles.checkbox__hide_input}`}
+        type={'checkbox'}
+      />
+    </label>
+  )
+}
 
 const Filters: FC = () => {
   const {data, isLoading} = useQuery({
