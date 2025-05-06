@@ -1,7 +1,5 @@
 'use client'
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import Ads from '@/components/screens/Ads/Ads'
 import Header from '@/components/MainComponents/Header/Header'
 import {FC} from 'react'
