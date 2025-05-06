@@ -27,6 +27,8 @@
       }
     ],
     "paths": {
+      "@/components/UI-kit/Inputs/*": ["./src/components/UI-kit/Inputs/*"],
+      "@/components/UI-kit/inputs/*": ["./src/components/UI-kit/Inputs/*"],
       "@/*": [
         "./src/*"
       ]
