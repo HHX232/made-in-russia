@@ -1,15 +1,15 @@
 'use client'
 import {FC} from 'react'
 import styles from './Filters.module.scss'
-import CategoryCheckBoxUI from '@/components/UI-kit/inputs/CategoryCheckBoxUI/CategoryCheckBoxUI'
+import CategoryCheckBoxUI from '@/components/UI-kit/Inputs/CategoryCheckBoxUI/CategoryCheckBoxUI'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
-import RangeInput from '@/components/UI-kit/inputs/RangeInputUI/RangeInputUI'
+import RangeInput from '@/components/UI-kit/Inputs/RangeInputUI/RangeInputUI'
 import {useQuery} from '@tanstack/react-query'
 import FiltersService from '@/services/filters/Filters.service'
 import Skeleton from 'react-loading-skeleton'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-import CheckBoxUI from '@/components/UI-kit/inputs/CheckBoxUI/CheckBoxUI'
+import CheckBoxUI from '@/components/UI-kit/Inputs/CheckBoxUI/CheckBoxUI'
 
 const Filters: FC = () => {
   const {data, isLoading} = useQuery({

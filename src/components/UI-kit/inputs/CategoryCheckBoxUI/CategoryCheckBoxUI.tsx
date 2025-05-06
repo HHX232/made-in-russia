@@ -42,7 +42,7 @@ const CategoryCheckBoxUI: FC<ICheckBoxUIProps> = ({
     if (setCheckedOnFirstRender && !isCheckedFromRedux) {
       dispatch(setFilter({filterName: actualFilterName, checked: true}))
     }
-  }, [setCheckedOnFirstRender, isCheckedFromRedux, actualFilterName, dispatch])
+  }, [setCheckedOnFirstRender, isCheckedFromRedux, actualFilterName, dispatch, setFilter])
 
   const debouncedOnChange = useDebouncedCallback((checked: boolean) => {
     dispatch(setFilter({filterName: actualFilterName, checked}))
