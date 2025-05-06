@@ -9,7 +9,7 @@ import FiltersService from '@/services/filters/Filters.service'
 import Skeleton from 'react-loading-skeleton'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-import CheckBoxUI from '@/components/UI-kit/inputs/CheckBoxUI/CheckBoxUI'
+import CheckBoxUI from '../../UI-kit/inputs/CheckBoxUI/CheckBoxUI'
 
 const Filters: FC = () => {
   const {data, isLoading} = useQuery({
