@@ -7,11 +7,13 @@ type FilterValue = boolean | {min: number; max: number}
 // Определяем тип состояния для фильтров
 interface FiltersState {
   selectedFilters: Record<string, FilterValue> // Хранит состояние фильтров: { [filterName]: boolean | { min, max } }
+  delivery: string[]
 }
 
 // Начальное состояние
 const initialState: FiltersState = {
-  selectedFilters: {}
+  selectedFilters: {},
+  delivery: []
 }
 
 // Создаем slice
@@ -53,12 +55,37 @@ export const filtersSlice = createSlice({
       state.selectedFilters = {}
     },
 
-    // Установка нескольких фильтров одновременно
     setMultipleFilters: (state, action: PayloadAction<Record<string, FilterValue>>) => {
       state.selectedFilters = {
         ...state.selectedFilters,
         ...action.payload
       }
+    },
+    addToDelivery: (state, action: PayloadAction<string>) => {
+      if (!state.delivery.includes(action.payload)) {
+        state.delivery.push(action.payload)
+      }
+    },
+
+    removeFromDelivery: (state, action: PayloadAction<string>) => {
+      state.delivery = state.delivery.filter((item) => item !== action.payload)
+    },
+
+    toggleDelivery: (state, action: PayloadAction<string>) => {
+      const exists = state.delivery.includes(action.payload)
+      if (exists) {
+        state.delivery = state.delivery.filter((item) => item !== action.payload)
+      } else {
+        state.delivery.push(action.payload)
+      }
+    },
+
+    clearDelivery: (state) => {
+      state.delivery = []
+    },
+
+    setDelivery: (state, action: PayloadAction<string[]>) => {
+      state.delivery = action.payload
     }
   }
 })
@@ -91,3 +118,5 @@ export const selectActiveFilters = (state: TypeRootState) =>
   )
 
 export default filtersSlice.reducer
+
+export const selectDelivery = (state: TypeRootState) => state.filters.delivery

@@ -17,58 +17,55 @@ interface CardsCatalogProps {
 
 const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMore = true}) => {
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
-  const {selectedFilters} = useTypedSelector((state) => state.filters)
+  const {selectedFilters, delivery} = useTypedSelector((state) => state.filters)
   const [allProducts, setAllProducts] = useState<Product[]>(initialProducts)
   const [hasMore, setHasMore] = useState(initialHasMore)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const lastProductRef = useRef<HTMLDivElement | null>(null)
   const [numericFilters, setNumericFilters] = useState<number[]>([])
-
-  // Определяем тип для параметров запроса
+  const {productInFavorites} = useTypedSelector((state) => state.favorites)
   interface PageParams {
     page: number
     size: number
     minPrice?: number
     maxPrice?: number
     categoryIds?: string
-    [key: string]: any // Для поддержки других динамических свойств
+    [key: string]: any
   }
+  useEffect(() => {
+    console.log('productInFavorites', productInFavorites)
+  }, [productInFavorites])
 
-  // Обновление pageParams как объект с поддержкой динамических свойств
   const [pageParams, setPageParams] = useState<PageParams>({
     page: initialProducts.length > 0 ? 2 : 0,
     size: 10,
     minPrice: priceRange?.min,
-    maxPrice: priceRange?.max
+    maxPrice: priceRange?.max,
+    deliveryMethodIds: delivery?.join(',') ? delivery?.join(',') : ''
   })
 
-  // Отслеживаем изменения в selectedFilters и обновляем numericFilters
   useEffect(() => {
-    // Фильтруем ключи, которые являются числами
     const numericKeys = Object.keys(selectedFilters)
-      .filter((key) => !isNaN(Number(key))) // Проверяем, что ключ - число
-      .map(Number) // Преобразуем строки в числа
+      .filter((key) => !isNaN(Number(key)))
+      .map(Number)
 
     setNumericFilters(numericKeys)
     console.log('numericFilters обновлен:', numericKeys)
   }, [selectedFilters])
 
-  // Отдельный эффект для обновления параметров запроса при изменении фильтров
   useEffect(() => {
     setPageParams((prev) => {
-      // Создаем объект с базовыми параметрами
       const newParams: PageParams = {
         ...prev,
-        page: 0, // Сбрасываем пагинацию при изменении фильтров
+        page: 0,
         minPrice: priceRange?.min,
-        maxPrice: priceRange?.max
+        maxPrice: priceRange?.max,
+        deliveryMethodIds: delivery?.join(',') || ''
       }
 
-      // Если есть фильтры по категориям, объединяем их в строку с запятыми
       if (numericFilters.length > 0) {
         newParams.categoryIds = numericFilters.join(',')
       } else {
-        // Удаляем параметр categoryId, если фильтры не выбраны
         if ('categoryIds' in newParams) {
           delete newParams.categoryIds
         }
@@ -77,7 +74,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
       return newParams
     })
 
-    // Очистим предыдущие результаты при изменении фильтров
     setAllProducts(initialProducts)
     setHasMore(initialHasMore)
 
@@ -85,7 +81,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
       'pageParams обновлены с фильтрами категорий:',
       numericFilters.length > 0 ? numericFilters.join(',') : 'нет'
     )
-  }, [numericFilters, priceRange, initialProducts, initialHasMore])
+  }, [numericFilters, priceRange, initialProducts, initialHasMore, delivery])
 
   // Эффект для логирования параметров запроса при их изменении
   useEffect(() => {
@@ -153,7 +149,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
     <div className={styled.cardsCatalog__box}>
       {allProducts.map((product, index) => {
         const uniqueKey = `${product.id}-${index}`
-
         // Для последнего элемента добавляем ref
         if (index === allProducts.length - 1) {
           return (

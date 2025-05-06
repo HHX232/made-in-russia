@@ -18,7 +18,7 @@ const ToggleFavoritesButtonUI: FC<ToggleFavoritesButtonUIProps> = ({
 
   const handleClick = () => {
     setIsActive(!isActive)
-    onClick?.() // вызываем переданный обработчик, если он есть
+    onClick?.()
   }
 
   return (

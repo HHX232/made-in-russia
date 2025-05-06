@@ -10,6 +10,8 @@ import BasketButtonUI from '../../buttons/BasketButtonUI/BasketButtonUI'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import ToggleFavoritesButtonUI from '../../buttons/toggleFavoritesButtonUI/toggleFavoritesButtonUI'
+import {useActions} from '@/hooks/useActions'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
 
 export interface ICardProps {
   id: number
@@ -31,10 +33,12 @@ const Card: FC<ICardProps> = ({
   discount = '0',
   imageUrl = t1,
   discountedPrice = '10000',
-  fullProduct = {},
+  fullProduct = {} as Product,
   isLoading = false
 }) => {
   const idFromHook = useId()
+  const {toggleToFavorites} = useActions()
+  const {productInFavorites} = useTypedSelector((state) => state.favorites)
   return (
     <div key={id + idFromHook} className={`${styles.card__box}`}>
       <div>
@@ -58,8 +62,10 @@ const Card: FC<ICardProps> = ({
           {!isLoading ? (
             <ToggleFavoritesButtonUI
               extraClass={`${styles.star__image}`}
-              isActive={false}
-              onClick={() => console.log('Button clicked!')}
+              isActive={productInFavorites.some((product) => product.id === (fullProduct.id ? fullProduct.id : {}))}
+              onClick={() => {
+                toggleToFavorites(fullProduct as Product)
+              }}
             />
           ) : (
             <Skeleton

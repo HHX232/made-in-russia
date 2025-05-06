@@ -3,16 +3,18 @@ import {FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, RE
 import storage from 'redux-persist/lib/storage'
 import {filtersSlice} from './Filters/filters.slice'
 import {basketSlice} from './Basket/Basket.slice'
+import {favoritesSlice} from './Favorites/Favorites.types'
 
 const rootReducer = combineReducers({
   filters: filtersSlice.reducer,
-  basket: basketSlice.reducer
+  basket: basketSlice.reducer,
+  favorites: favoritesSlice.reducer
 })
 
 const persistConfig = {
   key: 'persist store',
   storage,
-  whitelist: ['filters', 'basket']
+  whitelist: ['filters', 'basket', 'favorites']
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

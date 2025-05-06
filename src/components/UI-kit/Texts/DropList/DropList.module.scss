@@ -297,3 +297,15 @@
       border-radius: 20px;
    }
 }
+
+// Add these styles to your DropList.module.scss file
+
+.list__position_absolute {
+   position: absolute;
+   z-index: 10 !important;
+}
+
+.list__position_fixed {
+   position: fixed;
+   z-index: 100 !important;
+}

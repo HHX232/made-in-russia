@@ -1,7 +1,11 @@
 'use client'
-import {CSSProperties, FC, useId, useState} from 'react'
-import styles from './CheckBoxUI.module.scss'
+import {CSSProperties, FC, useId, useState, useEffect} from 'react'
+import styles from './CategoryCheckBoxUI.module.scss'
 import {useDebouncedCallback} from 'use-debounce'
+import {useDispatch, useSelector} from 'react-redux'
+import {useActions} from '@/hooks/useActions'
+import {TypeRootState} from '@/store/store'
+import {selectFilter} from '@/store/Filters/filters.slice'
 
 interface ICheckBoxUIProps {
   title: string
@@ -13,7 +17,7 @@ interface ICheckBoxUIProps {
   filterName: string
 }
 
-const CheckBoxUI: FC<ICheckBoxUIProps> = ({
+const CategoryCheckBoxUI: FC<ICheckBoxUIProps> = ({
   title,
   setCheckedOnFirstRender = false,
   extraClass,
@@ -23,16 +27,34 @@ const CheckBoxUI: FC<ICheckBoxUIProps> = ({
   filterName
 }) => {
   const id = useId()
-  const [isChecked, setIsChecked] = useState(setCheckedOnFirstRender)
+  const dispatch = useDispatch()
+  const {setFilter} = useActions()
+
+  const actualFilterName = filterName || title
+
+  const isCheckedFromRedux = useSelector((state: TypeRootState) => selectFilter(state, actualFilterName))
+  const [isChecked, setIsChecked] = useState(setCheckedOnFirstRender || isCheckedFromRedux)
+
+  useEffect(() => {
+    const initialState = setCheckedOnFirstRender || isCheckedFromRedux
+    setIsChecked(initialState)
+
+    if (setCheckedOnFirstRender && !isCheckedFromRedux) {
+      dispatch(setFilter({filterName: actualFilterName, checked: true}))
+    }
+  }, [setCheckedOnFirstRender, isCheckedFromRedux, actualFilterName, dispatch])
 
   const debouncedOnChange = useDebouncedCallback((checked: boolean) => {
+    dispatch(setFilter({filterName: actualFilterName, checked}))
+
     if (onChange) {
-      onChange(checked, filterName)
+      onChange(checked, actualFilterName)
     }
   }, debounceTime)
 
   const handleChange = () => {
     const newCheckedState = !isChecked
+
     setIsChecked(newCheckedState)
     debouncedOnChange(newCheckedState)
   }
@@ -52,4 +74,4 @@ const CheckBoxUI: FC<ICheckBoxUIProps> = ({
   )
 }
 
-export default CheckBoxUI
+export default CategoryCheckBoxUI
