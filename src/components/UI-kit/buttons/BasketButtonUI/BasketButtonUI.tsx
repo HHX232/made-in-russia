@@ -3,11 +3,11 @@ import {FC, useEffect, useState} from 'react'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import styles from './BasketButtonUI.module.scss'
 import Image from 'next/image'
-import basket from '@/assets/images/miniBasket.svg'
 import {useActions} from '@/hooks/useActions'
 import {Product} from '@/services/products/product.types'
 import {IProductInBasket} from '@/store/Basket/Basket.types'
 
+const basket = '/miniBasket.svg'
 interface IBasketButtonProps {
   product: Product // Принимаем весь продукт, а не только id
 }

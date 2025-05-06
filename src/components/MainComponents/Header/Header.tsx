@@ -1,19 +1,21 @@
-import insta from '@/assets/images/insta.svg'
-import telephone from '@/assets/images/phone.svg'
-import telegram from '@/assets/images/telegram.svg'
 import Image from 'next/image'
 import {FC} from 'react'
 import styles from './Header.module.scss'
 import Link from 'next/link'
 import createTelText from '@/utils/createTelText'
 import LanguageButtonUI from '@/components/UI-kit/buttons/LanguageButtonUI/LanguageButtonUI'
-import logo from '@/assets/images/Logo_Bear.svg'
-import logoText from '@/assets/images/logoText.svg'
 import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
 import ShopButtonUI from '@/components/UI-kit/buttons/ShopButtonUI/ShopButtonUI'
 import StarButtonUI from '@/components/UI-kit/buttons/StarButtonUI/StarButtonUI'
 import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
+
+const insta = '/insta.svg'
+const telephone = '/phone.svg'
+const telegram = '/telegram.svg'
+const logo = '/Logo_Bear.svg'
+const logoText = '/logoText.svg'
+
 const Header: FC = () => {
   // Формируем URL как строку
   const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'made-in-russia'}`

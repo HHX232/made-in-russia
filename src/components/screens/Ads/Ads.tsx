@@ -1,11 +1,12 @@
 import {FC, ReactNode} from 'react'
 import styles from './Ads.module.scss'
-import ads1 from '@/assets/images/ads1.jpg'
-import ads2 from '@/assets/images/ads2.jpg'
-import ads3 from '@/assets/images/ads3.jpg'
+
 import {StaticImageData} from 'next/image'
 import Link from 'next/link'
 
+const ads1 = '/ads1.jpg'
+const ads2 = '/ads2.jpg'
+const ads3 = '/ads3.jpg'
 interface IAdsItem {
   title?: string | ReactNode
   subtitle?: string | ReactNode

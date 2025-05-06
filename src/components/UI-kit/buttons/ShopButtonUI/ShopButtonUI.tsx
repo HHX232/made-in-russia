@@ -1,10 +1,9 @@
 'use client'
 import {FC, useEffect, useState} from 'react'
 import Image from 'next/image'
-import basket from '@/assets/images/basket.svg'
 import styles from './ShopButtonUI.module.scss'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-
+const basket = '/basket.svg'
 const ShopButtonUI: FC = () => {
   const [basketCounter, setBasketCounter] = useState(0)
   const {productsInBasket} = useTypedSelector((state) => state.basket)

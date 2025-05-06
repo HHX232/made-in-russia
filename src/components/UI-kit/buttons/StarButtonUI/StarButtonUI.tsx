@@ -1,9 +1,8 @@
 import {FC} from 'react'
 import styles from './StarButtonUI.module.scss'
-import star from '@/assets/images/star.svg'
 import Link from 'next/link'
 import Image from 'next/image'
-
+const star = '/star.svg'
 const StarButtonUI: FC = () => {
   return (
     <Link href={'favorites'}>

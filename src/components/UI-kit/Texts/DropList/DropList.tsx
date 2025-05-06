@@ -1,10 +1,9 @@
 'use client'
 import {FC, useState, useRef, useEffect, ReactNode} from 'react'
 import Image from 'next/image'
-import arrow from '@/assets/images/arrow-dark.svg'
 import styles from './DropList.module.scss'
 import cn from 'clsx'
-
+const arrow = '/arrow-dark.svg'
 // Обновленный интерфейс для поддержки строк и компонентов
 type DropListItem = string | ReactNode
 

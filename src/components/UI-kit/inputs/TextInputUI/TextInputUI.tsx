@@ -1,11 +1,11 @@
 import {CSSProperties, FC, useId, useState} from 'react'
 import styles from './TextInputUI.module.scss'
 import Image, {StaticImageData} from 'next/image'
-import hideIcon from '@/assets/images/hide__text.svg'
-import showIcon from '@/assets/images/show__text.svg'
+
 import Link from 'next/link'
 import {Url} from 'next/dist/shared/lib/router/router'
-
+const hideIcon = '/hide__text.svg'
+const showIcon = '/show__text.svg'
 interface ITextInputProps {
   extraClass?: string
   extraStyle?: CSSProperties

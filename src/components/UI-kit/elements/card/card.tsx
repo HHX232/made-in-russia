@@ -1,8 +1,7 @@
 'use client'
 import {DeliveryMethod, Product} from '@/services/products/product.types'
 import {FC, useId} from 'react'
-import t1 from '@/assets/images/tree.jpg'
-import t2 from '@/assets/images/tree2.jpg'
+
 import Image, {StaticImageData} from 'next/image'
 import styles from './card.module.scss'
 import {createPriceWithDot} from '@/utils/createPriceWithDot'
@@ -13,6 +12,8 @@ import ToggleFavoritesButtonUI from '../../buttons/toggleFavoritesButtonUI/toggl
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 
+const t1 = '/tree.jpg'
+const t2 = '/tree2.jpg'
 export interface ICardProps {
   id: number
   deliveryMethod: Omit<DeliveryMethod, 'creationDate' | 'lastModificationDate'>

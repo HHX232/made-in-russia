@@ -1,9 +1,9 @@
 'use client'
 import {FC, useRef, ChangeEvent, useCallback, useState, useEffect} from 'react'
 import styles from './SearchInputUI.module.scss'
-import loop from '@/assets/images/loop.svg'
 import Image from 'next/image'
 
+const loop = '/loop.svg'
 interface ISearchProps {
   placeholder?: string
   disabled?: boolean

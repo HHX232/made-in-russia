@@ -2,8 +2,8 @@
 import {FC, useEffect, useRef, useState} from 'react'
 import style from './LanguageButtonUI.module.scss'
 import Image from 'next/image'
-import whiteArrow from '@/assets/images/arrow-white.svg'
 
+const whiteArrow = '/arrow-white.svg'
 enum Languages {
   RUSSIAN = 'Русский',
   ENGLISH = 'English',
