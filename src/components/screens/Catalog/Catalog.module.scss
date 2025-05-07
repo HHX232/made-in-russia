@@ -4,3 +4,9 @@
    width: 100%;
    gap: 30px;
 }
+
+@media (max-width: 900px) {
+   .catalog__box {
+      flex-direction: column;
+   }
+}

@@ -1,19 +1,25 @@
 'use client'
-import {FC, useState} from 'react'
+import {CSSProperties, FC, useState} from 'react'
 import styles from './profileButtonUI.module.scss'
 import Image from 'next/image'
 
 const someAvatar = '/some_avatar.png'
 const userLogin = '/man_login.svg'
-const ProfileButtonUI: FC = () => {
+
+interface IProfileProps {
+  extraClass?: string
+  extraStyles?: CSSProperties
+}
+const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   const [userIsLogin, setUserIsLogin] = useState(false)
 
   return (
     <div
+      style={{...extraStyles}}
       onClick={() => {
         setUserIsLogin(!userIsLogin)
       }}
-      className={`${styles.profile_box}`}
+      className={`${styles.profile_box} ${extraClass}`}
     >
       {userIsLogin ? (
         <>

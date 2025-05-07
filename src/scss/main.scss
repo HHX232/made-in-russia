@@ -302,3 +302,10 @@ img {
 	height: auto;
 	border-style: none;
 }
+
+@media (max-width: 768px) {
+	.slick-slide {
+		display: block;
+		padding: 0 8px !important;
+	}
+}

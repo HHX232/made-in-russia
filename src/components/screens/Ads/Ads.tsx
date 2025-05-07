@@ -1,8 +1,12 @@
 import {FC, ReactNode} from 'react'
 import styles from './Ads.module.scss'
-
+import Slider from 'react-slick'
 import {StaticImageData} from 'next/image'
 import Link from 'next/link'
+// import {useWindowWidth} from '@/hooks/useWindoWidth'
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
+import {useWindowWidth} from '@/hooks/useWindoWidth'
 
 const ads1 = '/ads1.jpg'
 const ads2 = '/ads2.jpg'
@@ -39,6 +43,34 @@ const AdsItem: FC<IAdsItem> = ({title, subtitle, text, image, extraClass, href =
 }
 
 const Ads: FC = () => {
+  const windowWidth = useWindowWidth()
+  // let windowLess768 = false
+  // useEffect(() => {
+  //   if (windowWidth <= 768) {
+  //     windowLess768 = true
+  //   } else {
+  //     windowLess768 = false
+  //   }
+  // }, [windowWidth])
+
+  // на 670 сделай 1 slidesToShow
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 1500,
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 670,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  }
+
   return (
     <div className={`${styles.ads_box}`}>
       <div className='container'>
@@ -55,6 +87,7 @@ const Ads: FC = () => {
             }
             image={ads1}
           />
+
           <AdsItem
             href='#'
             extraClass={styles.ads__item_box_2}
@@ -63,6 +96,7 @@ const Ads: FC = () => {
             text=''
             image={ads2}
           />
+
           <AdsItem
             href='#'
             extraClass={styles.ads__item_box_3}
@@ -71,6 +105,47 @@ const Ads: FC = () => {
             text={<p className={`${styles.third__text} fontInstrument`}> Скидка работает только при самовывозе* </p>}
             image={ads3}
           />
+
+          {windowWidth < 768 && (
+            <Slider className={`${styles.slider__box__custom}`} {...settings}>
+              <AdsItem
+                href='#'
+                extraClass={styles.ads__item_box_4}
+                title={<h3 className={`${styles.second__title} fontInstrument`}>Новая поставка угля</h3>}
+                subtitle={<p className={`${styles.second__subtitle} fontInstrument`}>Бери пока не раскупили!</p>}
+                text=''
+                image={ads2}
+              />
+              <AdsItem
+                href='#'
+                extraClass={styles.ads__item_box_5}
+                title={<p className={`${styles.third__title} fontInstrument`}> Камень со скидкой </p>}
+                subtitle={<p className={`${styles.third__subtitle} fontInstrument`}> до 40%</p>}
+                text={
+                  <p className={`${styles.third__text} fontInstrument`}> Скидка работает только при самовывозе* </p>
+                }
+                image={ads3}
+              />
+              <AdsItem
+                href='#'
+                extraClass={styles.ads__item_box_6}
+                title={<h3 className={`${styles.second__title} fontInstrument`}>Новая поставка угля</h3>}
+                subtitle={<p className={`${styles.second__subtitle} fontInstrument`}>Бери пока не раскупили!</p>}
+                text=''
+                image={ads2}
+              />
+              <AdsItem
+                href='#'
+                extraClass={styles.ads__item_box_5}
+                title={<p className={`${styles.third__title} fontInstrument`}> Камень со скидкой </p>}
+                subtitle={<p className={`${styles.third__subtitle} fontInstrument`}> до 40%</p>}
+                text={
+                  <p className={`${styles.third__text} fontInstrument`}> Скидка работает только при самовывозе* </p>
+                }
+                image={ads3}
+              />
+            </Slider>
+          )}
         </div>
       </div>
     </div>

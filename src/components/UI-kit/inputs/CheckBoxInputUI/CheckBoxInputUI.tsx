@@ -1,6 +1,6 @@
 'use client'
 import {CSSProperties, FC, useId, useState} from 'react'
-import styles from './CheckBoxUI.module.scss'
+import styles from './CheckBoxInputUI.module.scss'
 import {useDebouncedCallback} from 'use-debounce'
 
 interface ICheckBoxUIProps {
@@ -13,7 +13,7 @@ interface ICheckBoxUIProps {
   filterName: string
 }
 
-const CheckBoxUI: FC<ICheckBoxUIProps> = ({
+const CheckBoxInputUI: FC<ICheckBoxUIProps> = ({
   title,
   setCheckedOnFirstRender = false,
   extraClass,
@@ -52,4 +52,4 @@ const CheckBoxUI: FC<ICheckBoxUIProps> = ({
   )
 }
 
-export default CheckBoxUI
+export default CheckBoxInputUI
