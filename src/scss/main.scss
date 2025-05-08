@@ -309,3 +309,16 @@ img {
 		padding: 0 8px !important;
 	}
 }
+
+@media (max-width: 600px) {
+	html {
+		scrollbar-width: none;
+		/* скрыть скроллбар в Firefox */
+	}
+
+	/* Для WebKit-браузеров */
+	::-webkit-scrollbar {
+		display: none !important;
+	}
+
+}
