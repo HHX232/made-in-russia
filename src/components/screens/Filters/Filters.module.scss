@@ -231,3 +231,17 @@
       margin-bottom: 0 !important;
    }
 }
+
+@media (max-width: 500px) {
+   .filters__title {
+      margin-right: 0;
+   }
+
+   .clear__filters {
+      order: -1;
+   }
+
+   .titles__box {
+      justify-content: space-between;
+   }
+}

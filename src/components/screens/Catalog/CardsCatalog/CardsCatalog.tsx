@@ -20,10 +20,12 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
   const {selectedFilters, delivery} = useTypedSelector((state) => state.filters)
   const [allProducts, setAllProducts] = useState<Product[]>(initialProducts)
   const [hasMore, setHasMore] = useState(initialHasMore)
+  const [isFiltersChanged, setIsFiltersChanged] = useState(false)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const lastProductRef = useRef<HTMLDivElement | null>(null)
   const [numericFilters, setNumericFilters] = useState<number[]>([])
   const {productInFavorites} = useTypedSelector((state) => state.favorites)
+
   interface PageParams {
     page: number
     size: number
@@ -54,6 +56,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
   }, [selectedFilters])
 
   useEffect(() => {
+    // Устанавливаем флаг, что фильтры изменились
+    setIsFiltersChanged(true)
+
     setPageParams((prev) => {
       const newParams: PageParams = {
         ...prev,
@@ -74,27 +79,31 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
       return newParams
     })
 
-    setAllProducts(initialProducts)
-    setHasMore(initialHasMore)
+    // При изменении фильтров не сбрасываем список продуктов сразу
+    // Мы сделаем это после получения новых данных
 
     console.log(
       'pageParams обновлены с фильтрами категорий:',
       numericFilters.length > 0 ? numericFilters.join(',') : 'нет'
     )
-  }, [numericFilters, priceRange, initialProducts, initialHasMore, delivery])
+  }, [numericFilters, priceRange, delivery])
 
   // Эффект для логирования параметров запроса при их изменении
   useEffect(() => {
     console.log('Текущие параметры запроса:', pageParams)
   }, [pageParams])
 
-  const {data: pageResponse, isLoading, isError} = useProducts(pageParams)
+  const {data: pageResponse, isLoading, isError, isFetching} = useProducts(pageParams)
+
+  // Используем isFetching для отслеживания любого запроса, включая фоновые
+  const showSkeleton = isLoading || (isFetching && isFiltersChanged)
 
   useEffect(() => {
     if (pageResponse) {
       // При получении первой страницы (после сброса фильтров), заменяем список
       if (pageParams.page === 0) {
         setAllProducts(pageResponse.content)
+        setIsFiltersChanged(false) // Сбрасываем флаг изменения фильтров
       } else {
         // При подгрузке следующих страниц добавляем уникальные товары
         const newProducts = pageResponse.content.filter(
@@ -112,7 +121,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
   // Функция для наблюдения за последним элементом
   const lastElementRef = useCallback(
     (node: HTMLDivElement | null) => {
-      if (isLoading) return
+      if (showSkeleton) return
 
       // Отключаем предыдущий observer
       if (observerRef.current) {
@@ -138,23 +147,45 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
         observerRef.current.observe(node)
       }
     },
-    [isLoading, hasMore]
+    [showSkeleton, hasMore]
   )
 
   if (isError) {
     return <div>Error</div>
   }
 
+  // При отображении решаем, что показывать:
+  // 1. Если идет загрузка или изменились фильтры и происходит выборка - показываем скелетон
+  // 2. Если не загружаем и есть товары - показываем их
+  // 3. Если нет товаров и не загружаем - показываем сообщение "Ничего не найдено"
+
   return (
     <div className={styled.cardsCatalog__box}>
-      {allProducts.map((product, index) => {
-        const uniqueKey = `${product.id}-${index}`
-        // Для последнего элемента добавляем ref
-        if (index === allProducts.length - 1) {
-          return (
-            <div key={uniqueKey} ref={lastElementRef}>
+      {!showSkeleton &&
+        allProducts.map((product, index) => {
+          const uniqueKey = `${product.id}-${index}`
+          // Для последнего элемента добавляем ref
+          if (index === allProducts.length - 1) {
+            return (
+              <div key={uniqueKey} ref={lastElementRef}>
+                <Card
+                  isLoading={false}
+                  id={product.id}
+                  title={product.title}
+                  price={product.price}
+                  discount={product.discount}
+                  imageUrl={product.imageUrl}
+                  discountedPrice={product.discountedPrice}
+                  deliveryMethod={product.deliveryMethod}
+                  fullProduct={product}
+                />
+              </div>
+            )
+          } else {
+            return (
               <Card
-                isLoading={isLoading}
+                isLoading={false}
+                key={uniqueKey}
                 id={product.id}
                 title={product.title}
                 price={product.price}
@@ -164,31 +195,16 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
                 deliveryMethod={product.deliveryMethod}
                 fullProduct={product}
               />
-            </div>
-          )
-        } else {
-          return (
-            <Card
-              isLoading={isLoading}
-              key={uniqueKey}
-              id={product.id}
-              title={product.title}
-              price={product.price}
-              discount={product.discount}
-              imageUrl={product.imageUrl}
-              discountedPrice={product.discountedPrice}
-              deliveryMethod={product.deliveryMethod}
-              fullProduct={product}
-            />
-          )
-        }
-      })}
-      {isLoading && (
+            )
+          }
+        })}
+
+      {showSkeleton && (
         <>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((_, i) => {
             return (
               <Card
-                isLoading={isLoading}
+                isLoading={true}
                 key={`skeleton-${i}`}
                 id={Math.random()}
                 title='Загрузка...'
@@ -202,6 +218,12 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
             )
           })}
         </>
+      )}
+
+      {!showSkeleton && allProducts.length === 0 && (
+        <div className={styled.cardsCatalog__empty}>
+          <p>По вашему запросу ничего не найдено</p>
+        </div>
       )}
     </div>
   )

@@ -121,7 +121,7 @@
 
    .searchBox {
       padding: 0 10px;
-      z-index: 100000;
+      z-index: 2000;
    }
 
    .bear__img {
@@ -184,6 +184,7 @@
    width: 19px;
    gap: 5px;
    cursor: pointer;
+   margin-right: 5px;
 }
 
 .burger__item {

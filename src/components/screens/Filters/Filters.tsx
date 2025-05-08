@@ -1,10 +1,10 @@
 'use client'
-import {FC, useState} from 'react'
+import {FC, useEffect, useState} from 'react'
 import styles from './Filters.module.scss'
 import CategoryCheckBoxUI from '@/components/UI-kit/inputs/CategoryCheckBoxUI/CategoryCheckBoxUI'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import RangeInput from '@/components/UI-kit/inputs/RangeInputUI/RangeInputUI'
-import {useQuery} from '@tanstack/react-query'
+import {useQuery, useQueryClient} from '@tanstack/react-query'
 import FiltersService from '@/services/filters/Filters.service'
 import Skeleton from 'react-loading-skeleton'
 import {useActions} from '@/hooks/useActions'
@@ -23,7 +23,7 @@ const Arrow = ({isActive}: {isActive: boolean}) => {
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
     >
-      <g clip-path='url(#clip0_2136_26)'>
+      <g clipPath='url(#clip0_2136_26)'>
         <path
           fillRule='evenodd'
           clipRule='evenodd'
@@ -42,12 +42,15 @@ const Arrow = ({isActive}: {isActive: boolean}) => {
 
 const Filters: FC = () => {
   const [filtersIsOpen, setFiltersIsOpen] = useState(false)
+  const queryClient = useQueryClient()
+  const {delivery, selectedFilters} = useTypedSelector((state) => state.filters)
   const windowWidth = useWindowWidth()
   const toggleFilters = () => {
     if (windowWidth > 500) return
 
     setFiltersIsOpen((prev) => !prev)
   }
+
   const {data, isLoading} = useQuery({
     queryKey: ['filters'],
     queryFn: () => FiltersService.getAll()
@@ -59,11 +62,13 @@ const Filters: FC = () => {
   })
 
   const {clearFilters, clearDelivery, toggleDelivery} = useActions()
-  const {delivery} = useTypedSelector((state) => state.filters)
 
   const handleDeliveryChange = (isChecked: boolean, title: string) => {
     toggleDelivery(title)
   }
+  useEffect(() => {
+    queryClient.invalidateQueries({queryKey: ['products']})
+  }, [selectedFilters, delivery, queryClient])
 
   const listOpenIf = () => {
     if (windowWidth > 500) return styles.isOpenList
@@ -102,7 +107,12 @@ const Filters: FC = () => {
                   // onChange={handleFilterChange}
                 />
               ))}
-            {isLoading && <Skeleton style={{display: 'flex', gap: '7px', height: '20px'}} count={5} />}
+            {isLoading && (
+              <Skeleton
+                style={{display: 'flex', gap: '7px', height: '20px', maxWidth: `${windowWidth < 550 ? '200px' : ''}`}}
+                count={5}
+              />
+            )}
           </div>
         </div>
         <div className={`${styles.part__drop} ${styles.part__drop__range}`}>
@@ -170,7 +180,12 @@ const Filters: FC = () => {
         <div className={`${styles.end__part}`}>
           <div className={`${styles.end__part_title}`}>Способы доставки</div>
           <div className={`${styles.end__part_droplists}`}>
-            {isDelLoading && <Skeleton style={{display: 'flex', gap: '7px', height: '20px'}} count={5} />}
+            {isDelLoading && (
+              <Skeleton
+                style={{display: 'flex', gap: '7px', height: '20px', maxWidth: `${windowWidth < 550 ? '190px' : ''}`}}
+                count={5}
+              />
+            )}
             {!isDelLoading && (
               <>
                 {dataDel?.map((el, i) => {

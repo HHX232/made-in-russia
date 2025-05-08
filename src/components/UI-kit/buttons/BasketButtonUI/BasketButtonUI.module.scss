@@ -14,6 +14,17 @@
    justify-content: space-between;
    margin: 28px auto 0 auto;
    border: 2px solid #AC2525;
+   transition: all .2s;
+
+   &:hover {
+      background-color: #B74444;
+      border-color: #B74444;
+   }
+
+   &:active {
+      background-color: #B84646;
+      border-color: #881D1D;
+   }
 }
 
 .add__box {
@@ -40,4 +51,8 @@
 
 .count__active {
    background-color: #E9D6D7;
+
+   &:hover {
+      background-color: #E9D6D7;
+   }
 }

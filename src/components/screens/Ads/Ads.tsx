@@ -60,10 +60,17 @@ const Ads: FC = () => {
     speed: 1500,
     slidesToShow: 2,
     slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4500,
+    // pauseOnHover: true,
     responsive: [
       {
         breakpoint: 670,
         settings: {
+          speed: 1500,
+          autoplay: true,
+          autoplaySpeed: 4500,
+
           slidesToShow: 1,
           slidesToScroll: 1
         }

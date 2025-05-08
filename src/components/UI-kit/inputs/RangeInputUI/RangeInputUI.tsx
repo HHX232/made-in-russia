@@ -121,59 +121,113 @@ export const RangeInput: React.FC<RangeInputProps> = ({
     debouncedOnChange(minValue, Math.round(newMax))
   }
 
-  // Mouse events for dragging handles
-  const handleMinDrag = (e: React.MouseEvent) => {
-    const startX = e.clientX
-    const startMinValue = minValue
-    const trackRect = (e.currentTarget.parentNode as HTMLElement).getBoundingClientRect()
-    const trackWidth = trackRect.width
+  // Shared logic for handling pointer movements (mouse or touch)
+  const handleDrag = (
+    startX: number,
+    startValue: number,
+    trackWidth: number,
+    isMinHandle: boolean,
+    moveEvent: MouseEvent | TouchEvent
+  ) => {
+    // Get client X position from either mouse or touch event
+    const clientX = 'touches' in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const deltaX = moveEvent.clientX - startX
-      const deltaPercentage = (deltaX / trackWidth) * 100
-      const deltaValue = (deltaPercentage / 100) * (max - min)
+    const deltaX = clientX - startX
+    const deltaPercentage = (deltaX / trackWidth) * 100
+    const deltaValue = (deltaPercentage / 100) * (max - min)
 
-      const newMin = Math.max(min, Math.min(startMinValue + deltaValue, maxValue - step))
+    if (isMinHandle) {
+      const newMin = Math.max(min, Math.min(startValue + deltaValue, maxValue - step))
       const roundedMin = Math.round(newMin)
-
       setMinValue(roundedMin)
       debouncedOnChange(roundedMin, maxValue)
-    }
-
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-    }
-
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseup', handleMouseUp)
-  }
-
-  const handleMaxDrag = (e: React.MouseEvent) => {
-    const startX = e.clientX
-    const startMaxValue = maxValue
-    const trackRect = (e.currentTarget.parentNode as HTMLElement).getBoundingClientRect()
-    const trackWidth = trackRect.width
-
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const deltaX = moveEvent.clientX - startX
-      const deltaPercentage = (deltaX / trackWidth) * 100
-      const deltaValue = (deltaPercentage / 100) * (max - min)
-
-      const newMax = Math.min(max, Math.max(startMaxValue + deltaValue, minValue + step))
+    } else {
+      const newMax = Math.min(max, Math.max(startValue + deltaValue, minValue + step))
       const roundedMax = Math.round(newMax)
-
       setMaxValue(roundedMax)
       debouncedOnChange(minValue, roundedMax)
     }
+  }
+
+  // Mouse events for dragging handles
+  const handleMinDrag = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault() // Prevent text selection and scrolling
+
+    // Get start position and track width
+    const startX = 'touches' in e ? e.touches[0].clientX : e.clientX
+    const startMinValue = minValue
+    const trackRect = (e.currentTarget.parentNode as HTMLElement).getBoundingClientRect()
+    const trackWidth = trackRect.width
+    const isMinHandle = true
+
+    // Mouse event handlers
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      handleDrag(startX, startMinValue, trackWidth, isMinHandle, moveEvent)
+    }
 
     const handleMouseUp = () => {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
     }
 
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseup', handleMouseUp)
+    // Touch event handlers
+    const handleTouchMove = (moveEvent: TouchEvent) => {
+      handleDrag(startX, startMinValue, trackWidth, isMinHandle, moveEvent)
+    }
+
+    const handleTouchEnd = () => {
+      document.removeEventListener('touchmove', handleTouchMove)
+      document.removeEventListener('touchend', handleTouchEnd)
+    }
+
+    // Add appropriate event listeners based on event type
+    if ('touches' in e) {
+      document.addEventListener('touchmove', handleTouchMove)
+      document.addEventListener('touchend', handleTouchEnd)
+    } else {
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+    }
+  }
+
+  const handleMaxDrag = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault() // Prevent text selection and scrolling
+
+    // Get start position and track width
+    const startX = 'touches' in e ? e.touches[0].clientX : e.clientX
+    const startMaxValue = maxValue
+    const trackRect = (e.currentTarget.parentNode as HTMLElement).getBoundingClientRect()
+    const trackWidth = trackRect.width
+    const isMinHandle = false
+
+    // Mouse event handlers
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      handleDrag(startX, startMaxValue, trackWidth, isMinHandle, moveEvent)
+    }
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+
+    // Touch event handlers
+    const handleTouchMove = (moveEvent: TouchEvent) => {
+      handleDrag(startX, startMaxValue, trackWidth, isMinHandle, moveEvent)
+    }
+
+    const handleTouchEnd = () => {
+      document.removeEventListener('touchmove', handleTouchMove)
+      document.removeEventListener('touchend', handleTouchEnd)
+    }
+
+    // Add appropriate event listeners based on event type
+    if ('touches' in e) {
+      document.addEventListener('touchmove', handleTouchMove)
+      document.addEventListener('touchend', handleTouchEnd)
+    } else {
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+    }
   }
 
   return (
@@ -210,8 +264,18 @@ export const RangeInput: React.FC<RangeInputProps> = ({
               width: `${maxPos - minPos}%`
             }}
           />
-          <div className={styles.sliderHandle} style={{left: `${minPos}%`}} onMouseDown={handleMinDrag} />
-          <div className={styles.sliderHandle} style={{left: `${maxPos}%`}} onMouseDown={handleMaxDrag} />
+          <div
+            className={styles.sliderHandle}
+            style={{left: `${minPos}%`}}
+            onMouseDown={handleMinDrag}
+            onTouchStart={handleMinDrag}
+          />
+          <div
+            className={styles.sliderHandle}
+            style={{left: `${maxPos}%`}}
+            onMouseDown={handleMaxDrag}
+            onTouchStart={handleMaxDrag}
+          />
         </div>
       </div>
     </>
