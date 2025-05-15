@@ -1,3 +1,4 @@
+'use client'
 import React, {useId, useEffect, useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {useDebouncedCallback} from 'use-debounce'

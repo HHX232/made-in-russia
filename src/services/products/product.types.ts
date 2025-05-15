@@ -39,6 +39,7 @@ export interface ProductPageResponse extends PageResponse<Product> {
 export interface Product {
   id: number
   deliveryMethod: DeliveryMethod
+  deliveryMethods: DeliveryMethod[]
   title: string
   price: number
   discount: number

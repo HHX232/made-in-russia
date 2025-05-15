@@ -140,10 +140,10 @@ const Header: FC = () => {
       </div>
       <div className={`${styles.middle__header}`}>
         <div className={`container ${styles.header__middle_box}`}>
-          <div className={`${styles.header__logo_box}`}>
+          <Link href={'/'} className={`${styles.header__logo_box}`}>
             <Image className={`${styles.bear__img}`} alt='Logo with Bear' src={logo} width={69} height={69} />
             <Image className={`${styles.bear__img_text}`} alt='Made In Russia' src={logoText} width={175} height={41} />
-          </div>
+          </Link>
           <div className={`${styles.searchBox}`}>
             <SearchInputUI />
           </div>

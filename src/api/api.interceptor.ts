@@ -14,7 +14,7 @@ export const axiosClassic = axios.create({
 instance.interceptors.request.use((config) => {
   const accessToken = getAccessToken()
   if (config.headers && accessToken !== null) {
-    config.headers.Authorization = `Bearer ${accessToken}`
+    config.headers.Authorization = `Bearer ${accessToken || 'stasic smotri'}`
   }
   return config
 })

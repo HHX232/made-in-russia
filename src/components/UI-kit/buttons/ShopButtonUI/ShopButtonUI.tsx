@@ -2,6 +2,7 @@
 import {FC, useEffect, useState} from 'react'
 import styles from './ShopButtonUI.module.scss'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import Link from 'next/link'
 
 interface ShopButtonUIProps {
   extraClass?: string
@@ -14,12 +15,15 @@ const ShopButtonUI: FC<ShopButtonUIProps> = ({extraClass = '', svgColor = 'white
 
   useEffect(() => {
     setBasketCounter(productsInBasket.length)
+    console.log('productsInBasket.length ', productsInBasket.length)
   }, [productsInBasket])
 
   return (
-    <div className={`${styles.basket__box} ${extraClass}`}>
-      {basketCounter > 0 && (
-        <div className={`${basketCounter > 9 ? styles.basket_big : ''} ${styles.counter}`}>{basketCounter}</div>
+    <Link href={'/basket'} className={`${styles.basket__box} ${extraClass}`}>
+      {productsInBasket.length > 0 && (
+        <div className={`${basketCounter > 9 ? styles.basket_big : ''} ${styles.counter}`}>
+          {productsInBasket.length}
+        </div>
       )}
       <svg
         onClick={() => console.log('Click')}
@@ -39,7 +43,7 @@ const ShopButtonUI: FC<ShopButtonUIProps> = ({extraClass = '', svgColor = 'white
           strokeLinejoin='round'
         />
       </svg>
-    </div>
+    </Link>
   )
 }
 

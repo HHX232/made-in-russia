@@ -1,7 +1,10 @@
 .basket__box {
    position: relative;
    max-height: 26px;
+   display: flex;
 }
+
+
 
 .counter {
    position: absolute;

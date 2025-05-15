@@ -18,12 +18,12 @@ export const saveToStorage = (data: any): void => {
   localStorage.setItem('user', JSON.stringify(data.user))
 }
 
-export const getAccessToken = async () => {
+export const getAccessToken = () => {
   const accessToken = Cookies.get('accessToken')
   return accessToken || null
 }
 
-export const getRefreshToken = async () => {
+export const getRefreshToken = () => {
   const refreshToken = Cookies.get('refreshToken')
   return refreshToken || null
 }

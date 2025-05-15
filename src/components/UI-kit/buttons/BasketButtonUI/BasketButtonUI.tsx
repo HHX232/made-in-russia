@@ -10,9 +10,10 @@ import {IProductInBasket} from '@/store/Basket/Basket.types'
 const basket = '/miniBasket.svg'
 interface IBasketButtonProps {
   product: Product // Принимаем весь продукт, а не только id
+  extraClass?: string
 }
 
-const BasketButtonUI: FC<IBasketButtonProps> = ({product}) => {
+const BasketButtonUI: FC<IBasketButtonProps> = ({product, extraClass = ''}) => {
   const {productsInBasket} = useTypedSelector((store) => store.basket)
   const [basketContainsProduct, setBasketContainsProduct] = useState(false)
   const {addToBasket, increaseCount, decreaseCount} = useActions()
@@ -23,9 +24,9 @@ const BasketButtonUI: FC<IBasketButtonProps> = ({product}) => {
     return basketId && productId && basketId === productId
   })
 
-  useEffect(() => {
-    console.log('productsInBasket', productsInBasket)
-  }, [productsInBasket])
+  // useEffect(() => {
+  //   console.log('productsInBasket', productsInBasket)
+  // }, [productsInBasket])
 
   useEffect(() => {
     const isInBasket = productsInBasket.some((item) => item.id === product.id)
@@ -43,7 +44,7 @@ const BasketButtonUI: FC<IBasketButtonProps> = ({product}) => {
   return (
     <div
       onClick={handleAddToBasket}
-      className={` ${basketContainsProduct && styles.count__active} ${styles.button__box}`}
+      className={` ${basketContainsProduct && styles.count__active} ${styles.button__box} ${extraClass}`}
     >
       {!basketContainsProduct ? (
         <div className={styles.add__box}>

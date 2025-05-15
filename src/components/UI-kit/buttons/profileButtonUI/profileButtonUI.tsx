@@ -1,35 +1,139 @@
 'use client'
-import {CSSProperties, FC, useState} from 'react'
+import {CSSProperties, FC, useEffect, useState, useMemo} from 'react'
 import styles from './profileButtonUI.module.scss'
 import Image from 'next/image'
+import {getAccessToken, getRefreshToken, removeFromStorage, saveTokenStorage} from '@/services/auth/auth.helper'
+import instance, {axiosClassic} from '@/api/api.interceptor'
+import {useRouter} from 'next/navigation'
 
-const someAvatar = '/some_avatar.png'
+const ava = '/avatars/avatar-v.svg'
+const ava1 = '/avatars/avatar-v-1.svg'
+const ava2 = '/avatars/avatar-v-2.svg'
+const ava3 = '/avatars/avatar-v-3.svg'
+const ava4 = '/avatars/avatar-v-4.svg'
+const ava5 = '/avatars/avatar-v-5.svg'
+const ava6 = '/avatars/avatar-v-6.svg'
+const ava7 = '/avatars/avatar-v-7.svg'
+const ava8 = '/avatars/avatar-v-8.svg'
+const ava9 = '/avatars/avatar-v-9.svg'
 const userLogin = '/man_login.svg'
+const avatarsArray = [ava, ava1, ava2, ava3, ava4, ava5, ava6, ava7, ava8, ava9]
+
+interface User {
+  id: number
+  role: string
+  email: string
+  login: string
+  phoneNumber: string
+  region: string
+  registrationDate: string
+  lastModificationDate: string
+  avatar: string
+}
 
 interface IProfileProps {
   extraClass?: string
   extraStyles?: CSSProperties
 }
+
 const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
-  const [userIsLogin, setUserIsLogin] = useState(false)
+  const [userData, setUserData] = useState<User>()
+  const [randomAvatar, setRandomAvatar] = useState<string>(ava)
+  const [userName, setUserName] = useState<null | string>(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    setRandomAvatar(avatarsArray[Math.floor(Math.random() * avatarsArray.length)])
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const getData = async () => {
+      const accessToken = getAccessToken()
+      const refreshToken = getRefreshToken()
+
+      if (!refreshToken) {
+        console.log('Нет гребанного рефреш токена')
+        return
+      }
+      if (!accessToken) {
+        console.log('Нет гребанного рефреш токена')
+        return
+      }
+
+      try {
+        console.log('accessToken', accessToken, 'refreshToken', refreshToken)
+        const response = await instance.get<User>('/me')
+        setUserData(response.data)
+      } catch (error) {
+        console.error('Failed to fetch user data:', error)
+
+        if (!refreshToken) {
+          removeFromStorage()
+          return
+        }
+
+        try {
+          const {data: tokenData} = await axiosClassic.patch<{
+            accessToken: string
+          }>('/me/current-session/refresh', {refreshToken})
+
+          console.log('NEW tokenData', tokenData)
+          saveTokenStorage({
+            accessToken: tokenData.accessToken,
+            refreshToken: refreshToken
+          })
+
+          const response = await instance.get<User>('/me')
+          setUserData(response.data)
+          console.log('мы сохранили новые токены')
+        } catch (e) {
+          console.error('Failed to refresh token:', e)
+          console.log('сейчас мы удалили токены')
+          // removeFromStorage()
+        }
+      }
+    }
+
+    getData()
+
+    return () => controller.abort()
+  }, [])
+
+  useEffect(() => {
+    if (!!userData?.login) {
+      if (userData?.login?.length > 13) {
+        const truncatedLogin = userData.login.substring(0, 12) + '...'
+        setUserName(truncatedLogin)
+      } else if (userData?.login) {
+        setUserName(userData.login)
+      }
+    }
+  }, [userData?.login])
+  const imageSrc = useMemo(() => {
+    return userData?.avatar?.trim() ? userData.avatar : randomAvatar
+  }, [userData?.avatar, randomAvatar])
 
   return (
     <div
-      style={{...extraStyles}}
       onClick={() => {
-        setUserIsLogin(!userIsLogin)
+        if (!userData?.login) {
+          router.push('/login')
+        }
       }}
+      style={{...extraStyles}}
       className={`${styles.profile_box} ${extraClass}`}
     >
-      {userIsLogin ? (
+      {userData?.login && (
         <>
-          <Image className={`${styles.image}`} src={someAvatar} alt='' width={28} height={28}></Image>
-          <p className={`${styles.profile_text}`}>Genadiy </p>
+          <Image className={styles.image} src={imageSrc} alt='Profile' width={28} height={28} priority />
+          <p className={styles.profile_text}>{userName || 'User'}</p>
         </>
-      ) : (
+      )}
+      {!userData?.login && (
         <>
-          <Image className={`${styles.image}`} src={userLogin} alt='please login image' width={28} height={28} />
-          <p className={`${styles.profile_text}`}>Войти </p>
+          <Image className={styles.image} src={userLogin} alt='Please login' width={28} height={28} />
+          <p className={styles.profile_text}>Войти</p>
         </>
       )}
     </div>

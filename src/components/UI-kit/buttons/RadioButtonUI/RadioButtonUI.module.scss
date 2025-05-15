@@ -1,0 +1,65 @@
+$radio-green: #43A047;
+$border-color: #d1d5db;
+$transition-speed: 0.2s;
+
+.radioButtonContainer {
+   display: flex;
+   align-items: center;
+
+}
+
+.radioButtonWrapper {
+   position: relative;
+   display: flex;
+   align-items: center;
+
+}
+
+.hiddenInput {
+   position: absolute;
+   opacity: 0;
+   width: 0;
+   height: 0;
+   cursor: pointer;
+}
+
+.radioButtonLabel {
+   display: flex;
+   gap: 10px;
+   align-items: center;
+   cursor: pointer;
+   user-select: none;
+
+   &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+   }
+}
+
+.radioButtonCheckmark {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 20px;
+   height: 20px;
+   border-radius: 50%;
+   border: 1px solid $border-color;
+   background-color: white;
+   transition: all $transition-speed ease-in-out;
+
+   &.checked {
+      background-color: $radio-green;
+      border-color: $radio-green;
+   }
+}
+
+.checkIcon {
+   width: 12px;
+   height: 12px;
+}
+
+.labelText {
+   font-size: 15px;
+   color: #fff;
+   max-width: 350px;
+}

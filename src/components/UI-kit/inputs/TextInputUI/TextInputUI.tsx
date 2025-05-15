@@ -1,4 +1,5 @@
-import {CSSProperties, FC, useId, useState} from 'react'
+'use client'
+import {CSSProperties, FC, ReactNode, useEffect, useId, useState} from 'react'
 import styles from './TextInputUI.module.scss'
 import Image, {StaticImageData} from 'next/image'
 
@@ -10,7 +11,7 @@ interface ITextInputProps {
   extraClass?: string
   extraStyle?: CSSProperties
   placeholder: string
-  title: string
+  title: string | ReactNode
   helpTitle?: string
   isSecret?: boolean
   currentValue: string
@@ -27,7 +28,7 @@ const TextInputUI: FC<ITextInputProps> = ({
   placeholder = '',
   title = '',
   helpTitle,
-  isSecret,
+  isSecret = false,
   currentValue,
   onSetValue,
   errorValue,
@@ -38,6 +39,12 @@ const TextInputUI: FC<ITextInputProps> = ({
   const [textIsShow, setTextIsShow] = useState(false)
   const [displayValue, setDisplayValue] = useState(isSecret ? currentValue.replace(/./g, '*') : currentValue)
   const id = useId()
+
+  // Обновляем displayValue при изменении currentValue извне
+  useEffect(() => {
+    setDisplayValue(isSecret && !textIsShow ? currentValue.replace(/./g, '*') : currentValue)
+  }, [currentValue, isSecret, textIsShow])
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
 
@@ -46,13 +53,12 @@ const TextInputUI: FC<ITextInputProps> = ({
         const addedChars = value.slice(displayValue.length)
         const newValue = currentValue + addedChars
         onSetValue(newValue)
-        setDisplayValue(displayValue + addedChars.replace(/./g, '*'))
       } else {
         const newValue = value.length === 0 ? '' : currentValue.slice(0, value.length)
         onSetValue(newValue)
-        setDisplayValue(newValue.replace(/./g, '*'))
       }
     } else {
+      // Для обычного ввода просто обновляем значение
       onSetValue(value)
     }
   }
@@ -64,7 +70,7 @@ const TextInputUI: FC<ITextInputProps> = ({
   return (
     <label style={{...extraStyle}} htmlFor={id} className={`${extraClass} ${styles.input__box}`}>
       <div className={`${styles.titles_box}`}>
-        {title && <p className={`${styles.input__title}`}>{title}</p>}
+        {typeof title === typeof 'string' ? <p className={`${styles.input__title}`}>{title}</p> : title}
         {helpTitle && (
           <Link href={linkToHelp} className={`${styles.help__title}`}>
             {helpTitle}
@@ -75,7 +81,7 @@ const TextInputUI: FC<ITextInputProps> = ({
         <input
           placeholder={placeholder}
           type={isSecret && !textIsShow ? 'password' : 'text'}
-          value={textIsShow ? currentValue : displayValue}
+          value={isSecret ? (textIsShow ? currentValue : displayValue) : currentValue}
           onChange={handleChange}
           className={`${styles.input} ${errorValue && styles.error__input}`}
           id={id}
@@ -84,9 +90,9 @@ const TextInputUI: FC<ITextInputProps> = ({
           (!customIcon ? (
             <div className={`${styles.secret__box}`} onClick={toggleTextVisibility}>
               {textIsShow ? (
-                <Image width={22} height={18} alt='Hide text' src={hideIcon} />
+                <Image style={{cursor: 'pointer'}} width={22} height={18} alt='Hide text' src={hideIcon} />
               ) : (
-                <Image width={22} height={18} alt='Show text' src={showIcon} />
+                <Image style={{cursor: 'pointer'}} width={22} height={18} alt='Show text' src={showIcon} />
               )}
             </div>
           ) : (
@@ -109,14 +115,3 @@ const TextInputUI: FC<ITextInputProps> = ({
 }
 
 export default TextInputUI
-
-//example const [text, setText] = useState('')
-// <TextInputUI
-// helpTitle='Help?'
-// errorValue='Error '
-// isSecret
-// currentValue={text}
-// onSetValue={setText}
-// placeholder='Write...'
-// title='title'
-// />

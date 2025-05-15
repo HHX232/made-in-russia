@@ -1,0 +1,33 @@
+.footer {
+   width: 100vw;
+   background-color: #2A2E46;
+   box-shadow: 0 -4px 5px #00000025;
+   padding: 40px;
+   margin-top: 100px;
+}
+
+.footer__inner {
+   display: flex;
+   justify-content: center;
+   gap: 60px !important;
+
+   &>a {
+      display: block;
+      color: #fff;
+      font-size: 15px;
+      max-width: fit-content;
+   }
+}
+
+@media (max-width: 640px) {
+   .footer__inner {
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+      justify-content: center;
+
+      &>a {
+         margin: 0 auto;
+      }
+   }
+}

@@ -24,7 +24,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
   const observerRef = useRef<IntersectionObserver | null>(null)
   const lastProductRef = useRef<HTMLDivElement | null>(null)
   const [numericFilters, setNumericFilters] = useState<number[]>([])
-  const {productInFavorites} = useTypedSelector((state) => state.favorites)
+  // const {productInFavorites} = useTypedSelector((state) => state.favorites)
 
   interface PageParams {
     page: number
@@ -34,9 +34,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
     categoryIds?: string
     [key: string]: any
   }
-  useEffect(() => {
-    console.log('productInFavorites', productInFavorites)
-  }, [productInFavorites])
+  // useEffect(() => {
+  //   console.log('productInFavorites', productInFavorites)
+  // }, [productInFavorites])
 
   const [pageParams, setPageParams] = useState<PageParams>({
     page: initialProducts.length > 0 ? 2 : 0,
@@ -52,7 +52,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
       .map(Number)
 
     setNumericFilters(numericKeys)
-    console.log('numericFilters обновлен:', numericKeys)
+    // console.log('numericFilters обновлен:', numericKeys)
   }, [selectedFilters])
 
   useEffect(() => {
@@ -82,16 +82,16 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
     // При изменении фильтров не сбрасываем список продуктов сразу
     // Мы сделаем это после получения новых данных
 
-    console.log(
-      'pageParams обновлены с фильтрами категорий:',
-      numericFilters.length > 0 ? numericFilters.join(',') : 'нет'
-    )
+    // console.log(
+    //   'pageParams обновлены с фильтрами категорий:',
+    //   numericFilters.length > 0 ? numericFilters.join(',') : 'нет'
+    // )
   }, [numericFilters, priceRange, delivery])
 
   // Эффект для логирования параметров запроса при их изменении
-  useEffect(() => {
-    console.log('Текущие параметры запроса:', pageParams)
-  }, [pageParams])
+  // useEffect(() => {
+  //   console.log('Текущие параметры запроса:', pageParams)
+  // }, [pageParams])
 
   const {data: pageResponse, isLoading, isError, isFetching} = useProducts(pageParams)
 
@@ -113,8 +113,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
       }
 
       setHasMore(!pageResponse.last && pageResponse.content.length > 0)
-      console.log('pageResponse получен:', pageResponse)
-      console.log('Товаров загружено:', pageResponse.content.length)
+      // console.log('pageResponse получен:', pageResponse)
+      // console.log('Товаров загружено:', pageResponse.content.length)
     }
   }, [pageResponse, pageParams.page])
 
