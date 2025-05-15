@@ -57,12 +57,15 @@ export async function middleware(request: NextRequest) {
         try {
           const {data: tokenData} = await axiosClassic.patch<{
             accessToken: string
-          }>('/me/current-session/refresh', {
-            refreshToken,
-            headers: {
-              'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+          }>(
+            '/me/current-session/refresh',
+            {refreshToken},
+            {
+              headers: {
+                'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+              }
             }
-          })
+          )
 
           console.log('NEW tokenData', tokenData)
           saveTokenStorage({
@@ -111,12 +114,15 @@ export async function middleware(request: NextRequest) {
             console.log('Начался запрос на /me/current-session/refresh N1')
             const {data: tokenData} = await axiosClassic.patch<{
               accessToken: string
-            }>('/me/current-session/refresh', {
-              refreshToken,
-              headers: {
-                'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+            }>(
+              '/me/current-session/refresh',
+              {refreshToken},
+              {
+                headers: {
+                  'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+                }
               }
-            })
+            )
             console.log('закончился запрос на /me/current-session/refresh N1 успешно', tokenData)
             saveTokenStorage({
               accessToken: tokenData.accessToken,
