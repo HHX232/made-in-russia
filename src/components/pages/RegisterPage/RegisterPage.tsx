@@ -16,6 +16,7 @@ import InputOtp from '@/components/UI-kit/inputs/inputOTP/inputOTP'
 import {saveTokenStorage, saveToStorage} from '@/services/auth/auth.helper'
 import {Router} from 'next/router'
 import {useRouter} from 'next/navigation'
+import {toast} from 'sonner'
 
 const decorImage = '/login__image.jpg'
 const belarusSvg = '/belarus.svg'
@@ -280,8 +281,24 @@ const RegisterPage = () => {
                         })
                         setShowNextStep(false)
                         setShowFinalStep(true)
-                      } catch (error) {
-                        console.error('Registration failed:', error)
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      } catch (error: any) {
+                        console.error('Registration failed:', error.response.data.message)
+                        if (error.response.data.message.includes('Пользователь с почтой')) {
+                          toast.error(
+                            <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+                              <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>
+                                Ошибка регистрации
+                              </strong>
+                              <span>{error.response.data.message}</span>
+                            </div>,
+                            {
+                              style: {
+                                background: '#AC2525'
+                              }
+                            }
+                          )
+                        }
                       }
                     }}
                   >
