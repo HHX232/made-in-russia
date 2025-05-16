@@ -69,3 +69,15 @@
       background-color: #f3f4f6;
    }
 }
+
+@media(max-width:470px) {
+   .inputOtpContainer {
+      gap: 15px !important;
+   }
+
+   .inputOtpBox {
+      padding: 22px 11px;
+      font-size: 25px;
+      max-width: 74px;
+   }
+}

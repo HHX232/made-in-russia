@@ -37,6 +37,7 @@ export async function middleware(request: NextRequest) {
 
       if (!refreshToken) {
         console.log('❌ Нет refresh token, редирект на /login')
+        console.log('refreshToken типо отсутствующий ', refreshToken, ' конец refresh токена')
         return NextResponse.redirect(new URL('/login', request.url))
       }
       if (!accessToken) {
@@ -102,7 +103,6 @@ export async function middleware(request: NextRequest) {
           const response = await instance.get<User>('/me', {
             headers: {
               Authorization: `Bearer ${accessToken}`,
-
               'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
             }
           })
