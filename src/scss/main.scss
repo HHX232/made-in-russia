@@ -316,6 +316,10 @@ img {
 		/* скрыть скроллбар в Firefox */
 	}
 
+	body {
+		overflow-x: hidden;
+	}
+
 	/* Для WebKit-браузеров */
 	::-webkit-scrollbar {
 		display: none !important;
