@@ -1,0 +1,19 @@
+meta:
+  environment: node
+  toolchain:
+    name: npm
+    version: "18"
+build:
+  skip: false
+  additionalCommands: npm install react-redux @reduxjs/toolkit @types/react-redux
+    @svgr/webpack file-loader && npm install && npm run build
+  artifacts:
+    "*": /
+run:
+  scriptName: .next/server.js
+  scriptArguments: null
+  nodeArguments: null
+  command: npm run start
+  persistenceMount: /data
+  containerPort: "80"
+  servicePort: "80"
