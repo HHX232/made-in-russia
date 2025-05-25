@@ -21,7 +21,10 @@ const telegram = '/telegram.svg'
 const logo = '/Logo_Bear.svg'
 const logoText = '/logoText.svg'
 
-const Header: FC = () => {
+interface HeaderProps {
+  isShowBottom?: boolean
+}
+const Header: FC<HeaderProps> = ({isShowBottom = true}) => {
   // Формируем URL как строку
   const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'made-in-russia'}`
   const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'made_in_russia'}`
@@ -179,61 +182,63 @@ const Header: FC = () => {
           </div>
         </div>
       </div>
-      <div className={`${styles.bottom_header}`}>
-        <div className='container'>
-          <ul className={`${styles.bottom__header__inner}`}>
-            <div className={`${styles.bottom__list_item}`}>
-              <DropList
-                title='Категории'
-                items={[
-                  'item1',
-                  <DropList
-                    extraClass={styles.extra_list}
-                    direction='right'
-                    gap={'20'}
-                    title='Категории'
-                    items={['item1', 'item2', 'item3']}
-                    key={1}
-                  />,
-                  'item3'
-                ]}
-              />
-            </div>
-            <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
-              <p>Отзывы</p>
-            </li>
-            <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
-              <p>Доставка</p>
-            </li>
-            <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
-              <p>О нас</p>{' '}
-            </li>
-            <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
-              <p>Помощь</p>{' '}
-            </li>
-            <li className={`${styles.drop__bottom_list}`}>
-              <DropList
-                extraClass={`${styles.extra__bottom__header__list}`}
-                title='Еще'
-                items={[
-                  <div key={Math.random()} className={`${styles.bottom__list_item}`}>
-                    <p>Отзывы</p>
-                  </div>,
-                  <div key={Math.random()} className={`${styles.bottom__list_item}`}>
-                    <p>Доставка</p>
-                  </div>,
-                  <div key={Math.random()} className={`${styles.bottom__list_item}`}>
-                    <p>О нас</p>{' '}
-                  </div>,
-                  <div key={Math.random()} className={`${styles.bottom__list_item}`}>
-                    <p>Помощь</p>{' '}
-                  </div>
-                ]}
-              />
-            </li>
-          </ul>
+      {isShowBottom && (
+        <div className={`${styles.bottom_header}`}>
+          <div className='container'>
+            <ul className={`${styles.bottom__header__inner}`}>
+              <div className={`${styles.bottom__list_item}`}>
+                <DropList
+                  title='Категории'
+                  items={[
+                    'item1',
+                    <DropList
+                      extraClass={styles.extra_list}
+                      direction='right'
+                      gap={'20'}
+                      title='Категории'
+                      items={['item1', 'item2', 'item3']}
+                      key={1}
+                    />,
+                    'item3'
+                  ]}
+                />
+              </div>
+              <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
+                <p>Отзывы</p>
+              </li>
+              <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
+                <p>Доставка</p>
+              </li>
+              <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
+                <p>О нас</p>{' '}
+              </li>
+              <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
+                <p>Помощь</p>{' '}
+              </li>
+              <li className={`${styles.drop__bottom_list}`}>
+                <DropList
+                  extraClass={`${styles.extra__bottom__header__list}`}
+                  title='Еще'
+                  items={[
+                    <div key={Math.random()} className={`${styles.bottom__list_item}`}>
+                      <p>Отзывы</p>
+                    </div>,
+                    <div key={Math.random()} className={`${styles.bottom__list_item}`}>
+                      <p>Доставка</p>
+                    </div>,
+                    <div key={Math.random()} className={`${styles.bottom__list_item}`}>
+                      <p>О нас</p>{' '}
+                    </div>,
+                    <div key={Math.random()} className={`${styles.bottom__list_item}`}>
+                      <p>Помощь</p>{' '}
+                    </div>
+                  ]}
+                />
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
     </header>
   )
 }

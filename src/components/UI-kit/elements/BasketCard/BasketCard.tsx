@@ -6,12 +6,18 @@ import BasketButtonUI from '../../buttons/BasketButtonUI/BasketButtonUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {createPriceWithDot} from '@/utils/createPriceWithDot'
 import {useActions} from '@/hooks/useActions'
+import {useEffect} from 'react'
 const trash = '/trash.svg'
 
 const BasketCard = ({product, onFavClick}: {product: IProductInBasket; onFavClick: () => void}) => {
   const {productInFavorites} = useTypedSelector((state) => state.favorites)
   const isProductInFavorites = productInFavorites.some((el) => el.id.toString() === product.id.toString())
   const {removeFromBasket} = useActions()
+
+  useEffect(() => {
+    console.log('product ', product)
+  }, [product])
+
   return (
     <li className={styles.basket__item}>
       <div className={`${styles.item__image__box}`}>
@@ -45,7 +51,7 @@ const BasketCard = ({product, onFavClick}: {product: IProductInBasket; onFavClic
             <div className={`${styles.info__descr}`}>{`Мини ${product.title}`}</div>
             <div
               className={`${styles.info__delivery}`}
-            >{`${product?.deliveryMethod?.name || product.deliveryMethods.map((el) => el.name)}`}</div>
+            >{`${product?.deliveryMethod?.name && (product?.deliveryMethod?.name || product.deliveryMethods.map((el) => el.name))}`}</div>
           </div>
           <div className={`${styles.top__price__box}`}>
             {product.discountedPrice !== product.price && (

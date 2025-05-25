@@ -28,6 +28,8 @@ const BasketPage: FC = () => {
     setFavorites(favArray.map((product) => product.id.toString()))
   }, [productsInBasket, productInFavorites])
 
+ 
+
   // Вычисляем суммы при изменении корзины (включая countInBasket)
   useEffect(() => {
     const priceSum = productsInBasket.reduce((acc, product) => acc + product.price * (product.countInBasket || 1), 0)
