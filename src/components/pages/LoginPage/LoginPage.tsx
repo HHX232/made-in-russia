@@ -18,6 +18,7 @@ const weibo = '/weibo-svgrepo-com.svg'
 const tg = '/tg.svg'
 
 const decorImage = '/login__image.jpg'
+const decorImage2 = '/new_login.webp'
 
 const LoginPage = () => {
   const [name, setNameState] = useState('')
@@ -99,11 +100,11 @@ const LoginPage = () => {
   return (
     <div className={`${styles.login__box}`}>
       <MinimalHeader />
-      <div className='container'>
+      <div className={`${styles.login__container} container`}>
         <div className={`${styles.login__inner}`}>
           <Image
             className={styles.decor__image}
-            src={decorImage}
+            src={decorImage2}
             width={580}
             height={745}
             alt='декоративное изображение "Большое количество материалов"'
@@ -178,6 +179,7 @@ const LoginPage = () => {
             </div>
           </form>
         </div>
+        <div className={`${styles.margin__box}`}></div>
       </div>
     </div>
   )

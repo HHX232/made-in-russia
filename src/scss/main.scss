@@ -303,10 +303,357 @@ img {
 	border-style: none;
 }
 
+.slick-next:before,
+.slick-prev:before {
+	content: "" !important;
+}
+
+.spec__slider_2 .slick-next:before {
+	display: none !important;
+}
+
+.spec__slider_2 .slick-list {
+	// width: 104%;
+	// left: -2%;
+}
+
+.spec__slider_2 .slick-slider .slick-list .slick-track {
+	gap: 15px !important;
+	display: flex;
+
+}
+
+.mini__card__slider .spec__slider_2 .slick-prev:before {
+	display: none !important;
+}
+
+.mini__card__slider .slick-list .slick-track>div {
+	max-width: fit-content;
+}
+
 @media (max-width: 768px) {
 	.slick-slide {
 		display: block;
 		padding: 0 8px !important;
+	}
+
+	.spec__slider_2 .slick-next:before {
+		display: none !important;
+	}
+
+	.spec__slider_2 .slick-prev:before {
+		display: none !important;
+	}
+
+	.spec__slider .slick-slide {
+		padding: 0 !important;
+	}
+}
+
+
+// !MARKDOWN Styles
+.borderText {
+	font-weight: 400;
+	font-size: 16px;
+	line-height: 150%;
+	padding: 2px 6px;
+	cursor: pointer;
+	border-radius: 4px;
+	border: 1px solid #B8B8B8;
+	background-color: #F7F7F7;
+	max-width: fit-content;
+}
+
+
+.mark_box {
+	padding: 0px;
+	font-size: 15px;
+	// max-width: 50%;
+
+	&>img {
+		border-radius: 6px;
+		margin: 0 !important;
+	}
+
+	&>p>img {
+		border-radius: 10px;
+		margin: 12px 0;
+		border: 2px solid #EEEFF8;
+		max-width: 500px;
+		max-height: 600px;
+	}
+
+	&>pre {
+		background-color: red !important;
+	}
+
+	&>blockquote {
+		width: 100%;
+		padding: 10px;
+		background-color: #fffaebc2;
+		font-size: 19px;
+		border-radius: 10px;
+		margin: 15px 0;
+	}
+
+	&>h1 {
+
+		margin-bottom: 16px;
+	}
+
+	table {
+		border-collapse: collapse;
+	}
+
+	table>td {
+		display: flex;
+		align-items: center;
+	}
+
+	td>img {
+		max-width: 40%;
+		margin: 0 auto;
+
+	}
+
+	&>h2 {
+		margin-bottom: 15px;
+		margin-top: 10px;
+	}
+
+	&>h3 {
+
+		margin: 14px 0;
+	}
+
+	&>h4 {
+
+		margin: 8px 0;
+	}
+
+	&>h5 {
+
+		margin: 8px 0;
+	}
+
+	&>h6 {
+
+		margin: 6px 0;
+
+	}
+
+	p>img {
+		width: 100%;
+		margin: 18px 0 !important;
+		border: 2px solid #EEEFF8;
+	}
+
+	&>p>a {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		cursor: pointer;
+		font-style: italic !important;
+	}
+
+	&>a {
+		font-style: italic !important;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	&>h1>a {
+		font-style: italic !important;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	&>h2>a {
+		font-style: italic !important;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	&>h3>a {
+		font-style: italic !important;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	&>h4>a {
+		font-style: italic !important;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	&>h5>a {
+		font-style: italic !important;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	&>p {
+		margin: 9px 0 !important;
+
+		font-size: 15px !important;
+		line-height: 150%;
+	}
+
+	&>li {
+
+		font-size: 18px !important;
+		line-height: 150%;
+	}
+
+	&>hr {
+		width: 100%;
+		height: 1px !important;
+		background-color: #d9d9d9;
+		margin: 4px 0;
+	}
+
+	&>p {
+		margin: 8px 0;
+
+	}
+
+	&>ol {
+
+		font-size: 18px !important;
+		margin: 15px 0;
+		margin-left: 20px;
+		list-style: circle;
+
+	}
+
+	&>ol>li>ol {
+		list-style: disc;
+		margin-left: 16px;
+	}
+
+	&>ul {
+		margin: 10px 0;
+
+		font-size: 18px !important;
+	}
+
+	&>ul>li>img {
+		border: 2px solid #EEEFF8;
+	}
+
+	&>ol>li>img {
+		margin: 10px 0;
+		border-radius: 10px;
+		border: 3px solid #EEEFF8;
+	}
+
+	&>img {
+		width: 100%;
+		margin: 15px 0 !important;
+		border: 2px solid #EEEFF8;
+	}
+}
+
+.mark_box table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1rem 0;
+	font-size: 18px;
+	text-align: left;
+}
+
+.mark_box th,
+.mark_box td {
+	padding: 10px 15px;
+	border: 1px solid #ddd;
+}
+
+.mark_box th {
+	background-color: #f4f4f4;
+	font-weight: bold;
+}
+
+.mark_box tr:nth-child(even) {
+	background-color: #f9f9f9;
+}
+
+.mark_box tr:hover {
+	background-color: #e9f5ff;
+}
+
+.mark_box caption {
+	caption-side: top;
+	text-align: center;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #555;
+	margin-bottom: 10px;
+}
+
+
+@media (max-width:1000px) {
+	.mark_box {
+		&>h1 {
+
+			font-size: 34px !important;
+		}
+
+		&>h2 {
+
+			font-size: 29px !important;
+		}
+
+		&>h3 {
+
+			font-size: 20px !important;
+		}
+
+		&>h4 {
+
+			font-size: 20px !important;
+		}
+
+		&>h5 {
+
+			font-size: 20px !important;
+		}
+
+		&>h6 {}
+	}
+}
+
+@media (max-width:700px) {
+	.mark_box {
+		&>h1 {
+
+			font-size: 30px !important;
+		}
+
+		&>h2 {
+
+			font-size: 25px !important;
+		}
+
+		&>h3 {
+
+			font-size: 19px !important;
+		}
+
+		&>h4 {
+
+			font-size: 19px !important;
+		}
+
+		&>h5 {
+
+			font-size: 17px !important;
+		}
+
+	}
+}
+
+@media (max-width:560px) {
+	.mark_box {
+		padding-bottom: 130px !important;
 	}
 }
 

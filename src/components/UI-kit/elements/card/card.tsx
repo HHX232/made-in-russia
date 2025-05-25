@@ -11,6 +11,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 import ToggleFavoritesButtonUI from '../../buttons/toggleFavoritesButtonUI/toggleFavoritesButtonUI'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import Link from 'next/link'
 
 const t1 = '/tree.jpg'
 const t2 = '/tree2.jpg'
@@ -41,7 +42,7 @@ const Card: FC<ICardProps> = ({
   const {toggleToFavorites} = useActions()
   const {productInFavorites} = useTypedSelector((state) => state.favorites)
   return (
-    <div key={id + idFromHook} className={`${styles.card__box}`}>
+    <Link href={`/card/${id}`} key={id + idFromHook} className={`${styles.card__box}`}>
       <div>
         <div className={`${styles.image__box}`}>
           {!isLoading ? (
@@ -120,7 +121,7 @@ const Card: FC<ICardProps> = ({
           <Skeleton style={{margin: '25px auto 0 auto', maxWidth: '150px', height: '32px', borderRadius: '20px'}} />
         )}
       </span>
-    </div>
+    </Link>
   )
 }
 

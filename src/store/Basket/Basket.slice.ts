@@ -12,6 +12,7 @@ export const basketSlice = createSlice({
   initialState,
   reducers: {
     addToBasket: (state, action: PayloadAction<Product>) => {
+      console.log('action.payload in basket slice', action.payload)
       const existingProduct = state.productsInBasket.find((p) => p.id === action.payload.id)
 
       if (existingProduct) {
@@ -34,6 +35,7 @@ export const basketSlice = createSlice({
 
     // Увеличение количества товара
     increaseCount: (state, action: PayloadAction<string>) => {
+      console.log('action.payload in basket slice', action.payload)
       const product = state.productsInBasket.find((p) => p.id.toString() === action.payload.toString())
       if (product) {
         product.countInBasket += 1

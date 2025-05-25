@@ -1,0 +1,145 @@
+.imageSlider {
+   width: 100%;
+   max-width: 500px;
+   // margin: 0 auto;
+   height: fit-content;
+
+   &__main {
+      width: 100%;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+
+      .slick-slide {
+         padding: 0;
+      }
+   }
+
+   &__slide {
+      outline: none;
+   }
+
+   &__imageWrapper {
+      width: 100%;
+      aspect-ratio: 1/1;
+      position: relative;
+      height: 0;
+      padding-bottom: 100%;
+   }
+
+   &__mainImage {
+      object-fit: cover;
+      width: 100%;
+
+      transition: transform 0.3s ease;
+   }
+
+   &__thumbnails {
+      margin-top: 16px;
+      padding: 0;
+
+
+      .slick-track {
+         display: flex;
+         justify-content: space-between;
+         gap: 33px;
+      }
+
+      .slick-slide {
+         padding: 0 6px;
+      }
+   }
+
+   &__thumbnail {
+      border-radius: 20px !important;
+
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      border-radius: 4px;
+      overflow: hidden;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      outline: none;
+
+      &:hover {
+         opacity: 0.9;
+         // transform: translateY(-2px);
+         border-color: #2A2E46;
+      }
+   }
+
+   &__thumbnailActive {
+      opacity: 1;
+      // border-color: #2A2E46;
+      border: none;
+      box-shadow: -2px 2px 4px #2a2e4644;
+      // transform: translateY(-4px);
+   }
+
+   .customArrow {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      // background: rgba(255, 255, 255, 0.8);
+      background: #ffffff2d;
+      backdrop-filter: blur(4px);
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+
+      &:hover {
+         // background: white;
+         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+         background: #ffffff62;
+      }
+
+      svg {
+         width: 15px;
+         height: 20px;
+      }
+   }
+
+   .customArrowLeft {
+      left: 10px;
+   }
+
+   .customArrowRight {
+      right: 10px;
+   }
+
+   // Стили для стрелок в миниатюрах
+   &__thumbnails {
+
+      .customArrow {
+         top: 50%;
+         transform: translateY(-50%);
+
+         width: 24px;
+         height: 24px;
+
+         svg {
+            width: 10px;
+            height: 14px;
+         }
+      }
+
+      .customArrowLeft {
+         left: -5px;
+      }
+
+      .customArrowRight {
+         right: -5px;
+      }
+   }
+}

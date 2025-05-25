@@ -8,12 +8,20 @@ import {Product} from '@/services/products/product.types'
 import {IProductInBasket} from '@/store/Basket/Basket.types'
 
 const basket = '/miniBasket.svg'
+const darkBasket = '/dark_basket.svg'
 interface IBasketButtonProps {
   product: Product // Принимаем весь продукт, а не только id
   extraClass?: string
+  textColor?: 'dark' | 'white'
+  iconColor?: 'dark' | 'white'
 }
 
-const BasketButtonUI: FC<IBasketButtonProps> = ({product, extraClass = ''}) => {
+const BasketButtonUI: FC<IBasketButtonProps> = ({
+  product,
+  extraClass = '',
+  textColor = 'white',
+  iconColor = 'white'
+}) => {
   const {productsInBasket} = useTypedSelector((store) => store.basket)
   const [basketContainsProduct, setBasketContainsProduct] = useState(false)
   const {addToBasket, increaseCount, decreaseCount} = useActions()
@@ -47,9 +55,9 @@ const BasketButtonUI: FC<IBasketButtonProps> = ({product, extraClass = ''}) => {
       className={` ${basketContainsProduct && styles.count__active} ${styles.button__box} ${extraClass}`}
     >
       {!basketContainsProduct ? (
-        <div className={styles.add__box}>
+        <div className={` ${styles.add__box} ${textColor === 'dark' ? styles.dark__text : styles.white__text}`}>
           Добавить
-          <Image src={basket} alt='add in basket' width={16} height={14} />
+          <Image src={iconColor === 'dark' ? darkBasket : basket} alt='add in basket' width={16} height={14} />
         </div>
       ) : (
         <div className={`${styles.count__box}`}>

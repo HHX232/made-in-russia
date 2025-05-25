@@ -4,6 +4,9 @@ import DefaultProvider from '@/providers/DefaultProvider'
 import '@/scss/_variables.scss'
 import '@/scss/main.scss'
 import 'react-loading-skeleton/dist/skeleton.css'
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
+
 import type {Metadata} from 'next'
 import {Toaster} from 'sonner'
 
