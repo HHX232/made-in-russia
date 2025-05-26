@@ -561,6 +561,24 @@ img {
 	text-align: left;
 }
 
+.table-wrapper {
+	overflow: auto;
+	max-width: 100%;
+}
+
+.mark_box table {
+	min-width: 600px;
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.mark_box td,
+.mark_box th {
+	padding: 8px 12px;
+	border: 1px solid #ddd;
+	white-space: nowrap;
+}
+
 .mark_box th,
 .mark_box td {
 	padding: 10px 15px;
@@ -651,11 +669,6 @@ img {
 	}
 }
 
-@media (max-width:560px) {
-	.mark_box {
-		padding-bottom: 130px !important;
-	}
-}
 
 @media (max-width: 600px) {
 	html {

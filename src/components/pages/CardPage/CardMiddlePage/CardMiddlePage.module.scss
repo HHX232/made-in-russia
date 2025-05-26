@@ -16,6 +16,7 @@
 
 .descr__box {
    display: flex;
+   gap: 15px;
 }
 
 .extra__group__class {
@@ -74,4 +75,27 @@
    margin: 5px 0;
    max-width: 170px;
    text-align: center;
+}
+
+@media (max-width: 950px) {
+   .descr__box {
+      flex-direction: column;
+   }
+
+   .spec__description__box {
+      position: static;
+      max-width: 850px;
+      order: -1;
+      margin: 0 auto;
+      margin-top: 20px;
+   }
+
+   .mark__span__box {
+      width: 100% !important;
+      max-width: 850px;
+      display: flex;
+      margin: 0 auto;
+      flex-direction: column;
+      flex-shrink: 0;
+   }
 }

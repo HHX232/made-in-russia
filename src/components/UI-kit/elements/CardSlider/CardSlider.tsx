@@ -34,8 +34,16 @@ const CustomArrowRight = ({className, onClick}: any) => (
   </div>
 )
 
-const SlickCardSlider = ({isLoading}: {isLoading: boolean}) => {
-  const images = [
+const SlickCardSlider = ({
+  isLoading,
+  imagesCustom,
+  extraClass
+}: {
+  isLoading: boolean
+  imagesCustom?: string[]
+  extraClass?: string
+}) => {
+  const imagesDefault = [
     '/new_login.jpg',
     '/login__image.jpg',
     '/new_login.jpg',
@@ -44,6 +52,7 @@ const SlickCardSlider = ({isLoading}: {isLoading: boolean}) => {
     '/new_login.jpg',
     '/login__image.jpg'
   ]
+  const images = imagesCustom ? imagesCustom : imagesDefault
 
   const [activeIndex, setActiveIndex] = useState(0)
   const mainSliderRef = useRef<Slider>(null)
@@ -97,6 +106,12 @@ const SlickCardSlider = ({isLoading}: {isLoading: boolean}) => {
         settings: {
           slidesToShow: images.length > 3 ? 3 : images.length
         }
+      },
+      {
+        breakpoint: 550,
+        settings: {
+          slidesToShow: images.length > 2 ? 2 : images.length
+        }
       }
     ]
   }
@@ -108,7 +123,7 @@ const SlickCardSlider = ({isLoading}: {isLoading: boolean}) => {
     }
   }
   return (
-    <div className={`spec__slider ${styles.imageSlider}`}>
+    <div className={`spec__slider ${styles.imageSlider} ${extraClass}`}>
       <div className={styles.imageSlider__main}>
         <Slider ref={mainSliderRef} {...mainSettings}>
           {images.map((image, index) => (

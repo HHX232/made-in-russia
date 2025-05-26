@@ -197,7 +197,13 @@ const ShowMarkdown: FC<IShowNarkdwonProps> = ({markValue}) => {
       <Markdown
         rehypePlugins={[rehypeRaw, remarkGfm]}
         components={{
-          // ...ваш существующий код для code...
+          table: ({node, children, ...props}) => {
+            return (
+              <div className='table-wrapper'>
+                <table {...props}>{children}</table>
+              </div>
+            )
+          },
           span: ({node, className, children, ...props}) => {
             if (className === 'borderText') {
               return (

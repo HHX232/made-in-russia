@@ -21,7 +21,6 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       <body>
         <DefaultProvider>
           {children}
-
           <Toaster theme={'dark'} position={'top-right'} duration={3500} />
         </DefaultProvider>
         <div id='modal_portal'></div>

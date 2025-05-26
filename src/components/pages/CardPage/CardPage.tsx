@@ -8,9 +8,11 @@ import {CardTopPage} from './CardTopPage'
 import {Product} from '@/services/products/product.types'
 import CardMiddlePage from './CardMiddlePage/CardMiddlePage'
 import CardBottomPage from './CardBottomPage/CardBottomPage'
+
 const user_avatar = '/comments/user__avatar.jpg'
 const comm1 = '/comments/comm1.jpg'
 const comm2 = '/comments/comm2.jpg'
+
 const CardPage: FC = () => {
   const params = useParams()
   const [isLoading, setIsLOading] = useState(true)

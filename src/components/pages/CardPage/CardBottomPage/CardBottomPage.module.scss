@@ -229,3 +229,16 @@
 .questions__content {
    width: 100%;
 }
+
+@media (max-width: 900px) {
+   .tabs__box__content {
+      flex-direction: column;
+   }
+
+   .create__comment__box {
+      max-width: 100%;
+      margin: 0 auto;
+      order: -1;
+      position: static;
+   }
+}

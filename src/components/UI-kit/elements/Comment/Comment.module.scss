@@ -62,3 +62,19 @@
    gap: 15px;
    margin-bottom: 10px;
 }
+
+.modal__text {
+   font-size: 15px;
+   margin-top: 15px;
+   max-width: 500px;
+}
+
+@media (max-width: 550px) {
+   .start__list__images>li {
+      display: none;
+   }
+
+   .start__list__images>li:first-child {
+      display: block !important;
+   }
+}
