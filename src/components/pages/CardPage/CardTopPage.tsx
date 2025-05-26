@@ -25,11 +25,24 @@ interface IPriceList {
   items: IPriceItem[]
   discountExpiration?: string | null
 }
-
+function isVideo(url: string) {
+  return url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')
+}
 const im1 = '/mini__comment1.jpg'
 const im2 = '/mini_comment2.jpg'
 const im4 = '/shop__test.svg'
 const im3 = '/mini_comment_3.jpg'
+
+const imArray = [
+  {item: im1, isVideo: true},
+  {item: im2, isVideo: isVideo(im2)},
+  {item: im3, isVideo: isVideo(im3)},
+  {item: im2, isVideo: isVideo(im2)},
+  {item: im1, isVideo: isVideo(im1)},
+  {item: im2, isVideo: isVideo(im2)},
+  {item: im1, isVideo: isVideo(im1)}
+]
+
 const var1 = '/var1.jpg'
 const var2 = '/var2.jpg'
 const var3 = '/var3.jpg'
@@ -138,34 +151,65 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
         </div>
         {!isReallyLoading ? (
           <div className={`${styles.images__comments__slider__box}`}>
-            <Image
-              className={`${styles.images__comments__slider__box__item_img}`}
-              src={im1}
-              alt='mini__comment'
-              width={60}
-              height={60}
-            />
-            <Image
-              className={`${styles.images__comments__slider__box__item_img}`}
-              src={im2}
-              alt='mini__comment'
-              width={60}
-              height={60}
-            />
-            <Image
-              className={`${styles.images__comments__slider__box__item_img}`}
-              src={im3}
-              alt='mini__comment'
-              width={60}
-              height={60}
-            />
-            <Image
-              className={`${styles.images__comments__slider__box__item_img}`}
-              src={im2}
-              alt='mini__comment'
-              width={60}
-              height={60}
-            />
+            {imArray.map((el, i) => {
+              if (imArray.length > 3) {
+                if (i === 3) {
+                  const moreCount = imArray.length - 3
+                  return (
+                    <span style={{width: '60px', height: '60px', position: 'relative'}} key={i}>
+                      <Image
+                        key={i}
+                        className={`${styles.images__comments__slider__box__item_img} ${styles.images__comments__slider__box__item_img__more}`}
+                        src={el.item}
+                        alt='mini__comment'
+                        width={60}
+                        height={60}
+                      />
+                      <div
+                        style={{content: `" ${moreCount}"`}}
+                        className={`${styles.images__comments__slider__box__item_img__more__count}`}
+                      >
+                        {`+ ${moreCount}`}
+                      </div>
+                    </span>
+                  )
+                }
+                if (i >= 4) {
+                  return null
+                }
+              }
+              return (
+                <span style={{width: '60px', height: '60px', position: 'relative'}} key={i}>
+                  <Image
+                    key={i}
+                    className={`${styles.images__comments__slider__box__item_img}`}
+                    src={el.item}
+                    alt='mini__comment'
+                    width={60}
+                    height={60}
+                  />
+                  {el.isVideo ? (
+                    <svg
+                      className={`${styles.play__video__button}`}
+                      width='22'
+                      height='22'
+                      viewBox='0 0 22 22'
+                      fill='none'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <path
+                        fillRule='evenodd'
+                        clipRule='evenodd'
+                        d='M11 21.4C13.7582 21.4 16.4035 20.3043 18.3539 18.3539C20.3043 16.4035 21.4 13.7582 21.4 11C21.4 8.24172 20.3043 5.59644 18.3539 3.64606C16.4035 1.69569 13.7582 0.599976 11 0.599976C8.24172 0.599976 5.59644 1.69569 3.64606 3.64606C1.69569 5.59644 0.599976 8.24172 0.599976 11C0.599976 13.7582 1.69569 16.4035 3.64606 18.3539C5.59644 20.3043 8.24172 21.4 11 21.4ZM10.4215 7.31838C10.2257 7.18775 9.99813 7.11273 9.76305 7.10131C9.52797 7.08989 9.2942 7.14251 9.08668 7.25354C8.87916 7.36457 8.70568 7.52986 8.58474 7.73176C8.4638 7.93367 8.39994 8.16462 8.39998 8.39998V13.6C8.39994 13.8353 8.4638 14.0663 8.58474 14.2682C8.70568 14.4701 8.87916 14.6354 9.08668 14.7464C9.2942 14.8574 9.52797 14.9101 9.76305 14.8986C9.99813 14.8872 10.2257 14.8122 10.4215 14.6816L14.3215 12.0816C14.4995 11.9629 14.6455 11.802 14.7465 11.6133C14.8474 11.4247 14.9003 11.214 14.9003 11C14.9003 10.786 14.8474 10.5753 14.7465 10.3866C14.6455 10.1979 14.4995 10.0371 14.3215 9.91838L10.4215 7.31838Z'
+                        fill='white'
+                      />
+                    </svg>
+                  ) : (
+                    <></>
+                  )}
+                </span>
+              )
+            })}
           </div>
         ) : (
           <div className={`${styles.images__comments__slider__box}`}>

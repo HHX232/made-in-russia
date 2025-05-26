@@ -5,7 +5,7 @@ import {Product} from '../products/product.types'
 const cardService = {
   async getCardById(id: number | string) {
     try {
-      const res = await axiosClassic.get<ICardFull | Product>(`/products/${id}`)
+      const res = await axiosClassic.get<ICardFull | Product>(`/products-summary/${id}`)
       return {
         data: res.data,
         isLoading: false,

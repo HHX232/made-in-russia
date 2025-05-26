@@ -21,7 +21,7 @@ export interface ICardProps {
   title: string
   price: number
   discount: number
-  imageUrl: string | StaticImageData
+  previewImageUrl: string | StaticImageData
   discountedPrice: number
   fullProduct?: Product
   isLoading?: boolean
@@ -33,7 +33,7 @@ const Card: FC<ICardProps> = ({
   title = 'Выгодный товар',
   price = '10000',
   discount = '0',
-  imageUrl = t1,
+  previewImageUrl = t1,
   discountedPrice = '10000',
   fullProduct = {} as Product,
   isLoading = false
@@ -51,7 +51,7 @@ const Card: FC<ICardProps> = ({
               width={250}
               height={250}
               alt='product Image'
-              src={imageUrl || t2}
+              src={previewImageUrl || t2}
             />
           ) : (
             <Skeleton className={`${styles.card__image__skeleton}`} count={1} />

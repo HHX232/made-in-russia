@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-export const PRODUCTS = '/products'
+export const PRODUCTS = '/products-summary'
 
 export interface Pageable {
   offset: number
@@ -41,9 +41,9 @@ export interface Product {
   deliveryMethod: DeliveryMethod
   deliveryMethods: DeliveryMethod[]
   title: string
-  price: number
+  originalPrice: number
   discount: number
-  imageUrl: string
+  previewImageUrl: string
   creationDate: Date | string
   lastModificationDate: Date | string
   discountedPrice: number

@@ -21,7 +21,13 @@ const BasketCard = ({product, onFavClick}: {product: IProductInBasket; onFavClic
   return (
     <li className={styles.basket__item}>
       <div className={`${styles.item__image__box}`}>
-        <Image className={styles.basket__image} src={product.imageUrl} alt={product.title} width={100} height={100} />
+        <Image
+          className={styles.basket__image}
+          src={product.previewImageUrl}
+          alt={product.title}
+          width={100}
+          height={100}
+        />
         <ToggleFavoritesButtonUI
           onClick={onFavClick}
           extraClass={`${styles.star__extra}`}
@@ -54,15 +60,15 @@ const BasketCard = ({product, onFavClick}: {product: IProductInBasket; onFavClic
             >{`${product?.deliveryMethod?.name && (product?.deliveryMethod?.name || product.deliveryMethods.map((el) => el.name))}`}</div>
           </div>
           <div className={`${styles.top__price__box}`}>
-            {product.discountedPrice !== product.price && (
+            {product.discountedPrice !== product.originalPrice && (
               <div className={`${styles.spec__price} `}>
                 {createPriceWithDot(product.discountedPrice.toString()) + ' RUB'}
               </div>
             )}
             <div
-              className={`${styles.price} ${product.discountedPrice !== product.price && styles.spec__price_discount}`}
+              className={`${styles.price} ${product.discountedPrice !== product.originalPrice && styles.spec__price_discount}`}
             >
-              {createPriceWithDot(product.price.toString()) + ' RUB'}
+              {createPriceWithDot(product.originalPrice.toString()) + ' RUB'}
             </div>
           </div>
         </div>

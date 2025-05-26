@@ -172,9 +172,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
                   isLoading={false}
                   id={product.id}
                   title={product.title}
-                  price={product.price}
+                  price={product.originalPrice}
                   discount={product.discount}
-                  imageUrl={product.imageUrl}
+                  previewImageUrl={product.previewImageUrl}
                   discountedPrice={product.discountedPrice}
                   deliveryMethod={product.deliveryMethod}
                   fullProduct={product}
@@ -188,9 +188,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
                 key={uniqueKey}
                 id={product.id}
                 title={product.title}
-                price={product.price}
+                price={product.originalPrice}
                 discount={product.discount}
-                imageUrl={product.imageUrl}
+                previewImageUrl={product.previewImageUrl}
                 discountedPrice={product.discountedPrice}
                 deliveryMethod={product.deliveryMethod}
                 fullProduct={product}
@@ -210,7 +210,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
                 title='Загрузка...'
                 price={0}
                 discount={0}
-                imageUrl=''
+                previewImageUrl=''
                 discountedPrice={0}
                 deliveryMethod={'Самовывоз' as any}
                 fullProduct={{} as any}

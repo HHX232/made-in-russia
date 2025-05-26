@@ -16,6 +16,7 @@ const ShopButtonUI: FC<ShopButtonUIProps> = ({extraClass = '', svgColor = 'white
   useEffect(() => {
     setBasketCounter(productsInBasket.length)
     console.log('productsInBasket.length ', productsInBasket.length)
+    console.log('productsInBasket ', productsInBasket)
   }, [productsInBasket])
 
   return (

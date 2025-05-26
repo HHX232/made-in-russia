@@ -51,7 +51,11 @@ const BasketButtonUI: FC<IBasketButtonProps> = ({
 
   return (
     <div
-      onClick={handleAddToBasket}
+      onClick={(e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        handleAddToBasket()
+      }}
       className={` ${basketContainsProduct && styles.count__active} ${styles.button__box} ${extraClass}`}
     >
       {!basketContainsProduct ? (
@@ -62,7 +66,9 @@ const BasketButtonUI: FC<IBasketButtonProps> = ({
       ) : (
         <div className={`${styles.count__box}`}>
           <div
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
               decreaseCount(product.id.toString())
             }}
             className={`${styles.decrease__text}`}
@@ -71,7 +77,9 @@ const BasketButtonUI: FC<IBasketButtonProps> = ({
           </div>
           <div className={`${styles.count__inBox}`}>{currentProductInBasket?.countInBasket}</div>
           <div
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
               increaseCount(product.id.toString())
             }}
             className={`${styles.increase__text}`}
