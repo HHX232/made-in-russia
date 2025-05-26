@@ -6,7 +6,7 @@ const yellowStars = '/comments/yellow__start.svg'
 const grayStars = '/comments/gray__start.svg'
 const Comment: FC<ICommentProps> = ({
   commentID,
-  userId,
+  // userId,
   images,
   userName,
   userImage,
