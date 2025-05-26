@@ -3,11 +3,11 @@ import axios from 'axios'
 import {getContentType} from './api.helper'
 
 export const instance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL + '/api/v1',
   headers: getContentType()
 })
 export const axiosClassic = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL + '/api/v1',
   headers: getContentType()
 })
 
