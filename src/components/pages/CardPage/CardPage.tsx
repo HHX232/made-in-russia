@@ -3,7 +3,6 @@ import {FC, useEffect, useState} from 'react'
 import styles from './CardPage.module.scss'
 import {useParams} from 'next/navigation'
 import cardService from '@/services/card/card.service'
-// import Skeleton from 'react-loading-skeleton'
 import Header from '@/components/MainComponents/Header/Header'
 import {CardTopPage} from './CardTopPage'
 import {Product} from '@/services/products/product.types'
@@ -41,14 +40,15 @@ const CardPage: FC = () => {
         </div>
         <CardMiddlePage isLoading={isLoading} />
         <CardBottomPage
-          isLoading={true}
+          isLoading={isLoading}
           comments={[
             {
               commentID: '1',
               userId: 'user101',
               userName: 'Алексей Иванов',
               userImage: user_avatar,
-              commentText: 'Отличный пост, очень информативно!',
+              commentText:
+                'Отличный пост, очень информативно! Отличный пост, очень информативно! Отличный пост, очень информативно! Отличный пост, очень информативно!',
               createdAt: '2023-05-15T10:30:00Z',
               starsCount: 2,
               images: [comm1]
@@ -105,35 +105,3 @@ export default CardPage
 {
   /* {isLoading && <Skeleton className={`${styles.card__def__skeleton}`} count={5} />} */
 }
-
-// const [priceList, setPriceList] = useState<IPriceList>({
-//   items: [
-//     {
-//       title: '1-5 т.',
-//       currentPrice: '900',
-//       originalPrice: '1200',
-//       priceUnit: 'USD/т'
-//     },
-//     {
-//       title: '5-20 т.',
-//       currentPrice: '1500',
-//       originalPrice: '2000',
-//       priceUnit: 'USD/т'
-//     },
-//     {
-//       title: 'От 20т',
-//       currentPrice: '700',
-//       originalPrice: '700',
-//       priceUnit: 'USD/т'
-//     }
-//   ],
-//   discountExpiration: '2025-06-27'
-// })
-
-// const settings = {
-//   dots: false,
-//   infinite: true,
-//   speed: 1500,
-//   slidesToShow: 4,
-//   slidesToScroll: 1
-// }

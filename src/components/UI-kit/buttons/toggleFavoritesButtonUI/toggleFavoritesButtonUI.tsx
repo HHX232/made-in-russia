@@ -17,7 +17,9 @@ const ToggleFavoritesButtonUI: FC<ToggleFavoritesButtonUIProps> = ({
 }) => {
   const [isActive, setIsActive] = useState(initialActive)
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
     setIsActive(!isActive)
     onClick?.()
   }
@@ -26,7 +28,11 @@ const ToggleFavoritesButtonUI: FC<ToggleFavoritesButtonUIProps> = ({
     <button
       className={`${styles.button} ${extraClass}`}
       style={extraStyles}
-      onClick={handleClick}
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        handleClick(e)
+      }}
       aria-label={isActive ? 'Remove from favorites' : 'Add to favorites'}
     >
       <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
