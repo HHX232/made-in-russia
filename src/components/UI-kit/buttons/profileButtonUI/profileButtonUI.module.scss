@@ -14,9 +14,22 @@
    }
 }
 
-.image {}
+.image {
+   // width: 30px;
+   // aspect-ratio: 1/1;
+}
 
 .profile_text {
    transition: all .15s;
    font-size: 14px;
+}
+
+@media (max-width:880px) {
+   .profile_text {
+      display: none;
+   }
+
+   .profile_box {
+      padding: 4px 10px;
+   }
 }

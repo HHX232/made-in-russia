@@ -1,48 +1,36 @@
-import { Action, combineReducers, configureStore } from '@reduxjs/toolkit';
-import {
-  FLUSH,
-  PAUSE,
-  PERSIST,
-  persistReducer,
-  persistStore,
-  PURGE,
-  REGISTER,
-  REHYDRATE,
-} from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-
-const exampleReducer = (state = { value: 0 }, action: Action) => {
-  switch (action.type) {
-    case 'increment':
-      return { value: state.value + 1 };
-    default:
-      return state;
-  }
-};
-
+import {combineReducers, configureStore} from '@reduxjs/toolkit'
+import {FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE} from 'redux-persist'
+import {filtersSlice} from './Filters/filters.slice'
+import {basketSlice} from './Basket/Basket.slice'
+import {favoritesSlice} from './Favorites/Favorites.types'
+import {registrationSlice} from './registerUser/registerUser.slice'
+import {storage} from '@/utils/storage/storage'
 const rootReducer = combineReducers({
-  example: exampleReducer,
-});
+  filters: filtersSlice.reducer,
+  basket: basketSlice.reducer,
+  favorites: favoritesSlice.reducer,
+  registration: registrationSlice.reducer
+})
 
 const persistConfig = {
-  key: 'root',
-  storage,
-};
+  key: 'persist store',
+  storage: storage,
+  whitelist: ['filters', 'basket', 'favorites']
+}
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }),
-});
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
+      }
+    })
+})
 
-export const persistor = persistStore(store);
+export const persistor = persistStore(store)
 
-
-export type TypeRootState = ReturnType<typeof store.getState>;
-export type TypeAppDispatch = typeof store.dispatch;
+export type TypeRootState = ReturnType<typeof store.getState>
+export type TypeAppDispatch = typeof store.dispatch

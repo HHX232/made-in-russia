@@ -1,0 +1,31 @@
+.input__box {
+   display: flex;
+   align-items: center;
+   width: 100%;
+   background-color: #D9DFFB;
+   border-radius: 15px;
+
+}
+
+.def__input {
+   background-color: transparent;
+   font-size: 15px;
+   border: none;
+   margin-left: 10px;
+}
+
+.box__start {
+   font-weight: 600;
+   font-size: 15px;
+   color: #2A2E46;
+   padding: 14px 15px;
+   background-color: #B6BCD7;
+   border-radius: 15px;
+   line-height: 18px !important;
+   border: 1px solid #2A2E46;
+
+}
+
+.error__box {
+   color: #AC2525;
+}

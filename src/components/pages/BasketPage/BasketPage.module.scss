@@ -1,0 +1,246 @@
+.basket__title {
+   margin-top: 44px;
+   margin-bottom: 30px;
+   font-weight: 600;
+   font-size: 36px;
+   line-height: 44px;
+}
+
+.basket__content {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+   gap: 20px;
+}
+
+.basket__list {
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+   max-width: 800px;
+   width: 100%;
+}
+
+.basket__status {
+   display: flex;
+   flex-direction: column;
+   max-width: 430px;
+   width: 100%;
+   min-width: 335px;
+   flex-shrink: 3;
+   position: sticky;
+   top: 10px;
+   padding: 28px;
+   background-color: #F4F5F6;
+   box-shadow: -2px 4px 4px #00000015;
+   border-radius: 30px;
+   max-height: fit-content;
+}
+
+.count__and__price {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+   margin-bottom: 20px;
+}
+
+.status__title__box {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+}
+
+.basket__status__title {
+   font-weight: 600;
+   font-size: 20px;
+}
+
+.status__title__count {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   margin-bottom: 30px;
+
+   &>div {
+      font-size: 14px !important;
+
+   }
+
+}
+
+.count__and__price {
+   font-size: 14px;
+}
+
+.count__price {
+   font-weight: 600;
+}
+
+.line {
+   width: 1px;
+   height: 12px;
+   background-color: #000;
+}
+
+.sell__box {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+   margin-bottom: 25px;
+}
+
+.sel__value {
+   font-weight: 600;
+   color: #AC2525;
+}
+
+.promo__label {
+   display: flex;
+}
+
+.promo__box {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 28px;
+}
+
+.promo__label {
+   display: flex;
+   padding: 5px;
+   border-radius: 10px;
+   border: 2px solid #AC2525;
+   max-width: 120px;
+}
+
+.promo__input {
+   border: none;
+   background-color: transparent;
+   outline: none;
+   text-align: center;
+   margin: 0 auto;
+   font-size: 16px;
+   max-width: 100px;
+}
+
+.delivery__box {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+}
+
+
+.delivery__value {
+   text-align: end;
+}
+
+.result__box {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+   margin-top: 40px;
+}
+
+.result__title,
+.result__val {
+   font-weight: 600;
+   font-size: 24px;
+}
+
+.by__button {
+   width: 100%;
+   padding: 14px;
+   font-size: 16px;
+   line-height: 19px;
+   background-color: #AC2525;
+   margin-top: 40px;
+   color: #fff;
+   border-radius: 10px;
+}
+
+
+
+// Добавляем стили для мобильного меню
+
+.mobile__menu {
+   display: none;
+   position: fixed;
+   bottom: 0;
+   left: 0;
+   width: 100%;
+   background-color: #fff;
+   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+   padding: 15px;
+   z-index: 100;
+
+   &__info {
+      display: flex;
+      flex-direction: column;
+   }
+
+   &__count {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 4px;
+   }
+
+   &__price {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2A2E46;
+   }
+
+   &__button {
+      background-color: #AC2525;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      // &:hover {
+      //    background-color: #333;
+      // }
+   }
+}
+
+@media (max-width: 950px) {
+   .mobile__menu {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+   }
+
+   // Дополнительные стили для основного контента при наличии мобильного меню
+   .basket__content {
+      padding-bottom: 80px; // Добавляем отступ внизу, чтобы контент не скрывался за мобильным меню
+   }
+}
+
+// Существующие стили корзины можно добавить здесь или импортировать из существующего файла
+
+@media (max-width: 950px) {
+   .basket__content {
+      flex-direction: column;
+      justify-content: center;
+      padding: 10px;
+   }
+
+   .basket__list,
+   .basket__status {
+      margin: 0 auto;
+   }
+
+   .basket__status {
+      width: 100%;
+      max-width: 800px;
+   }
+
+   .basket__title {
+      padding-left: 15px;
+   }
+}

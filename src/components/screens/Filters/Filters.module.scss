@@ -1,0 +1,248 @@
+.filters__box {
+   display: flex;
+   flex-direction: column;
+   background-color: #EFF1F8;
+   border-radius: 20px;
+   box-shadow: -1px 4px 4px rgba(0, 0, 0, 0.25);
+   padding: 18px 0 18px 25px;
+   max-width: 280px;
+   position: sticky;
+   top: 10px;
+   min-width: 260px;
+   max-height: fit-content;
+   z-index: 1000;
+
+   max-height: 750px;
+   height: 95vh;
+
+}
+
+.span_over {
+   /* Для Firefox */
+   scrollbar-width: thin;
+   scrollbar-color: #2A2E46 #EFF1F8;
+   overflow-y: scroll;
+   transition: all .2s;
+   padding-right: 25px;
+}
+
+/* Стили для WebKit-браузеров */
+.span_over::-webkit-scrollbar {
+   width: 1px !important;
+}
+
+.span_over::-webkit-scrollbar-track {
+   background: #EFF1F8;
+   border-radius: 3px;
+   /* Добавляем отступы по 15px сверху и снизу (в сумме 30px) */
+}
+
+.span_over::-webkit-scrollbar-thumb {
+   background-color: #2A2E46;
+   border-radius: 3px;
+}
+
+.filters__title {
+   font-weight: 600;
+   text-underline-offset: 2px;
+   font-size: 20px;
+   text-decoration: underline;
+   color: #2A2E46;
+   text-align: center;
+   margin-right: 40px;
+
+
+}
+
+.filters__part {
+   display: flex;
+   flex-direction: column;
+   margin-bottom: 40px;
+
+   .filters__part_title {
+      font-weight: 600;
+      font-size: 15px;
+      color: #2A2E46;
+      margin-bottom: 20px;
+   }
+}
+
+.filters__part_checkboxes {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+}
+
+.filters__part_droplists {
+   // position: relative;
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+}
+
+.filters__part_title_drop {
+   font-weight: 600;
+   font-size: 15px;
+   color: #2A2E46;
+   margin-bottom: 20px;
+}
+
+.part__drop {
+   margin-bottom: 40px;
+}
+
+.end__part,
+.end__part_droplists {
+   display: flex;
+   flex-direction: column;
+}
+
+.end__part_droplists {
+   gap: 10px;
+}
+
+.end__part_title {
+   font-weight: 600;
+   font-size: 15px;
+   color: #2A2E46;
+   margin-bottom: 20px;
+}
+
+.titles__box {
+   display: flex;
+   width: 100%;
+   padding-right: 25px;
+   // align-items: end;
+   margin-bottom: 33px;
+   justify-content: end;
+}
+
+.clear__filters {
+   font-size: 14px;
+   color: #AC2525;
+   text-decoration: underline;
+   text-underline-offset: 2px;
+   padding-top: 4px;
+   cursor: pointer;
+
+}
+
+.title__box {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+}
+
+// --------
+
+.checkbox__container {
+   display: flex;
+   justify-content: start;
+   gap: 10px;
+   cursor: pointer;
+}
+
+.checkbox__hide_input {
+   opacity: 0;
+   width: 0;
+   height: 0;
+}
+
+.checkbox__visual {
+   width: 20px;
+   height: 20px;
+   border: 1px solid #2A2E46;
+   background-color: #D9DFFB;
+   border-radius: 5px;
+   transition: all .2s;
+}
+
+.checkbox__visual_checked {
+   background-color: #4E5479 !important;
+}
+
+.input__text {
+   font-size: 15px;
+   line-height: 19px;
+}
+
+.isCloseList {
+   height: 0;
+   opacity: 0;
+   width: 0;
+}
+
+.titles__box_without__margin {
+   margin-bottom: 0;
+   margin-left: auto;
+}
+
+.titles__box_with__margin {
+   margin-bottom: 33px;
+}
+
+@media (max-width:900px) {
+
+   .filters__box {
+      position: static;
+      width: 100%;
+      max-width: none;
+      height: fit-content;
+      max-height: fit-content;
+      // margin: 6px !important;
+      // flex-direction: row;
+   }
+
+   .span_over {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+   }
+}
+
+@media (max-width:720px) {
+   .span_over {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, auto);
+   }
+
+   .part__drop__lists {
+      order: -3;
+   }
+
+   .part__drop__range {
+      order: +1;
+   }
+
+   .part__drop__lists {
+      max-width: fit-content;
+   }
+}
+
+@media (max-width: 420px) {
+   .span_over {
+      grid-template-columns: repeat(1, 1fr);
+      grid-template-rows: repeat(4, auto);
+      gap: 20px;
+   }
+
+   .part__drop,
+   .filters__part {
+      margin-bottom: 0 !important;
+   }
+}
+
+@media (max-width: 500px) {
+   .filters__title {
+      margin-right: 0;
+   }
+
+   .clear__filters {
+      order: -1;
+   }
+
+   .titles__box {
+      justify-content: space-between;
+   }
+}

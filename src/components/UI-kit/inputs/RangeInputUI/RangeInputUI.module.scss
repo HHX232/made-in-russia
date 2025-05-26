@@ -1,0 +1,93 @@
+.rangeContainer {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+   gap: 10px;
+   max-width: 180px;
+   margin: 0 auto;
+}
+
+.inputsContainer {
+   display: flex;
+   justify-content: space-between;
+   gap: 8px;
+}
+
+.valueInput {
+   background-color: #2A2E46;
+   color: white;
+   border: 1px solid #3A3F59;
+   border-radius: 30px;
+   padding: 3px 13px;
+   width: 100%;
+   max-width: 180px;
+   font-size: 15px;
+   font-weight: 600;
+   max-width: fit-content;
+
+   &:focus {
+      outline: none;
+      border-color: #4D5575;
+   }
+
+   // Скрыть стрелки у number input
+   &::-webkit-outer-spin-button,
+   &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+   }
+
+   /* Firefox */
+   -moz-appearance: textfield;
+}
+
+.sliderContainer {
+   position: relative;
+   height: 24px;
+   width: 100%;
+}
+
+.sliderTrack {
+   position: absolute;
+   height: 4px;
+   width: 100%;
+   background-color: #2A2E46;
+   border-radius: 6px;
+   top: 50%;
+   transform: translateY(-50%);
+}
+
+.sliderRange {
+   position: absolute;
+   height: 4px;
+   background-color: #2A2E46;
+   border-radius: 6px;
+   top: 50%;
+   transform: translateY(-50%);
+}
+
+.sliderHandle {
+   position: absolute;
+   width: 18px;
+   height: 18px;
+   border-radius: 50%;
+   background-color: #2A2E46;
+   top: 50%;
+   transform: translate(-50%, -50%);
+   cursor: pointer;
+
+   &:hover {
+      box-shadow: 0 0 0 6px rgba(42, 46, 70, 0.2);
+   }
+
+   &:active {
+      box-shadow: 0 0 0 8px rgba(42, 46, 70, 0.3);
+   }
+}
+
+.rangeContainer_title {
+   font-weight: 600;
+   font-size: 15px;
+   color: #2A2E46;
+   margin-bottom: 20px;
+}

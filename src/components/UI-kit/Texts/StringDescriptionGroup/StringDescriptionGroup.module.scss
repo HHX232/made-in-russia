@@ -1,0 +1,93 @@
+.descr__box {
+   display: flex;
+   flex-direction: column;
+   gap: 15px;
+   width: 100%;
+   max-height: fit-content;
+}
+
+.descr__title {
+   font-weight: 700;
+}
+
+.descr__list {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+   gap: 15px;
+}
+
+.descr__list__item {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+   padding-bottom: 5px;
+   border-bottom: .3px solid #818181;
+   align-items: center;
+}
+
+.element__value {
+   max-width: 45%;
+}
+
+// Font size classes
+.element__def__font,
+.titleFontSize {
+   &_14 {
+      font-size: 14px;
+   }
+
+   &_15 {
+      font-size: 15px;
+   }
+
+   &_16 {
+      font-size: 16px;
+   }
+
+   &_17 {
+      font-size: 17px;
+   }
+
+   &_18 {
+      font-size: 18px;
+   }
+
+   &_20 {
+      font-size: 20px;
+   }
+
+   &_22 {
+      font-size: 22px;
+   }
+
+   &_23 {
+      font-size: 23px;
+   }
+
+   &_24 {
+      font-size: 24px;
+   }
+
+   &_25 {
+      font-size: 25px;
+   }
+}
+
+.list__gap {
+   &_5 {
+      gap: 5px;
+   }
+
+   &_10 {
+      gap: 10px;
+   }
+
+   &_15 {
+      gap: 15px;
+   }
+
+   &_20 {
+      gap: 20px;
+   }
+}

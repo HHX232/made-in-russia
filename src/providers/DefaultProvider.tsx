@@ -1,30 +1,26 @@
-// app/PersistProvider.tsx
-'use client';
+'use client'
 
-import { persistor, store } from "@/store/store";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
+import {persistor, store} from '@/store/store'
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import {Provider} from 'react-redux'
+import {PersistGate} from 'redux-persist/integration/react'
 
 const queryClient = new QueryClient({
-  defaultOptions:{
+  defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: false
     }
   }
-});
+})
 
-export default function DefaultProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DefaultProvider({children}: {children: React.ReactNode}) {
   return (
     <QueryClientProvider client={queryClient}>
-    <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      {children}
-    </PersistGate>
-    </Provider></QueryClientProvider>
-  );
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          {children}
+        </PersistGate>
+      </Provider>
+    </QueryClientProvider>
+  )
 }
