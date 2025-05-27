@@ -1,19 +1,15 @@
-'use client'
 import Image from 'next/image'
-import {FC, useState} from 'react'
+import {FC} from 'react'
 import styles from './Header.module.scss'
 import Link from 'next/link'
 import createTelText from '@/utils/createTelText'
 import LanguageButtonUI from '@/components/UI-kit/buttons/LanguageButtonUI/LanguageButtonUI'
-// import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
-// import ShopButtonUI from '@/components/UI-kit/buttons/ShopButtonUI/ShopButtonUI'
-// import StarButtonUI from '@/components/UI-kit/buttons/StarButtonUI/StarButtonUI'
-// import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
 import ShopButtonUI from '@/components/UI-kit/buttons/ShopButtonUI/ShopButtonUI'
 import StarButtonUI from '@/components/UI-kit/buttons/StarButtonUI/StarButtonUI'
 import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
+import BurgerMenu from '../BurgerMenu/BurgerMenu'
 
 const insta = '/insta.svg'
 const telephone = '/phone.svg'
@@ -25,12 +21,11 @@ interface HeaderProps {
   isShowBottom?: boolean
 }
 const Header: FC<HeaderProps> = ({isShowBottom = true}) => {
-  // Формируем URL как строку
   const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'made-in-russia'}`
   const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'made_in_russia'}`
   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `7${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
-  const [menuIsOpen, setMenuIsOpen] = useState(false)
+
   return (
     <header className={`${styles.header}`}>
       <div className={`${styles.header__top} container`}>
@@ -155,31 +150,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true}) => {
             <ShopButtonUI />
             <StarButtonUI />
           </div>
-          <div className={`${styles.burger__menu} `}>
-            <div
-              onClick={() => {
-                setMenuIsOpen((prev) => !prev)
-              }}
-              className={`${styles.burger}`}
-            >
-              <div className={`${styles.burger__item}`}></div>
-              <div className={`${styles.burger__item}`}></div>
-              <div className={`${styles.burger__item}`}></div>
-            </div>
-            <div className={`${styles.burger__menu__list} ${menuIsOpen ? styles.burger__menu__list__active : ''}`}>
-              <div className={`${styles.burger__menu__item} ${styles.burger__menu__item__first}`}>
-                <ProfileButtonUI extraClass={`${styles.extra__profile__class}`} />
-              </div>
-              <div className={`${styles.burger__menu__item}`}>
-                <ShopButtonUI svgColor='#2A2E46' />
-                <p className={`${styles.burger__item__text}`}>Корзина</p>
-              </div>
-              <div className={`${styles.burger__menu__item}`}>
-                <StarButtonUI svgColor='#2A2E46' />
-                <p className={`${styles.burger__item__text}`}>Избранное</p>
-              </div>
-            </div>
-          </div>
+          <BurgerMenu />
         </div>
       </div>
       {isShowBottom && (
@@ -210,7 +181,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true}) => {
                 <p>Доставка</p>
               </li>
               <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
-                <p>О нас</p>{' '}
+                <p>О нас</p>{' '}
               </li>
               <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
                 <p>Помощь</p>{' '}

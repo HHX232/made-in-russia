@@ -6,6 +6,14 @@
    padding: 16px 5px;
 }
 
+.header {
+   z-index: -100000;
+   opacity: 0;
+   position: absolute;
+   top: -400vh;
+   left: -400vw;
+}
+
 .header__top_image_insta {
    width: 20px;
    height: 20px;
@@ -250,9 +258,6 @@
 .burger__item__text {
    color: #2A2E46;
 }
-
-
-
 
 
 /* Добавьте в Header.module.scss */

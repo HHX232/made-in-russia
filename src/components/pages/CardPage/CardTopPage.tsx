@@ -14,6 +14,7 @@ import styles from './CardPage.module.scss'
 import Image from 'next/image'
 import {ReactNode, useEffect, useState} from 'react'
 import {useWindowWidth} from '@/hooks/useWindoWidth'
+import ICardFull from '@/services/card/card.types'
 
 interface IPriceItem {
   title: string | ReactNode
@@ -91,8 +92,8 @@ const VariantsBox = ({imagesUrls = []}: {imagesUrls: string[]}) => {
   )
 }
 
-export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData: Product | null}) => {
-  const [cardMiniData, setCardMiniData] = useState<Product | null>(cardData)
+export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData: ICardFull | null}) => {
+  const [cardMiniData, setCardMiniData] = useState<ICardFull | null>(cardData)
   const windowWidth = useWindowWidth()
 
   useEffect(() => {

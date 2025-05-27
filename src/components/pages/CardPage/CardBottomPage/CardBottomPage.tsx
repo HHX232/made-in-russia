@@ -1,3 +1,4 @@
+'use client'
 import Skeleton from 'react-loading-skeleton'
 import styles from './CardBottomPage.module.scss'
 import {useEffect, useRef, useState} from 'react'

@@ -5,6 +5,7 @@ import {basketSlice} from './Basket/Basket.slice'
 import {favoritesSlice} from './Favorites/Favorites.types'
 import {registrationSlice} from './registerUser/registerUser.slice'
 import {storage} from '@/utils/storage/storage'
+
 const rootReducer = combineReducers({
   filters: filtersSlice.reducer,
   basket: basketSlice.reducer,

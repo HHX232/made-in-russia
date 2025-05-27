@@ -1,3 +1,4 @@
+'use client'
 import {FC, ReactNode} from 'react'
 import styles from './Ads.module.scss'
 import Slider from 'react-slick'

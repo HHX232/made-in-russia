@@ -1,4 +1,3 @@
-// Клиентское хранилище (localStorage)
 const clientStorage = {
   getItem(key: string) {
     return Promise.resolve(localStorage.getItem(key))
@@ -13,7 +12,6 @@ const clientStorage = {
   }
 }
 
-// Серверное хранилище (noop)
 const serverStorage = {
   getItem() {
     return Promise.resolve(null)
