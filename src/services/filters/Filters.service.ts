@@ -7,6 +7,7 @@ const FiltersService = {
     return response.data
   },
   async getById(id: number | string): Promise<Filter> {
+    console.dir(axiosClassic)
     const {data} = await axiosClassic.get<Filter>(`/categories/${id}`)
     return data
   },
