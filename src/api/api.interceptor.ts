@@ -33,6 +33,12 @@ const getApiUrl = () => {
     // Клиентский режим
     console.log('Клиентский режим, NEXT_PUBLIC_API_URL: ', process.env.NEXT_PUBLIC_API_URL)
 
+    // В режиме клиента (CSR):
+    // Через глобальную переменную (если Amvera поддерживает)
+    if (window['__ENV' as keyof typeof window]?.NEXT_PUBLIC_API_URL) {
+      return window['__ENV' as keyof typeof window].NEXT_PUBLIC_API_URL
+    }
+
     return (
       process.env.NEXT_PUBLIC_API_URL ||
       window['ENV' as keyof typeof window]?.NEXT_PUBLIC_API_URL ||
