@@ -10,8 +10,7 @@ import Skeleton from 'react-loading-skeleton'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import CheckBoxInputUI from '@/components/UI-kit/inputs/CheckBoxInputUI/CheckBoxInputUI'
-import {useWindowWidth} from '@/hooks/useWindoWidth'
-// импорт классический
+import useWindowWidth from '@/hooks/useWindoWidth'
 
 const Arrow = ({isActive}: {isActive: boolean}) => {
   return (
@@ -42,12 +41,18 @@ const Arrow = ({isActive}: {isActive: boolean}) => {
 
 const Filters: FC = () => {
   const [filtersIsOpen, setFiltersIsOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
   const queryClient = useQueryClient()
   const {delivery, selectedFilters} = useTypedSelector((state) => state.filters)
   const windowWidth = useWindowWidth()
-  const toggleFilters = () => {
-    if (windowWidth > 500) return
 
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  const toggleFilters = () => {
+    if (!isMounted || !windowWidth || windowWidth > 500) return
     setFiltersIsOpen((prev) => !prev)
   }
 
@@ -66,22 +71,49 @@ const Filters: FC = () => {
   const handleDeliveryChange = (isChecked: boolean, title: string) => {
     toggleDelivery(title)
   }
+
   useEffect(() => {
     queryClient.invalidateQueries({queryKey: ['products']})
   }, [selectedFilters, delivery, queryClient])
 
-  const listOpenIf = () => {
+  const listOpenIf = (): string => {
+    if (!isMounted || !windowWidth) return styles.isCloseList
+
     if (windowWidth > 500) return styles.isOpenList
-    if (windowWidth < 500 && filtersIsOpen) return styles.isOpenList
-    if (windowWidth < 500 && !filtersIsOpen) return styles.isCloseList
+    if (windowWidth <= 500 && filtersIsOpen) return styles.isOpenList
+    if (windowWidth <= 500 && !filtersIsOpen) return styles.isCloseList
+
+    return styles.isCloseList
   }
+
+  const getTitlesBoxClassName = (): string => {
+    let className = styles.titles__box
+
+    if (!filtersIsOpen) {
+      className += ` ${styles.titles__box_without__margin}`
+    }
+
+    if (isMounted && windowWidth && windowWidth > 500) {
+      className += ` ${styles.titles__box_with__margin}`
+    }
+
+    return className
+  }
+
+  const shouldShowArrow = (): boolean => {
+    return isMounted && !!windowWidth && windowWidth < 500
+  }
+
+  const getSkeletonMaxWidth = (): string => {
+    if (!isMounted || !windowWidth) return '200px'
+    return windowWidth < 550 ? '200px' : 'auto'
+  }
+
   return (
     <div className={`${styles.filters__box}`}>
-      <div
-        className={`${styles.titles__box} ${!filtersIsOpen && styles.titles__box_without__margin} ${windowWidth > 500 && styles.titles__box_with__margin}`}
-      >
+      <div className={getTitlesBoxClassName()}>
         <div onClick={toggleFilters} className={`${styles.title__box}`}>
-          {windowWidth < 500 && <Arrow isActive={filtersIsOpen} />}
+          {shouldShowArrow() && <Arrow isActive={filtersIsOpen} />}
           <h4 className={`${styles.filters__title}`}>Фильтры</h4>
         </div>
         <button
@@ -100,16 +132,16 @@ const Filters: FC = () => {
           <div className={`${styles.filters__part_checkboxes}`}>
             {!isLoading &&
               data?.map((filter) => (
-                <CategoryCheckBoxUI
-                  key={filter.id}
-                  title={filter.name}
-                  filterName={filter.id.toString()}
-                  // onChange={handleFilterChange}
-                />
+                <CategoryCheckBoxUI key={filter.id} title={filter.name} filterName={filter.id.toString()} />
               ))}
             {isLoading && (
               <Skeleton
-                style={{display: 'flex', gap: '7px', height: '20px', maxWidth: `${windowWidth < 550 ? '200px' : ''}`}}
+                style={{
+                  display: 'flex',
+                  gap: '7px',
+                  height: '20px',
+                  maxWidth: getSkeletonMaxWidth()
+                }}
                 count={5}
               />
             )}
@@ -125,7 +157,6 @@ const Filters: FC = () => {
               step={10}
               defaultMin={100}
               defaultMax={100000}
-              // onChange={handleRangeChange}
               debounceTime={500}
             />
           </div>
@@ -182,7 +213,12 @@ const Filters: FC = () => {
           <div className={`${styles.end__part_droplists}`}>
             {isDelLoading && (
               <Skeleton
-                style={{display: 'flex', gap: '7px', height: '20px', maxWidth: `${windowWidth < 550 ? '190px' : ''}`}}
+                style={{
+                  display: 'flex',
+                  gap: '7px',
+                  height: '20px',
+                  maxWidth: getSkeletonMaxWidth()
+                }}
                 count={5}
               />
             )}
@@ -209,18 +245,3 @@ const Filters: FC = () => {
 }
 
 export default Filters
-
-{
-  /* <div className='active-filters'>
-        <h3>Активные фильтры:</h3>
-        {activeFilters.length > 0 ? (
-          <ul>
-            {activeFilters.map((filter) => (
-              <li key={filter}>{filter}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>Нет активных фильтров</p>
-        )}
-      </div> */
-}

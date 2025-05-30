@@ -4,6 +4,7 @@ import ShowMarkdown from '@/components/UI-kit/Texts/ShowMarkdown/ShowMarkdown'
 import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
 import Image from 'next/image'
 import Skeleton from 'react-loading-skeleton'
+import ICardFull from '@/services/card/card.types'
 const markExample1 = `**Применение:**  
 Применение:  Паркетные полы, мебельное производство, отделка интерьеров, строительство террас, декоративные панели.
 <span style="color: #2E4053; font-weight: 500;">Паркетные полы, мебельные фасады, лестницы, декоративные стеновые панели.</span>  
@@ -26,6 +27,7 @@ const markExample1 = `**Применение:**
 🔹 <span style="color: #7D6608;">Долговечность</span> — плотность 720 кг/м³, устойчивость к деформациям.  
 🔹 <span style="color: #7D6608;">Экология</span> — сертифицированная древесина с нулевым VOC.  
 🔹 <span style="color: #7D6608;">Гибкость</span> — совместимость с системами подогрева пола.  `
+
 const markExample2 = `**Дополнение:**  
 <a href="https://api64w.ilovepdf.com/v1/download/84tr3zp3v3m94jy08xrjygkjsp8c0x3b2qngqnfz4rAd569Ag1y1t44v01r2wvl3bz7q93wr5hml3dt7xllq3c5dnlb6kjtp1twfrfw4mz6r6km9f4yfth4kgp8yrq1yAndqsz50xdbf1n1s5f4wc98qsv58mk5bv5hAmpn1jpz2bwrdwvb1" download>Скачать PDF файл</a>
 
@@ -79,17 +81,20 @@ const markExample2 = `**Дополнение:**
 `
 const image1 = '/ads1.jpg'
 
-const CardMiddlePage: FC<{isLoading: boolean}> = ({isLoading}) => {
+const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoading, cardData}) => {
   return (
     <div className={`${styles.card__middle__box}`}>
-      <h3 style={{marginBottom: isLoading ? '15px' : '0'}} className={`${styles.card__middle__title}`}>
+      <h3
+        id='description__title__id'
+        style={{marginBottom: isLoading ? '15px' : '0'}}
+        className={`${styles.card__middle__title}`}
+      >
         Описание
       </h3>
-
       <div className={`${styles.descr__box}`}>
         <div className={`${styles.mark__span__box}`}>
           {!isLoading ? (
-            <ShowMarkdown markValue={markExample1} />
+            <ShowMarkdown markValue={cardData.mainDescription || markExample1} />
           ) : (
             <>
               {' '}
@@ -121,24 +126,13 @@ const CardMiddlePage: FC<{isLoading: boolean}> = ({isLoading}) => {
               extraBoxClass={`${styles.extra__group__class}`}
               titleFontSize='16'
               listGap='20'
-              items={[
-                {title: 'Модель', value: 'Royal Oak DB-45'},
-                {title: 'Материал', value: 'Натуральный дуб'},
-                {title: 'Цвет', value: 'Золотисто-медовый'},
-                {title: 'Покрытие', value: 'UV-лак, матовое'},
-                {title: 'Класс износостойкости', value: 'AC4 (коммерческий)'},
-                {title: 'Толщина', value: '14 мм'},
-                {title: 'Ширина доски', value: '190 мм'},
-                {title: 'Сертификация', value: 'FSC, ISO 9001'},
-                {title: 'Упаковка', value: 'Паллеты (1.2 м³)'},
-                {title: 'Гарантия', value: '25 лет'}
-              ]}
+              items={cardData.characteristics.map((el) => ({title: el.name, value: el.value}))}
               titleMain='Технические характеристики:'
             />
           ) : (
             <></>
           )}
-          {!isLoading ? <ShowMarkdown markValue={markExample2} /> : <></>}
+          {!isLoading ? <ShowMarkdown markValue={cardData.furtherDescription || markExample2} /> : <></>}
         </div>
         <div className={`${styles.spec__description__box}`}>
           {!isLoading ? (

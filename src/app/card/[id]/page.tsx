@@ -1,5 +1,3 @@
-// app/card/[id]/page.tsx
-
 import CardPage from '@/components/pages/CardPage/CardPage'
 import cardService from '@/services/card/card.service'
 import ICardFull from '@/services/card/card.types'
@@ -13,6 +11,7 @@ export async function generateMetadata({params}: {params: {id: string}}) {
     const {data} = await cardService.getFullCardById(params.id)
     const product = data as ICardFull
 
+    console.log('full product', product)
     if (!product) {
       return {
         title: 'Product Not Found'
@@ -25,7 +24,7 @@ export async function generateMetadata({params}: {params: {id: string}}) {
       openGraph: {
         title: product.title || 'Product',
         description: product.furtherDescription || 'Product description',
-        images: product.media ? [product.media[0].url] : []
+        images: product.media ? [product.media[0]] : []
       }
     }
   } catch (error) {

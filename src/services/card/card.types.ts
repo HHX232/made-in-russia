@@ -30,15 +30,27 @@ interface Characteristic {
   lastModificationDate: string
 }
 
+interface Faq {
+  id: number
+  question: string
+  answer: string
+  creationDate: string
+  lastModificationDate: string
+}
+
 interface ICardFull {
   id: number // read-only
+  reviewsMedia: Media[]
   category: Category
   deliveryMethod: DeliveryMethod
   deliveryMethods: DeliveryMethod[]
   media: Media[]
+  rating: number
   characteristics: Characteristic[]
-  article: string // read-only, 9 characters
-  title: string // required, max 255 characters
+  article: string
+  faq: Faq[]
+  ordersCount: number
+  title: string
   mainDescription: string // required, max 20000 characters (может содержать HTML)
   furtherDescription: string // required, max 5000 characters
   summaryDescription: string // required, max 5000 characters
@@ -50,6 +62,7 @@ interface ICardFull {
   previewImageUrl: string // required, URI
   creationDate: string // read-only, ISO date-time
   lastModificationDate: string // read-only, ISO date-time
+  reviewsCount: number
 }
 
 interface Author {
@@ -66,7 +79,15 @@ interface Author {
 
 interface Review {
   id: number
-  images?: string[]
+  media?: {
+    id: number
+    url: string
+    mediaType: string
+    mimeType: string
+    altText: string
+    creationDate: string
+    lastModificationDate: string
+  }[]
   author: Author
   text: string
   rating: number
@@ -81,26 +102,24 @@ interface Sort {
 }
 
 interface Pageable {
-  offset: number
-  sort: Sort
-  paged: boolean
-  pageNumber: number
-  pageSize: number
-  unpaged: boolean
+  number: number
+  size: number
+  totalElements: number
+  totalPages: number
 }
 
 interface PaginatedResponse<T> {
   content: T[]
-  pageable: Pageable
+  page: Pageable
   last: boolean
-  totalElements: number
-  totalPages: number
-  size: number
-  number: number
-  sort: Sort
-  numberOfElements: number
-  first: boolean
-  empty: boolean
+  // totalElements: number
+  // totalPages: number
+  // size: number
+  // number: number
+  // sort: Sort
+  // numberOfElements: number
+  // first: boolean
+  // empty: boolean
 }
 interface GetProductReviewsParams {
   /**

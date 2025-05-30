@@ -7,7 +7,6 @@ import Link from 'next/link'
 // import {useWindowWidth} from '@/hooks/useWindoWidth'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
-import {useWindowWidth} from '@/hooks/useWindoWidth'
 
 const ads1 = '/ads1.jpg'
 const ads2 = '/ads2.jpg'
@@ -44,7 +43,6 @@ const AdsItem: FC<IAdsItem> = ({title, subtitle, text, image, extraClass, href =
 }
 
 const Ads: FC = () => {
-  const windowWidth = useWindowWidth()
   // let windowLess768 = false
   // useEffect(() => {
   //   if (windowWidth <= 768) {
@@ -54,7 +52,6 @@ const Ads: FC = () => {
   //   }
   // }, [windowWidth])
 
-  // на 670 сделай 1 slidesToShow
   const settings = {
     dots: false,
     infinite: true,
@@ -63,7 +60,6 @@ const Ads: FC = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 4500,
-    // pauseOnHover: true,
     responsive: [
       {
         breakpoint: 670,
@@ -114,46 +110,40 @@ const Ads: FC = () => {
             image={ads3}
           />
 
-          {windowWidth < 768 && (
-            <Slider className={`${styles.slider__box__custom}`} {...settings}>
-              <AdsItem
-                href='#'
-                extraClass={styles.ads__item_box_4}
-                title={<h3 className={`${styles.second__title} fontInstrument`}>Новая поставка угля</h3>}
-                subtitle={<p className={`${styles.second__subtitle} fontInstrument`}>Бери пока не раскупили!</p>}
-                text=''
-                image={ads2}
-              />
-              <AdsItem
-                href='#'
-                extraClass={styles.ads__item_box_5}
-                title={<p className={`${styles.third__title} fontInstrument`}> Камень со скидкой </p>}
-                subtitle={<p className={`${styles.third__subtitle} fontInstrument`}> до 40%</p>}
-                text={
-                  <p className={`${styles.third__text} fontInstrument`}> Скидка работает только при самовывозе* </p>
-                }
-                image={ads3}
-              />
-              <AdsItem
-                href='#'
-                extraClass={styles.ads__item_box_6}
-                title={<h3 className={`${styles.second__title} fontInstrument`}>Новая поставка угля</h3>}
-                subtitle={<p className={`${styles.second__subtitle} fontInstrument`}>Бери пока не раскупили!</p>}
-                text=''
-                image={ads2}
-              />
-              <AdsItem
-                href='#'
-                extraClass={styles.ads__item_box_5}
-                title={<p className={`${styles.third__title} fontInstrument`}> Камень со скидкой </p>}
-                subtitle={<p className={`${styles.third__subtitle} fontInstrument`}> до 40%</p>}
-                text={
-                  <p className={`${styles.third__text} fontInstrument`}> Скидка работает только при самовывозе* </p>
-                }
-                image={ads3}
-              />
-            </Slider>
-          )}
+          <Slider className={`${styles.slider__box__custom} ${styles.slider__box__custom__hidden}`} {...settings}>
+            <AdsItem
+              href='#'
+              extraClass={styles.ads__item_box_4}
+              title={<h3 className={`${styles.second__title} fontInstrument`}>Новая поставка угля</h3>}
+              subtitle={<p className={`${styles.second__subtitle} fontInstrument`}>Бери пока не раскупили!</p>}
+              text=''
+              image={ads2}
+            />
+            <AdsItem
+              href='#'
+              extraClass={styles.ads__item_box_5}
+              title={<p className={`${styles.third__title} fontInstrument`}> Камень со скидкой </p>}
+              subtitle={<p className={`${styles.third__subtitle} fontInstrument`}> до 40%</p>}
+              text={<p className={`${styles.third__text} fontInstrument`}> Скидка работает только при самовывозе* </p>}
+              image={ads3}
+            />
+            <AdsItem
+              href='#'
+              extraClass={styles.ads__item_box_6}
+              title={<h3 className={`${styles.second__title} fontInstrument`}>Новая поставка угля</h3>}
+              subtitle={<p className={`${styles.second__subtitle} fontInstrument`}>Бери пока не раскупили!</p>}
+              text=''
+              image={ads2}
+            />
+            <AdsItem
+              href='#'
+              extraClass={styles.ads__item_box_5}
+              title={<p className={`${styles.third__title} fontInstrument`}> Камень со скидкой </p>}
+              subtitle={<p className={`${styles.third__subtitle} fontInstrument`}> до 40%</p>}
+              text={<p className={`${styles.third__text} fontInstrument`}> Скидка работает только при самовывозе* </p>}
+              image={ads3}
+            />
+          </Slider>
         </div>
       </div>
     </div>

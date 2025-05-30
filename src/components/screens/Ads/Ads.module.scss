@@ -184,6 +184,16 @@
    }
 }
 
+.slider__box__custom__hidden {
+   display: none !important;
+}
+
+@media (max-width: 768px) {
+   .slider__box__custom__hidden {
+      display: block !important;
+   }
+}
+
 @media(max-width:670px) {
 
    .ads__item_box {

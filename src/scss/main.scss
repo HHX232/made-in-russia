@@ -5,7 +5,9 @@ html {
 	scrollbar-width: thin;
 	/* 'auto' или 'thin' */
 	scrollbar-color: #2A2E46 #EFF1F8;
+	scroll-behavior: smooth;
 }
+
 
 .react-loading-skeleton {
 	width: 1000px !important;

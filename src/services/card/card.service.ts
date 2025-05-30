@@ -42,7 +42,7 @@ const cardService = {
   async getCommentsByCardId(id: string | number, page: number = 1, size: number = 10) {
     try {
       const res = await axiosClassic.get<PaginatedResponse<Review>>(
-        `/products-summary/${id}/reviews?page=${page}&size=${size}&minRating=1&maxRating=5`
+        `/products/${id}/reviews?page=${page}&size=${size}&minRating=1&maxRating=5`
       )
       return {
         data: res.data,

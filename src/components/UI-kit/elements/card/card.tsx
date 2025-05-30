@@ -65,7 +65,9 @@ const Card: FC<ICardProps> = ({
             <ToggleFavoritesButtonUI
               extraClass={`${styles.star__image}`}
               isActive={productInFavorites.some((product) => product.id === (fullProduct.id ? fullProduct.id : {}))}
-              onClick={() => {
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.stopPropagation()
+                e.preventDefault()
                 toggleToFavorites(fullProduct as Product)
               }}
             />

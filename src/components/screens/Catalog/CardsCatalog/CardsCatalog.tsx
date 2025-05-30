@@ -96,7 +96,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
   const {data: pageResponse, isLoading, isError, isFetching} = useProducts(pageParams)
 
   // Используем isFetching для отслеживания любого запроса, включая фоновые
-  const showSkeleton = isLoading || (isFetching && isFiltersChanged)
+  // const showSkeleton = isLoading || (isFetching && isFiltersChanged)
+  const showSkeleton = (isLoading || (isFetching && isFiltersChanged)) && allProducts.length === 0
 
   useEffect(() => {
     if (pageResponse) {
@@ -123,7 +124,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
     (node: HTMLDivElement | null) => {
       if (showSkeleton) return
 
-      // Отключаем предыдущий observer
       if (observerRef.current) {
         observerRef.current.disconnect()
       }
@@ -134,7 +134,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
       // Создаем новый observer
       observerRef.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
-          // Если последний элемент виден и есть еще данные, загружаем следующую страницу
           setPageParams((prev) => ({
             ...prev,
             page: prev.page + 1

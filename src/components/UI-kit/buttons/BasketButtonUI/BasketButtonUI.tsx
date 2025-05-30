@@ -59,12 +59,12 @@ const BasketButtonUI: FC<IBasketButtonProps> = ({
       className={` ${basketContainsProduct && styles.count__active} ${styles.button__box} ${extraClass}`}
     >
       {!basketContainsProduct ? (
-        <div className={` ${styles.add__box} ${textColor === 'dark' ? styles.dark__text : styles.white__text}`}>
+        <button className={` ${styles.add__box} ${textColor === 'dark' ? styles.dark__text : styles.white__text}`}>
           Добавить
           <Image src={iconColor === 'dark' ? darkBasket : basket} alt='add in basket' width={16} height={14} />
-        </div>
+        </button>
       ) : (
-        <div className={`${styles.count__box}`}>
+        <button className={`${styles.count__box}`}>
           <div
             onClick={(e) => {
               e.stopPropagation()
@@ -86,7 +86,7 @@ const BasketButtonUI: FC<IBasketButtonProps> = ({
           >
             +
           </div>
-        </div>
+        </button>
       )}
     </div>
   )

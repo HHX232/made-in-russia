@@ -3,352 +3,329 @@
 import Image from 'next/image'
 import styles from './RegisterPage.module.scss'
 import MinimalHeader from '@/components/MainComponents/MinimalHeader/MinimalHeader'
-import DropList from '@/components/UI-kit/Texts/DropList/DropList'
-import {useEffect, useId, useState} from 'react'
-import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
-import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
+import {useEffect, useState} from 'react'
+import {TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import Link from 'next/link'
-import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI'
 import {axiosClassic} from '@/api/api.interceptor'
-import InputOtp from '@/components/UI-kit/inputs/inputOTP/inputOTP'
-import {saveTokenStorage, saveToStorage} from '@/services/auth/auth.helper'
-import {Router} from 'next/router'
+import {saveTokenStorage} from '@/services/auth/auth.helper'
 import {useRouter} from 'next/navigation'
 import {toast} from 'sonner'
+import RegisterUserFirst from './RegisterUser/RegisterUserFirst'
+import RegisterUserSecond from './RegisterUser/RegisterUserSecond'
+import RegisterUserThird from './RegisterUser/RegisterUserThird'
+import RegisterCompany from './RegisterCompany/RegisterCompany'
+import {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 
 const decorImage = '/login__image.jpg'
 const belarusSvg = '/belarus.svg'
+
 interface AuthResponse {
   accessToken: string
   refreshToken: string
 }
-const RegionItem = ({
-  imageSrc,
-  title,
-  altName,
-  onClickF
-}: {
-  imageSrc: string
-  title: string
-  altName: string
-  onClickF?: () => void
-}) => {
-  const id = useId()
-  return (
-    <div onClick={onClickF} key={id} className={`${styles.region__item}`}>
-      <Image className={`${styles.region__image}`} src={imageSrc} alt={altName} width={18} height={18} />
-      <p className={`${styles.region__text}`}>{title}</p>
-    </div>
-  )
-}
 
 const RegisterPage = () => {
-  const [selectedOption, setSelectedOption] = useState('')
-  const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(e.target.value === selectedOption)
-    setSelectedOption((prevSelected) => (prevSelected === e.target.value ? '' : e.target.value))
-  }
+  const router = useRouter()
 
-  // ! STEPS FORM
+  // Form steps state
   const [showNextStep, setShowNextStep] = useState(false)
   const [showFinalStep, setShowFinalStep] = useState(false)
-  //
-  const router = useRouter()
+
+  // User/Company toggle
+  const [isUser, setIsUser] = useState(true)
+
+  // Common form fields state
   const [email, setEmailStore] = useState('')
   const [name, setNameState] = useState('')
   const [password, setPasswordState] = useState('')
-  const [listIsOpen, setListIsOpen] = useState(false)
   const [telText, setTelText] = useState('')
   const [trueTelephoneNumber, setTrueTelephoneNumber] = useState('')
+  const [otpValue, setOtpValue] = useState<string>('')
+  const [selectedOption, setSelectedOption] = useState('')
 
+  // User-specific state
+  const [listIsOpen, setListIsOpen] = useState(false)
   const [errorInName, setErrorInName] = useState<null | string>(null)
   const [isValidNumber, setIsValidNumber] = useState(true)
-  const {name: nameStore, password: passwordStores, number, region} = useTypedSelector((state) => state.registration)
   const [selectedRegion, setSelectedRegion] = useState({
     imageSrc: belarusSvg,
     title: 'Беларусь',
     altName: 'Belarus'
   })
-  const {setRegion, setPassword, setNumber, setName, setEmail} = useActions()
-  const [otpValue, setOtpValue] = useState<string>('')
 
-  const handleOtpComplete = (value: string) => {
-    setOtpValue(value)
-    // console.log('OTP Value:', value)
-  }
-  // useEffect(() => {
-  //   console.log(telText)
-  // }, [telText])
+  // Company-specific state
+  const [inn, setInn] = useState('')
+  const [selectedCountries, setSelectedCountries] = useState<MultiSelectOption[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<MultiSelectOption[]>([])
+
+  // Redux hooks
+  const {name: nameStore, password: passwordStores, number, region} = useTypedSelector((state) => state.registration)
+  const {setRegion, setPassword, setNumber, setName, setEmail} = useActions()
+
+  // Effects
   useEffect(() => {
     const cleanedNumber = telText.replace(/\D/g, '')
     setTrueTelephoneNumber(cleanedNumber)
-  }, [telText, trueTelephoneNumber])
+  }, [telText])
+
+  // Reset form when switching between user and company
+  useEffect(() => {
+    setShowNextStep(false)
+    setShowFinalStep(false)
+    setEmail('')
+    setNameState('')
+    setPassword('')
+    setTelText('')
+    setSelectedOption('')
+    setInn('')
+    setSelectedCountries([])
+    setSelectedCategories([])
+  }, [isUser])
+
+  // Handlers
+  const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedOption((prevSelected) => (prevSelected === e.target.value ? '' : e.target.value))
+  }
+
+  const handleOtpComplete = (value: string) => {
+    setOtpValue(value)
+  }
 
   const onChangeTelNumber = (val: string) => {
     const cleanedNumber = val.replace(/\D/g, '')
+    let countryForValidation: TNumberStart = 'Belarus'
 
-    const isValid = validatePhoneLength(cleanedNumber, selectedRegion.altName as TNumberStart)
+    if (isUser) {
+      countryForValidation = selectedRegion.altName as TNumberStart
+    } else if (selectedCountries.length > 0) {
+      countryForValidation = selectedCountries[0].value as TNumberStart
+    }
+
+    const isValid = validatePhoneLength(cleanedNumber, countryForValidation)
     setTelText(val)
     setIsValidNumber(isValid)
     setTrueTelephoneNumber(cleanedNumber)
   }
 
-  const regions = [
-    {imageSrc: belarusSvg, title: 'Беларусь', altName: 'Belarus'},
-    {imageSrc: belarusSvg, title: 'Казахстан', altName: 'Kazakhstan'},
-    {imageSrc: belarusSvg, title: 'Китай', altName: 'China'},
-    {imageSrc: belarusSvg, title: 'Россия', altName: 'Russia'}
-  ]
   const handleNameChange = (value: string) => {
-    if (/[0-9!@#$%^&*()_+=|<>?{}\[\]~\/]/.test(value)) {
+    if (isUser && /[0-9!@#$%^&*()_+=|<>?{}\[\]~\/]/.test(value)) {
       setErrorInName('Имя не должно содержать цифр или специальных символов')
     } else {
       setErrorInName(null)
       setNameState(value)
     }
   }
-  const handleRegionSelect = (region: {imageSrc: string; title: string; altName: string}) => {
-    setSelectedRegion(region)
-    setListIsOpen(false)
-  }
 
-  const onSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  // Step 1 submit
+  const onSubmitFirstStep = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    if (name.length < 3 || !isValidNumber || password.length < 6) {
-      // console.log('all in error')
+    if (isUser) {
+      if (name.length < 3 || !isValidNumber || password.length < 6) {
+        // Validation error
+      } else {
+        setPassword(password)
+        setNumber(trueTelephoneNumber)
+        setName(name)
+        setRegion(selectedRegion.altName)
+        setShowNextStep(true)
+      }
     } else {
-      setPassword(password)
-      setNumber(trueTelephoneNumber)
-      setName(name)
-      setRegion(selectedRegion.altName)
-      setShowNextStep(true)
-      // console.log('set: ', password, ' ', trueTelephoneNumber, ' ', name, ' ', selectedRegion.altName)
+      // Company validation - пароль теперь на втором шаге
+      if (inn.length < 9 || name.length < 3 || !isValidNumber || selectedCountries.length === 0) {
+        // Validation error
+      } else {
+        setNumber(trueTelephoneNumber)
+        setName(name)
+        // Сохраняем страны в Redux если нужно
+        setShowNextStep(true)
+      }
     }
   }
+
+  // Step 2 submit
+  const onSubmitSecondStep = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+
+    // Сохраняем пароль для компании на втором шаге
+    if (!isUser) {
+      setPassword(password)
+    }
+
+    try {
+      const registrationData = isUser
+        ? {
+            email,
+            login: name,
+            password,
+            region: selectedRegion.altName,
+            phoneNumber: trueTelephoneNumber,
+            type: 'user'
+          }
+        : {
+            email,
+            companyName: name,
+            inn,
+            password,
+            countries: selectedCountries.map((c) => c.value),
+            categories: selectedCategories.map((c) => c.value),
+            phoneNumber: trueTelephoneNumber,
+            type: 'company'
+          }
+
+      const response = await axiosClassic.post('/auth/register', registrationData)
+
+      console.log('Registration successful:', {email, name})
+      setShowNextStep(false)
+      setShowFinalStep(true)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error('Registration failed:', error.response?.data?.message)
+      const errorMessage = error.response?.data?.message || 'Ошибка регистрации'
+
+      toast.error(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Ошибка регистрации</strong>
+          <span>{errorMessage}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
+    }
+  }
+
+  // Step 3 submit
+  const onSubmitThirdStep = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    try {
+      const {data} = await axiosClassic.post<AuthResponse>('/auth/verify-email', {
+        email: email,
+        code: otpValue
+      })
+
+      const {accessToken, refreshToken} = data
+      saveTokenStorage({accessToken, refreshToken})
+      router.push('/')
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  // Navigation handlers
+  const handleBackToFirst = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    setShowNextStep(false)
+    setShowFinalStep(false)
+  }
+
+  const handleBackToSecond = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    setShowNextStep(true)
+    setShowFinalStep(false)
+  }
+
   return (
     <div className={`${styles.login__box}`}>
       <MinimalHeader />
       <div className='container'>
         <div className={`${styles.login__inner}`}>
-          <Image
-            className={styles.decor__image}
-            src={decorImage}
-            width={580}
-            height={745}
-            alt='декоративное изображение "Большое количество материалов"'
-          />
+          <div className={styles.decor__image}></div>
 
           <form className={`${styles.login__form__box}`}>
-            <Link href='/login' className={`${styles.toggle__action__button}`}>
-              есть аккаунт? Войти!
-            </Link>
-            <h2 className={`${styles.login__title}`}>Регистрация</h2>
+            <div className={`${styles.top__links}`}>
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  setIsUser(!isUser)
+                }}
+                className={`${styles.toggle__action__button}`}
+              >
+                {isUser ? 'Я продавец' : 'Я покупатель'}
+              </button>
+              <Link href='/login' className={`${styles.toggle__action__button}`}>
+                есть аккаунт? Войти!
+              </Link>
+            </div>
+
+            <h2 className={`${styles.login__title}`}>{isUser ? 'Регистрация' : 'Регистрация компании'}</h2>
+
             <div className={`${styles.inputs__box}`}>
-              {!showNextStep && !showFinalStep && (
-                <>
-                  {' '}
-                  <div className={`${styles.some__drop__box}`}>
-                    <p className={`${styles.input__title}`}>Страна/Регион</p>
-                    <div className={`${styles.drop__box}`}>
-                      <DropList
-                        extraClass={`${styles.extra__drop__list}`}
-                        gap='15'
-                        extraListClass={`${styles.extra__list__style}`}
-                        title={
-                          <RegionItem
-                            imageSrc={selectedRegion.imageSrc}
-                            title={selectedRegion.title}
-                            altName={selectedRegion.altName}
-                          />
-                        }
-                        isOpen={listIsOpen}
-                        onOpenChange={setListIsOpen}
-                        items={regions.map((region, index) => (
-                          <div
-                            style={{width: '100%'}}
-                            key={index}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleRegionSelect(region)
-                            }}
-                          >
-                            <RegionItem imageSrc={region.imageSrc} title={region.title} altName={region.altName} />
-                          </div>
-                        ))}
-                      />
-                    </div>
-                  </div>
-                  <TextInputUI
-                    extraClass={`${styles.inputs__text_extra} ${name.length !== 0 && name.length < 3 && styles.extra__name__class}`}
-                    isSecret={false}
-                    onSetValue={handleNameChange}
-                    currentValue={name}
-                    placeholder='Введите имя...'
-                    title={<p className={`${styles.input__title}`}>Полное имя</p>}
-                  />
-                  <TextInputUI
-                    extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2}`}
-                    isSecret={true}
-                    onSetValue={setPasswordState}
-                    currentValue={password}
-                    errorValue={
-                      password.length < 6 && password.length !== 0 ? 'Пароль должен быть не менее 6 символов' : ''
-                    }
-                    placeholder='Введите пароль, 6-20 символов'
-                    title={<p className={`${styles.input__title}`}>Пароль аккаунта</p>}
-                  />
-                  <div className={`${styles.some__drop__box}`}>
-                    <p className={`${styles.input__title}`}>Номер мобильного телефона</p>
-                    <TelephoneInputUI
-                      currentValue={telText}
-                      error={!isValidNumber ? 'error' : ''}
-                      onSetValue={onChangeTelNumber}
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      numberStartWith={selectedRegion.altName as any}
-                    />
-                  </div>
-                  <button
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                      onSubmit(e)
-                    }}
-                    className={`${styles.form__button}`}
-                  >
-                    Далее
-                  </button>
-                </>
-              )}
-              {showNextStep && (
-                <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column'}}>
-                  <TextInputUI
-                    extraClass={`${styles.inputs__text_extra} ${(!email.includes('@') || !email.includes('.')) && email.length !== 0 ? styles.extra__email__error : ''}`}
-                    extraStyle={{width: '100%'}}
-                    isSecret={false}
-                    onSetValue={setEmailStore}
-                    currentValue={email}
-                    errorValue={
-                      (!email.includes('@') || !email.includes('.')) && email.length !== 0
-                        ? 'почта должна содержать @ и расширение'
-                        : ''
-                    }
-                    placeholder='Введите почту...'
-                    title={<p className={`${styles.input__title}`}>Почта</p>}
-                  />
-                  <p className={`${styles.input__subtitle}`}>Предпочтительна бизнес-электронная почта.</p>
-                  <RadioButton
-                    label='Я согласен с пользовательским соглашением и политикой конфиденциальности. '
-                    name='Personal'
-                    value='Personal'
-                    checked={selectedOption === 'Personal'}
-                    onChange={handleOptionChange}
-                    allowUnchecked={true}
-                  />
-
-                  <button
-                    style={{
-                      opacity:
-                        selectedOption === 'Personal' &&
-                        email.includes('@') &&
-                        email.includes('.') &&
-                        email.length !== 0
-                          ? 1
-                          : 0.7,
-                      pointerEvents:
-                        selectedOption === 'Personal' &&
-                        email.includes('@') &&
-                        email.includes('.') &&
-                        email.length !== 0
-                          ? 'auto'
-                          : 'none'
-                    }}
-                    className={`${styles.checked__email}`}
-                    onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
-                      e.preventDefault()
-
-                      try {
-                        const response = await axiosClassic.post('/auth/register', {
-                          email,
-                          login: name,
-                          password,
-                          region: selectedRegion.altName,
-                          phoneNumber: trueTelephoneNumber
-                        })
-
-                        console.log('Registration successful:', {
-                          email,
-                          name
-                        })
-                        setShowNextStep(false)
-                        setShowFinalStep(true)
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      } catch (error: any) {
-                        console.error('Registration failed:', error.response.data.message)
-                        if (error.response.data.message.includes('Пользователь с почтой')) {
-                          toast.error(
-                            <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-                              <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>
-                                Ошибка регистрации
-                              </strong>
-                              <span>{error.response.data.message}</span>
-                            </div>,
-                            {
-                              style: {
-                                background: '#AC2525'
-                              }
-                            }
-                          )
-                        }
-                      }
-                    }}
-                  >
-                    Проверка электронной почты
-                  </button>
-                </div>
+              {/* Для пользователей */}
+              {isUser && !showNextStep && !showFinalStep && (
+                <RegisterUserFirst
+                  name={name}
+                  password={password}
+                  telText={telText}
+                  selectedRegion={selectedRegion}
+                  listIsOpen={listIsOpen}
+                  isValidNumber={isValidNumber}
+                  setName={setNameState}
+                  setPassword={setPasswordState}
+                  setTelText={setTelText}
+                  setSelectedRegion={setSelectedRegion}
+                  setListIsOpen={setListIsOpen}
+                  setIsValidNumber={setIsValidNumber}
+                  handleNameChange={handleNameChange}
+                  onChangeTelNumber={onChangeTelNumber}
+                  onSubmit={onSubmitFirstStep}
+                />
               )}
 
+              {isUser && showNextStep && !showFinalStep && (
+                <RegisterUserSecond
+                  email={email}
+                  selectedOption={selectedOption}
+                  setEmail={setEmailStore}
+                  handleOptionChange={handleOptionChange}
+                  onBack={handleBackToFirst}
+                  onNext={onSubmitSecondStep}
+                />
+              )}
+
+              {/* Для компаний */}
+              {!isUser && !showFinalStep && (
+                <RegisterCompany
+                  inn={inn}
+                  name={name}
+                  password={password}
+                  telText={telText}
+                  email={email}
+                  selectedOption={selectedOption}
+                  isValidNumber={isValidNumber}
+                  selectedCountries={selectedCountries}
+                  selectedCategories={selectedCategories}
+                  setInn={setInn}
+                  setName={setNameState}
+                  setPassword={setPasswordState}
+                  setTelText={setTelText}
+                  setEmail={setEmailStore}
+                  setIsValidNumber={setIsValidNumber}
+                  setSelectedCountries={setSelectedCountries}
+                  setSelectedCategories={setSelectedCategories}
+                  handleNameChange={handleNameChange}
+                  onChangeTelNumber={onChangeTelNumber}
+                  handleOptionChange={handleOptionChange}
+                  showNextStep={showNextStep}
+                  onSubmitFirstStep={onSubmitFirstStep}
+                  onSubmitSecondStep={onSubmitSecondStep}
+                  handleBackToFirst={handleBackToFirst}
+                />
+              )}
+
+              {/* Общий третий шаг для всех */}
               {showFinalStep && (
-                <div className={`${styles.inputOtp_section}`}>
-                  <p className={`${styles.otp__text}`}>
-                    Код подтверждения был отправлен на ваш адрес электронной почты{' '}
-                    {email ? email : 'ваша почта@gmail.com'}
-                  </p>
-                  <InputOtp length={4} onComplete={handleOtpComplete} />
-                </div>
-              )}
-
-              {showFinalStep && (
-                <>
-                  {' '}
-                  <button
-                    style={{
-                      opacity: otpValue.length !== 0 ? 1 : 0.8,
-                      pointerEvents: otpValue.length !== 0 ? 'auto' : 'none'
-                    }}
-                    className={`${styles.checked__email}`}
-                    onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
-                      e.preventDefault()
-                      try {
-                        const {data} = await axiosClassic.post<AuthResponse>('/auth/verify-email', {
-                          email: email,
-                          code: otpValue
-                        })
-
-                        const {accessToken, refreshToken} = data
-                        // console.log(accessToken, refreshToken)
-                        saveTokenStorage({accessToken, refreshToken})
-                        router.push('/')
-                      } catch (e) {
-                        console.log(e)
-                      }
-                    }}
-                  >
-                    Подтвердить
-                  </button>
-                  <Link href={'#'} className={styles.problem__link}>
-                    Есть проблемы с получением кода?
-                  </Link>
-                </>
+                <RegisterUserThird
+                  email={email}
+                  otpValue={otpValue}
+                  setOtpValue={setOtpValue}
+                  handleOtpComplete={handleOtpComplete}
+                  onBack={handleBackToSecond}
+                  onConfirm={onSubmitThirdStep}
+                />
               )}
             </div>
           </form>
@@ -363,14 +340,14 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
 
   switch (country) {
     case 'Belarus':
-      return cleanedPhone.length === 9 // Пример: 29 123 45 67 → 291234567 (9 цифр)
+      return cleanedPhone.length === 9
     case 'China':
-      return cleanedPhone.length === 11 // Пример: 131 2345 6789 → 13123456789 (11 цифр)
+      return cleanedPhone.length === 11
     case 'Russia':
     case 'Kazakhstan':
     case 'other':
     default:
-      return cleanedPhone.length === 10 // Пример: 912 345 67 89 → 9123456789 (10 цифр)
+      return cleanedPhone.length === 10
   }
 }
 

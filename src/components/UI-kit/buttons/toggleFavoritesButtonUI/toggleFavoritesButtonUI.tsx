@@ -6,7 +6,7 @@ interface ToggleFavoritesButtonUIProps {
   extraClass?: string
   extraStyles?: React.CSSProperties
   isActive?: boolean
-  onClick?: () => void
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 const ToggleFavoritesButtonUI: FC<ToggleFavoritesButtonUIProps> = ({
@@ -21,7 +21,7 @@ const ToggleFavoritesButtonUI: FC<ToggleFavoritesButtonUIProps> = ({
     e.preventDefault()
     e.stopPropagation()
     setIsActive(!isActive)
-    onClick?.()
+    onClick?.(e)
   }
 
   return (

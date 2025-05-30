@@ -130,14 +130,27 @@ const SlickCardSlider = ({
             <div key={index} className={styles.imageSlider__slide}>
               <div className={styles.imageSlider__imageWrapper}>
                 {!isLoading ? (
-                  <Image
-                    src={image}
-                    alt={`Slide ${index + 1}`}
-                    width={500}
-                    height={500}
-                    layout='responsive'
-                    className={styles.imageSlider__mainImage}
-                  />
+                  // <Image
+                  //   src={image}
+                  //   alt={`Slide ${index + 1}`}
+                  //   width={500}
+                  //   height={500}
+                  //   layout='responsive'
+                  //   className={styles.imageSlider__mainImage}
+                  // />
+                  image.includes('.mp4') ? (
+                    <video src={image} autoPlay muted loop className={styles.imageSlider__mainVideo} />
+                  ) : (
+                    // <Image
+                    //   src={image}
+                    //   alt={`Slide ${index + 1}`}
+                    //   width={500}
+                    //   height={500}
+                    //   layout='responsive'
+                    //   className={styles.imageSlider__mainImage}
+                    // />
+                    <div style={{backgroundImage: `url(${image})`}} className={styles.imageSlider__mainImage}></div>
+                  )
                 ) : (
                   <Skeleton width={500} height={500} />
                 )}

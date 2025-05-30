@@ -1,104 +1,182 @@
 // CommentSection/CommentSection.tsx
 'use client'
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import CardBottomPage from '../CardBottomPage/CardBottomPage'
+import cardService from '@/services/card/card.service'
+import ICardFull, {Review} from '@/services/card/card.types'
 
-const avatar1 = '/avatars/avatar-v-1.svg'
-const avatar2 = '/avatars/avatar-v-2.svg'
-const comm1 = '/comments/comm1.jpg'
-const comm2 = '/comments/comm2.jpg'
-
-interface Comment {
-  commentID: string
-  userId: string
-  userName: string
-  userImage: string
-  commentText: string
-  createdAt: string
-  starsCount: number
-  images: string[]
-}
+// const comm1 = '/comments/comm1.jpg'
+// const comm2 = '/comments/comm2.jpg'
 
 interface CommentsSectionProps {
   cardId: string
 }
 
+const IntersectionObserverElement = ({observerRef}: {observerRef: (node: HTMLDivElement | null) => void}) => {
+  return (
+    <div
+      style={{
+        height: '20px',
+        width: '100%',
+        background: 'transparent'
+      }}
+      ref={observerRef}
+    />
+  )
+}
+
 export default function CommentsSection({cardId}: CommentsSectionProps) {
-  const [comments, setComments] = useState<Comment[]>([])
+  const [comments, setComments] = useState<Review[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [hasMore, setHasMore] = useState(true)
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const loadingRef = useRef(false)
+  const [pageParams, setPageParams] = useState({
+    page: 0,
+    size: 10
+  })
+
+  const [cardDataNew, setCardDataNew] = useState<ICardFull | null>(null)
+  useEffect(() => {
+    const loadCardData = async () => {
+      try {
+        const {data} = await cardService.getFullCardById(cardId)
+        setCardDataNew(data as ICardFull)
+
+        if (!cardDataNew) {
+          console.log('not found card data')
+        }
+      } catch (error) {
+        console.error('Error fetching card data:', error)
+      }
+    }
+    loadCardData()
+  }, [])
+
+  const lastElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
+      if (!node || !hasMore || isLoading) return
+
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          const [entry] = entries
+          if (entry.isIntersecting && !loadingRef.current && hasMore) {
+            loadingRef.current = true
+            setHasMore(true)
+            setPageParams((prev) => ({
+              ...prev,
+              page: prev.page + 1
+            }))
+          }
+        },
+        {
+          root: null,
+          rootMargin: '20px',
+          threshold: 0.1
+        }
+      )
+
+      observerRef.current.observe(node)
+    },
+    [hasMore, isLoading]
+  )
 
   useEffect(() => {
     const loadComments = async () => {
       try {
         setIsLoading(true)
-
-        await new Promise((resolve) => setTimeout(resolve, 8000))
-
-        const mockComments: Comment[] = [
-          {
-            commentID: '1',
-            userId: 'user101',
-            userName: 'Алексей Иванов',
-            userImage: avatar2,
-            commentText:
-              'Отличный пост, очень информативно! Отличный пост, очень информативно! Отличный пост, очень информативно! Отличный пост, очень информативно!',
-            createdAt: '2023-05-15T10:30:00Z',
-            starsCount: 2,
-            images: [comm1]
-          },
-          {
-            commentID: '2',
-            userId: 'user202',
-            userName: 'Мария Петрова',
-            userImage: avatar1,
-            commentText: 'Спасибо за полезную информацию!',
-            createdAt: '2023-05-16T14:45:00Z',
-            starsCount: 4,
-            images: [comm2, comm1]
-          },
-          {
-            commentID: '3',
-            userId: 'user303',
-            userName: 'Дмитрий Смирнов',
-            userImage: avatar1,
-            commentText: 'Есть вопросы по второму пункту, можно уточнить?',
-            createdAt: '2023-05-17T09:15:00Z',
-            starsCount: 5,
-            images: []
-          },
-          {
-            commentID: '4',
-            userId: 'user404',
-            userName: 'Елена Кузнецова',
-            userImage: avatar2,
-            commentText: 'Все понятно и доступно объяснено, благодарю!',
-            createdAt: '2023-05-18T16:20:00Z',
-            starsCount: 5,
-            images: [comm2, comm1]
-          },
-          {
-            commentID: '5',
-            userId: 'user505',
-            userName: 'Сергей Васильев',
-            userImage: avatar2,
-            commentText: 'Хотелось бы увидеть больше примеров кода.',
-            createdAt: '2023-05-19T11:10:00Z',
-            starsCount: 3,
-            images: [comm1]
-          }
-        ]
-
-        setComments(mockComments)
-      } catch (error) {
-        console.error('Error loading comments:', error)
         setComments([])
+        setHasMore(true)
+        loadingRef.current = false
+
+        const commentsData = await cardService.getCommentsByCardId(cardId, 0, pageParams.size)
+        console.log('commentsData ', commentsData.data)
+
+        if (commentsData.data?.content) {
+          setComments(commentsData.data.content)
+
+          const totalPages = commentsData.data.page?.totalPages || 0
+          const currentPage = commentsData.data.page?.number || 0
+          setHasMore(currentPage + 1 < totalPages)
+        } else {
+          setComments([])
+          setHasMore(false)
+        }
+
+        // Сбрасываем страницу на 0
+        setPageParams((prev) => ({...prev, page: 0}))
+      } catch (error) {
+        console.error('Error loading initial comments:', error)
+        setComments([])
+        setHasMore(false)
       } finally {
         setIsLoading(false)
       }
     }
 
-    loadComments()
-  }, [cardId])
+    if (cardId) {
+      loadComments()
+    }
+  }, [cardId, pageParams.size])
 
-  return <CardBottomPage isLoading={isLoading} comments={comments} />
+  useEffect(() => {
+    const loadMoreComment = async () => {
+      if (pageParams.page === 0 || !hasMore || !loadingRef.current) return
+      try {
+        setIsLoading(true)
+        loadingRef.current = false
+        console.log(`Loading page ${pageParams.page}...`)
+        const commentsData = await cardService.getCommentsByCardId(cardId, pageParams.page, pageParams.size)
+        if (commentsData.data?.content && commentsData.data.content.length > 0) {
+          setComments((prev) => {
+            const existingsIds = new Set(prev.map((prev) => prev.id || prev))
+            const newComments = commentsData.data.content.filter((comment) => !existingsIds.has(comment.id || comment))
+            return [...prev, ...newComments]
+          })
+
+          const currentPage = commentsData.data.page?.number || 0
+          const totalPages = commentsData.data.page?.totalPages || 0
+
+          if (currentPage + 1 >= totalPages) {
+            setHasMore(false)
+            console.log('No more comments to load')
+          }
+        } else {
+          setHasMore(false)
+        }
+      } catch {
+        setHasMore(false)
+      } finally {
+        setIsLoading(false)
+        loadingRef.current = false
+      }
+    }
+    if (cardId) {
+      loadMoreComment()
+    }
+  }, [cardId, hasMore, pageParams.page, pageParams.size])
+
+  useEffect(() => {
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
+    }
+  }, [])
+
+  return (
+    <CardBottomPage
+      isLoading={false}
+      cardData={cardDataNew ?? null}
+      comments={comments}
+      specialLastElement={
+        hasMore && !isLoading && comments.length > 0 ? (
+          <IntersectionObserverElement observerRef={lastElementRef} />
+        ) : null
+      }
+    />
+  )
 }

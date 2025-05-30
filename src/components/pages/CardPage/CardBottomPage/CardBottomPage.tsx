@@ -2,30 +2,16 @@
 import Skeleton from 'react-loading-skeleton'
 import styles from './CardBottomPage.module.scss'
 import {useEffect, useRef, useState} from 'react'
-import {ICommentProps} from '@/components/UI-kit/elements/Comment/Comment.types'
 import Comment from '@/components/UI-kit/elements/Comment/Comment'
 import Image from 'next/image'
 import Accordion from '@/components/UI-kit/Texts/Accordions/Accordions'
-const accordionItems = [
-  {
-    title: 'Что такое Next.js?',
-    value: 'Next.js - это React фреймворк для создания веб-приложений с серверным рендерингом.',
-    isDefaultActive: true
-  },
-  {
-    title: 'Преимущества TypeScript',
-    value: 'TypeScript добавляет статическую типизацию в JavaScript, что помогает выявлять ошибки на этапе разработки.',
-    isDefaultActive: false
-  },
-  {
-    title: 'SCSS Modules',
-    value: 'SCSS Modules позволяют использовать локальные стили, избегая конфликтов имен классов.',
-    isDefaultActive: false
-  }
-]
+import ICardFull, {Review} from '@/services/card/card.types'
+
 interface ICardBottomPageProps {
   isLoading: boolean
-  comments: ICommentProps[]
+  comments: Review[]
+  specialLastElement: React.ReactNode
+  cardData: ICardFull | null
 }
 
 interface IUploadedFile {
@@ -76,7 +62,7 @@ const AutoResizeTextarea = ({
   )
 }
 
-const CardBottomPage = ({isLoading, comments}: ICardBottomPageProps) => {
+const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICardBottomPageProps) => {
   const [activeIndex, setActiveIndex] = useState(1)
   const [commentValue, setCommentValue] = useState('')
   const [uploadedFiles, setUploadedFiles] = useState<IUploadedFile[]>([])
@@ -219,6 +205,8 @@ const CardBottomPage = ({isLoading, comments}: ICardBottomPageProps) => {
     }
   }
 
+  if (comments.length === 0)
+    return <p className={`${styles.create__first__comment}`}>Пока нет отзывов. Станьте первым!</p>
   return (
     <div className={`${styles.card__bottom__box}`}>
       <div className={`${styles.tabs__box}`}>
@@ -227,14 +215,19 @@ const CardBottomPage = ({isLoading, comments}: ICardBottomPageProps) => {
           className={`fontInstrument ${styles.tabs__box__item} ${activeIndex === 1 ? styles.tabs__box__item__active : ''}`}
         >
           Отзывы
-          <span className={`${styles.tabs__box__item__count__comments}`}>{comments.length}</span>
+          <span className={`${styles.tabs__box__item__count__comments}`}>
+            {comments.length ? comments.length : '0'}
+          </span>
         </div>
         <div
           onClick={() => setActiveIndex(2)}
           className={`fontInstrument ${styles.tabs__box__item} ${activeIndex === 2 ? styles.tabs__box__item__active : ''}`}
         >
           Вопросы
-          <span className={`${styles.tabs__box__item__count__comments}`}>{comments.length}</span>
+          <span className={`${styles.tabs__box__item__count__comments}`}>
+            {' '}
+            {comments.length ? comments.length : '0'}
+          </span>
         </div>
       </div>
 
@@ -242,7 +235,7 @@ const CardBottomPage = ({isLoading, comments}: ICardBottomPageProps) => {
         {activeIndex === 1 && (
           <>
             {isLoading ? (
-              <Skeleton height={100} count={3} style={{marginBottom: '16px', width: '100000px', maxWidth: '600px'}} />
+              <Skeleton height={100} count={3} style={{marginBottom: '16px', width: '90%', maxWidth: '400px'}} />
             ) : (
               <ul className={`${styles.comments__list}`}>
                 {comments.length > 0 ? (
@@ -256,6 +249,7 @@ const CardBottomPage = ({isLoading, comments}: ICardBottomPageProps) => {
                     <p>Пока нет отзывов. Станьте первым!</p>
                   </li>
                 )}
+                {specialLastElement}
               </ul>
             )}
 
@@ -370,7 +364,10 @@ const CardBottomPage = ({isLoading, comments}: ICardBottomPageProps) => {
                 <Skeleton height={80} count={4} style={{marginBottom: '12px'}} />
               </div>
             ) : (
-              <Accordion items={accordionItems} multiActive={false} />
+              <Accordion
+                items={cardData?.faq.map((el) => ({title: el.question, value: el.answer})) || []}
+                multiActive={false}
+              />
             )}
           </div>
         )}

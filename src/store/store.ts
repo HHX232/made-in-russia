@@ -1,10 +1,13 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit'
-import {FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE} from 'redux-persist'
+import {FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE} from 'redux-persist'
 import {filtersSlice} from './Filters/filters.slice'
 import {basketSlice} from './Basket/Basket.slice'
 import {favoritesSlice} from './Favorites/Favorites.types'
 import {registrationSlice} from './registerUser/registerUser.slice'
+import persistReducer from 'redux-persist/es/persistReducer'
+import {persistStore} from 'redux-persist'
 import {storage} from '@/utils/storage/storage'
+// import storage from 'redux-persist/lib/storage'
 
 const rootReducer = combineReducers({
   filters: filtersSlice.reducer,

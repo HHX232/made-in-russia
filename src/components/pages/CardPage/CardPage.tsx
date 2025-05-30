@@ -9,7 +9,7 @@ import styles from './CardPage.module.scss'
 import ICardFull from '@/services/card/card.types'
 import CommentsSection from './CommentSection/CommentSection'
 import CardBottomPage from './CardBottomPage/CardBottomPage'
-import SEOHeader from '@/components/MainComponents/SEOHeader/SEOHeader'
+// import SEOHeader from '@/components/MainComponents/SEOHeader/SEOHeader'
 
 async function CardContent({id}: {id: string}) {
   let cardData: ICardFull
@@ -31,7 +31,7 @@ async function CardContent({id}: {id: string}) {
       <div className={`${styles.card__inner} ${styles.card__inner__main}`}>
         <CardTopPage isLoading={false} cardData={cardData} />
       </div>
-      <CardMiddlePage isLoading={false} />
+      <CardMiddlePage isLoading={false} cardData={cardData} />
     </>
   )
 }
@@ -40,11 +40,12 @@ export default function CardPage({params}: {params: {id: string}}) {
   return (
     <div className={`${styles.card__box}`}>
       <Header isShowBottom={false} />
-      <SEOHeader />
+      {/* <SEOHeader /> */}
       <div className='container'>
         <CardContent id={params.id} />
-
-        <Suspense fallback={<CardBottomPage isLoading={true} comments={[]} />}>
+        <Suspense
+          fallback={<CardBottomPage cardData={null} isLoading={true} comments={[]} specialLastElement={null} />}
+        >
           <CommentsSection cardId={params.id} />
         </Suspense>
       </div>
