@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {NextResponse} from 'next/server'
 import type {NextRequest} from 'next/server'
 import instance, {axiosClassic} from './api/api.interceptor'
@@ -56,7 +55,7 @@ interface User {
 
 export async function middleware(request: NextRequest) {
   console.log('🚀 Middleware запущен для пути:', request.nextUrl.pathname)
-  console.log('api url: process.env.NEXT_PUBLIC_API_URL_SECOND ', process.env.NEXT_PUBLIC_API_URL_SECOND)
+  console.log('api url: process.env.NEXT_PUBLIC_API_URL ', process.env.NEXT_PUBLIC_API_URL)
   try {
     const {pathname} = request.nextUrl
 
