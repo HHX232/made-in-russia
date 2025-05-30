@@ -1,58 +1,48 @@
-# syntax=docker.io/docker/dockerfile:1
+# Шаг 1: Сборка приложения
+FROM node:20-alpine AS builder
 
-FROM node:18-alpine AS base
-
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
+# Устанавливаем зависимости (поддержка yarn, npm, pnpm)
 WORKDIR /app
-
-# Устанавливаем corepack для pnpm (если нужно)
-RUN corepack enable
-
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
-
-# Устанавливаем зависимости, включая типы для TypeScript
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 RUN \
     if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-    elif [ -f package-lock.json ]; then npm install react-redux @reduxjs/toolkit @types/react-redux; \
-    elif [ -f pnpm-lock.yaml ]; then pnpm i --frozen-lockfile; \
+    elif [ -f package-lock.json ]; then npm ci; \
+    elif [ -f pnpm-lock.yaml ]; then corepack enable && pnpm install --frozen-lockfile; \
     else echo "Lockfile not found." && exit 1; \
     fi
 
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Копируем исходный код и env-файлы
 COPY . .
 
-# Устанавливаем TypeScript глобально для проверки типов
-RUN npm install -g typescript
+# Собираем приложение (с standalone)
+RUN npm run build
 
-# Проверяем типы перед сборкой
-RUN npx tsc --noEmit
+# Шаг 2: Продакшен образ
+FROM node:20-alpine AS production
 
-RUN \
-    if [ -f yarn.lock ]; then yarn run build; \
-    elif [ -f package-lock.json ]; then npm run build; \
-    elif [ -f pnpm-lock.yaml ]; then pnpm run build; \
-    else echo "Lockfile not found." && exit 1; \
-    fi
-
-FROM base AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
 
+# Копируем только необходимые файлы из builder
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Проверяем тип сборки (standalone или нет)
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# Для кастомного сервера (если используется)
+# COPY --from=builder /app/server.js ./
+
+# Оптимизация образа
+RUN apk add --no-cache curl && \
+    addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001 -G nodejs && \
+    chown -R nextjs:nodejs /app
 
 USER nextjs
-EXPOSE 3000
 
-CMD ["npm", "start"]
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=3s \
+    CMD curl -f http://localhost:3000 || exit 1
+
+CMD ["node", "server.js"]
