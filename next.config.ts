@@ -12,7 +12,9 @@ const nextConfig: NextConfig = {
       'www.thekint.com',
       'example.com',
       'images.unsplash.com',
-      'youtu.be'
+      'youtu.be',
+      'v.ftcdn.net',
+      'plus.unsplash.com'
     ]
   }
 }
