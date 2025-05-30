@@ -27,9 +27,12 @@ let _axiosClassic: Axios.AxiosInstance | null = null
 const getApiUrl = () => {
   if (typeof window === 'undefined') {
     // Серверный режим (SSR)
+    console.log('Серверный режим, NEXT_PUBLIC_API_URL: ', process.env.NEXT_PUBLIC_API_URL)
     return process.env.NEXT_PUBLIC_API_URL || 'http://default-server-api.com'
   } else {
     // Клиентский режим
+    console.log('Клиентский режим, NEXT_PUBLIC_API_URL: ', process.env.NEXT_PUBLIC_API_URL)
+
     return (
       process.env.NEXT_PUBLIC_API_URL ||
       window['ENV' as keyof typeof window]?.NEXT_PUBLIC_API_URL ||
