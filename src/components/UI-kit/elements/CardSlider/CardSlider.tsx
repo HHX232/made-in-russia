@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, {useState, useRef, useEffect} from 'react'
-import Image from 'next/image'
 import Slider from 'react-slick'
 import styles from './CardSlider.module.scss'
 import Skeleton from 'react-loading-skeleton'
@@ -171,7 +170,11 @@ const SlickCardSlider = ({
                   }`}
                   onClick={() => handleThumbnailClick(index)}
                 >
-                  <Image src={image} alt={`Thumbnail ${index + 1}`} width={100} height={100} layout='responsive' />
+                  {image.includes('.mp4') ? (
+                    <video src={image} autoPlay muted loop className={styles.imageSlider__thumbnailVideo} />
+                  ) : (
+                    <div style={{backgroundImage: `url(${image})`}} className={styles.imageSlider__thumbnailImage} />
+                  )}
                 </div>
               ))
             : Array.from({length: images.length}).map((_, index) => <Skeleton key={index} width={100} height={100} />)}

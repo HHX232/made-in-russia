@@ -89,7 +89,6 @@ const VariantsBox = ({imagesUrls = []}: {imagesUrls: string[]}) => {
     </div>
   )
 }
-
 const ImagesSlider = ({
   isLoading,
   isLargeScreen,
@@ -117,13 +116,35 @@ const ImagesSlider = ({
             const moreCount = cardMiniData.reviewsMedia.length - maxItems
             return (
               <span style={{width: '60px', height: '60px', position: 'relative'}} key={el.id.toString()}>
-                <Image
-                  className={`${styles.images__comments__slider__box__item_img} ${styles.images__comments__slider__box__item_img__more}`}
-                  src={el.url}
-                  alt='mini__comment'
-                  width={60}
-                  height={60}
-                />
+                {el.mediaType === 'video' ? (
+                  <video
+                    className={`${styles.images__comments__slider__box__item_img} ${styles.images__comments__slider__box__item_img__more}`}
+                    src={el.url}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload='metadata'
+                    width={60}
+                    height={60}
+                    style={{
+                      objectFit: 'cover',
+                      backgroundColor: '#f0f0f0',
+                      display: 'block'
+                    }}
+                    onError={(e) => {
+                      console.error('Video loading error:', e)
+                    }}
+                  />
+                ) : (
+                  <Image
+                    className={`${styles.images__comments__slider__box__item_img} ${styles.images__comments__slider__box__item_img__more}`}
+                    src={el.url}
+                    alt='mini__comment'
+                    width={60}
+                    height={60}
+                  />
+                )}
                 <div className={`${styles.images__comments__slider__box__item_img__more__count}`}>
                   {`+ ${moreCount}`}
                 </div>
@@ -135,13 +156,38 @@ const ImagesSlider = ({
 
         return (
           <span style={{width: '60px', height: '60px', position: 'relative'}} key={el.id.toString()}>
-            <Image
-              className={`${styles.images__comments__slider__box__item_img}`}
-              src={el.url}
-              alt='mini__comment'
-              width={60}
-              height={60}
-            />
+            {el.mediaType === 'video' ? (
+              <video
+                className={`${styles.images__comments__slider__box__item_img}`}
+                src={el.url}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload='metadata'
+                width={60}
+                height={60}
+                style={{
+                  objectFit: 'cover',
+                  backgroundColor: '#f0f0f0',
+                  display: 'block'
+                }}
+                onError={(e) => {
+                  console.error('Video loading error:', e)
+                  // Можно заменить на placeholder изображение
+                }}
+                onLoadStart={() => console.log('Video loading started')}
+                onCanPlay={() => console.log('Video can play')}
+              />
+            ) : (
+              <Image
+                className={`${styles.images__comments__slider__box__item_img}`}
+                src={el.url}
+                alt='mini__comment'
+                width={60}
+                height={60}
+              />
+            )}
             {el.mediaType === 'video' && (
               <svg
                 className={`${styles.play__video__button}`}
@@ -165,7 +211,6 @@ const ImagesSlider = ({
     </div>
   )
 }
-
 export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData: ICardFull | null}) => {
   const [cardMiniData, setCardMiniData] = useState<ICardFull | null>(cardData)
   const [isMounted, setIsMounted] = useState(false)

@@ -92,7 +92,38 @@ const Comment: FC<Review> = ({id: commentID, media, author, text, rating, creati
               className={`${styles.images__item__box}`}
               key={i}
             >
-              <Image src={el.url} alt='image' width={70} height={75} />
+              {el.url.includes('mp4') ? (
+                <div
+                  style={{
+                    position: 'relative',
+                    borderRadius: '10px',
+                    width: '70px',
+                    height: '75px',
+                    overflow: 'hidden'
+                  }}
+                >
+                  <video
+                    src={el.url}
+                    autoPlay
+                    loop
+                    muted
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
+                  ></video>
+                </div>
+              ) : (
+                <div
+                  style={{backgroundImage: `url(${el.url})`}}
+                  className={`${styles.images__item__image__comment__content}`}
+                ></div>
+              )}
             </li>
           )
         })}
