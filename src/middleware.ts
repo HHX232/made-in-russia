@@ -55,7 +55,7 @@ interface User {
 
 export async function middleware(request: NextRequest) {
   console.log('🚀 Middleware запущен для пути:', request.nextUrl.pathname)
-  console.log('api url: process.env.NEXT_PUBLIC_API_URL ', process.env.NEXT_PUBLIC_API_URL)
+  console.log('api url: process.env.NEXT_PUBLIC_API_URL ', process.env.NEXT_PUBLIC_API_URL_SECOND)
   try {
     const {pathname} = request.nextUrl
 

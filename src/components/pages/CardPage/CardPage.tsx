@@ -36,17 +36,19 @@ async function CardContent({id}: {id: string}) {
   )
 }
 
-export default function CardPage({params}: {params: {id: string}}) {
+export default async function CardPage({params}: {params: Promise<{id: string}>}) {
+  const {id} = await params
+
   return (
     <div className={`${styles.card__box}`}>
       <Header isShowBottom={false} />
       {/* <SEOHeader /> */}
       <div className='container'>
-        <CardContent id={params.id} />
+        <CardContent id={id} />
         <Suspense
           fallback={<CardBottomPage cardData={null} isLoading={true} comments={[]} specialLastElement={null} />}
         >
-          <CommentsSection cardId={params.id} />
+          <CommentsSection cardId={id} />
         </Suspense>
       </div>
     </div>

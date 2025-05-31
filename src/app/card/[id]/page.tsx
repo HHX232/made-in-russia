@@ -2,13 +2,15 @@ import CardPage from '@/components/pages/CardPage/CardPage'
 import cardService from '@/services/card/card.service'
 import ICardFull from '@/services/card/card.types'
 
-export default function CardPageRoute({params}: {params: {id: string}}) {
+export default async function CardPageRoute({params}: {params: Promise<{id: string}>}) {
   return <CardPage params={params} />
 }
 
-export async function generateMetadata({params}: {params: {id: string}}) {
+export async function generateMetadata({params}: {params: Promise<{id: string}>}) {
+  const {id} = await params
+
   try {
-    const {data} = await cardService.getFullCardById(params.id)
+    const {data} = await cardService.getFullCardById(id)
     const product = data as ICardFull
 
     console.log('full product', product)
