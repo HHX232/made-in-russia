@@ -31,6 +31,16 @@ interface RegisterUserFirstProps {
   onSubmit: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
+interface RegionDropListProps {
+  regions: RegionType[]
+  selectedRegion: RegionType
+  listIsOpen: boolean
+  setListIsOpen: (value: boolean) => void
+  handleRegionSelect: (region: RegionType) => void
+  extraClass?: string
+  extraStyle?: React.CSSProperties
+}
+
 const RegionItem = ({
   imageSrc,
   title,
@@ -46,6 +56,47 @@ const RegionItem = ({
     <div onClick={onClickF} className={`${styles.region__item}`}>
       <Image className={`${styles.region__image}`} src={imageSrc} alt={altName} width={18} height={18} />
       <p className={`${styles.region__text}`}>{title}</p>
+    </div>
+  )
+}
+
+export const RegionDropList: React.FC<RegionDropListProps> = ({
+  regions,
+  selectedRegion,
+  listIsOpen,
+  setListIsOpen,
+  handleRegionSelect,
+  extraClass = '',
+  extraStyle = {}
+}) => {
+  return (
+    <div style={extraStyle} className={extraClass}>
+      <DropList
+        extraClass={`${styles.extra__drop__list}`}
+        gap='15'
+        extraListClass={`${styles.extra__list__style}`}
+        title={
+          <RegionItem
+            imageSrc={selectedRegion.imageSrc}
+            title={selectedRegion.title}
+            altName={selectedRegion.altName}
+          />
+        }
+        isOpen={listIsOpen}
+        onOpenChange={setListIsOpen}
+        items={regions.map((region, index) => (
+          <div
+            style={{width: '100%'}}
+            key={index}
+            onClick={(e) => {
+              e.stopPropagation()
+              handleRegionSelect(region)
+            }}
+          >
+            <RegionItem imageSrc={region.imageSrc} title={region.title} altName={region.altName} />
+          </div>
+        ))}
+      />
     </div>
   )
 }
@@ -71,21 +122,6 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
     {imageSrc: belarusSvg, title: 'Россия', altName: 'Russia'}
   ]
 
-  //   const categoryOptions: MultiSelectOption[] = [
-  //     {id: 1, label: 'Беларусь', value: 'Belarus', icon: regions[0].imageSrc},
-  //     {id: 2, label: 'Китай', value: 'China', icon: regions[1].imageSrc},
-  //     {id: 3, label: 'Казахстан', value: 'Kazakhstan', icon: regions[2].imageSrc},
-  //     {id: 4, label: 'Россия', value: 'Russia', icon: regions[3].imageSrc},
-  //     {id: 5, label: 'Другое', value: 'Other'}
-  //   ]
-
-  //   const [selectedCategories, setSelectedCategories] = useState<MultiSelectOption[]>([])
-  //   <MultiDropSelect
-  //   options={categoryOptions}
-  //   selectedValues={selectedCategories}
-  //   onChange={setSelectedCategories}
-  //   placeholder='Выберите категории...'
-  // />
   const handleRegionSelect = (region: RegionType) => {
     setSelectedRegion(region)
     setListIsOpen(false)
@@ -97,31 +133,12 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
         <p className={`${styles.input__title}`}>Страна/Регион</p>
 
         <div className={`${styles.drop__box}`}>
-          <DropList
-            extraClass={`${styles.extra__drop__list}`}
-            gap='15'
-            extraListClass={`${styles.extra__list__style}`}
-            title={
-              <RegionItem
-                imageSrc={selectedRegion.imageSrc}
-                title={selectedRegion.title}
-                altName={selectedRegion.altName}
-              />
-            }
-            isOpen={listIsOpen}
-            onOpenChange={setListIsOpen}
-            items={regions.map((region, index) => (
-              <div
-                style={{width: '100%'}}
-                key={index}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleRegionSelect(region)
-                }}
-              >
-                <RegionItem imageSrc={region.imageSrc} title={region.title} altName={region.altName} />
-              </div>
-            ))}
+          <RegionDropList
+            regions={regions}
+            selectedRegion={selectedRegion}
+            listIsOpen={listIsOpen}
+            setListIsOpen={setListIsOpen}
+            handleRegionSelect={handleRegionSelect}
           />
         </div>
       </div>

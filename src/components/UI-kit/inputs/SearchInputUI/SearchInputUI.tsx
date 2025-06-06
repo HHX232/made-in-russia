@@ -1,5 +1,5 @@
 'use client'
-import {FC, useRef, ChangeEvent, useCallback, useState, useEffect} from 'react'
+import {FC, useRef, ChangeEvent, useCallback, useState, useEffect, useId} from 'react'
 import styles from './SearchInputUI.module.scss'
 import Image from 'next/image'
 
@@ -14,7 +14,7 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
   const [inputValue, setInputValue] = useState('')
   const [listIsOpen, setListIsOpen] = useState(false)
   const boxRef = useRef<HTMLDivElement | null>(null)
-
+  const id = useId()
   const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setListIsOpen(true)
     if (inputRef.current) {
@@ -46,11 +46,11 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
   }, [listIsOpen])
   return (
     <div ref={boxRef} className={`${styles.search__box} ${disabled ? styles.search__box_disabled : ''}`}>
-      <label htmlFor='inputID' className={styles.search__label}>
+      <label htmlFor={'inputID' + id} className={styles.search__label}>
         <Image src={loop} width={16} height={16} alt='search icon' className={styles.search__icon} />
         <input
           type='text'
-          id='inputID'
+          id={'inputID' + id}
           ref={inputRef}
           onClick={() => setListIsOpen(true)}
           onChange={handleInputChange}

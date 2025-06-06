@@ -6,7 +6,7 @@ import createTelText from '@/utils/createTelText'
 import LanguageButtonUI from '@/components/UI-kit/buttons/LanguageButtonUI/LanguageButtonUI'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
-import ShopButtonUI from '@/components/UI-kit/buttons/ShopButtonUI/ShopButtonUI'
+// import ShopButtonUI from '@/components/UI-kit/buttons/ShopButtonUI/ShopButtonUI'
 import StarButtonUI from '@/components/UI-kit/buttons/StarButtonUI/StarButtonUI'
 import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
 import BurgerMenu from '../BurgerMenu/BurgerMenu'
@@ -15,8 +15,10 @@ import Head from 'next/head'
 const insta = '/insta.svg'
 const telephone = '/phone.svg'
 const telegram = '/telegram.svg'
-const logo = '/Logo_Bear.svg'
-const logoText = '/logoText.svg'
+
+// const logoFav = '/logos/logo_fav.svg'
+const logoFavBig = '/logos/logoWithoutText.svg'
+const logoFavSmall = '/logos/logo_fav.svg'
 
 interface HeaderProps {
   isShowBottom?: boolean
@@ -229,18 +231,26 @@ const Header: FC<HeaderProps> = ({isShowBottom = true}) => {
               <Image
                 className={`${styles.bear__img}`}
                 alt='Logo with Bear'
-                src={logo}
-                width={69}
-                height={69}
+                src={logoFavBig}
+                width={286}
+                height={65}
                 itemProp='logo'
               />
               <Image
+                className={`${styles.bear__img_min}`}
+                alt='Logo with Bear'
+                src={logoFavSmall}
+                width={100}
+                height={100}
+                itemProp='logo'
+              />
+              {/* <Image
                 className={`${styles.bear__img_text}`}
                 alt='Made In Russia'
                 src={logoText}
                 width={175}
                 height={41}
-              />
+              /> */}
               <meta itemProp='name' content='Made In Russia' />
               <meta
                 itemProp='url'
@@ -254,7 +264,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true}) => {
 
             <div className={`${styles.main__middle_content}`}>
               <ProfileButtonUI />
-              <ShopButtonUI />
+              {/* <ShopButtonUI /> */}
               <StarButtonUI />
             </div>
             <BurgerMenu />

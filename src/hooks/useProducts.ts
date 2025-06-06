@@ -18,10 +18,10 @@ export interface ProductQueryParams {
   [key: string]: any
 }
 
-export const useProducts = (params: ProductQueryParams = {}) => {
+export const useProducts = (params: ProductQueryParams = {}, specialRoute?: string | undefined) => {
   return useQuery({
     queryKey: ['products', params],
-    queryFn: async () => await ProductService.getAll(params),
+    queryFn: async () => await ProductService.getAll(params, specialRoute),
     placeholderData: (previousData) => previousData ?? undefined,
     // Включаем ручное управление инвалидацией
     // staleTime - время, в течение которого данные считаются "свежими"

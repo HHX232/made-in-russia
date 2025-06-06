@@ -1,4 +1,4 @@
-import {axiosClassic} from '@/api/api.interceptor'
+import instance, {axiosClassic} from '@/api/api.interceptor'
 import {PRODUCTS} from './product.types'
 import {Product, ProductPageResponse} from './product.types'
 
@@ -11,7 +11,7 @@ export interface ProductQueryParams {
 }
 
 const ProductService = {
-  async getAll(params: ProductQueryParams = {}): Promise<ProductPageResponse> {
+  async getAll(params: ProductQueryParams = {}, specialRoute?: string | undefined): Promise<ProductPageResponse> {
     // Устанавливаем значения по умолчанию
     const defaultParams = {
       page: params.page ?? 0,
@@ -19,11 +19,24 @@ const ProductService = {
       ...params
     }
 
-    const {data} = await axiosClassic<ProductPageResponse>({
-      url: PRODUCTS,
-      method: 'GET',
-      params: defaultParams
-    })
+    let data: ProductPageResponse
+
+    if (specialRoute && specialRoute.length !== 0) {
+      const response = await instance<ProductPageResponse>({
+        url: specialRoute,
+        method: 'GET',
+        params: defaultParams
+      })
+      data = response.data
+    } else {
+      const response = await axiosClassic<ProductPageResponse>({
+        url: PRODUCTS,
+        method: 'GET',
+        params: defaultParams
+      })
+      data = response.data
+    }
+
     return data
   },
 

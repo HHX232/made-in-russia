@@ -62,7 +62,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
       }
 
       try {
-        console.log('accessToken', accessToken, 'refreshToken', refreshToken)
+        // console.log('accessToken', accessToken, 'refreshToken', refreshToken)
         const response = await instance.get<User>('/me')
         setUserData(response.data)
       } catch (error) {
@@ -119,6 +119,8 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
       onClick={() => {
         if (!userData?.login) {
           router.push('/login')
+        } else {
+          router.push('/profile')
         }
       }}
       style={{...extraStyles}}

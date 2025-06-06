@@ -16,6 +16,8 @@ interface MultiDropSelectProps {
   onChange: (selected: MultiSelectOption[]) => void
   placeholder?: string
   disabled?: boolean
+  direction?: 'left' | 'right' | 'bottom' | 'top'
+  extraClass?: string
 }
 
 const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
@@ -23,7 +25,9 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   selectedValues,
   onChange,
   placeholder = 'Выберите элементы...',
-  disabled = false
+  disabled = false,
+  direction = 'bottom',
+  extraClass
 }) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -50,7 +54,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
   // Компонент заголовка дропдауна
   const DropdownTitle = () => (
-    <div className={styles.dropdownTitle}>
+    <div className={`${styles.dropdownTitle} ${extraClass}`}>
       {selectedValues.length === 0 ? (
         <span className={styles.placeholder}>{placeholder}</span>
       ) : (
@@ -170,7 +174,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
         extraListClass={styles.dropListContent}
         title={<DropdownTitle />}
         isOpen={isOpen}
-        direction='left'
+        direction={direction}
         onOpenChange={setIsOpen}
         items={dropListItems}
       />

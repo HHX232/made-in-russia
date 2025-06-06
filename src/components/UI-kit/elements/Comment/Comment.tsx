@@ -31,7 +31,7 @@ const Comment: FC<Review> = ({id: commentID, media, author, text, rating, creati
               alt='image'
               style={{
                 borderRadius: '20px',
-                width: '600px',
+                width: '100%',
                 height: 'auto',
                 aspectRatio: '1 / 1',
                 maxWidth: '600px',
@@ -43,7 +43,11 @@ const Comment: FC<Review> = ({id: commentID, media, author, text, rating, creati
         ) : (
           <>
             {' '}
-            <SlickCardSlider isLoading={false} imagesCustom={media?.map((el) => el.url)}></SlickCardSlider>
+            <SlickCardSlider
+              extraClass={styles.extra__class__slick__slider}
+              isLoading={false}
+              imagesCustom={media?.map((el) => el.url)}
+            ></SlickCardSlider>
             <p className={`${styles.modal__text}`}>{text}</p>
           </>
         )}

@@ -1,8 +1,9 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import styles from '../RegisterPage.module.scss'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import MultiDropSelect, {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
+import useWindowWidth from '@/hooks/useWindoWidth'
 
 const belarusSvg = '/belarus.svg'
 
@@ -34,6 +35,11 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
   setSelectedCountries,
   onSubmit
 }) => {
+  const [isClient, setIsClient] = useState(false)
+  const windowWidth = useWindowWidth()
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
   // Опции стран для мультивыбора
   const countryOptions: MultiSelectOption[] = [
     {id: 'belarus', label: 'Беларусь', value: 'Belarus', icon: belarusSvg},
@@ -79,6 +85,7 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
           selectedValues={selectedCountries}
           onChange={setSelectedCountries}
           placeholder='Выберите страны...'
+          direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'left'}
         />
       </div>
 

@@ -9,18 +9,32 @@ interface ITelephoneProps {
   onSetValue: (val: string) => void
   error?: string
   numberStartWith: TNumberStart
+  extraClass?: string
+  extraStyle?: React.CSSProperties
 }
 
 export const TelephoneInputUI: FC<ITelephoneProps> = ({
   currentValue = '',
   onSetValue,
   error = '',
-  numberStartWith = 'other'
+  numberStartWith = 'other',
+  extraClass,
+  extraStyle
 }) => {
   const id = useId()
   const [startValue, setStartValue] = useState('+375')
   const [inputValue, setInputValue] = useState(currentValue)
   const [formattedValue, setFormattedValue] = useState('')
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Обновляем внутреннее состояние при изменении currentValue извне
+  useEffect(() => {
+    if (currentValue !== inputValue) {
+      setInputValue(currentValue)
+      const formatted = formatPhoneNumber(currentValue, numberStartWith)
+      setFormattedValue(formatted)
+    }
+  }, [currentValue])
 
   // Set country code based on selected country
   useEffect(() => {
@@ -44,8 +58,8 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
         break
       case 'other':
       default:
-        code = ''
-        maxLength = 15 // Произвольное значение для "other"
+        code = '' // Пустой код для 'other'
+        maxLength = 25 // Произвольное значение для "other"
         break
     }
 
@@ -54,14 +68,20 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
     // Обрезаем номер до допустимой длины для новой страны
     const cleanedValue = inputValue.replace(/\D/g, '').slice(0, maxLength)
 
-    // Форматируем обрезанное значение
+    // Форматируем значение
     const newFormattedValue = formatPhoneNumber(cleanedValue, numberStartWith)
 
-    // Обновляем состояния
     setInputValue(cleanedValue)
     setFormattedValue(newFormattedValue)
-    onSetValue(newFormattedValue)
-  }, [numberStartWith, onSetValue])
+
+    // НЕ вызываем onSetValue при инициализации или смене страны
+    // Вызываем только если это результат действий пользователя
+    if (isInitialized) {
+      onSetValue(cleanedValue)
+    } else {
+      setIsInitialized(true)
+    }
+  }, [numberStartWith])
 
   // Format the phone number based on country
   const formatPhoneNumber = (value: string, country: TNumberStart) => {
@@ -93,38 +113,52 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
         break
 
       case 'other':
-      default: // Format: (XXX) XXX XXXX
-        if (digitsOnly.length > 0) formatted += '(' + digitsOnly.substring(0, 3)
-        if (digitsOnly.length > 3) formatted += ') ' + digitsOnly.substring(3, 6)
-        if (digitsOnly.length > 6) formatted += ' ' + digitsOnly.substring(6, 10)
+      default: // Без форматирования для неопределенных стран
+        formatted = digitsOnly // Просто возвращаем цифры без форматирования
         break
     }
 
     return formatted
   }
 
-  // Handle input changes
+  // Handle input changes - это единственное место где должен вызываться onSetValue
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Get input value and remove any non-digit characters
     const value = e.target.value
     const digitsOnly = value.replace(/\D/g, '')
 
-    // Format the phone number
-    const formatted = formatPhoneNumber(digitsOnly, numberStartWith)
+    // Получаем максимальную длину для текущей страны
+    let maxLength = 25
+    switch (numberStartWith) {
+      case 'Belarus':
+        maxLength = 9
+        break
+      case 'China':
+        maxLength = 11
+        break
+      case 'Russia':
+      case 'Kazakhstan':
+        maxLength = 10
+        break
+    }
 
-    // Update state
-    setInputValue(digitsOnly)
+    // Ограничиваем ввод максимальной длиной
+    const limitedDigits = digitsOnly.slice(0, maxLength)
+    const formatted = formatPhoneNumber(limitedDigits, numberStartWith)
+
+    setInputValue(limitedDigits)
     setFormattedValue(formatted)
-    onSetValue(digitsOnly)
+
+    // Вызываем onSetValue только при пользовательском вводе
+    onSetValue(limitedDigits)
   }
 
   return (
-    <div className={` ${styles.input__box}`}>
+    <div className={` ${styles.input__box} ${extraClass}`} style={extraStyle}>
       <label htmlFor={id} className={`${styles.input__box} `}>
         <div
           className={`${styles.box__start} ${error && error?.length > 1 && formattedValue?.length !== 0 && styles.error__box}`}
         >
-          {startValue}
+          {startValue.length !== 0 ? startValue : '+'}
         </div>
         <input
           onChange={handleInputChange}
@@ -132,7 +166,7 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
           id={id}
           type='text'
           className={styles.def__input}
-          //  placeholder={getPhoneFormat(numberStartWith)}
+          // placeholder={'please write your telephone'}
         />
       </label>
     </div>
@@ -150,6 +184,25 @@ export const getPhoneFormat = (country: TNumberStart) => {
       return '(XXX) XXXX XXXX'
     case 'other':
     default:
-      return '(XXX) XXX XXXX'
+      return 'XXXXXXXXXX' // Без форматирования для 'other'
+  }
+}
+
+// Вспомогательная функция для проверки валидности номера
+export const isPhoneNumberValid = (value: string, country: TNumberStart): boolean => {
+  const digitsOnly = value.replace(/\D/g, '')
+
+  switch (country) {
+    case 'Belarus':
+      return digitsOnly.length === 9
+    case 'Russia':
+    case 'Kazakhstan':
+      return digitsOnly.length === 10
+    case 'China':
+      return digitsOnly.length === 11
+    case 'other':
+      return digitsOnly.length >= 1 // Для 'other' любая длина валидна
+    default:
+      return false
   }
 }

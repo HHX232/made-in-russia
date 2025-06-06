@@ -2,11 +2,13 @@
 import {CSSProperties, FC, ReactNode, useEffect, useId, useState} from 'react'
 import styles from './TextInputUI.module.scss'
 import Image, {StaticImageData} from 'next/image'
-
+import cn from 'clsx'
 import Link from 'next/link'
 import {Url} from 'next/dist/shared/lib/router/router'
+
 const hideIcon = '/hide__text.svg'
 const showIcon = '/show__text.svg'
+
 interface ITextInputProps {
   extraClass?: string
   extraStyle?: CSSProperties
@@ -20,6 +22,19 @@ interface ITextInputProps {
   customIcon?: StaticImageData
   customIconOnAlternativeState?: StaticImageData
   linkToHelp?: Url
+  theme?: 'dark' | 'light'
+  // Дополнительные события для input
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  onMouseEnter?: (e: React.MouseEvent<HTMLInputElement>) => void
+  onMouseLeave?: (e: React.MouseEvent<HTMLInputElement>) => void
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void
+  disabled?: boolean
+  readOnly?: boolean
+  autoComplete?: string
+  autoFocus?: boolean
 }
 
 const TextInputUI: FC<ITextInputProps> = ({
@@ -34,7 +49,19 @@ const TextInputUI: FC<ITextInputProps> = ({
   errorValue,
   customIcon,
   customIconOnAlternativeState,
-  linkToHelp = ''
+  linkToHelp = '',
+  theme = 'dark',
+  onBlur,
+  onFocus,
+  onKeyDown,
+  onKeyUp,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
+  disabled = false,
+  readOnly = false,
+  autoComplete,
+  autoFocus = false
 }) => {
   const [textIsShow, setTextIsShow] = useState(false)
   const [displayValue, setDisplayValue] = useState(isSecret ? currentValue.replace(/./g, '*') : currentValue)
@@ -68,7 +95,14 @@ const TextInputUI: FC<ITextInputProps> = ({
   }
 
   return (
-    <label style={{...extraStyle}} htmlFor={id} className={`${extraClass} ${styles.input__box}`}>
+    <label
+      style={{...extraStyle}}
+      htmlFor={id}
+      className={cn(extraClass, styles.input__box, {
+        [styles.dark]: theme === 'dark',
+        [styles.light]: theme === 'light'
+      })}
+    >
       <div className={`${styles.titles_box}`}>
         {typeof title === typeof 'string' ? <p className={`${styles.input__title}`}>{title}</p> : title}
         {helpTitle && (
@@ -83,6 +117,17 @@ const TextInputUI: FC<ITextInputProps> = ({
           type={isSecret && !textIsShow ? 'password' : 'text'}
           value={isSecret ? (textIsShow ? currentValue : displayValue) : currentValue}
           onChange={handleChange}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          onKeyDown={onKeyDown}
+          onKeyUp={onKeyUp}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          onClick={onClick}
+          disabled={disabled}
+          readOnly={readOnly}
+          autoComplete={autoComplete}
+          autoFocus={autoFocus}
           className={`${styles.input} ${errorValue && styles.error__input}`}
           id={id}
         />

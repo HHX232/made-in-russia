@@ -83,7 +83,24 @@
       display: none;
    }
 
+   .extra__class__slick__slider {
+      max-width: 420px !important;
+      margin: 0 auto;
+   }
+
    .start__list__images>li:first-child {
       display: block !important;
+   }
+}
+
+@media (max-width: 460px) {
+   .extra__class__slick__slider {
+      max-width: 350px !important;
+   }
+}
+
+@media (max-width: 390px) {
+   .extra__class__slick__slider {
+      max-width: 310px !important;
    }
 }

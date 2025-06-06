@@ -118,6 +118,21 @@ const RegisterPage = () => {
     }
   }
 
+  // Helper function to get country code
+  const getCountryCode = (country: string): string => {
+    switch (country) {
+      case 'Belarus':
+        return '+375'
+      case 'China':
+        return '+86'
+      case 'Russia':
+      case 'Kazakhstan':
+        return '+7'
+      default:
+        return '+'
+    }
+  }
+
   // Step 1 submit
   const onSubmitFirstStep = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
@@ -154,27 +169,38 @@ const RegisterPage = () => {
     }
 
     try {
+      // Формируем полный номер телефона с кодом страны
+      let fullPhoneNumber = trueTelephoneNumber
+
+      if (isUser) {
+        const countryCode = getCountryCode(selectedRegion.altName)
+        fullPhoneNumber = countryCode + trueTelephoneNumber
+      } else if (selectedCountries.length > 0) {
+        const countryCode = getCountryCode(selectedCountries[0].value)
+        fullPhoneNumber = countryCode + trueTelephoneNumber
+      }
+
       const registrationData = isUser
         ? {
             email,
             login: name,
             password,
             region: selectedRegion.altName,
-            phoneNumber: trueTelephoneNumber,
+            phoneNumber: fullPhoneNumber,
             type: 'user'
           }
         : {
             email,
-            companyName: name,
+            login: name,
             inn,
             password,
             countries: selectedCountries.map((c) => c.value),
-            categories: selectedCategories.map((c) => c.value),
-            phoneNumber: trueTelephoneNumber,
+            productCategories: selectedCategories.map((c) => c.value),
+            phoneNumber: fullPhoneNumber,
             type: 'company'
           }
 
-      const response = await axiosClassic.post('/auth/register', registrationData)
+      const response = await axiosClassic.post(isUser ? '/auth/register' : '/auth/register-vendor', registrationData)
 
       console.log('Registration successful:', {email, name})
       setShowNextStep(false)
@@ -347,7 +373,7 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
     case 'Kazakhstan':
     case 'other':
     default:
-      return cleanedPhone.length === 10
+      return cleanedPhone.length >= 7
   }
 }
 

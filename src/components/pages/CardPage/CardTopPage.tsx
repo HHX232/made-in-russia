@@ -9,6 +9,7 @@ import {createPriceWithDot} from '@/utils/createPriceWithDot'
 import renderPriceUnit from '@/utils/createUnitPrice'
 import getDatesDifference from '@/utils/getDatesDifference'
 import Link from 'next/link'
+import Head from 'next/head'
 import styles from './CardPage.module.scss'
 import Image from 'next/image'
 import {ReactNode, useEffect, useState} from 'react'
@@ -46,6 +47,138 @@ const imArray = [
 const var1 = '/var1.jpg'
 const var2 = '/var2.jpg'
 const var3 = '/var3.jpg'
+
+// Компонент микроразметки
+const ProductSchema = ({
+  cardData,
+  priceList,
+  shopName
+}: {
+  cardData: ICardFull | null
+  priceList: IPriceList
+  shopName: string
+}) => {
+  if (!cardData) return null
+
+  // Получаем минимальную и максимальную цены
+  const prices = priceList.items
+    .map((item) => parseFloat(item.currentPrice || item.originalPrice || '0'))
+    .filter((price) => price > 0)
+
+  const minPrice = Math.min(...prices)
+  const maxPrice = Math.max(...prices)
+
+  // Формируем массив предложений для AggregateOffer
+  const offers = priceList.items.map((item, index) => ({
+    '@type': 'Offer',
+    price: item.currentPrice || item.originalPrice,
+    priceCurrency: 'USD',
+    priceValidUntil: priceList.discountExpiration,
+    availability: 'https://schema.org/InStock',
+    eligibleQuantity: {
+      '@type': 'QuantitativeValue',
+      name: item.title,
+      unitCode: 'TNE' // Код для тонн
+    }
+  }))
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: cardData.title,
+    description: cardData.furtherDescription || cardData.title,
+    sku: cardData.article,
+    mpn: cardData.article,
+    image: cardData.media?.map((media) => media.url) || [],
+    brand: {
+      '@type': 'Organization',
+      name: shopName
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: cardData.rating,
+      reviewCount: cardData.reviewsCount,
+      bestRating: '5',
+      worstRating: '1'
+    },
+    offers: {
+      '@type': 'AggregateOffer',
+      offerCount: priceList.items.length,
+      lowPrice: minPrice,
+      highPrice: maxPrice,
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      priceValidUntil: priceList.discountExpiration,
+      offers: offers
+    },
+    additionalProperty:
+      cardData.characteristics?.map((char) => ({
+        '@type': 'PropertyValue',
+        name: char.name,
+        value: char.value
+      })) || [],
+    shippingDetails: [
+      {
+        '@type': 'OfferShippingDetails',
+        shippingDestination: {
+          '@type': 'DefinedRegion',
+          addressCountry: 'RU'
+        },
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          currency: 'USD'
+        },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          businessDays: {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+            opens: '00:00',
+            closes: '23:59'
+          },
+          transitTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 7,
+            maxValue: 21,
+            unitCode: 'DAY'
+          }
+        }
+      },
+      {
+        '@type': 'OfferShippingDetails',
+        shippingDestination: {
+          '@type': 'DefinedRegion',
+          addressCountry: 'CN'
+        },
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          currency: 'USD'
+        },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          businessDays: {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+            opens: '00:00',
+            closes: '23:59'
+          },
+          transitTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 14,
+            maxValue: 42,
+            unitCode: 'DAY'
+          }
+        }
+      }
+    ]
+  }
+
+  return (
+    <Head>
+      <script type='application/ld+json' dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData)}} />
+    </Head>
+  )
+}
 
 const ShopProfile = ({name, imageSrc, isLoading}: {name: string; imageSrc: string; isLoading: boolean}) => {
   return (
@@ -89,6 +222,7 @@ const VariantsBox = ({imagesUrls = []}: {imagesUrls: string[]}) => {
     </div>
   )
 }
+
 const ImagesSlider = ({
   isLoading,
   isLargeScreen,
@@ -109,7 +243,12 @@ const ImagesSlider = ({
   const maxItems = isLargeScreen ? 3 : 4
 
   return (
-    <div className={`${styles.images__comments__slider__box}`}>
+    <div
+      onClick={() => {
+        window.scrollTo({top: document.getElementById('cardCommentsSection')?.offsetTop, behavior: 'smooth'})
+      }}
+      className={`${styles.images__comments__slider__box}`}
+    >
       {cardMiniData?.reviewsMedia.map((el, i) => {
         if (cardMiniData.reviewsMedia.length > maxItems) {
           if (i === maxItems) {
@@ -211,11 +350,13 @@ const ImagesSlider = ({
     </div>
   )
 }
+
 export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData: ICardFull | null}) => {
   const [cardMiniData, setCardMiniData] = useState<ICardFull | null>(cardData)
   const [isMounted, setIsMounted] = useState(false)
   const [currentDate] = useState<number>(Date.now()) // Фиксируем дату при инициализации
   const windowWidth = useWindowWidth()
+  const shopName = 'Имя продавца' // TODO: Получить из cardData
 
   useEffect(() => {
     setIsMounted(true)
@@ -282,7 +423,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
       <ImagesSlider cardMiniData={cardMiniData} isLoading={isReallyLoading} isLargeScreen={isLargeScreen} />
 
-      <ShopProfile isLoading={isReallyLoading} name={'Имя продавца'} imageSrc={im4} />
+      <ShopProfile isLoading={isReallyLoading} name={shopName} imageSrc={im4} />
 
       <div className={`${styles.variants__box}`}>
         {!isReallyLoading ? (
@@ -397,7 +538,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
         </div>
 
         <div className='styles.buttons__box'>
-          {!isReallyLoading && cardMiniData ? (
+          {/* {!isReallyLoading && cardMiniData ? (
             <BasketButtonUI
               textColor='dark'
               iconColor='dark'
@@ -406,9 +547,10 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             />
           ) : (
             <Skeleton height={48} width={150} />
-          )}
+          )} */}
           {!isReallyLoading ? (
             <button
+              // style={{marginTop: '10px'}}
               onClick={(event) => {
                 event.preventDefault()
               }}
@@ -480,6 +622,9 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
   return (
     <>
+      {/* Микроразметка Schema.org */}
+      <ProductSchema cardData={cardMiniData} priceList={priceList} shopName={shopName} />
+
       <div className={`${styles.card__slider__box}`}>
         <CardSlider
           imagesCustom={cardMiniData?.media?.map((el) => el.url)}

@@ -1,0 +1,141 @@
+.phone__input__box {
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   gap: 5px;
+}
+
+.profile__region__dropdown {
+   width: 100%;
+}
+
+.region__box__input {
+   display: flex;
+   width: 100%;
+   border: 2px solid #2A2E46;
+   border-radius: 10px;
+   padding: 11px 15px;
+}
+
+// !EXTRA
+.extra__phone__class {
+   &>label {
+      background-color: #F4F5F6 !important;
+      border: 2px solid #2A2E46;
+      border-radius: 10px;
+
+      &>div {
+         padding: 10px 15px;
+         border-top: 1.5px solid #2A2E46;
+         border-right: 2px solid #2A2E46;
+         border-bottom: 1.5px solid #2A2E46;
+         border-radius: 8px;
+         background-color: #81818120;
+      }
+
+      &>input {
+         min-height: 40px;
+      }
+   }
+}
+
+.buttons__logouts__box {
+   display: flex;
+   gap: 30px;
+   margin-bottom: 35px;
+   margin-top: 25px;
+}
+
+.input__title {
+   font-size: 14px;
+   color: #818181;
+}
+
+
+.create__box {
+   margin-top: 8px;
+   display: flex;
+   flex-direction: column;
+   width: 330px;
+}
+
+.extra__input {
+   &>div:nth-child(2) {
+      background-color: transparent !important;
+      padding: 8px 12px;
+      border-radius: 10px;
+   }
+}
+
+
+.region__box {
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   gap: 4px;
+   margin-top: 5px;
+   margin-bottom: 5px;
+}
+
+.region__box__input {
+   display: flex;
+   width: 100%;
+   border: 2px solid #2A2E46;
+   border-radius: 10px;
+   padding: 11px 15px;
+}
+
+.region__box__input {
+   display: flex;
+   width: 100%;
+   border: 2px solid #2A2E46;
+   border-radius: 10px;
+   padding: 11px 15px;
+}
+
+.modal__text {
+   font-size: 26px;
+   font-weight: 500;
+   color: #2A2E46;
+   margin-bottom: 10px;
+   text-align: center;
+
+}
+
+.modal__text__mini {
+   margin-bottom: 25px;
+   font-size: 16px;
+   font-weight: 500;
+   color: #2A2E46;
+   text-align: center;
+}
+
+.extra__input__inn {
+   line-height: 20px;
+   background-color: transparent !important;
+}
+
+.extra__input__inn>div:last-child>input {
+   line-height: 22px !important;
+}
+
+.profile__region__dropdown__extra {
+   & {
+      border: 2px solid #2A2E46 !important;
+      border-radius: 10px !important;
+      padding: 8px 12px !important;
+      background-color: transparent !important;
+   }
+
+   &>div>span {
+      background-color: #fff !important;
+   }
+}
+
+@media (max-width: 900px) {
+
+   .create__box {
+      width: 100%;
+      max-width: 500px;
+   }
+}

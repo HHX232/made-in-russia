@@ -1,8 +1,9 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import styles from '../RegisterPage.module.scss'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI'
 import MultiDropSelect, {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
+import useWindowWidth from '@/hooks/useWindoWidth'
 
 interface RegisterCompanySecondProps {
   email: string
@@ -32,7 +33,11 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
   const isEmailValid = email.includes('@') && email.includes('.') && email.length !== 0
   const canProceed =
     selectedOption === 'Personal' && isEmailValid && password.length >= 6 && selectedCategories.length > 0
-
+  const [isClient, setIsClient] = useState(false)
+  const windowWidth = useWindowWidth()
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
   // Категории товаров компании
   const categoryOptions: MultiSelectOption[] = [
     {id: 'metal', label: 'Металл и металлоизделия', value: 'metal'},
@@ -77,6 +82,7 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
           selectedValues={selectedCategories}
           onChange={setSelectedCategories}
           placeholder='Выберите категории товаров...'
+          direction={isClient && windowWidth !== undefined && windowWidth > 1050 ? 'left' : 'bottom'}
         />
         <p className={`${styles.input__subtitle}`} style={{marginTop: '8px'}}>
           Выберите основные категории материалов, с которыми работает ваша компания

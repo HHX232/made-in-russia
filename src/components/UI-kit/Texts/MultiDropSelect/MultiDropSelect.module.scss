@@ -37,7 +37,16 @@
    margin-top: 4px;
    max-height: 400px;
    overflow-y: auto;
+   top: 60%;
+
    padding: 4px;
+}
+
+@media (max-width: 1050px) {
+   .dropListContent {
+      left: 50%;
+      transform: translateX(-50%);
+   }
 }
 
 .dropdownTitle {

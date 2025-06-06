@@ -33,15 +33,21 @@ const CustomArrowRight = ({className, onClick}: any) => (
   </div>
 )
 
-const SlickCardSlider = ({
-  isLoading,
-  imagesCustom,
-  extraClass
-}: {
+interface SlickCardSliderProps {
   isLoading: boolean
   imagesCustom?: string[]
   extraClass?: string
-}) => {
+  productName?: string
+  productId?: string | number
+}
+
+const SlickCardSlider = ({
+  isLoading,
+  imagesCustom,
+  extraClass,
+  productName = 'Товар',
+  productId
+}: SlickCardSliderProps) => {
   const imagesDefault = [
     '/new_login.jpg',
     '/login__image.jpg',
@@ -56,6 +62,65 @@ const SlickCardSlider = ({
   const [activeIndex, setActiveIndex] = useState(0)
   const mainSliderRef = useRef<Slider>(null)
   const thumbnailSliderRef = useRef<Slider>(null)
+
+  // Генерируем структурированные данные для галереи
+  const generateImageGalleryStructuredData = () => {
+    const baseUrl =
+      typeof window !== 'undefined'
+        ? process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+        : 'https://yourdomain.com'
+
+    const mediaObjects = images.map((media, index) => {
+      const isVideo = media.includes('.mp4')
+      const fullUrl = media.startsWith('http') ? media : `${baseUrl}${media}`
+
+      if (isVideo) {
+        return {
+          '@type': 'VideoObject',
+          name: `Видео товара ${productName} - ${index + 1}`,
+          description: `Демонстрация товара ${productName}`,
+          contentUrl: fullUrl,
+          thumbnailUrl: fullUrl,
+          uploadDate: new Date().toISOString(),
+          duration: 'PT30S' // Примерная длительность
+        }
+      } else {
+        return {
+          '@type': 'ImageObject',
+          name: `Изображение товара ${productName} - ${index + 1}`,
+          description: `Фотография товара ${productName}`,
+          contentUrl: fullUrl,
+          url: fullUrl,
+          width: '500',
+          height: '500'
+        }
+      }
+    })
+
+    return {
+      '@context': 'https://schema.org/',
+      '@type': 'ImageGallery',
+      name: `Галерея изображений ${productName}`,
+      description: `Фотографии и видео товара ${productName}`,
+      about: {
+        '@type': 'Product',
+        name: productName,
+        ...(productId && {sku: `product-${productId}`})
+      },
+      associatedMedia: mediaObjects,
+      mainEntity: mediaObjects[activeIndex] // Текущее активное изображение/видео
+    }
+  }
+
+  // Получаем URL для изображения/видео
+  const getMediaUrl = (media: string) => {
+    if (media.startsWith('http')) return media
+    const baseUrl =
+      typeof window !== 'undefined'
+        ? process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+        : 'https://yourdomain.com'
+    return `${baseUrl}${media}`
+  }
 
   useEffect(() => {
     if (thumbnailSliderRef.current) {
@@ -121,66 +186,144 @@ const SlickCardSlider = ({
       mainSliderRef.current.slickGoTo(index, true)
     }
   }
-  return (
-    <div className={`spec__slider ${styles.imageSlider} ${extraClass}`}>
-      <div className={styles.imageSlider__main}>
-        <Slider ref={mainSliderRef} {...mainSettings}>
-          {images.map((image, index) => (
-            <div key={index} className={styles.imageSlider__slide}>
-              <div className={styles.imageSlider__imageWrapper}>
-                {!isLoading ? (
-                  // <Image
-                  //   src={image}
-                  //   alt={`Slide ${index + 1}`}
-                  //   width={500}
-                  //   height={500}
-                  //   layout='responsive'
-                  //   className={styles.imageSlider__mainImage}
-                  // />
-                  image.includes('.mp4') ? (
-                    <video src={image} autoPlay muted loop className={styles.imageSlider__mainVideo} />
-                  ) : (
-                    // <Image
-                    //   src={image}
-                    //   alt={`Slide ${index + 1}`}
-                    //   width={500}
-                    //   height={500}
-                    //   layout='responsive'
-                    //   className={styles.imageSlider__mainImage}
-                    // />
-                    <div style={{backgroundImage: `url(${image})`}} className={styles.imageSlider__mainImage}></div>
-                  )
-                ) : (
-                  <Skeleton width={500} height={500} />
-                )}
-              </div>
-            </div>
-          ))}
-        </Slider>
-      </div>
 
-      <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
-        <Slider ref={thumbnailSliderRef} {...thumbnailSettings}>
-          {!isLoading
-            ? images.map((image, index) => (
+  if (isLoading) {
+    return (
+      <div className={`spec__slider ${styles.imageSlider} ${extraClass}`}>
+        <div className={styles.imageSlider__main}>
+          <Skeleton width={500} height={500} />
+        </div>
+        <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
+          {Array.from({length: 4}).map((_, index) => (
+            <Skeleton key={index} width={100} height={100} style={{margin: '0 5px'}} />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {/* SEO микроразметка для галереи изображений */}
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generateImageGalleryStructuredData())
+        }}
+      />
+
+      <div
+        className={`spec__slider ${styles.imageSlider} ${extraClass}`}
+        itemScope
+        itemType='https://schema.org/ImageGallery'
+      >
+        <meta itemProp='name' content={`Галерея изображений ${productName}`} />
+        <meta itemProp='description' content={`Фотографии и видео товара ${productName}`} />
+
+        <div className={styles.imageSlider__main}>
+          <Slider ref={mainSliderRef} {...mainSettings}>
+            {images.map((image, index) => {
+              const isVideo = image.includes('.mp4')
+              const isActive = index === activeIndex
+
+              return (
+                <div key={index} className={styles.imageSlider__slide}>
+                  <div
+                    className={styles.imageSlider__imageWrapper}
+                    itemScope
+                    itemType={isVideo ? 'https://schema.org/VideoObject' : 'https://schema.org/ImageObject'}
+                  >
+                    {isVideo ? (
+                      <>
+                        <video
+                          src={image}
+                          autoPlay
+                          muted
+                          loop
+                          className={styles.imageSlider__mainVideo}
+                          itemProp='contentUrl'
+                          aria-label={`Видео товара ${productName} - ${index + 1}`}
+                        />
+                        <meta itemProp='name' content={`Видео товара ${productName} - ${index + 1}`} />
+                        <meta itemProp='description' content={`Демонстрация товара ${productName}`} />
+                        <meta itemProp='thumbnailUrl' content={getMediaUrl(image)} />
+                        <meta itemProp='uploadDate' content={new Date().toISOString()} />
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          style={{backgroundImage: `url(${image})`}}
+                          className={styles.imageSlider__mainImage}
+                          role='img'
+                          aria-label={`Изображение товара ${productName} - ${index + 1}`}
+                        />
+                        <meta itemProp='contentUrl' content={getMediaUrl(image)} />
+                        <meta itemProp='url' content={getMediaUrl(image)} />
+                        <meta itemProp='name' content={`Изображение товара ${productName} - ${index + 1}`} />
+                        <meta itemProp='description' content={`Фотография товара ${productName}`} />
+                        <meta itemProp='width' content='500' />
+                        <meta itemProp='height' content='500' />
+
+                        {/* Основное изображение товара (активное) */}
+                        {isActive && <link itemProp='image' href={getMediaUrl(image)} />}
+                      </>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </Slider>
+        </div>
+
+        <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
+          <Slider ref={thumbnailSliderRef} {...thumbnailSettings}>
+            {images.map((image, index) => {
+              const isVideo = image.includes('.mp4')
+
+              return (
                 <div
                   key={index}
                   className={`${styles.imageSlider__thumbnail} ${
                     index === activeIndex ? styles.imageSlider__thumbnailActive : ''
                   }`}
                   onClick={() => handleThumbnailClick(index)}
+                  role='button'
+                  tabIndex={0}
+                  aria-label={`${isVideo ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleThumbnailClick(index)
+                    }
+                  }}
                 >
-                  {image.includes('.mp4') ? (
-                    <video src={image} autoPlay muted loop className={styles.imageSlider__thumbnailVideo} />
+                  {isVideo ? (
+                    <video
+                      src={image}
+                      autoPlay
+                      muted
+                      loop
+                      className={styles.imageSlider__thumbnailVideo}
+                      aria-hidden='true'
+                    />
                   ) : (
-                    <div style={{backgroundImage: `url(${image})`}} className={styles.imageSlider__thumbnailImage} />
+                    <div
+                      style={{backgroundImage: `url(${image})`}}
+                      className={styles.imageSlider__thumbnailImage}
+                      aria-hidden='true'
+                    />
                   )}
                 </div>
-              ))
-            : Array.from({length: images.length}).map((_, index) => <Skeleton key={index} width={100} height={100} />)}
-        </Slider>
+              )
+            })}
+          </Slider>
+        </div>
+
+        <div itemScope itemType='https://schema.org/Product' style={{display: 'none'}}>
+          <meta itemProp='name' content={productName} />
+          {productId && <meta itemProp='sku' content={`product-${productId}`} />}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

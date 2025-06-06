@@ -206,9 +206,13 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
   }
 
   if (comments.length === 0)
-    return <p className={`${styles.create__first__comment}`}>Пока нет отзывов. Станьте первым!</p>
+    return (
+      <p id='cardCommentsSection' className={`${styles.create__first__comment}`}>
+        Пока нет отзывов. Станьте первым!
+      </p>
+    )
   return (
-    <div className={`${styles.card__bottom__box}`}>
+    <div id='cardCommentsSection' className={`${styles.card__bottom__box}`}>
       <div className={`${styles.tabs__box}`}>
         <div
           onClick={() => setActiveIndex(1)}

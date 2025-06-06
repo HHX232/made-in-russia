@@ -27,6 +27,15 @@
    margin-bottom: 9px;
 }
 
+.by__now__button {
+   padding: 7px 20px;
+   border: 2px solid #AC2525;
+   border-radius: 10px;
+   color: #fff;
+   font-size: 15px;
+   background-color: #AC2525;
+}
+
 .card__image {
    border-radius: 15px;
    max-width: 250px;
@@ -115,4 +124,11 @@
    width: 100%;
    display: flex;
    justify-content: center;
+   padding: 7px 20px;
+   margin-top: 15px;
+   border: 2px solid #AC2525;
+   border-radius: 10px;
+   color: #fff;
+   font-size: 15px;
+   background-color: #AC2525;
 }

@@ -9,13 +9,19 @@ import {selectRangeFilter} from '@/store/Filters/filters.slice'
 import {useSelector} from 'react-redux'
 import {TypeRootState} from '@/store/store'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useActions} from '@/hooks/useActions'
 
 interface CardsCatalogProps {
   initialProducts?: Product[]
   initialHasMore?: boolean
+  specialRoute?: string
 }
 
-const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMore = true}) => {
+const CardsCatalog: FC<CardsCatalogProps> = ({
+  initialProducts = [],
+  initialHasMore = true,
+  specialRoute = undefined
+}) => {
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery} = useTypedSelector((state) => state.filters)
   const [allProducts, setAllProducts] = useState<Product[]>(initialProducts)
@@ -24,8 +30,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
   const observerRef = useRef<IntersectionObserver | null>(null)
   const lastProductRef = useRef<HTMLDivElement | null>(null)
   const [numericFilters, setNumericFilters] = useState<number[]>([])
-  // const {productInFavorites} = useTypedSelector((state) => state.favorites)
-
+  const {addToLatestViews} = useActions()
   interface PageParams {
     page: number
     size: number
@@ -93,7 +98,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
   //   console.log('Текущие параметры запроса:', pageParams)
   // }, [pageParams])
 
-  const {data: pageResponse, isLoading, isError, isFetching} = useProducts(pageParams)
+  const {data: pageResponse, isLoading, isError, isFetching} = useProducts(pageParams, specialRoute)
 
   // Используем isFetching для отслеживания любого запроса, включая фоновые
   // const showSkeleton = isLoading || (isFetching && isFiltersChanged)
@@ -177,6 +182,10 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
                   discountedPrice={product.discountedPrice}
                   deliveryMethod={product.deliveryMethod}
                   fullProduct={product}
+                  onClickFunction={() => {
+                    addToLatestViews(product)
+                    console.log('addToLatestViews', product)
+                  }}
                 />
               </div>
             )
@@ -193,6 +202,10 @@ const CardsCatalog: FC<CardsCatalogProps> = ({initialProducts = [], initialHasMo
                 discountedPrice={product.discountedPrice}
                 deliveryMethod={product.deliveryMethod}
                 fullProduct={product}
+                onClickFunction={() => {
+                  addToLatestViews(product)
+                  console.log('addToLatestViews', product)
+                }}
               />
             )
           }
