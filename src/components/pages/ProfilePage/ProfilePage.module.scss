@@ -256,6 +256,47 @@
    margin-top: 40px;
 }
 
+
+.modal__sessions__title {
+   font-size: 24px;
+   text-align: center;
+   margin: 0 50px 20px 50px;
+
+}
+
+.modal__sessions__list {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+   gap: 20px;
+
+}
+
+.modal__sessions__list__item {
+   display: flex;
+   align-items: center;
+   gap: 35px;
+   padding: 15px;
+   justify-content: space-between;
+   border-radius: 10px;
+   background-color: #F4F5F6;
+}
+
+.device__type,
+.browser,
+.os,
+.last__login__date {
+   display: flex;
+   flex-direction: column;
+   gap: 7px;
+}
+
+.device__type,
+.sessions__item__title {
+   font-weight: 500;
+   font-size: 18px;
+}
+
 .profile__user__box {
    width: 100%;
    background-color: #F4F5F6;

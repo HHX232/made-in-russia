@@ -155,7 +155,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   )
 
   if (isError) {
-    return <div>Error</div>
+    return <div style={{marginBottom: '50px'}}>Вы еще не опубликовали свой первый товар</div>
   }
 
   // При отображении решаем, что показывать:

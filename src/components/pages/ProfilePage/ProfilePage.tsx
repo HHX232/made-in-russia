@@ -13,7 +13,7 @@ import ProfilePageBottomDelivery from './ProfilePageBottom/ProfilePageBottomDeli
 import ProfileForm from './ProfileForm/ProfileForm'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import {User} from '@/services/users.types'
-import router from 'next/router'
+import {useRouter} from 'next/navigation'
 
 // Константы
 const ASSETS = {
@@ -21,6 +21,38 @@ const ASSETS = {
   belarusSvg: '/belarus.svg',
   redStar: '/profile/red_star.svg',
   basket: '/profile/red_basket.svg'
+}
+
+// TODO: добавить поддержку языков
+function formatDateToRussian(dateString: string): string {
+  const date = new Date(dateString)
+
+  // Проверка на валидность даты
+  if (isNaN(date.getTime())) {
+    return 'Некорректная дата'
+  }
+
+  const day = date.getDate()
+  const month = date.getMonth()
+  const year = date.getFullYear()
+
+  // Массив с названиями месяцев в родительном падеже
+  const months = [
+    'января',
+    'февраля',
+    'марта',
+    'апреля',
+    'мая',
+    'июня',
+    'июля',
+    'августа',
+    'сентября',
+    'октября',
+    'ноября',
+    'декабря'
+  ]
+
+  return `${day} ${months[month]} ${year}`
 }
 
 export const REGIONS: RegionType[] = [
@@ -120,11 +152,77 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({userData}) => {
 
 // Компонент быстрых действий
 export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentClick}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [sessions, setSessions] = useState<
+    {
+      id: string
+      deviceId: string
+      deviceType: string
+      browser: string
+      os: string
+      ipAddress: string
+      lastLoginDate: string | Date
+    }[]
+  >([])
+
+  const onNewDeviceClick = async (e: React.MouseEvent) => {
+    onDevicesClick(e)
+    e.preventDefault()
+    try {
+      const response = await instance.get<
+        {
+          id: string
+          deviceId: string
+          deviceType: string
+          browser: string
+          os: string
+          ipAddress: string
+          lastLoginDate: string | Date
+        }[]
+      >('/me/sessions')
+      setSessions(response.data)
+      setIsModalOpen(true)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   return (
     <ul className={styles.fast__buttons__box}>
+      <ModalWindowDefault isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <p className={styles.modal__sessions__title}>Мои сессии</p>
+        <ul className={styles.modal__sessions__list}>
+          {sessions.map((el, i) => {
+            return (
+              <li key={i} className={styles.modal__sessions__list__item}>
+                <p className={`${styles.device__type}`}>
+                  <span className={`${styles.sessions__item__title}`}> Тип устройства:</span>{' '}
+                  <span className={`${styles.sessions__item__value}`}>{el.deviceType}</span>
+                </p>
+                <p className={`${styles.browser}`}>
+                  <span className={`${styles.sessions__item__title}`}> Браузер:</span>{' '}
+                  <span className={`${styles.sessions__item__value}}`}>{el.browser}</span>
+                </p>
+                <p className={`${styles.os}`}>
+                  <span className={`${styles.sessions__item__title}`}> Операционная система:</span>{' '}
+                  <span className={`${styles.sessions__item__value}}`}>{el.os}</span>
+                </p>
+                <p className={`${styles.last__login__date}`}>
+                  <span className={`${styles.sessions__item__title}`}> Последний вход:</span>{' '}
+                  <span className={`${styles.sessions__item__value}`}>
+                    {typeof el.lastLoginDate === 'string'
+                      ? formatDateToRussian(el.lastLoginDate)
+                      : formatDateToRussian(el.lastLoginDate.toISOString())}
+                  </span>
+                </p>
+              </li>
+            )
+          })}
+        </ul>
+      </ModalWindowDefault>
       <li className={styles.fast__buttons__box__item}>
-        <button className={styles.fast__buttons__box__item__button} onClick={onDevicesClick}>
-          Ваши устройства
+        <button className={styles.fast__buttons__box__item__button} onClick={onNewDeviceClick}>
+          Мои сессии
         </button>
       </li>
       <li className={styles.fast__buttons__box__item}>
@@ -278,7 +376,7 @@ const ProfilePage: FC = () => {
   const [needToSave, setNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {productInFavorites} = useTypedSelector((state) => state.favorites)
-
+  const router = useRouter()
   useEffect(() => {
     if (!loading && userData) {
       setNeedToSave(false)
@@ -312,8 +410,9 @@ const ProfilePage: FC = () => {
 
   const handleLogout = () => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const response = instance.post('/auth/logout')
-      console.log(response)
+      // console.log(response)
       removeFromStorage()
       router.push('/')
     } catch (e) {

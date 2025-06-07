@@ -78,12 +78,21 @@ const PhoneInputSection: FC<PhoneInputSectionProps> = ({telText, isValidNumber, 
 }
 
 // Обновленный ProfileForm с флагом пользовательского взаимодействия
+// Обновленный ProfileForm с флагом пользовательского взаимодействия
+// Обновленный ProfileForm с флагом пользовательского взаимодействия
 const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions, isLoading, setNeedToSave}) => {
   const [password, setPassword] = useState('')
   const [telText, setTelText] = useState('')
   const [trueTelephoneNumber, setTrueTelephoneNumber] = useState('')
   const [isValidNumber, setIsValidNumber] = useState(true)
-  const [selectedRegion, setSelectedRegion] = useState<RegionType>(regions[0])
+  const [selectedRegion, setSelectedRegion] = useState<RegionType>(() => {
+    // Если есть userData с регионом, используем его, иначе берем первый из списка
+    if (userData?.region) {
+      const userRegion = regions.find((region) => region.altName === userData.region)
+      return userRegion || regions[0]
+    }
+    return regions[0]
+  })
   const [listIsOpen, setListIsOpen] = useState(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -95,7 +104,7 @@ const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions,
   const [inn, setInn] = useState('')
   const [categories, setCategories] = useState<MultiSelectOption[]>([])
 
-  // флаг для отслеживания взаимодействия пользователя
+  // Новый флаг для отслеживания взаимодействия пользователя
   const [userInteracted, setUserInteracted] = useState(false)
 
   // Сохраняем оригинальные данные для сравнения
@@ -155,12 +164,10 @@ const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions,
       // 1. Инициализация завершена
       // 2. Пользователь взаимодействовал с формой
       if (isPhoneInitialized && userInteracted) {
-        if (telText !== originalData?.phoneNumber && isValidNumber) {
-          setNeedToSave(value)
-        }
+        setNeedToSave(value)
       }
     },
-    [isPhoneInitialized, userInteracted, setNeedToSave, telText, originalData?.phoneNumber, isValidNumber]
+    [isPhoneInitialized, userInteracted, setNeedToSave]
   )
 
   // Инициализация данных пользователя
@@ -197,8 +204,15 @@ const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions,
 
   // Установка региона из userData
   useEffect(() => {
+    console.log('ProfileForm - region setup:', {
+      userDataRegion: userData?.region,
+      userInteracted,
+      regions
+    })
+
     if (userData?.region && !userInteracted) {
       const userRegion = regions.find((region) => region.altName === userData.region)
+      console.log('Found user region:', userRegion)
       if (userRegion) {
         setSelectedRegion(userRegion)
       }

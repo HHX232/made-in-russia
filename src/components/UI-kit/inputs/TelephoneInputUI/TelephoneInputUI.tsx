@@ -13,6 +13,38 @@ interface ITelephoneProps {
   extraStyle?: React.CSSProperties
 }
 
+// Функция для получения кода страны
+const getCountryCode = (country: TNumberStart): string => {
+  switch (country) {
+    case 'Belarus':
+      return '+375'
+    case 'China':
+      return '+86'
+    case 'Russia':
+    case 'Kazakhstan':
+      return '+7'
+    case 'other':
+    default:
+      return ''
+  }
+}
+
+// Функция для получения максимальной длины номера
+const getMaxLength = (country: TNumberStart): number => {
+  switch (country) {
+    case 'Belarus':
+      return 9
+    case 'China':
+      return 11
+    case 'Russia':
+    case 'Kazakhstan':
+      return 10
+    case 'other':
+    default:
+      return 25
+  }
+}
+
 export const TelephoneInputUI: FC<ITelephoneProps> = ({
   currentValue = '',
   onSetValue,
@@ -22,69 +54,33 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
   extraStyle
 }) => {
   const id = useId()
-  const [startValue, setStartValue] = useState('+375')
-  const [inputValue, setInputValue] = useState(currentValue)
-  const [formattedValue, setFormattedValue] = useState('')
+
+  console.log('TelephoneInputUI render:', {
+    currentValue,
+    numberStartWith,
+    currentValueLength: currentValue.length
+  })
+
+  // Инициализируем startValue правильным кодом страны
+  const [startValue, setStartValue] = useState(() => {
+    const code = getCountryCode(numberStartWith)
+    console.log('Initial startValue:', code, 'for country:', numberStartWith)
+    return code
+  })
+  const [inputValue, setInputValue] = useState(() => {
+    console.log('Initial inputValue:', currentValue)
+    return currentValue
+  })
+  const [formattedValue, setFormattedValue] = useState(() => {
+    // Форматируем начальное значение при инициализации
+    const formatted = formatPhoneNumber(currentValue, numberStartWith)
+    console.log('Initial formattedValue:', formatted, 'from:', currentValue)
+    return formatted
+  })
   const [isInitialized, setIsInitialized] = useState(false)
 
-  // Обновляем внутреннее состояние при изменении currentValue извне
-  useEffect(() => {
-    if (currentValue !== inputValue) {
-      setInputValue(currentValue)
-      const formatted = formatPhoneNumber(currentValue, numberStartWith)
-      setFormattedValue(formatted)
-    }
-  }, [currentValue])
-
-  // Set country code based on selected country
-  useEffect(() => {
-    // Устанавливаем код страны
-    let code = ''
-    let maxLength = 10 // Значение по умолчанию
-
-    switch (numberStartWith) {
-      case 'Belarus':
-        code = '+375'
-        maxLength = 9 // 9 цифр после кода +375
-        break
-      case 'China':
-        code = '+86'
-        maxLength = 11 // 11 цифр после кода +86
-        break
-      case 'Russia':
-      case 'Kazakhstan':
-        code = '+7'
-        maxLength = 10 // 10 цифр после кода +7
-        break
-      case 'other':
-      default:
-        code = '' // Пустой код для 'other'
-        maxLength = 25 // Произвольное значение для "other"
-        break
-    }
-
-    setStartValue(code)
-
-    // Обрезаем номер до допустимой длины для новой страны
-    const cleanedValue = inputValue.replace(/\D/g, '').slice(0, maxLength)
-
-    // Форматируем значение
-    const newFormattedValue = formatPhoneNumber(cleanedValue, numberStartWith)
-
-    setInputValue(cleanedValue)
-    setFormattedValue(newFormattedValue)
-
-    // НЕ вызываем onSetValue при инициализации или смене страны
-    // Вызываем только если это результат действий пользователя
-    if (isInitialized) {
-      onSetValue(cleanedValue)
-    } else {
-      setIsInitialized(true)
-    }
-  }, [numberStartWith])
-
   // Format the phone number based on country
-  const formatPhoneNumber = (value: string, country: TNumberStart) => {
+  function formatPhoneNumber(value: string, country: TNumberStart) {
     // Remove all non-digit characters
     const digitsOnly = value.replace(/\D/g, '')
 
@@ -121,25 +117,86 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
     return formatted
   }
 
-  // Handle input changes - это единственное место где должен вызываться onSetValue
+  // Обновляем значение при изменении currentValue извне (после инициализации)
+  useEffect(() => {
+    console.log('currentValue useEffect:', {
+      currentValue,
+      inputValue,
+      isInitialized,
+      numberStartWith
+    })
+
+    if (currentValue !== inputValue) {
+      console.log('Updating from currentValue:', currentValue)
+      setInputValue(currentValue)
+      const formatted = formatPhoneNumber(currentValue, numberStartWith)
+      setFormattedValue(formatted)
+      console.log('Set formatted to:', formatted)
+    }
+  }, [currentValue, numberStartWith])
+
+  // Set country code when country changes
+  useEffect(() => {
+    console.log('Country change useEffect:', {
+      numberStartWith,
+      isInitialized,
+      currentInputValue: inputValue,
+      currentValue
+    })
+
+    // Устанавливаем код страны
+    const code = getCountryCode(numberStartWith)
+    const maxLength = getMaxLength(numberStartWith)
+
+    console.log('Setting country code:', code)
+    setStartValue(code)
+
+    // Если это не первая инициализация
+    if (isInitialized) {
+      // Используем currentValue если inputValue пустой
+      const valueToUse = inputValue || currentValue
+      // Обрезаем номер до допустимой длины для новой страны
+      const cleanedValue = valueToUse.replace(/\D/g, '').slice(0, maxLength)
+
+      // Форматируем значение
+      const newFormattedValue = formatPhoneNumber(cleanedValue, numberStartWith)
+
+      console.log('Country change - updating values:', {
+        valueToUse,
+        cleanedValue,
+        newFormattedValue
+      })
+
+      setInputValue(cleanedValue)
+      setFormattedValue(newFormattedValue)
+      onSetValue(cleanedValue)
+    } else {
+      // При первой инициализации форматируем currentValue если он есть
+      if (currentValue) {
+        const cleanedValue = currentValue.replace(/\D/g, '').slice(0, maxLength)
+        const newFormattedValue = formatPhoneNumber(cleanedValue, numberStartWith)
+
+        console.log('First init with value:', {
+          currentValue,
+          cleanedValue,
+          newFormattedValue
+        })
+
+        setInputValue(cleanedValue)
+        setFormattedValue(newFormattedValue)
+      }
+      console.log('First initialization completed')
+      setIsInitialized(true)
+    }
+  }, [numberStartWith, currentValue])
+
+  // Handle input changes - это единственное место где должен вызываться onSetValue при вводе пользователя
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     const digitsOnly = value.replace(/\D/g, '')
 
     // Получаем максимальную длину для текущей страны
-    let maxLength = 25
-    switch (numberStartWith) {
-      case 'Belarus':
-        maxLength = 9
-        break
-      case 'China':
-        maxLength = 11
-        break
-      case 'Russia':
-      case 'Kazakhstan':
-        maxLength = 10
-        break
-    }
+    const maxLength = getMaxLength(numberStartWith)
 
     // Ограничиваем ввод максимальной длиной
     const limitedDigits = digitsOnly.slice(0, maxLength)
