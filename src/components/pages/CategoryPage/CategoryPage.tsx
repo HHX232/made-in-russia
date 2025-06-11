@@ -2,11 +2,11 @@
 import {useEffect, useState, useRef, useMemo} from 'react'
 import Header from '@/components/MainComponents/Header/Header'
 import styles from './CategoryPage.module.scss'
-import Image from 'next/image'
 import Catalog from '@/components/screens/Catalog/Catalog'
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 import {Category} from '@/services/categoryes/categoryes.service'
+import {useActions} from '@/hooks/useActions'
 
 const CATEGORYESCONST = [
   {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: '/category/cat1.jpg'},
@@ -15,71 +15,84 @@ const CATEGORYESCONST = [
   {title: 'Животноводство', value: 'Livestock_farming', imageSrc: '/category/cat4.jpg'},
   {title: 'Смешанное сельское хозяйство', value: 'Mixed_farming', imageSrc: '/category/cat5.jpg'}
 ]
-const CATEGORYES2CONST = [
-  {
-    title: 'Зерновые (кроме риса), зернобобовые культуры и семяна масличных культур',
-    value: 'Cereals (except rice), legumes and oilseeds',
-    imageSrc: ''
-  },
-  {title: 'Рис', value: 'Rice', imageSrc: ''},
-  {
-    title: 'Овощи, бахчевые, корнеплодные и клубнеплодные культуры, грибы и трюфеля',
-    value: 'Vegetables, melons, root and tuber crops, mushrooms and truffles',
-    imageSrc: ''
-  },
-  {title: 'Сахарный тростник', value: 'Sugar cane', imageSrc: ''},
-  {title: 'Табак и махорка', value: 'Tobacco and makhorka', imageSrc: ''},
-  {title: 'Волокнистые прядильные культуры', value: 'Fiber spinning crops', imageSrc: ''},
-  {title: 'Прочие однолетние культуры', value: 'Other annual crops', imageSrc: ''},
-  {title: 'Виноград', value: 'Grapes', imageSrc: ''},
-  {title: 'Тропические и субтропические культуры', value: 'Tropical and subtropical crops', imageSrc: ''},
-  {title: 'Цитрусовые культуры', value: 'Citrus crops', imageSrc: ''},
-  {title: 'Семечковые и косточковые культуры', value: 'Pome and stone fruits', imageSrc: ''},
-  {title: 'Прочие плодовые деревья, кустарники и орехи', value: 'Other fruit trees, shrubs and nuts', imageSrc: ''},
-  {title: 'Плоды масличных культур', value: 'Oil fruit crops', imageSrc: ''},
-  {title: 'Культуры для производства напитков', value: 'Beverage crops', imageSrc: ''},
-  {
-    title: 'Специи, пряно-ароматические, эфиромасличные и лекарственные культуры',
-    value: 'Spices, aromatic, essential oil and medicinal crops',
-    imageSrc: ''
-  },
-  {title: 'Прочие многолетние культуры', value: 'Other perennial crops', imageSrc: ''},
-  {title: 'Молочный крупный рогатый скот, сырое молоко', value: 'Dairy cattle, raw milk', imageSrc: ''},
-  {
-    title: 'Прочие породы крупного рогатого скота и буйволов, производство спермы',
-    value: 'Other cattle and buffalo breeds, semen production',
-    imageSrc: ''
-  },
-  {
-    title: 'Лошади и прочие животные семейства лошадиных отряда непарнокопытных',
-    value: 'Horses and other equine animals of the order Perissodactyla',
-    imageSrc: ''
-  },
-  {title: 'Верблюды и прочие животные семейства верблюжьих', value: 'Camels and other camelids', imageSrc: ''},
-  {title: 'Овцы и козы', value: 'Sheep and goats', imageSrc: ''},
-  {title: 'Свиньи', value: 'Pigs', imageSrc: ''},
-  {title: 'Сельскохозяйственная птица', value: 'Poultry', imageSrc: ''},
-  {title: 'Прочие животные', value: 'Other animals', imageSrc: ''},
-  {title: 'Олени', value: 'Deer', imageSrc: ''}
-]
+// const CATEGORYES2CONST = [
+//   {
+//     title: 'Зерновые (кроме риса), зернобобовые культуры и семяна масличных культур',
+//     value: 'Cereals (except rice), legumes and oilseeds',
+//     imageSrc: ''
+//   },
+//   {title: 'Рис', value: 'Rice', imageSrc: ''},
+//   {
+//     title: 'Овощи, бахчевые, корнеплодные и клубнеплодные культуры, грибы и трюфеля',
+//     value: 'Vegetables, melons, root and tuber crops, mushrooms and truffles',
+//     imageSrc: ''
+//   },
+//   {title: 'Сахарный тростник', value: 'Sugar cane', imageSrc: ''},
+//   {title: 'Табак и махорка', value: 'Tobacco and makhorka', imageSrc: ''},
+//   {title: 'Волокнистые прядильные культуры', value: 'Fiber spinning crops', imageSrc: ''},
+//   {title: 'Прочие однолетние культуры', value: 'Other annual crops', imageSrc: ''},
+//   {title: 'Виноград', value: 'Grapes', imageSrc: ''},
+//   {title: 'Тропические и субтропические культуры', value: 'Tropical and subtropical crops', imageSrc: ''},
+//   {title: 'Цитрусовые культуры', value: 'Citrus crops', imageSrc: ''},
+//   {title: 'Семечковые и косточковые культуры', value: 'Pome and stone fruits', imageSrc: ''},
+//   {title: 'Прочие плодовые деревья, кустарники и орехи', value: 'Other fruit trees, shrubs and nuts', imageSrc: ''},
+//   {title: 'Плоды масличных культур', value: 'Oil fruit crops', imageSrc: ''},
+//   {title: 'Культуры для производства напитков', value: 'Beverage crops', imageSrc: ''},
+//   {
+//     title: 'Специи, пряно-ароматические, эфиромасличные и лекарственные культуры',
+//     value: 'Spices, aromatic, essential oil and medicinal crops',
+//     imageSrc: ''
+//   },
+//   {title: 'Прочие многолетние культуры', value: 'Other perennial crops', imageSrc: ''},
+//   {title: 'Молочный крупный рогатый скот, сырое молоко', value: 'Dairy cattle, raw milk', imageSrc: ''},
+//   {
+//     title: 'Прочие породы крупного рогатого скота и буйволов, производство спермы',
+//     value: 'Other cattle and buffalo breeds, semen production',
+//     imageSrc: ''
+//   },
+//   {
+//     title: 'Лошади и прочие животные семейства лошадиных отряда непарнокопытных',
+//     value: 'Horses and other equine animals of the order Perissodactyla',
+//     imageSrc: ''
+//   },
+//   {title: 'Верблюды и прочие животные семейства верблюжьих', value: 'Camels and other camelids', imageSrc: ''},
+//   {title: 'Овцы и козы', value: 'Sheep and goats', imageSrc: ''},
+//   {title: 'Свиньи', value: 'Pigs', imageSrc: ''},
+//   {title: 'Сельскохозяйственная птица', value: 'Poultry', imageSrc: ''},
+//   {title: 'Прочие животные', value: 'Other animals', imageSrc: ''},
+//   {title: 'Олени', value: 'Deer', imageSrc: ''}
+// ]
 
 const CategoryPage = ({
   categoryName,
   level = 1,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   parentCategory,
-  categories = []
+  categories = [],
+  idOfFilter,
+  categoryTitleName
 }: {
   categoryName: string
+  categoryTitleName?: string
   level?: number
   parentCategory?: string
   categories?: Category[]
+  idOfFilter?: number
 }) => {
   const [sortedCategories, setSortedCategories] = useState<Category[]>(categories)
   const listRef = useRef<HTMLUListElement>(null)
   const itemRefs = useRef<(HTMLLIElement | null)[]>([])
   const pathname = usePathname()
+  const {clearFilters, setFilter} = useActions()
 
+  useEffect(() => {
+    clearFilters()
+    setFilter({filterName: idOfFilter?.toString() || '', checked: idOfFilter ? true : false})
+
+    return () => {
+      clearFilters()
+    }
+  }, [clearFilters, idOfFilter, setFilter])
   // Мемоизируем строковое представление категорий для сравнения
   const categoriesKey = useMemo(() => {
     return JSON.stringify(categories.map((cat) => cat.id || cat.slug))
@@ -122,7 +135,7 @@ const CategoryPage = ({
       // Для level !== 2 или когда нет необходимости в сортировке
       setSortedCategories(categories)
     }
-  }, [level, categoryName, categoriesKey]) // Используем categoriesKey вместо categories
+  }, [level, categoryName, categoriesKey, categories]) // Используем categoriesKey вместо categories
 
   // Используем sortedCategories для отображения
   const categoriesToDisplay = sortedCategories
@@ -145,12 +158,24 @@ const CategoryPage = ({
         <div className={styles.category__inner}>
           {level < 3 && (
             <h1 className={styles.category__title__main}>
-              {categoryName.slice(0, 1).toUpperCase() + categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
+              {categoryTitleName
+                ? categoryTitleName.slice(0, 1).toUpperCase() +
+                  categoryTitleName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')
+                : categoryName.slice(0, 1).toUpperCase() +
+                  categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
             </h1>
           )}
           {level === 3 && (
-            <h1 style={{marginBottom: '0'}} className={styles.category__title__main}>
-              Каталог
+            // <h1 style={{marginBottom: '0'}} className={styles.category__title__main}>
+            //   Каталог
+            // </h1>
+            <h1 className={styles.category__title__main}>
+              {' '}
+              {categoryTitleName
+                ? categoryTitleName.slice(0, 1).toUpperCase() +
+                  categoryTitleName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')
+                : categoryName.slice(0, 1).toUpperCase() +
+                  categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
             </h1>
           )}
           {level < 3 && categoriesToDisplay.length > 0 && (
@@ -161,19 +186,28 @@ const CategoryPage = ({
               {categoriesToDisplay.map((category, index) => (
                 <Link key={category.id || category.slug} href={buildHref(category)}>
                   <li
+                    style={{
+                      // aspectRatio: category.image?.length && category.image?.length > 0 ? '1 / 1' : 'auto',
+                      // minHeight: category.image?.length && category.image?.length > 0 ? '213px' : 'auto',
+                      backgroundImage: `
+      ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
+      url(${category.image ? category.image : !category.image && level === 1 && CATEGORYESCONST[index].imageSrc})
+    `,
+                      color: level === 1 ? '#FFF' : '#000'
+                    }}
                     ref={(el) => {
                       if (level === 2) {
                         itemRefs.current[index] = el
                       }
                     }}
-                    className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''}`}
+                    className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${level === 1 ? styles.category__item__with__image : ''}`}
                   >
                     <p
                       className={`${styles.category__item__title} ${level === 2 ? styles.category__item__title__second : ''}`}
                     >
                       {category.name}
                     </p>
-                    {category.image && (
+                    {/* {category.image && (
                       <Image
                         className={styles.category__item__image}
                         src={category.image}
@@ -181,22 +215,13 @@ const CategoryPage = ({
                         width={300}
                         height={150}
                       />
-                    )}
-                    {!category.image && level === 1 && CATEGORYESCONST[index] && (
-                      <Image
-                        className={styles.category__item__image}
-                        src={CATEGORYESCONST[index].imageSrc}
-                        alt={category.name}
-                        width={300}
-                        height={150}
-                      />
-                    )}
+                    )} */}
                   </li>
                 </Link>
               ))}
             </ul>
           )}
-          {level === 2 && categoriesToDisplay.length == 0 && (
+          {/* {level === 2 && categoriesToDisplay.length == 0 && (
             <ul
               ref={listRef}
               className={`${styles.category__list} ${level === 2 ? styles.category__list__second : ''}`}
@@ -239,7 +264,7 @@ const CategoryPage = ({
                 </Link>
               ))}
             </ul>
-          )}
+          )} */}
           <Catalog initialProducts={[]} initialHasMore={true} />
         </div>
       </div>
