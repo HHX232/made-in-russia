@@ -6,14 +6,16 @@ type FilterValue = boolean | {min: number; max: number}
 
 // Определяем тип состояния для фильтров
 interface FiltersState {
-  selectedFilters: Record<string, FilterValue> // Хранит состояние фильтров: { [filterName]: boolean | { min, max } }
+  selectedFilters: Record<string, FilterValue>
   delivery: string[]
+  searchTitle: string
 }
 
 // Начальное состояние
 const initialState: FiltersState = {
   selectedFilters: {},
-  delivery: []
+  delivery: [],
+  searchTitle: ''
 }
 
 // Создаем slice
@@ -30,6 +32,13 @@ export const filtersSlice = createSlice({
       } else {
         state.selectedFilters[filterName] = checked
       }
+    },
+    setSearchTitle: (state, action: PayloadAction<string>) => {
+      state.searchTitle = action.payload
+    },
+
+    clearSearchTitle: (state) => {
+      state.searchTitle = ''
     },
 
     // Установка диапазонного фильтра (для RangeInput)

@@ -78,7 +78,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
             accessToken: string
           }>('/me/current-session/refresh', {refreshToken})
 
-          console.log('NEW tokenData', tokenData)
+          // console.log('NEW tokenData', tokenData)
           saveTokenStorage({
             accessToken: tokenData.accessToken,
             refreshToken: refreshToken
@@ -86,10 +86,10 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
 
           const response = await instance.get<User>('/me')
           setUserData(response.data)
-          console.log('мы сохранили новые токены')
+          // console.log('мы сохранили новые токены')
         } catch (e) {
           console.error('Failed to refresh token:', e)
-          console.log('сейчас мы удалили токены')
+          // console.log('сейчас мы удалили токены')
           // removeFromStorage()
         }
       }

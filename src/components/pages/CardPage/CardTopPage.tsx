@@ -1,7 +1,6 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Skeleton from 'react-loading-skeleton'
-import BasketButtonUI from '@/components/UI-kit/buttons/BasketButtonUI/BasketButtonUI'
 import CardSlider from '@/components/UI-kit/elements/CardSlider/CardSlider'
 import StarsCount from '@/components/UI-kit/Texts/StarsCount/StarsCount'
 import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
@@ -368,9 +367,9 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     }
   }, [cardData])
 
-  useEffect(() => {
-    console.log('cardMiniData', cardMiniData)
-  }, [cardMiniData])
+  // useEffect(() => {
+  //   console.log('cardMiniData', cardMiniData)
+  // }, [cardMiniData])
 
   const [priceList] = useState<IPriceList>({
     items: [

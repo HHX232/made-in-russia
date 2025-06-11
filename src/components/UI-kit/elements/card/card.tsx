@@ -119,8 +119,8 @@ const Card: FC<ICardProps> = ({
             <Skeleton style={{maxWidth: '140px', borderRadius: '6px'}} />
           </div>
         </div>
-        <span className={`${styles.button__span}`}>
-          <Skeleton style={{margin: '25px auto 0 auto', maxWidth: '150px', height: '32px', borderRadius: '20px'}} />
+        <span style={{backgroundColor: 'transparent', border: 'none'}} className={`${styles.button__span}`}>
+          <Skeleton style={{margin: '25px auto 0 auto', maxWidth: '250px', height: '32px', borderRadius: '20px'}} />
         </span>
       </div>
     )
@@ -194,10 +194,12 @@ const Card: FC<ICardProps> = ({
           </div>
         </div>
 
-        <span onClick={(e) => onClickFunction?.(e)} className={`${styles.button__span}`}>
-          {/* <BasketButtonUI product={fullProduct as Product} /> */}
-          Просмотреть
-        </span>
+        {!isLoading && (
+          <span onClick={(e) => onClickFunction?.(e)} className={`${styles.button__span}`}>
+            {/* <BasketButtonUI product={fullProduct as Product} /> */}
+            Просмотреть
+          </span>
+        )}
       </Link>
     </>
   )

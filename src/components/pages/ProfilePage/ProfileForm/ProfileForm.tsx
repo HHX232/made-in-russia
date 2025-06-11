@@ -204,15 +204,15 @@ const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions,
 
   // Установка региона из userData
   useEffect(() => {
-    console.log('ProfileForm - region setup:', {
-      userDataRegion: userData?.region,
-      userInteracted,
-      regions
-    })
+    // console.log('ProfileForm - region setup:', {
+    //   userDataRegion: userData?.region,
+    //   userInteracted,
+    //   regions
+    // })
 
     if (userData?.region && !userInteracted) {
       const userRegion = regions.find((region) => region.altName === userData.region)
-      console.log('Found user region:', userRegion)
+      // console.log('Found user region:', userRegion)
       if (userRegion) {
         setSelectedRegion(userRegion)
       }

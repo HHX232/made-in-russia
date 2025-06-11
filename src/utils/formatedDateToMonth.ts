@@ -16,8 +16,8 @@ function formatDateToDayMonth(inputDate: string): string {
 }
 
 // Пример использования
-const inputDate = '2023-05-16T14:45:00Z'
-const formattedDate = formatDateToDayMonth(inputDate) // "16 May."
-console.log(formattedDate)
+// const inputDate = '2023-05-16T14:45:00Z'
+// const formattedDate = formatDateToDayMonth(inputDate) // "16 May."
+// console.log(formattedDate)
 
 export default formatDateToDayMonth

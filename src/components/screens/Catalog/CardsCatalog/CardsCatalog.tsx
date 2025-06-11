@@ -23,7 +23,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   specialRoute = undefined
 }) => {
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
-  const {selectedFilters, delivery} = useTypedSelector((state) => state.filters)
+  const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
   const [allProducts, setAllProducts] = useState<Product[]>(initialProducts)
   const [hasMore, setHasMore] = useState(initialHasMore)
   const [isFiltersChanged, setIsFiltersChanged] = useState(false)
@@ -31,24 +31,24 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const lastProductRef = useRef<HTMLDivElement | null>(null)
   const [numericFilters, setNumericFilters] = useState<number[]>([])
   const {addToLatestViews} = useActions()
+
   interface PageParams {
     page: number
     size: number
     minPrice?: number
     maxPrice?: number
     categoryIds?: string
+    title?: string
     [key: string]: any
   }
-  // useEffect(() => {
-  //   console.log('productInFavorites', productInFavorites)
-  // }, [productInFavorites])
 
   const [pageParams, setPageParams] = useState<PageParams>({
     page: initialProducts.length > 0 ? 2 : 0,
     size: 10,
     minPrice: priceRange?.min,
     maxPrice: priceRange?.max,
-    deliveryMethodIds: delivery?.join(',') ? delivery?.join(',') : ''
+    deliveryMethodIds: delivery?.join(',') ? delivery?.join(',') : '',
+    title: searchTitle
   })
 
   useEffect(() => {
@@ -57,8 +57,17 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       .map(Number)
 
     setNumericFilters(numericKeys)
-    // console.log('numericFilters обновлен:', numericKeys)
   }, [selectedFilters])
+
+  // Добавляем отдельный useEffect для searchTitle
+  useEffect(() => {
+    setIsFiltersChanged(true)
+    setPageParams((prev) => ({
+      ...prev,
+      page: 0,
+      title: searchTitle
+    }))
+  }, [searchTitle])
 
   useEffect(() => {
     // Устанавливаем флаг, что фильтры изменились
@@ -83,25 +92,10 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
       return newParams
     })
-
-    // При изменении фильтров не сбрасываем список продуктов сразу
-    // Мы сделаем это после получения новых данных
-
-    // console.log(
-    //   'pageParams обновлены с фильтрами категорий:',
-    //   numericFilters.length > 0 ? numericFilters.join(',') : 'нет'
-    // )
   }, [numericFilters, priceRange, delivery])
-
-  // Эффект для логирования параметров запроса при их изменении
-  // useEffect(() => {
-  //   console.log('Текущие параметры запроса:', pageParams)
-  // }, [pageParams])
 
   const {data: pageResponse, isLoading, isError, isFetching} = useProducts(pageParams, specialRoute)
 
-  // Используем isFetching для отслеживания любого запроса, включая фоновые
-  // const showSkeleton = isLoading || (isFetching && isFiltersChanged)
   const showSkeleton = (isLoading || (isFetching && isFiltersChanged)) && allProducts.length === 0
 
   useEffect(() => {
@@ -119,12 +113,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       }
 
       setHasMore(!pageResponse.last && pageResponse.content.length > 0)
-      // console.log('pageResponse получен:', pageResponse)
-      // console.log('Товаров загружено:', pageResponse.content.length)
     }
   }, [pageResponse, pageParams.page])
 
-  // Функция для наблюдения за последним элементом
   const lastElementRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (showSkeleton) return
@@ -133,7 +124,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
         observerRef.current.disconnect()
       }
 
-      // Сохраняем ссылку на последний элемент
       lastProductRef.current = node
 
       // Создаем новый observer
@@ -157,12 +147,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   if (isError) {
     return <div style={{marginBottom: '50px'}}>Вы еще не опубликовали свой первый товар</div>
   }
-
-  // При отображении решаем, что показывать:
-  // 1. Если идет загрузка или изменились фильтры и происходит выборка - показываем скелетон
-  // 2. Если не загружаем и есть товары - показываем их
-  // 3. Если нет товаров и не загружаем - показываем сообщение "Ничего не найдено"
-
   return (
     <div className={styled.cardsCatalog__box}>
       {!showSkeleton &&
@@ -171,7 +155,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
           // Для последнего элемента добавляем ref
           if (index === allProducts.length - 1) {
             return (
-              <div key={uniqueKey} ref={lastElementRef}>
+              <div style={{height: '100%'}} key={uniqueKey} ref={lastElementRef}>
                 <Card
                   isLoading={false}
                   id={product.id}
@@ -184,7 +168,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
                   fullProduct={product}
                   onClickFunction={() => {
                     addToLatestViews(product)
-                    console.log('addToLatestViews', product)
                   }}
                 />
               </div>
@@ -204,7 +187,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
                 fullProduct={product}
                 onClickFunction={() => {
                   addToLatestViews(product)
-                  console.log('addToLatestViews', product)
                 }}
               />
             )

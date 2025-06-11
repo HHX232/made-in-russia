@@ -89,7 +89,7 @@ const Comment: FC<Review> = ({id: commentID, media, author, text, rating, creati
           return (
             <li
               onClick={() => {
-                console.log('modal is open')
+                // console.log('modal is open')
                 setModalIsOpen(true)
               }}
               style={{cursor: 'pointer'}}

@@ -1,5 +1,6 @@
+'use client'
 import Image from 'next/image'
-import {FC} from 'react'
+import {FC, useEffect, useState} from 'react'
 import styles from './Header.module.scss'
 import Link from 'next/link'
 import createTelText from '@/utils/createTelText'
@@ -11,6 +12,7 @@ import StarButtonUI from '@/components/UI-kit/buttons/StarButtonUI/StarButtonUI'
 import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
 import BurgerMenu from '../BurgerMenu/BurgerMenu'
 import Head from 'next/head'
+import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 
 const insta = '/insta.svg'
 const telephone = '/phone.svg'
@@ -22,13 +24,69 @@ const logoFavSmall = '/logos/logo_fav.svg'
 
 interface HeaderProps {
   isShowBottom?: boolean
+  categories?: Category[]
 }
+export const renderCategoryItems = (
+  categories: Category[],
+  positionIsAbsolute?: boolean,
+  direction?: 'right' | 'left' | 'bottom' | 'top',
+  gap?: '0' | '5' | '10' | '15' | '20' | '25' | '30' | '35' | '40' | '45' | '50',
+  parentPath?: string
+): React.ReactNode[] => {
+  return categories.map((category) => {
+    // Формируем полный путь для текущей категории
+    const currentPath = parentPath ? `${parentPath}/${category.slug}` : category.slug
 
-const Header: FC<HeaderProps> = ({isShowBottom = true}) => {
+    // Если у категории есть дети, создаем вложенный DropList
+    if (category.children && category.children.length > 0) {
+      return (
+        <DropList
+          key={category.id}
+          extraClass={styles.extra_list}
+          safeAreaEnabled
+          safeAreaSize={500}
+          direction={direction || 'right'}
+          positionIsAbsolute={positionIsAbsolute}
+          gap={gap || '0'}
+          title={
+            <Link href={`/categories/${currentPath}`}>
+              <p>{category.name}</p>
+            </Link>
+          }
+          items={renderCategoryItems(
+            category.children,
+            positionIsAbsolute,
+            direction,
+            gap,
+            currentPath // Передаем текущий путь как родительский для детей
+          )}
+          trigger='hover'
+        />
+      )
+    }
+
+    // Если детей нет, просто возвращаем ссылку
+    return (
+      <Link key={category.id} href={`/categories/${currentPath}`}>
+        <p>{category.name}</p>
+      </Link>
+    )
+  })
+}
+const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'made-in-russia'}`
   const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'made_in_russia'}`
   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `7${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
+  const [categoriesList, setCategoriesList] = useState<Category[]>(categories || [])
+
+  useEffect(() => {
+    async function rrrr() {
+      const res = await CategoriesService.getAll()
+      setCategoriesList(res)
+    }
+    rrrr()
+  }, [])
 
   const organizationSchema = {
     '@context': 'https://schema.org',
@@ -283,19 +341,19 @@ const Header: FC<HeaderProps> = ({isShowBottom = true}) => {
               <ul className={`${styles.bottom__header__inner}`}>
                 <div className={`${styles.bottom__list_item}`}>
                   <DropList
-                    title='Категории'
-                    items={[
-                      'item1',
-                      <DropList
-                        extraClass={styles.extra_list}
-                        direction='right'
-                        gap={'20'}
-                        title='Категории'
-                        items={['item1', 'item2', 'item3']}
-                        key={1}
-                      />,
-                      'item3'
-                    ]}
+                    title={<p>Категории</p>}
+                    extraStyle={{position: 'absolute', top: '-1000vh', left: '-1000vw', opacity: '0'}}
+                    trigger='hover'
+                    isOpen={true}
+                    safeAreaEnabled
+                    items={renderCategoryItems(categoriesList)}
+                  />
+                  <DropList
+                    title={<p>Категории</p>}
+                    trigger='hover'
+                    safeAreaEnabled
+                    extraClass={`${styles.extra_list__first__drop}`}
+                    items={renderCategoryItems(categoriesList)}
                   />
                 </div>
                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>

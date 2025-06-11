@@ -2,7 +2,7 @@
 import {FC, useEffect, useState} from 'react'
 import styles from './Filters.module.scss'
 import CategoryCheckBoxUI from '@/components/UI-kit/inputs/CategoryCheckBoxUI/CategoryCheckBoxUI'
-import DropList from '@/components/UI-kit/Texts/DropList/DropList'
+// import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import RangeInput from '@/components/UI-kit/inputs/RangeInputUI/RangeInputUI'
 import {useQuery, useQueryClient} from '@tanstack/react-query'
 import FiltersService from '@/services/filters/Filters.service'
@@ -11,6 +11,8 @@ import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import CheckBoxInputUI from '@/components/UI-kit/inputs/CheckBoxInputUI/CheckBoxInputUI'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {renderCategoryItems} from '@/components/MainComponents/Header/Header'
+import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 
 const Arrow = ({isActive}: {isActive: boolean}) => {
   return (
@@ -44,8 +46,17 @@ const Filters: FC = () => {
   const [isMounted, setIsMounted] = useState(false)
 
   const queryClient = useQueryClient()
-  const {delivery, selectedFilters} = useTypedSelector((state) => state.filters)
+  const {delivery, selectedFilters, searchTitle} = useTypedSelector((state) => state.filters)
   const windowWidth = useWindowWidth()
+  const [categoriesList, setCategoriesList] = useState<Category[]>([])
+
+  useEffect(() => {
+    async function rrrr() {
+      const res = await CategoriesService.getAll()
+      setCategoriesList(res)
+    }
+    rrrr()
+  }, [])
 
   useEffect(() => {
     setIsMounted(true)
@@ -74,7 +85,8 @@ const Filters: FC = () => {
 
   useEffect(() => {
     queryClient.invalidateQueries({queryKey: ['products']})
-  }, [selectedFilters, delivery, queryClient])
+    console.log('Мы сделала не валидными продукты; ' + searchTitle)
+  }, [selectedFilters, delivery, queryClient, searchTitle])
 
   const listOpenIf = (): string => {
     if (!isMounted || !windowWidth) return styles.isCloseList
@@ -164,48 +176,14 @@ const Filters: FC = () => {
         <div className={`${styles.part__drop} ${styles.part__drop__lists}`}>
           <p className={`${styles.filters__part_title_drop}`}>Категории</p>
           <div className={`${styles.filters__part_droplists}`}>
-            <DropList
+            {/* <DropList
               positionIsAbsolute={false}
               direction={'right'}
               gap={'25'}
               title='Сырье'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Металлургия'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Древесина'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Щебни'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Соли'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Угли'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
+              items={renderCategoryItems(categoriesList, false)}
+            /> */}
+            {renderCategoryItems(categoriesList, false, 'right', '25')}
           </div>
         </div>
         <div className={`${styles.end__part}`}>
@@ -232,6 +210,7 @@ const Filters: FC = () => {
                       setCheckedOnFirstRender={!!delivery?.includes(el.id.toString())}
                       filterName={el.id.toString()}
                       onChange={handleDeliveryChange}
+                      extraStyles={{minHeight: '20px', minWidth: '20px'}}
                     />
                   )
                 })}

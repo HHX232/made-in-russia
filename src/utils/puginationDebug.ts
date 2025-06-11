@@ -24,12 +24,12 @@ export const createPaginationDebugger = () => {
 
   const logPageLoad = (page: number, response: any) => {
     console.group(`📄 Загрузка страницы ${page}`)
-    console.log('Ответ API:', response)
-    console.log('Количество элементов:', response.content?.length || 0)
-    console.log('Номер страницы:', response.page?.number || response.number || page)
-    console.log('Всего страниц:', response.page?.totalPages || response.totalPages || 'неизвестно')
-    console.log('Всего элементов:', response.page?.totalElements || response.totalElements || 'неизвестно')
-    console.log('Последняя страница?', response.last || false)
+    // console.log('Ответ API:', response)
+    // console.log('Количество элементов:', response.content?.length || 0)
+    // console.log('Номер страницы:', response.page?.number || response.number || page)
+    // console.log('Всего страниц:', response.page?.totalPages || response.totalPages || 'неизвестно')
+    // console.log('Всего элементов:', response.page?.totalElements || response.totalElements || 'неизвестно')
+    // console.log('Последняя страница?', response.last || false)
     console.groupEnd()
   }
 
@@ -74,13 +74,13 @@ export const createPaginationDebugger = () => {
     const duplicateInfo = checkDuplicates(state.comments)
 
     console.group('📊 Состояние пагинации')
-    console.log('Текущая страница:', state.currentPage)
-    console.log('Всего страниц:', state.totalPages)
-    console.log('Загружено страниц:', Array.from(state.loadedPages).sort())
-    console.log('Есть еще страницы?', state.hasMore)
-    console.log('Всего комментариев:', state.comments.length)
-    console.log('Уникальных комментариев:', duplicateInfo.uniqueCount)
-    console.log('Дубликатов:', duplicateInfo.duplicateCount)
+    // console.log('Текущая страница:', state.currentPage)
+    // console.log('Всего страниц:', state.totalPages)
+    // console.log('Загружено страниц:', Array.from(state.loadedPages).sort())
+    // console.log('Есть еще страницы?', state.hasMore)
+    // console.log('Всего комментариев:', state.comments.length)
+    // console.log('Уникальных комментариев:', duplicateInfo.uniqueCount)
+    // console.log('Дубликатов:', duplicateInfo.duplicateCount)
     console.groupEnd()
   }
 

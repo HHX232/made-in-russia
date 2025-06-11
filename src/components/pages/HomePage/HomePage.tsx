@@ -2,6 +2,7 @@ import Ads from '@/components/screens/Ads/Ads'
 import Header from '@/components/MainComponents/Header/Header'
 import {FC} from 'react'
 import Catalog, {CatalogProps} from '@/components/screens/Catalog/Catalog'
+import {Category} from '@/services/categoryes/categoryes.service'
 // import ProductService from '@/services/products/product.service'
 // import {GetStaticProps} from 'next'
 
@@ -18,10 +19,14 @@ import Catalog, {CatalogProps} from '@/components/screens/Catalog/Catalog'
 //   }
 // }
 
-const HomePage: FC<CatalogProps> = ({initialProducts = [], initialHasMore = false}) => {
+const HomePage: FC<CatalogProps & {categories: Category[]}> = ({
+  initialProducts = [],
+  initialHasMore = false,
+  categories = []
+}) => {
   return (
     <>
-      <Header />
+      <Header categories={categories} />
       <Ads />
       <Catalog initialProducts={initialProducts} initialHasMore={initialHasMore} />
     </>

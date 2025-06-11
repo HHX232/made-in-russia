@@ -50,7 +50,7 @@ export function debouncePromise<T extends (...args: any[]) => any>(
 // Hook версия для React компонентов
 import {useCallback, useRef} from 'react'
 
-export function useDebounce<T extends (...args: any[]) => any>(
+export function useDebounce<T extends (...args: any | any[]) => any>(
   callback: T,
   delay: number
 ): (...args: Parameters<T>) => void {

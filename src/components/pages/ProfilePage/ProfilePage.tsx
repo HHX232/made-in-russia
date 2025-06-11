@@ -20,7 +20,12 @@ const ASSETS = {
   avatar1: '/avatars/avatar-v-2.svg',
   belarusSvg: '/belarus.svg',
   redStar: '/profile/red_star.svg',
-  basket: '/profile/red_basket.svg'
+  basket: '/profile/red_basket.svg',
+  paymentsList: [
+    {title: 'Банковская карта – Альфа банк', value: '1234 1234 1234 1234'},
+    {title: 'Банковская карта – Сбербанк', value: '4132 1234 4123 1234'},
+    {title: 'ERIP', value: '1234567ER0000001231PB'}
+  ]
 }
 
 // TODO: добавить поддержку языков
@@ -153,6 +158,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({userData}) => {
 // Компонент быстрых действий
 export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentClick}) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [sessions, setSessions] = useState<
     {
       id: string
@@ -226,10 +232,32 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
         </button>
       </li>
       <li className={styles.fast__buttons__box__item}>
-        <button className={styles.fast__buttons__box__item__button} onClick={onPaymentClick}>
+        <button
+          className={styles.fast__buttons__box__item__button}
+          onClick={(e) => {
+            e.preventDefault()
+            setIsPaymentModalOpen(true)
+            onPaymentClick(e)
+          }}
+        >
           Способы оплаты
         </button>
       </li>
+
+      <ModalWindowDefault isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)}>
+        <h3 className={styles.payments__methods__title}>Способы оплаты</h3>
+
+        <ul className={styles.payments__methods__list}>
+          {ASSETS.paymentsList.map((el, i) => {
+            return (
+              <li className={styles.payments__methods__list__item} key={i}>
+                <p className={styles.payments__methods__list__item__title}>{el.title}</p>
+                <p className={styles.payments__methods__list__item__value}>{el.value}</p>
+              </li>
+            )
+          })}
+        </ul>
+      </ModalWindowDefault>
     </ul>
   )
 }

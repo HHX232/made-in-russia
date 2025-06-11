@@ -49,6 +49,22 @@
 
 }
 
+
+.extra__drop__list {
+   max-height: 200px !important;
+   overflow-y: auto;
+}
+
+.extra_list__first__drop {
+
+
+   &>ul {
+      // background-color: red !important;
+      width: 250% !important;
+
+   }
+}
+
 .header__middle_box {
    padding: 6px !important;
 }
@@ -89,6 +105,12 @@
 
 .extra_list {
    width: 100%;
+
+
+   &>ul {
+      max-height: 400px;
+      overflow-y: auto;
+   }
 }
 
 .mobile__top_contacts {

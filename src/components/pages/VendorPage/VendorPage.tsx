@@ -20,6 +20,7 @@ import {useRouter} from 'next/navigation'
 import {Product} from '@/services/products/product.types'
 import Accordion from '@/components/UI-kit/Texts/Accordions/Accordions'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
+import Filters from '@/components/screens/Filters/Filters'
 
 const Arrow = ({isActive, onClick, extraClass}: {isActive: boolean; onClick: () => void; extraClass?: string}) => {
   return (
@@ -128,9 +129,9 @@ const VendorPageComponent: FC = () => {
   const averageRating =
     reviews.length > 0 ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1) : '4.5'
 
-  useEffect(() => {
-    console.log('userData', userData)
-  }, [userData])
+  // useEffect(() => {
+  //   console.log('userData', userData)
+  // }, [userData])
 
   // Запускаем анимацию после загрузки компонента
   useEffect(() => {
@@ -158,7 +159,7 @@ const VendorPageComponent: FC = () => {
       (entries) => {
         const [entry] = entries
         if (entry.isIntersecting && hasMore && !reviewsLoading) {
-          console.log('Loading more reviews via IntersectionObserver')
+          // console.log('Loading more reviews via IntersectionObserver')
           loadMoreReviews()
         }
       },
@@ -190,7 +191,7 @@ const VendorPageComponent: FC = () => {
 
       // Если близко к концу и можно загрузить еще - загружаем
       if (isNearBottom && hasMore && !reviewsLoading) {
-        console.log('Near bottom, loading more via scroll event')
+        // console.log('Near bottom, loading more via scroll event')
         loadMoreReviews()
       }
     }
@@ -315,7 +316,7 @@ const VendorPageComponent: FC = () => {
             <div
               style={{
                 height: !isCommentsOpen ? 'fit-content' : '100%',
-                maxHeight: reviews.length === 0 ? 'none' : '500px'
+                maxHeight: reviews.length === 0 ? 'none' : '590px'
               }}
               className={`${styles.list__box}`}
             >
@@ -374,6 +375,7 @@ const VendorPageComponent: FC = () => {
               <SearchInputUI />
             </div>
             <div className={styles.products__list}>
+              <Filters />
               <CardsCatalog specialRoute={'/me/products-summary'} />
             </div>
           </div>

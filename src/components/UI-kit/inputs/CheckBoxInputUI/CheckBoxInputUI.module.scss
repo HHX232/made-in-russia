@@ -14,6 +14,8 @@
 .checkbox__visual {
    width: 20px;
    height: 20px;
+   min-width: 20px;
+   min-height: 20px;
    border: 1px solid #2A2E46;
    background-color: #D9DFFB;
    border-radius: 5px;

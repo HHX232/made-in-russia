@@ -1,4 +1,4 @@
-interface Category {
+interface CategoryOld {
   id: number
   name: string
   creationDate: string // ISO date-time string
@@ -41,7 +41,7 @@ interface Faq {
 interface ICardFull {
   id: number // read-only
   reviewsMedia: Media[]
-  category: Category
+  category: CategoryOld
   deliveryMethod: DeliveryMethod
   deliveryMethods: DeliveryMethod[]
   media: Media[]

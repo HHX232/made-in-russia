@@ -13,7 +13,7 @@ export async function generateMetadata({params}: {params: Promise<{id: string}>}
     const {data} = await cardService.getFullCardById(id)
     const product = data as ICardFull
 
-    console.log('full product', product)
+    // console.log('full product', product)
     if (!product) {
       return {
         title: 'Product Not Found'

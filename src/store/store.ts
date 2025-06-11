@@ -8,10 +8,15 @@ import persistReducer from 'redux-persist/es/persistReducer'
 import {persistStore} from 'redux-persist'
 import {storage} from '@/utils/storage/storage'
 import latestViewsSlice from './LatestViews/LatestViews.slice'
-// import storage from 'redux-persist/lib/storage'
+
+const filtersPersistConfig = {
+  key: 'filters',
+  storage: storage,
+  blacklist: ['searchTitle']
+}
 
 const rootReducer = combineReducers({
-  filters: filtersSlice.reducer,
+  filters: persistReducer(filtersPersistConfig, filtersSlice.reducer),
   basket: basketSlice.reducer,
   favorites: favoritesSlice.reducer,
   registration: registrationSlice.reducer,
@@ -21,7 +26,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'persist store',
   storage: storage,
-  whitelist: ['filters', 'basket', 'favorites', 'latestViews']
+  whitelist: ['basket', 'favorites', 'latestViews'] // убрали 'filters' отсюда
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

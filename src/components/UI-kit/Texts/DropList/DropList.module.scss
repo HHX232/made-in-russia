@@ -288,9 +288,19 @@
    display: flex;
    align-items: center;
    gap: 10px;
-   padding: 5px 15px;
+   // padding: 0px 15px;
    width: 100%;
    cursor: pointer;
+
+   &>div,
+   &>p {
+      padding: 5px 15px;
+   }
+
+   &>a>div,
+   &>a>p {
+      padding: 5px 15px;
+   }
 
    &:hover {
       background-color: #D9DFFB;

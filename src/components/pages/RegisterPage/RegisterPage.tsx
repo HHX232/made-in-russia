@@ -202,7 +202,7 @@ const RegisterPage = () => {
 
       const response = await axiosClassic.post(isUser ? '/auth/register' : '/auth/register-vendor', registrationData)
 
-      console.log('Registration successful:', {email, name})
+      // console.log('Registration successful:', {email, name})
       setShowNextStep(false)
       setShowFinalStep(true)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

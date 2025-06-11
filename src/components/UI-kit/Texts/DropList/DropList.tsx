@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
-import {FC, useState, useRef, useEffect, ReactNode, CSSProperties} from 'react'
+import {FC, useState, useRef, useEffect, ReactNode, CSSProperties, useCallback} from 'react'
 // import Image from 'next/image'
 import styles from './DropList.module.scss'
 import cn from 'clsx'
@@ -43,6 +44,8 @@ export const ArrowIcon: FC<ArrowIconProps> = ({
       style={{
         transform: `rotate(${rotationMap[direction]}deg)`,
         transition: 'transform 0.2s ease, opacity 0.2s ease',
+        minWidth: width,
+        minHeight: height,
         ...style
       }}
     >
@@ -68,6 +71,11 @@ interface IDropListProps extends Pick<ArrowIconProps, 'color' | 'width' | 'heigh
   arrowClassName?: string // Новый проп для классов стрелки
   isOpen?: boolean // Новый проп для внешнего управления состоянием
   onOpenChange?: (isOpen: boolean) => void // Коллбэк для оповещения родителя об изменении состояния
+  trigger?: 'click' | 'hover' // Новый параметр для управления способом открытия
+  hoverDelay?: number // Задержка для ховера в миллисекундах
+  closeOnMouseLeave?: boolean // Будет ли закрываться при расховере (по умолчанию true)
+  safeAreaEnabled?: boolean // Включить механизм безопасной зоны для навигации между списками
+  safeAreaSize?: number // Размер безопасной зоны в пикселях
 }
 
 const DropList: FC<IDropListProps> = ({
@@ -85,13 +93,27 @@ const DropList: FC<IDropListProps> = ({
   arrowClassName,
   style,
   isOpen, // Внешнее состояние открытия/закрытия
-  onOpenChange // Коллбэк для оповещения родителя
+  onOpenChange, // Коллбэк для оповещения родителя
+  trigger = 'click', // По умолчанию клик
+  hoverDelay = 200, // Задержка по умолчанию 200мс
+  closeOnMouseLeave = true, // По умолчанию закрывается при расховере
+  safeAreaEnabled = true, // По умолчанию включена безопасная зона
+  safeAreaSize = 10 // Размер безопасной зоны в пикселях
 }) => {
   // Используем внутреннее состояние только если внешнее не предоставлено
   const [internalOpenState, setInternalOpenState] = useState(false)
 
   // Определяем, какое состояние использовать
   const openList = isOpen !== undefined ? isOpen : internalOpenState
+
+  // Рефы для таймеров ховера
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Используем рефы для хранения последней позиции мыши и траектории
+  // чтобы избежать лишних рендеров
+  const lastMousePosRef = useRef({x: 0, y: 0})
+  const mouseTrajectoryRef = useRef<Array<{x: number; y: number; time: number}>>([])
 
   // Функция для переключения состояния
   const toggleList = () => {
@@ -104,11 +126,180 @@ const DropList: FC<IDropListProps> = ({
     }
   }
 
+  // Функция для открытия списка
+  const openDropList = () => {
+    if (isOpen !== undefined) {
+      onOpenChange?.(true)
+    } else {
+      setInternalOpenState(true)
+    }
+  }
+
+  // Функция для закрытия списка
+  const closeDropList = () => {
+    if (isOpen !== undefined) {
+      onOpenChange?.(false)
+    } else {
+      setInternalOpenState(false)
+    }
+  }
+
+  // Функция для проверки точки внутри прямоугольника
+  const isPointInRect = (
+    x: number,
+    y: number,
+    rect: DOMRect | {left: number; top: number; right: number; bottom: number}
+  ) => {
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+  }
+
+  // Функция для проверки, движется ли мышь в сторону выпадающего списка
+  const isMouseMovingTowardsList = useCallback(
+    (currentX: number, currentY: number) => {
+      if (!safeAreaEnabled || !listRef.current || !titleRef.current) return false
+
+      const titleRect = titleRef.current.getBoundingClientRect()
+      const listRect = listRef.current.getBoundingClientRect()
+
+      // Проверяем, находится ли мышь в пределах заголовка или списка
+      if (isPointInRect(currentX, currentY, listRect) || isPointInRect(currentX, currentY, titleRect)) {
+        return true
+      }
+
+      // Создаем расширенную безопасную зону в зависимости от направления
+      let safeZone: DOMRect
+
+      switch (direction) {
+        case 'bottom':
+          // Расширяем зону вниз от заголовка до списка и по бокам
+          safeZone = new DOMRect(
+            Math.min(titleRect.left, listRect.left) - safeAreaSize,
+            titleRect.bottom,
+            Math.max(titleRect.width, listRect.width) + safeAreaSize * 2,
+            listRect.top - titleRect.bottom + listRect.height + safeAreaSize
+          )
+          break
+        case 'top':
+          // Расширяем зону вверх от заголовка до списка и по бокам
+          safeZone = new DOMRect(
+            Math.min(titleRect.left, listRect.left) - safeAreaSize,
+            listRect.top - safeAreaSize,
+            Math.max(titleRect.width, listRect.width) + safeAreaSize * 2,
+            titleRect.top - listRect.top + titleRect.height + safeAreaSize
+          )
+          break
+        case 'right':
+          // Расширяем зону вправо от заголовка, включая весь путь к списку
+          const rightZoneWidth = Math.max(listRect.right - titleRect.right, safeAreaSize * 2)
+          safeZone = new DOMRect(
+            titleRect.right,
+            Math.min(titleRect.top, listRect.top) - safeAreaSize,
+            rightZoneWidth + listRect.width,
+            Math.max(titleRect.height, listRect.height) + safeAreaSize * 2
+          )
+          break
+        case 'left':
+          // Расширяем зону влево от заголовка, включая весь путь к списку
+          const leftZoneWidth = Math.max(titleRect.left - listRect.left, safeAreaSize * 2)
+          safeZone = new DOMRect(
+            listRect.left - safeAreaSize,
+            Math.min(titleRect.top, listRect.top) - safeAreaSize,
+            leftZoneWidth + titleRect.width + safeAreaSize,
+            Math.max(titleRect.height, listRect.height) + safeAreaSize * 2
+          )
+          break
+        default:
+          return false
+      }
+
+      // Проверяем, находится ли мышь в безопасной зоне
+      return isPointInRect(currentX, currentY, safeZone)
+    },
+    [direction, safeAreaEnabled, safeAreaSize]
+  )
+
+  // Отслеживание движения мыши для безопасной зоны
+  // Используем useCallback чтобы функция не пересоздавалась каждый рендер
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!safeAreaEnabled || trigger !== 'hover') return
+
+      const currentTime = Date.now()
+      const newPoint = {x: e.clientX, y: e.clientY, time: currentTime}
+
+      // Обновляем рефы вместо состояния
+      lastMousePosRef.current = {x: e.clientX, y: e.clientY}
+
+      // Фильтруем старые точки и добавляем новую
+      const filtered = mouseTrajectoryRef.current.filter((point) => currentTime - point.time < 200)
+      mouseTrajectoryRef.current = [...filtered, newPoint].slice(-5)
+    },
+    [safeAreaEnabled, trigger]
+  )
+
+  // Обработчики для ховера
+  const handleMouseEnter = () => {
+    if (trigger !== 'hover') return
+
+    // Очищаем таймер закрытия если он был
+    if (leaveTimeoutRef.current) {
+      clearTimeout(leaveTimeoutRef.current)
+      leaveTimeoutRef.current = null
+    }
+
+    // Устанавливаем таймер открытия
+    hoverTimeoutRef.current = setTimeout(() => {
+      openDropList()
+    }, hoverDelay)
+  }
+
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    if (trigger !== 'hover' || !closeOnMouseLeave) return
+
+    // Очищаем таймер открытия если он был
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+      hoverTimeoutRef.current = null
+    }
+
+    // Если включена безопасная зона и список открыт, проверяем траекторию мыши
+    if (safeAreaEnabled && openList) {
+      const isMovingTowardsList = isMouseMovingTowardsList(e.clientX, e.clientY)
+
+      if (isMovingTowardsList) {
+        // Не закрываем список, если мышь движется в его сторону
+        return
+      }
+    }
+
+    // Устанавливаем таймер закрытия
+    leaveTimeoutRef.current = setTimeout(() => {
+      closeDropList()
+    }, hoverDelay)
+  }
+
+  // Обработчик клика
+  const handleClick = () => {
+    if (trigger === 'click') {
+      toggleList()
+    }
+  }
+
   const dropdownRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
   const [listPosition, setListPosition] = useState({top: 0, left: 0})
   const [isVisible, setIsVisible] = useState(true)
+
+  // Добавляем обработчик движения мыши для всего документа
+  useEffect(() => {
+    if (safeAreaEnabled && trigger === 'hover' && openList) {
+      document.addEventListener('mousemove', handleMouseMove)
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove)
+      }
+    }
+  }, [safeAreaEnabled, trigger, openList, handleMouseMove])
 
   // Управление видимостью при скролле для fixed позиционирования
   useEffect(() => {
@@ -137,10 +328,12 @@ const DropList: FC<IDropListProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         // Закрываем список при клике вне его
-        if (isOpen !== undefined) {
-          onOpenChange?.(false)
-        } else {
-          setInternalOpenState(false)
+        if (trigger === 'click' || (trigger === 'hover' && !closeOnMouseLeave)) {
+          if (isOpen !== undefined) {
+            onOpenChange?.(false)
+          } else {
+            setInternalOpenState(false)
+          }
         }
       }
     }
@@ -155,7 +348,19 @@ const DropList: FC<IDropListProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [openList, positionIsAbsolute, isOpen, onOpenChange])
+  }, [openList, positionIsAbsolute, isOpen, onOpenChange, trigger, closeOnMouseLeave])
+
+  // Очистка таймеров при размонтировании
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current)
+      }
+      if (leaveTimeoutRef.current) {
+        clearTimeout(leaveTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // Calculate position when dropdown opens
   const updateListPosition = () => {
@@ -214,8 +419,14 @@ const DropList: FC<IDropListProps> = ({
     : {}
 
   return (
-    <div ref={dropdownRef} className={cn(styles.list_box, extraClass)} style={extraStyle}>
-      <div ref={titleRef} onClick={toggleList} className={styles.list__title_box}>
+    <div
+      ref={dropdownRef}
+      className={cn(styles.list_box, extraClass)}
+      style={extraStyle}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div ref={titleRef} onClick={handleClick} className={styles.list__title_box}>
         {typeof title === 'string' ? <span>{title}</span> : title}
         <ArrowIcon
           color={color}
@@ -233,6 +444,8 @@ const DropList: FC<IDropListProps> = ({
           ref={listRef}
           className={cn(extraListClass, styles.items__list, styles[`direction_${direction}`], styles[`gap_${gap}`])}
           style={fixedPositionStyle}
+          onMouseEnter={trigger === 'hover' ? handleMouseEnter : undefined}
+          onMouseLeave={trigger === 'hover' ? handleMouseLeave : undefined}
         >
           {items.map((item, i) => {
             return (
