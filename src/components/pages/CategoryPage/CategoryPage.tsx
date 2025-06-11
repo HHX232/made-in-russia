@@ -191,7 +191,7 @@ const CategoryPage = ({
                       // minHeight: category.image?.length && category.image?.length > 0 ? '213px' : 'auto',
                       backgroundImage: `
       ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-      url(${category.image ? category.image : !category.image && level === 1 && CATEGORYESCONST[index].imageSrc})
+      url(${category.image ? category.image : (!category.image && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''})
     `,
                       color: level === 1 ? '#FFF' : '#000'
                     }}
