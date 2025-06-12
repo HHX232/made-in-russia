@@ -10,6 +10,7 @@ export default async function CategoryPageSpecialSecond({
   console.log('thirdCategoryName:', thirdCategoryName)
   const categories = await CategoriesService.getById('l3_' + thirdCategoryName)
   console.log('categories third by slug:', categories)
+
   return (
     <CategoryPage
       idOfFilter={categories.id}

@@ -1,0 +1,120 @@
+.notFoundContainer {
+   display: flex;
+   flex-direction: column;
+   min-height: 100vh;
+   background-color: #f9fafb;
+}
+
+.mainContent {
+   flex: 1;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 0 16px;
+}
+
+.contentWrapper {
+   max-width: 448px;
+   width: 100%;
+   text-align: center;
+}
+
+.iconCircle {
+   background-color: #fee2e2;
+   border-radius: 50%;
+   padding: 12px;
+   width: 96px;
+   height: 96px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   margin: 0 auto 24px;
+}
+
+.errorIcon {
+   width: 64px;
+   height: 64px;
+   color: #AC2525;
+}
+
+.heading {
+   font-size: 30px;
+   font-weight: 700;
+   color: #17469D;
+   margin-bottom: 16px;
+   line-height: 1.2;
+}
+
+.description {
+   color: #4b5563;
+   font-size: 18px;
+   line-height: 1.5;
+   margin-bottom: 32px;
+}
+
+.homeButton {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   padding: 12px 24px;
+   border: none;
+   border-radius: 8px;
+   font-size: 16px;
+   font-weight: 500;
+   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+   color: white;
+   background-color: #AC2525;
+   cursor: pointer;
+   text-decoration: none;
+   transition: background-color 0.3s ease;
+}
+
+.homeButton:hover {
+   background-color: #8a1f1f;
+}
+
+.homeButton:focus {
+   outline: 2px solid #17469D;
+   outline-offset: 2px;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+   .heading {
+      font-size: 26px;
+   }
+
+   .description {
+      font-size: 16px;
+   }
+
+   .iconCircle {
+      width: 80px;
+      height: 80px;
+   }
+
+   .errorIcon {
+      width: 48px;
+      height: 48px;
+   }
+}
+
+@media (max-width: 480px) {
+   .heading {
+      font-size: 22px;
+   }
+
+   .description {
+      font-size: 15px;
+      margin-bottom: 24px;
+   }
+
+   .homeButton {
+      padding: 10px 20px;
+      font-size: 15px;
+   }
+
+   .iconCircle {
+      margin-bottom: 16px;
+   }
+}

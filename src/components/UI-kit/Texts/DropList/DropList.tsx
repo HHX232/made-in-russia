@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
-import {FC, useState, useRef, useEffect, ReactNode, CSSProperties, useCallback} from 'react'
-// import Image from 'next/image'
+import React, {FC, useState, useRef, useEffect, ReactNode, CSSProperties, useCallback} from 'react'
+
 import styles from './DropList.module.scss'
 import cn from 'clsx'
-// const arrow = '/arrow-dark.svg'
-// Обновленный интерфейс для поддержки строк и компонентов
+
 type DropListItem = string | ReactNode
 
 interface ArrowIconProps {
@@ -68,14 +66,17 @@ interface IDropListProps extends Pick<ArrowIconProps, 'color' | 'width' | 'heigh
   extraStyle?: React.CSSProperties
   extraListClass?: string
   positionIsAbsolute?: boolean
-  arrowClassName?: string // Новый проп для классов стрелки
-  isOpen?: boolean // Новый проп для внешнего управления состоянием
-  onOpenChange?: (isOpen: boolean) => void // Коллбэк для оповещения родителя об изменении состояния
-  trigger?: 'click' | 'hover' // Новый параметр для управления способом открытия
-  hoverDelay?: number // Задержка для ховера в миллисекундах
-  closeOnMouseLeave?: boolean // Будет ли закрываться при расховере (по умолчанию true)
-  safeAreaEnabled?: boolean // Включить механизм безопасной зоны для навигации между списками
-  safeAreaSize?: number // Размер безопасной зоны в пикселях
+  arrowClassName?: string
+  isOpen?: boolean
+  onOpenChange?: (isOpen: boolean) => void
+  trigger?: 'click' | 'hover'
+  hoverDelay?: number
+  closeOnMouseLeave?: boolean
+  safeAreaEnabled?: boolean
+  safeAreaSize?: number
+  dropListId?: string // Новый проп для идентификации списка
+  parentDropListId?: string // ID родительского списка для вложенных
+  onChildHover?: (childId: string) => void // Коллбэк для уведомления родителя о ховере на дочерний элемент
 }
 
 const DropList: FC<IDropListProps> = ({
@@ -92,41 +93,40 @@ const DropList: FC<IDropListProps> = ({
   height = 7,
   arrowClassName,
   style,
-  isOpen, // Внешнее состояние открытия/закрытия
-  onOpenChange, // Коллбэк для оповещения родителя
-  trigger = 'click', // По умолчанию клик
-  hoverDelay = 200, // Задержка по умолчанию 200мс
-  closeOnMouseLeave = true, // По умолчанию закрывается при расховере
-  safeAreaEnabled = true, // По умолчанию включена безопасная зона
-  safeAreaSize = 10 // Размер безопасной зоны в пикселях
+  isOpen,
+  onOpenChange,
+  trigger = 'click',
+  hoverDelay = 200,
+  closeOnMouseLeave = true,
+  safeAreaEnabled = true,
+  safeAreaSize = 10,
+  dropListId,
+  parentDropListId,
+  onChildHover
 }) => {
-  // Используем внутреннее состояние только если внешнее не предоставлено
   const [internalOpenState, setInternalOpenState] = useState(false)
-
-  // Определяем, какое состояние использовать
   const openList = isOpen !== undefined ? isOpen : internalOpenState
 
-  // Рефы для таймеров ховера
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Используем рефы для хранения последней позиции мыши и траектории
-  // чтобы избежать лишних рендеров
   const lastMousePosRef = useRef({x: 0, y: 0})
   const mouseTrajectoryRef = useRef<Array<{x: number; y: number; time: number}>>([])
 
-  // Функция для переключения состояния
+  // Реф для отслеживания активного дочернего элемента
+  const activeChildRef = useRef<string | null>(null)
+
+  // Генерируем уникальный ID если не предоставлен
+  const listIdRef = useRef(dropListId || `droplist-${Math.random().toString(36).substr(2, 9)}`)
+  const listId = listIdRef.current
+
   const toggleList = () => {
     if (isOpen !== undefined) {
-      // Если управление внешнее, вызываем коллбэк
       onOpenChange?.(!isOpen)
     } else {
-      // Иначе используем внутреннее состояние
       setInternalOpenState(!internalOpenState)
     }
   }
 
-  // Функция для открытия списка
   const openDropList = () => {
     if (isOpen !== undefined) {
       onOpenChange?.(true)
@@ -135,16 +135,16 @@ const DropList: FC<IDropListProps> = ({
     }
   }
 
-  // Функция для закрытия списка
   const closeDropList = () => {
     if (isOpen !== undefined) {
       onOpenChange?.(false)
     } else {
       setInternalOpenState(false)
     }
+    // Сбрасываем активный дочерний элемент при закрытии
+    activeChildRef.current = null
   }
 
-  // Функция для проверки точки внутри прямоугольника
   const isPointInRect = (
     x: number,
     y: number,
@@ -153,7 +153,6 @@ const DropList: FC<IDropListProps> = ({
     return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
   }
 
-  // Функция для проверки, движется ли мышь в сторону выпадающего списка
   const isMouseMovingTowardsList = useCallback(
     (currentX: number, currentY: number) => {
       if (!safeAreaEnabled || !listRef.current || !titleRef.current) return false
@@ -161,17 +160,14 @@ const DropList: FC<IDropListProps> = ({
       const titleRect = titleRef.current.getBoundingClientRect()
       const listRect = listRef.current.getBoundingClientRect()
 
-      // Проверяем, находится ли мышь в пределах заголовка или списка
       if (isPointInRect(currentX, currentY, listRect) || isPointInRect(currentX, currentY, titleRect)) {
         return true
       }
 
-      // Создаем расширенную безопасную зону в зависимости от направления
       let safeZone: DOMRect
 
       switch (direction) {
         case 'bottom':
-          // Расширяем зону вниз от заголовка до списка и по бокам
           safeZone = new DOMRect(
             Math.min(titleRect.left, listRect.left) - safeAreaSize,
             titleRect.bottom,
@@ -180,7 +176,6 @@ const DropList: FC<IDropListProps> = ({
           )
           break
         case 'top':
-          // Расширяем зону вверх от заголовка до списка и по бокам
           safeZone = new DOMRect(
             Math.min(titleRect.left, listRect.left) - safeAreaSize,
             listRect.top - safeAreaSize,
@@ -189,7 +184,6 @@ const DropList: FC<IDropListProps> = ({
           )
           break
         case 'right':
-          // Расширяем зону вправо от заголовка, включая весь путь к списку
           const rightZoneWidth = Math.max(listRect.right - titleRect.right, safeAreaSize * 2)
           safeZone = new DOMRect(
             titleRect.right,
@@ -199,7 +193,6 @@ const DropList: FC<IDropListProps> = ({
           )
           break
         case 'left':
-          // Расширяем зону влево от заголовка, включая весь путь к списку
           const leftZoneWidth = Math.max(titleRect.left - listRect.left, safeAreaSize * 2)
           safeZone = new DOMRect(
             listRect.left - safeAreaSize,
@@ -212,14 +205,11 @@ const DropList: FC<IDropListProps> = ({
           return false
       }
 
-      // Проверяем, находится ли мышь в безопасной зоне
       return isPointInRect(currentX, currentY, safeZone)
     },
     [direction, safeAreaEnabled, safeAreaSize]
   )
 
-  // Отслеживание движения мыши для безопасной зоны
-  // Используем useCallback чтобы функция не пересоздавалась каждый рендер
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!safeAreaEnabled || trigger !== 'hover') return
@@ -227,27 +217,32 @@ const DropList: FC<IDropListProps> = ({
       const currentTime = Date.now()
       const newPoint = {x: e.clientX, y: e.clientY, time: currentTime}
 
-      // Обновляем рефы вместо состояния
       lastMousePosRef.current = {x: e.clientX, y: e.clientY}
 
-      // Фильтруем старые точки и добавляем новую
       const filtered = mouseTrajectoryRef.current.filter((point) => currentTime - point.time < 200)
       mouseTrajectoryRef.current = [...filtered, newPoint].slice(-5)
     },
     [safeAreaEnabled, trigger]
   )
 
-  // Обработчики для ховера
+  // Обработчик для дочерних элементов, которые сообщают о ховере на них
+  const handleChildHover = useCallback((childId: string) => {
+    activeChildRef.current = childId
+  }, [])
+
   const handleMouseEnter = () => {
     if (trigger !== 'hover') return
 
-    // Очищаем таймер закрытия если он был
+    // Уведомляем родителя, что на нас навели
+    if (parentDropListId && onChildHover) {
+      onChildHover(listId)
+    }
+
     if (leaveTimeoutRef.current) {
       clearTimeout(leaveTimeoutRef.current)
       leaveTimeoutRef.current = null
     }
 
-    // Устанавливаем таймер открытия
     hoverTimeoutRef.current = setTimeout(() => {
       openDropList()
     }, hoverDelay)
@@ -256,29 +251,51 @@ const DropList: FC<IDropListProps> = ({
   const handleMouseLeave = (e: React.MouseEvent) => {
     if (trigger !== 'hover' || !closeOnMouseLeave) return
 
-    // Очищаем таймер открытия если он был
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current)
       hoverTimeoutRef.current = null
     }
 
-    // Если включена безопасная зона и список открыт, проверяем траекторию мыши
-    if (safeAreaEnabled && openList) {
-      const isMovingTowardsList = isMouseMovingTowardsList(e.clientX, e.clientY)
+    // Проверяем, куда ушла мышь
+    const relatedTarget = e.relatedTarget as HTMLElement
 
-      if (isMovingTowardsList) {
-        // Не закрываем список, если мышь движется в его сторону
+    if (relatedTarget) {
+      // Проверяем, не ушла ли мышь на элемент текущего списка
+      const isOwnElement = dropdownRef.current?.contains(relatedTarget)
+
+      // Проверяем data-атрибуты для определения связанности элементов
+      const targetDropListId = relatedTarget.closest('[data-droplist-id]')?.getAttribute('data-droplist-id')
+      const targetParentId = relatedTarget.closest('[data-parent-droplist-id]')?.getAttribute('data-parent-droplist-id')
+
+      // Если мышь ушла на собственный элемент или на активный дочерний список
+      if (isOwnElement || (targetParentId === listId && targetDropListId === activeChildRef.current)) {
+        return
+      }
+
+      // Если мышь ушла на элемент того же уровня (соседний элемент в родительском списке)
+      const isSiblingElement = targetParentId === parentDropListId && targetDropListId !== listId
+
+      if (isSiblingElement) {
+        // Закрываем немедленно без задержки
+        closeDropList()
         return
       }
     }
 
-    // Устанавливаем таймер закрытия
+    // Стандартная логика с безопасной зоной
+    if (safeAreaEnabled && openList) {
+      const isMovingTowardsList = isMouseMovingTowardsList(e.clientX, e.clientY)
+
+      if (isMovingTowardsList) {
+        return
+      }
+    }
+
     leaveTimeoutRef.current = setTimeout(() => {
       closeDropList()
     }, hoverDelay)
   }
 
-  // Обработчик клика
   const handleClick = () => {
     if (trigger === 'click') {
       toggleList()
@@ -291,7 +308,6 @@ const DropList: FC<IDropListProps> = ({
   const [listPosition, setListPosition] = useState({top: 0, left: 0})
   const [isVisible, setIsVisible] = useState(true)
 
-  // Добавляем обработчик движения мыши для всего документа
   useEffect(() => {
     if (safeAreaEnabled && trigger === 'hover' && openList) {
       document.addEventListener('mousemove', handleMouseMove)
@@ -301,13 +317,11 @@ const DropList: FC<IDropListProps> = ({
     }
   }, [safeAreaEnabled, trigger, openList, handleMouseMove])
 
-  // Управление видимостью при скролле для fixed позиционирования
   useEffect(() => {
     if (!positionIsAbsolute && openList) {
       const checkVisibility = () => {
         if (dropdownRef.current) {
           const rect = dropdownRef.current.getBoundingClientRect()
-          // Если родительский контейнер вышел за пределы экрана, скрываем выпадающий список
           if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
             setIsVisible(false)
           } else {
@@ -327,7 +341,6 @@ const DropList: FC<IDropListProps> = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        // Закрываем список при клике вне его
         if (trigger === 'click' || (trigger === 'hover' && !closeOnMouseLeave)) {
           if (isOpen !== undefined) {
             onOpenChange?.(false)
@@ -350,7 +363,6 @@ const DropList: FC<IDropListProps> = ({
     }
   }, [openList, positionIsAbsolute, isOpen, onOpenChange, trigger, closeOnMouseLeave])
 
-  // Очистка таймеров при размонтировании
   useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) {
@@ -362,7 +374,6 @@ const DropList: FC<IDropListProps> = ({
     }
   }, [])
 
-  // Calculate position when dropdown opens
   const updateListPosition = () => {
     if (!titleRef.current) return
 
@@ -396,16 +407,23 @@ const DropList: FC<IDropListProps> = ({
     setListPosition({top, left})
   }
 
-  // Функция для определения, является ли элемент строкой или компонентом
-  const renderItem = (item: DropListItem) => {
-    if (typeof item === 'string') {
-      return item
-    } else {
-      return item
+  const renderItem = (item: DropListItem, index: number) => {
+    // Клонируем элемент и добавляем необходимые пропсы если это DropList
+    if (typeof item === 'object' && item !== null && 'type' in item) {
+      const element = item as React.ReactElement
+      if (element.type === DropList) {
+        return React.cloneElement(element, {
+          ...element.props,
+          parentDropListId: listId,
+          onChildHover: handleChildHover,
+          dropListId: element.props.dropListId || `${listId}-child-${index}`
+        })
+      }
     }
+
+    return item
   }
 
-  // Определяем дополнительные стили для позиционирования, если используется fixed
   const fixedPositionStyle: React.CSSProperties = !positionIsAbsolute
     ? {
         position: 'fixed',
@@ -413,10 +431,74 @@ const DropList: FC<IDropListProps> = ({
         left: `${listPosition.left}px`,
         maxWidth: '300px',
         width: 'fit-content',
-        zIndex: 1000,
+        zIndex: 1000000,
         display: isVisible ? 'block' : 'none'
       }
     : {}
+
+  // Стили для невидимого моста между заголовком и списком
+  const getBridgeStyle = (): React.CSSProperties | null => {
+    if (!openList || trigger !== 'hover' || !titleRef.current || !listRef.current) return null
+
+    const titleRect = titleRef.current.getBoundingClientRect()
+    const gapSize = parseInt(gap, 10) || 0
+
+    // Создаем мост только если есть gap
+    if (gapSize === 0) return null
+
+    let bridgeStyle: React.CSSProperties = {
+      position: positionIsAbsolute ? 'absolute' : 'fixed',
+      pointerEvents: 'auto',
+      zIndex: 99999999999999
+      // Для отладки можно раскомментировать:
+      // backgroundColor: 'rgba(255, 0, 0, 0.2)'
+    }
+
+    switch (direction) {
+      case 'bottom':
+        bridgeStyle = {
+          ...bridgeStyle,
+          top: positionIsAbsolute ? '100%' : `${titleRect.bottom}px`,
+          left: positionIsAbsolute ? 0 : `${titleRect.left}px`,
+          width: titleRect.width,
+          height: gapSize
+        }
+        break
+      case 'top':
+        bridgeStyle = {
+          ...bridgeStyle,
+          bottom: positionIsAbsolute ? '100%' : undefined,
+          top: positionIsAbsolute ? undefined : `${titleRect.top - gapSize}px`,
+          left: positionIsAbsolute ? 0 : `${titleRect.left}px`,
+          width: titleRect.width,
+          height: gapSize
+        }
+        break
+      case 'right':
+        bridgeStyle = {
+          ...bridgeStyle,
+          left: positionIsAbsolute ? '100%' : `${titleRect.right}px`,
+          top: positionIsAbsolute ? 0 : `${titleRect.top}px`,
+          width: gapSize,
+          height: titleRect.height
+        }
+        break
+      case 'left':
+        bridgeStyle = {
+          ...bridgeStyle,
+          right: positionIsAbsolute ? '100%' : undefined,
+          left: positionIsAbsolute ? undefined : `${titleRect.left - gapSize}px`,
+          top: positionIsAbsolute ? 0 : `${titleRect.top}px`,
+          width: gapSize,
+          height: titleRect.height
+        }
+        break
+    }
+
+    return bridgeStyle
+  }
+
+  const bridgeStyle = getBridgeStyle()
 
   return (
     <div
@@ -425,6 +507,8 @@ const DropList: FC<IDropListProps> = ({
       style={extraStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      data-droplist-id={listId}
+      data-parent-droplist-id={parentDropListId}
     >
       <div ref={titleRef} onClick={handleClick} className={styles.list__title_box}>
         {typeof title === 'string' ? <span>{title}</span> : title}
@@ -439,6 +523,17 @@ const DropList: FC<IDropListProps> = ({
         />
       </div>
 
+      {/* Невидимый мост между заголовком и списком */}
+      {openList && trigger === 'hover' && bridgeStyle && (
+        <div
+          style={bridgeStyle}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          data-droplist-id={listId}
+          data-parent-droplist-id={parentDropListId}
+        />
+      )}
+
       {openList && (
         <ul
           ref={listRef}
@@ -446,11 +541,13 @@ const DropList: FC<IDropListProps> = ({
           style={fixedPositionStyle}
           onMouseEnter={trigger === 'hover' ? handleMouseEnter : undefined}
           onMouseLeave={trigger === 'hover' ? handleMouseLeave : undefined}
+          data-droplist-id={listId}
+          data-parent-droplist-id={parentDropListId}
         >
           {items.map((item, i) => {
             return (
               <li key={i} className={styles.list__element}>
-                {renderItem(item)}
+                {renderItem(item, i)}
               </li>
             )
           })}

@@ -26,25 +26,30 @@ interface HeaderProps {
   isShowBottom?: boolean
   categories?: Category[]
 }
+
 export const renderCategoryItems = (
   categories: Category[],
   positionIsAbsolute?: boolean,
   direction?: 'right' | 'left' | 'bottom' | 'top',
   gap?: '0' | '5' | '10' | '15' | '20' | '25' | '30' | '35' | '40' | '45' | '50',
-  parentPath?: string
+  parentPath?: string,
+  parentDropListId?: string,
+  extraClass?: string
 ): React.ReactNode[] => {
   return categories.map((category) => {
     // Формируем полный путь для текущей категории
     const currentPath = parentPath ? `${parentPath}/${category.slug}` : category.slug
+    // Генерируем уникальный ID для этого списка
+    const dropListId = `category-${currentPath.replace(/\//g, '-')}`
 
     // Если у категории есть дети, создаем вложенный DropList
     if (category.children && category.children.length > 0) {
       return (
         <DropList
           key={category.id}
-          extraClass={styles.extra_list}
-          safeAreaEnabled
-          safeAreaSize={500}
+          dropListId={dropListId}
+          parentDropListId={parentDropListId}
+          extraClass={`${styles.extra_list} ${extraClass}`}
           direction={direction || 'right'}
           positionIsAbsolute={positionIsAbsolute}
           gap={gap || '0'}
@@ -58,9 +63,13 @@ export const renderCategoryItems = (
             positionIsAbsolute,
             direction,
             gap,
-            currentPath // Передаем текущий путь как родительский для детей
+            currentPath,
+            dropListId // Передаем ID текущего списка как родительский для детей
           )}
           trigger='hover'
+          hoverDelay={150}
+          safeAreaEnabled={true}
+          safeAreaSize={30}
         />
       )
     }
@@ -341,19 +350,32 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
               <ul className={`${styles.bottom__header__inner}`}>
                 <div className={`${styles.bottom__list_item}`}>
                   <DropList
+                    dropListId='categories-seo'
                     title={<p>Категории</p>}
                     extraStyle={{position: 'absolute', top: '-1000vh', left: '-1000vw', opacity: '0'}}
                     trigger='hover'
                     isOpen={true}
                     safeAreaEnabled
-                    items={renderCategoryItems(categoriesList)}
+                    items={renderCategoryItems(categoriesList, true, 'bottom', '10')}
                   />
                   <DropList
+                    dropListId='categories-main'
                     title={<p>Категории</p>}
                     trigger='hover'
                     safeAreaEnabled
+                    // safeAreaSize={30}
+                    hoverDelay={0}
+                    positionIsAbsolute={false}
                     extraClass={`${styles.extra_list__first__drop}`}
-                    items={renderCategoryItems(categoriesList)}
+                    items={renderCategoryItems(
+                      categoriesList,
+                      true, // positionIsAbsolute
+                      'right', // direction
+                      undefined, // parentPath
+                      '' // parentDropListId для корневого списка,
+                    )}
+                    direction='bottom'
+                    gap='10'
                   />
                 </div>
                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>

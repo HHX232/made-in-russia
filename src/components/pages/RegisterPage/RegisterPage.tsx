@@ -17,6 +17,7 @@ import RegisterUserSecond from './RegisterUser/RegisterUserSecond'
 import RegisterUserThird from './RegisterUser/RegisterUserThird'
 import RegisterCompany from './RegisterCompany/RegisterCompany'
 import {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
+import Footer from '@/components/MainComponents/Footer/Footer'
 
 const decorImage = '/login__image.jpg'
 const belarusSvg = '/belarus.svg'
@@ -357,6 +358,7 @@ const RegisterPage = () => {
           </form>
         </div>
       </div>
+      <Footer extraClass={`${styles.extraFooter}`} />
     </div>
   )
 }

@@ -3,6 +3,7 @@ import Header from '@/components/MainComponents/Header/Header'
 import {FC} from 'react'
 import Catalog, {CatalogProps} from '@/components/screens/Catalog/Catalog'
 import {Category} from '@/services/categoryes/categoryes.service'
+import Footer from '@/components/MainComponents/Footer/Footer'
 // import ProductService from '@/services/products/product.service'
 // import {GetStaticProps} from 'next'
 
@@ -29,6 +30,7 @@ const HomePage: FC<CatalogProps & {categories: Category[]}> = ({
       <Header categories={categories} />
       <Ads />
       <Catalog initialProducts={initialProducts} initialHasMore={initialHasMore} />
+      <Footer />
     </>
   )
 }

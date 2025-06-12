@@ -10,7 +10,7 @@
    top: 10px;
    min-width: 260px;
    max-height: fit-content;
-   z-index: 1000;
+   z-index: 997;
 
    max-height: 750px;
    height: 95vh;
@@ -22,6 +22,7 @@
    scrollbar-width: thin;
    scrollbar-color: #2A2E46 #EFF1F8;
    overflow-y: scroll;
+   column-gap: 15px;
    transition: all .2s;
    padding-right: 25px;
 }

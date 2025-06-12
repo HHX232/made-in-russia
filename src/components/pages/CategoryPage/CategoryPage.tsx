@@ -7,6 +7,7 @@ import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 import {Category} from '@/services/categoryes/categoryes.service'
 import {useActions} from '@/hooks/useActions'
+import Footer from '@/components/MainComponents/Footer/Footer'
 
 const CATEGORYESCONST = [
   {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: '/category/cat1.jpg'},
@@ -86,6 +87,11 @@ const CategoryPage = ({
   const {clearFilters, setFilter} = useActions()
 
   useEffect(() => {
+    return () => {
+      clearFilters()
+    }
+  }, [])
+  useEffect(() => {
     clearFilters()
     setFilter({filterName: idOfFilter?.toString() || '', checked: idOfFilter ? true : false})
 
@@ -156,7 +162,7 @@ const CategoryPage = ({
       <Header />
       <div className='container'>
         <div className={styles.category__inner}>
-          {level < 3 && (
+          {level < 4 && (
             <h1 className={styles.category__title__main}>
               {categoryTitleName
                 ? categoryTitleName.slice(0, 1).toUpperCase() +
@@ -165,7 +171,7 @@ const CategoryPage = ({
                   categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
             </h1>
           )}
-          {level === 3 && (
+          {/* {level === 3 && (
             // <h1 style={{marginBottom: '0'}} className={styles.category__title__main}>
             //   Каталог
             // </h1>
@@ -177,22 +183,20 @@ const CategoryPage = ({
                 : categoryName.slice(0, 1).toUpperCase() +
                   categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
             </h1>
-          )}
-          {level < 3 && categoriesToDisplay.length > 0 && (
+          )} */}
+          {level < 4 && categoriesToDisplay.length > 0 && (
             <ul
               ref={listRef}
-              className={`${styles.category__list} ${level === 2 ? styles.category__list__second : ''}`}
+              className={`${styles.category__list} ${level === 1 ? styles.category__list__first : ''} ${level > 1 ? styles.category__list__more_than_first : ''} ${level === 2 ? styles.category__list__second : ''}`}
             >
               {categoriesToDisplay.map((category, index) => (
                 <Link key={category.id || category.slug} href={buildHref(category)}>
                   <li
                     style={{
-                      // aspectRatio: category.image?.length && category.image?.length > 0 ? '1 / 1' : 'auto',
-                      // minHeight: category.image?.length && category.image?.length > 0 ? '213px' : 'auto',
                       backgroundImage: `
-      ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-      url(${category.image ? category.image : (!category.image && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''})
-    `,
+                       ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
+                       url(${category.image ? category.image : (!category.image && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''})
+                       `,
                       color: level === 1 ? '#FFF' : '#000'
                     }}
                     ref={(el) => {
@@ -221,6 +225,7 @@ const CategoryPage = ({
               ))}
             </ul>
           )}
+
           {/* {level === 2 && categoriesToDisplay.length == 0 && (
             <ul
               ref={listRef}
@@ -265,9 +270,12 @@ const CategoryPage = ({
               ))}
             </ul>
           )} */}
+
           <Catalog initialProducts={[]} initialHasMore={true} />
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

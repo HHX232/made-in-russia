@@ -11,6 +11,7 @@ import Link from 'next/link'
 import {toast} from 'sonner'
 import {saveTokenStorage} from '@/services/auth/auth.helper'
 import {useRouter} from 'next/navigation'
+import Footer from '@/components/MainComponents/Footer/Footer'
 
 const google = '/google_registr.svg'
 const wechat = '/wechat_registr.svg'
@@ -181,6 +182,7 @@ const LoginPage = () => {
         </div>
         <div className={`${styles.margin__box}`}></div>
       </div>
+      <Footer extraClass={`${styles.extraFooter}`} />
     </div>
   )
 }
