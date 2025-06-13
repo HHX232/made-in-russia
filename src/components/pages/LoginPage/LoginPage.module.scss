@@ -18,7 +18,8 @@
    flex-direction: column;
    align-items: center;
    padding: 45px 20px 70px 60px;
-   background-color: #2A2E46;
+   background-color: #FFF;
+   border: 2px solid #2A2E46;
    width: 50%;
    border-radius: 0 20px 20px 0;
    min-height: 640px;
@@ -52,14 +53,14 @@
    font-weight: 700;
    font-size: 32px;
    line-height: 39px;
-   color: #fff;
+   color: #2A2E46;
    margin-right: auto;
    margin-bottom: 40px;
 }
 
 .input__title {
    font-weight: 500;
-   color: #fff;
+   color: #2A2E46;
    font-size: 15px;
    // margin-bottom: 10px;
 }
@@ -86,7 +87,7 @@
    font-size: 20px;
    font-weight: 600;
    font-size: 24px;
-   color: #fff;
+   color: #FFF;
    cursor: pointer;
    background-color: #AC2525;
 }
@@ -103,7 +104,7 @@
    max-width: 350px;
    font-weight: 600;
    font-size: 24px;
-   color: #fff;
+   color: #2A2E46;
    cursor: pointer;
    background-color: transparent;
 }
@@ -191,6 +192,12 @@
       padding: 10px 20px !important;
    }
 
+   &>div:nth-child(3) {
+
+      color: #2A2E46;
+      margin-top: 4px;
+   }
+
 
 }
 
@@ -269,7 +276,7 @@
 
 .apps__text {
    font-size: 15px;
-   color: #fff;
+   color: #2A2E46;
    text-align: center;
 }
 

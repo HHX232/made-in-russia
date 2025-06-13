@@ -34,6 +34,7 @@ export async function generateMetadata() {
     const initialPage1 = await ProductService.getAll({page: 0, size: 10})
 
     return {
+      // TODO Убрать ноу индекс
       ...NO_INDEX_PAGE,
       title: 'Made In Russia',
       description:

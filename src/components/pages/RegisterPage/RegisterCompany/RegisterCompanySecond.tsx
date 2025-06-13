@@ -95,6 +95,7 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
         value='Personal'
         checked={selectedOption === 'Personal'}
         onChange={handleOptionChange}
+        textColor='dark'
         allowUnchecked={true}
         extraStyle={{marginTop: '6px'}}
       />

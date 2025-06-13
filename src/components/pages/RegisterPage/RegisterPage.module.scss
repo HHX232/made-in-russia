@@ -12,7 +12,8 @@
    flex-direction: column;
    align-items: center;
    padding: 20px 20px 40px 20px;
-   background-color: #2A2E46;
+   background-color: #FFF;
+   border: 2px solid #2A2E46;
    width: 50%;
    border-radius: 0 20px 20px 0;
    min-height: 640px;
@@ -33,7 +34,7 @@
    display: block;
    font-size: 14px;
    line-height: 17px;
-   color: #fff;
+   color: #2A2E46;
    text-decoration: underline;
    text-underline-offset: 2px;
    // margin-left: auto;
@@ -51,7 +52,7 @@
    font-weight: 700;
    font-size: 32px;
    line-height: 39px;
-   color: #fff;
+   color: #2A2E46;
    // margin-right: auto;
    text-align: center;
    margin: 0 auto;
@@ -61,7 +62,7 @@
 
 .input__title {
    font-weight: 500;
-   color: #fff;
+   color: #2A2E46;
    font-size: 15px;
    margin-bottom: 10px;
 }
@@ -86,7 +87,7 @@
    font-size: 20px;
    font-weight: 600;
    font-size: 24px;
-   color: #fff;
+   color: #2A2E46;
    cursor: pointer;
 }
 
@@ -193,7 +194,7 @@
 .input__subtitle {
    margin-top: 19px;
    margin-bottom: 35px;
-   color: #fff;
+   color: #2A2E46;
 }
 
 .buttons__box {
@@ -240,7 +241,7 @@
 .otp__text {
    font-weight: 500;
    font-size: 19px;
-   color: #fff;
+   color: #2A2E46;
    line-height: 24px;
    max-height: 460px;
    width: 100%;
@@ -248,7 +249,7 @@
 
 .problem__link {
    font-size: 14px;
-   color: #fff;
+   color: #2A2E46;
 }
 
 @media (max-width:1050px) {

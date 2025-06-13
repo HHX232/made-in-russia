@@ -408,17 +408,14 @@ const DropList: FC<IDropListProps> = ({
   }
 
   const renderItem = (item: DropListItem, index: number) => {
-    // Клонируем элемент и добавляем необходимые пропсы если это DropList
-    if (typeof item === 'object' && item !== null && 'type' in item) {
-      const element = item as React.ReactElement
-      if (element.type === DropList) {
-        return React.cloneElement(element, {
-          ...element.props,
-          parentDropListId: listId,
-          onChildHover: handleChildHover,
-          dropListId: element.props.dropListId || `${listId}-child-${index}`
-        })
-      }
+    if (React.isValidElement(item) && item.type === DropList) {
+      const typedItem = item as React.ReactElement<IDropListProps>
+
+      return React.cloneElement(typedItem, {
+        parentDropListId: listId,
+        onChildHover: handleChildHover,
+        dropListId: typedItem.props.dropListId || `${listId}-child-${index}`
+      } as Partial<IDropListProps>)
     }
 
     return item

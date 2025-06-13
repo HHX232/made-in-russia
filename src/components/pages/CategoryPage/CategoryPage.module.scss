@@ -73,8 +73,6 @@
 
 .category__item__title__second {
    white-space: unset;
-
-
 }
 
 .category__item__image {
@@ -83,7 +81,6 @@
    height: 100%;
    width: 100%;
 }
-
 
 @media (max-width: 800px) {
    .category__list__first {
@@ -95,8 +92,6 @@
          min-width: 140px;
       }
    }
-
-
 }
 
 @media (max-width: 750px) {
@@ -105,32 +100,35 @@
    }
 
    .category__list {
-
-
       display: grid;
       grid-auto-flow: column;
       grid-template-rows: 1fr 1fr;
-      grid-auto-columns: minmax(320px, 1fr);
+      // Убираем фиксированный размер колонок, пусть грид сам определяет количество
+      grid-auto-columns: minmax(320px, max-content);
       overflow-x: auto;
       height: fit-content;
+      // Добавляем ограничение ширины контейнера
+      width: 100%;
    }
 
    .category__list__more_than_first {
-      grid-auto-columns: minmax(min-content, 1fr);
+      // Для списков больше первого уровня используем более гибкую сетку
+      grid-template-rows: repeat(2, minmax(min-content, max-content));
+      grid-auto-columns: minmax(min-content, max-content);
       padding: 5px 0;
+      // Добавляем подсчет максимальной ширины на основе количества элементов
+      max-width: 100%;
 
-      &>a>li {
-         // background-color: red !important;
+      &>a>li,
+      &>li {
          justify-content: center;
+         width: 100%;
+         max-width: 400px;
+         min-width: 280px;
 
          &>p {
             white-space: unset;
          }
-
-         width: 100%;
-         max-width: 400px;
       }
-
    }
-
 }

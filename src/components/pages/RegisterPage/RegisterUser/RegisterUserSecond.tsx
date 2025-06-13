@@ -42,6 +42,7 @@ const RegisterUserSecond: React.FC<RegisterUserSecondProps> = ({
         label='Я согласен с пользовательским соглашением и политикой конфиденциальности. '
         name='Personal'
         value='Personal'
+        textColor='dark'
         checked={selectedOption === 'Personal'}
         onChange={handleOptionChange}
         allowUnchecked={true}
