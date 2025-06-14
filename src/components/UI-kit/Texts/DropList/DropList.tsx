@@ -260,24 +260,44 @@ const DropList: FC<IDropListProps> = ({
     const relatedTarget = e.relatedTarget as HTMLElement
 
     if (relatedTarget) {
-      // Проверяем, не ушла ли мышь на элемент текущего списка
-      const isOwnElement = dropdownRef.current?.contains(relatedTarget)
+      try {
+        // Проверяем, что relatedTarget является валидным Node
+        if (!(relatedTarget instanceof Node)) {
+          // Если не Node, закрываем с задержкой
+          leaveTimeoutRef.current = setTimeout(() => {
+            closeDropList()
+          }, hoverDelay)
+          return
+        }
 
-      // Проверяем data-атрибуты для определения связанности элементов
-      const targetDropListId = relatedTarget.closest('[data-droplist-id]')?.getAttribute('data-droplist-id')
-      const targetParentId = relatedTarget.closest('[data-parent-droplist-id]')?.getAttribute('data-parent-droplist-id')
+        // Проверяем, не ушла ли мышь на элемент текущего списка
+        const isOwnElement = dropdownRef.current?.contains(relatedTarget)
 
-      // Если мышь ушла на собственный элемент или на активный дочерний список
-      if (isOwnElement || (targetParentId === listId && targetDropListId === activeChildRef.current)) {
-        return
-      }
+        // Проверяем data-атрибуты для определения связанности элементов
+        const targetDropListId = relatedTarget.closest('[data-droplist-id]')?.getAttribute('data-droplist-id')
+        const targetParentId = relatedTarget
+          .closest('[data-parent-droplist-id]')
+          ?.getAttribute('data-parent-droplist-id')
 
-      // Если мышь ушла на элемент того же уровня (соседний элемент в родительском списке)
-      const isSiblingElement = targetParentId === parentDropListId && targetDropListId !== listId
+        // Если мышь ушла на собственный элемент или на активный дочерний список
+        if (isOwnElement || (targetParentId === listId && targetDropListId === activeChildRef.current)) {
+          return
+        }
 
-      if (isSiblingElement) {
-        // Закрываем немедленно без задержки
-        closeDropList()
+        // Если мышь ушла на элемент того же уровня (соседний элемент в родительском списке)
+        const isSiblingElement = targetParentId === parentDropListId && targetDropListId !== listId
+
+        if (isSiblingElement) {
+          // Закрываем немедленно без задержки
+          closeDropList()
+          return
+        }
+      } catch (error) {
+        // В случае любой ошибки при работе с DOM, закрываем с задержкой
+        console.warn('Error in handleMouseLeave:', error)
+        leaveTimeoutRef.current = setTimeout(() => {
+          closeDropList()
+        }, hoverDelay)
         return
       }
     }

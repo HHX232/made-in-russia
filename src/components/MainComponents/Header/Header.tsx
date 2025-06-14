@@ -4,7 +4,6 @@ import {FC, useEffect, useState} from 'react'
 import styles from './Header.module.scss'
 import Link from 'next/link'
 import createTelText from '@/utils/createTelText'
-import LanguageButtonUI from '@/components/UI-kit/buttons/LanguageButtonUI/LanguageButtonUI'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
 // import ShopButtonUI from '@/components/UI-kit/buttons/ShopButtonUI/ShopButtonUI'
@@ -13,6 +12,12 @@ import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputU
 import BurgerMenu from '../BurgerMenu/BurgerMenu'
 import Head from 'next/head'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
+
+enum Languages {
+  RUSSIAN = 'Русский',
+  ENGLISH = 'English',
+  CHINA = '中文'
+}
 
 const insta = '/insta.svg'
 const telephone = '/phone.svg'
@@ -88,6 +93,9 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `7${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
   const [categoriesList, setCategoriesList] = useState<Category[]>(categories || [])
+
+  // TODO: Заменить на получение из файлов
+  const [activeLanguage, setActiveLanguage] = useState<Languages>(Languages.RUSSIAN)
 
   useEffect(() => {
     async function rrrr() {
@@ -284,7 +292,28 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
               />
             </li>
           </ul>
-          <LanguageButtonUI />
+          {/* <LanguageButtonUI /> */}
+          <DropList
+            closeOnMouseLeave={true}
+            extraClass={`${styles.extra__header__language_box}`}
+            color='white'
+            title={activeLanguage}
+            gap='5'
+            safeAreaEnabled={true}
+            positionIsAbsolute={false}
+            items={[
+              <p onClick={() => setActiveLanguage(Languages.RUSSIAN)} key={1}>
+                {Languages.RUSSIAN}
+              </p>,
+              <p onClick={() => setActiveLanguage(Languages.ENGLISH)} key={2}>
+                {Languages.ENGLISH}
+              </p>,
+              <p onClick={() => setActiveLanguage(Languages.CHINA)} key={3}>
+                {Languages.CHINA}
+              </p>
+            ]}
+            trigger='hover'
+          />
         </div>
 
         <div className={`${styles.middle__header}`}>
@@ -401,6 +430,8 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                 <li className={`${styles.drop__bottom_list}`}>
                   <DropList
                     extraClass={`${styles.extra__bottom__header__list}`}
+                    trigger='hover'
+                    positionIsAbsolute={false}
                     title='Еще'
                     items={[
                       <div key={Math.random()} className={`${styles.bottom__list_item}`}>

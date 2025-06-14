@@ -99,6 +99,20 @@
       grid-auto-columns: max-content !important;
    }
 
+   .category__title__main {
+
+      font-size: 28px;
+      line-height: 36px;
+
+   }
+
+   .category__item__title {
+      font-size: 18px;
+      line-height: 22px;
+
+   }
+
+
    .category__list {
       display: grid;
       grid-auto-flow: column;

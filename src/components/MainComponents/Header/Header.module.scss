@@ -11,6 +11,17 @@
 //    z-index: 9999;
 // }
 
+.extra__header__language_box {
+   background-color: #AC2525 !important;
+   padding: 5px 13px;
+   border-radius: 10px;
+   box-shadow: -2px 4px 4px rgba(0, 0, 0, 0.10);
+
+   &>div>span {
+      color: #FFF !important;
+   }
+}
+
 .header__top_image_insta {
    width: 20px;
    height: 20px;

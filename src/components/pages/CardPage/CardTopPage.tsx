@@ -362,6 +362,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   }, [])
 
   useEffect(() => {
+    console.log('cardData', cardData)
     if (cardData) {
       setCardMiniData(cardData)
     }
@@ -422,6 +423,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
       <ImagesSlider cardMiniData={cardMiniData} isLoading={isReallyLoading} isLargeScreen={isLargeScreen} />
 
+      {/* TODO: */}
       <ShopProfile isLoading={isReallyLoading} name={shopName} imageSrc={im4} />
 
       <div className={`${styles.variants__box}`}>
