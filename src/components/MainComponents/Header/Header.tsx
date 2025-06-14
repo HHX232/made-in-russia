@@ -296,6 +296,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
           {/* <LanguageButtonUI /> */}
           <DropList
             closeOnMouseLeave={true}
+            extraStyle={{zIndex: '99999'}}
             extraClass={`${styles.extra__header__language_box}`}
             color='white'
             title={activeLanguage}

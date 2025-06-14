@@ -74,9 +74,10 @@ interface IDropListProps extends Pick<ArrowIconProps, 'color' | 'width' | 'heigh
   closeOnMouseLeave?: boolean
   safeAreaEnabled?: boolean
   safeAreaSize?: number
-  dropListId?: string // Новый проп для идентификации списка
-  parentDropListId?: string // ID родительского списка для вложенных
-  onChildHover?: (childId: string) => void // Коллбэк для уведомления родителя о ховере на дочерний элемент
+  dropListId?: string
+  parentDropListId?: string
+  onChildHover?: (childId: string) => void
+  closeOnScroll?: boolean // Новый пропс для закрытия при скролле
 }
 
 const DropList: FC<IDropListProps> = ({
@@ -102,7 +103,8 @@ const DropList: FC<IDropListProps> = ({
   safeAreaSize = 10,
   dropListId,
   parentDropListId,
-  onChildHover
+  onChildHover,
+  closeOnScroll = true // Значение по умолчанию true
 }) => {
   const [internalOpenState, setInternalOpenState] = useState(false)
   const openList = isOpen !== undefined ? isOpen : internalOpenState
@@ -336,6 +338,22 @@ const DropList: FC<IDropListProps> = ({
       }
     }
   }, [safeAreaEnabled, trigger, openList, handleMouseMove])
+
+  // Добавляем новый useEffect для обработки скролла
+  useEffect(() => {
+    if (!closeOnScroll || !openList) return
+
+    const handleScroll = () => {
+      closeDropList()
+    }
+
+    // Добавляем слушатель скролла на window и все родительские элементы
+    window.addEventListener('scroll', handleScroll, true)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true)
+    }
+  }, [closeOnScroll, openList])
 
   useEffect(() => {
     if (!positionIsAbsolute && openList) {
