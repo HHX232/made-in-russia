@@ -24,8 +24,26 @@ export default function NotFound() {
   const [mousePos, setMousePos] = useState<MousePosition>({x: -1000, y: -1000})
   const [dots, setDots] = useState<Dot[]>([])
   const [isMouseInside, setIsMouseInside] = useState<boolean>(false)
+  const [windowWidth, setWindowWidth] = useState<number>(0)
   const animationFrameRef = useRef<number>(1)
   const lastUpdateTime = useRef<number>(0)
+
+  // Отслеживаем размер окна
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
+
+    // Устанавливаем начальное значение
+    setWindowWidth(window.innerWidth)
+
+    // Добавляем слушатель изменения размера окна
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
 
   // Создаем точки для формирования "404"
   useEffect(() => {
@@ -213,6 +231,36 @@ export default function NotFound() {
     setMousePos({x: -1000, y: -1000})
   }, [])
 
+  // Вычисляем размеры на основе состояния windowWidth
+  const isMobile = windowWidth < 600
+  const svgWidth = isMobile ? 300 : 500
+  const svgHeight = isMobile ? 150 : 250
+  const paddingStyle = isMobile ? '40px 20px' : ''
+  const marginLeft = isMobile ? '40px' : '70px'
+
+  // Не рендерим SVG до тех пор, пока не получим размер окна
+  if (windowWidth === 0) {
+    return (
+      <div className={styles.notFoundContainer}>
+        <Header />
+        <main className={styles.mainContent}>
+          <div className={styles.contentWrapper}>
+            <div style={{height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              Loading...
+            </div>
+            <p className={styles.description}>
+              Страница не найдена или удалена. Проверьте правильность URL или вернитесь на главную.
+            </p>
+            <Link href='/' className={styles.homeButton}>
+              Вернуться на главную
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
   return (
     <div className={styles.notFoundContainer}>
       <Header />
@@ -224,14 +272,14 @@ export default function NotFound() {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              padding: window.innerWidth < 600 ? '40px 20px' : '',
+              padding: paddingStyle,
               overflow: 'visible'
             }}
           >
             <svg
               ref={svgRef}
-              width={window.innerWidth < 600 ? '300' : '500'}
-              height={window.innerWidth < 600 ? '150' : '250'}
+              width={svgWidth}
+              height={svgHeight}
               viewBox='0 0 100 50'
               onMouseMove={handleMouseMove}
               onMouseEnter={handleMouseEnter}
@@ -241,7 +289,7 @@ export default function NotFound() {
                 position: 'relative',
                 zIndex: 1,
                 overflow: 'visible',
-                marginLeft: window.innerWidth < 600 ? '40px' : '70px',
+                marginLeft: marginLeft,
                 maxWidth: '100%'
               }}
             >

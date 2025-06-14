@@ -340,20 +340,27 @@ const DropList: FC<IDropListProps> = ({
   useEffect(() => {
     if (!positionIsAbsolute && openList) {
       const checkVisibility = () => {
-        if (dropdownRef.current) {
-          const rect = dropdownRef.current.getBoundingClientRect()
-          if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
-            setIsVisible(false)
-          } else {
-            setIsVisible(true)
-            updateListPosition()
-          }
+        if (typeof window === 'undefined' || !dropdownRef.current) return
+
+        const rect = dropdownRef.current.getBoundingClientRect()
+        if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
+          setIsVisible(false)
+        } else {
+          setIsVisible(true)
+          updateListPosition()
         }
       }
 
-      window.addEventListener('scroll', checkVisibility)
-      return () => {
-        window.removeEventListener('scroll', checkVisibility)
+      // Проверяем доступность window перед добавлением слушателя
+      if (typeof window !== 'undefined') {
+        window.addEventListener('scroll', checkVisibility)
+
+        // Вызываем сразу для первоначальной проверки
+        checkVisibility()
+
+        return () => {
+          window.removeEventListener('scroll', checkVisibility)
+        }
       }
     }
   }, [positionIsAbsolute, openList])
