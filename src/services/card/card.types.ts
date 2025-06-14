@@ -39,6 +39,7 @@ interface Faq {
 }
 
 interface ICardFull {
+  user: Author
   id: number // read-only
   reviewsMedia: Media[]
   category: CategoryOld

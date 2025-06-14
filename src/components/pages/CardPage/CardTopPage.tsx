@@ -424,7 +424,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
       <ImagesSlider cardMiniData={cardMiniData} isLoading={isReallyLoading} isLargeScreen={isLargeScreen} />
 
       {/* TODO: */}
-      <ShopProfile isLoading={isReallyLoading} name={shopName} imageSrc={im4} />
+      <ShopProfile isLoading={isReallyLoading} name={cardMiniData?.user.login || ''} imageSrc={im4} />
 
       <div className={`${styles.variants__box}`}>
         {!isReallyLoading ? (
@@ -624,7 +624,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   return (
     <>
       {/* Микроразметка Schema.org */}
-      <ProductSchema cardData={cardMiniData} priceList={priceList} shopName={shopName} />
+      <ProductSchema cardData={cardMiniData} priceList={priceList} shopName={cardMiniData?.user.login || ''} />
 
       <div className={`${styles.card__slider__box}`}>
         <CardSlider
