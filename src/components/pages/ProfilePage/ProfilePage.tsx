@@ -14,6 +14,7 @@ import ProfileForm from './ProfileForm/ProfileForm'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import {User} from '@/services/users.types'
 import {useRouter} from 'next/navigation'
+import Footer from '@/components/MainComponents/Footer/Footer'
 
 // Константы
 const ASSETS = {
@@ -483,6 +484,7 @@ const ProfilePage: FC = () => {
           <ProfilePageBottomDelivery />
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

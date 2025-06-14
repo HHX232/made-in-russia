@@ -77,7 +77,8 @@ interface IDropListProps extends Pick<ArrowIconProps, 'color' | 'width' | 'heigh
   dropListId?: string
   parentDropListId?: string
   onChildHover?: (childId: string) => void
-  closeOnScroll?: boolean // Новый пропс для закрытия при скролле
+  closeOnScroll?: boolean
+  scrollThreshold?: number
 }
 
 const DropList: FC<IDropListProps> = ({
@@ -104,7 +105,8 @@ const DropList: FC<IDropListProps> = ({
   dropListId,
   parentDropListId,
   onChildHover,
-  closeOnScroll = true // Значение по умолчанию true
+  closeOnScroll = true,
+  scrollThreshold = 200
 }) => {
   const [internalOpenState, setInternalOpenState] = useState(false)
   const openList = isOpen !== undefined ? isOpen : internalOpenState
@@ -120,6 +122,9 @@ const DropList: FC<IDropListProps> = ({
   // Генерируем уникальный ID если не предоставлен
   const listIdRef = useRef(dropListId || `droplist-${Math.random().toString(36).substr(2, 9)}`)
   const listId = listIdRef.current
+
+  // Проверка, является ли список особенным (categories-seo)
+  const isSpecialList = listId === 'categories-seo'
 
   const toggleList = () => {
     if (isOpen !== undefined) {
@@ -146,6 +151,17 @@ const DropList: FC<IDropListProps> = ({
     // Сбрасываем активный дочерний элемент при закрытии
     activeChildRef.current = null
   }
+
+  // Добавляем/убираем атрибут new-id-for-open-list при открытии/закрытии
+  useEffect(() => {
+    if (dropdownRef.current && !isSpecialList) {
+      if (openList) {
+        dropdownRef.current.setAttribute('new-id-for-open-list', '')
+      } else {
+        dropdownRef.current.removeAttribute('new-id-for-open-list')
+      }
+    }
+  }, [openList, isSpecialList])
 
   const isPointInRect = (
     x: number,
@@ -339,12 +355,31 @@ const DropList: FC<IDropListProps> = ({
     }
   }, [safeAreaEnabled, trigger, openList, handleMouseMove])
 
-  // Добавляем новый useEffect для обработки скролла
+  // Глобальный обработчик скролла для всех элементов с new-id-for-open-list
   useEffect(() => {
-    if (!closeOnScroll || !openList) return
+    if (!closeOnScroll || isSpecialList) return
 
     const handleScroll = () => {
-      closeDropList()
+      // Находим все элементы с атрибутом new-id-for-open-list
+      const allOpenLists = document.querySelectorAll('[new-id-for-open-list]')
+
+      allOpenLists.forEach((element) => {
+        const rect = element.getBoundingClientRect()
+
+        // Проверяем, вышел ли элемент за пределы экрана с учетом порога
+        const isOutOfView =
+          rect.bottom < -scrollThreshold ||
+          rect.top > window.innerHeight + scrollThreshold ||
+          rect.right < -scrollThreshold ||
+          rect.left > window.innerWidth + scrollThreshold
+
+        if (isOutOfView) {
+          // Если это наш элемент, закрываем его
+          if (dropdownRef.current === element) {
+            closeDropList()
+          }
+        }
+      })
     }
 
     // Добавляем слушатель скролла на window и все родительские элементы
@@ -353,7 +388,7 @@ const DropList: FC<IDropListProps> = ({
     return () => {
       window.removeEventListener('scroll', handleScroll, true)
     }
-  }, [closeOnScroll, openList])
+  }, [closeOnScroll, scrollThreshold, isSpecialList])
 
   useEffect(() => {
     if (!positionIsAbsolute && openList) {
@@ -459,7 +494,8 @@ const DropList: FC<IDropListProps> = ({
       return React.cloneElement(typedItem, {
         parentDropListId: listId,
         onChildHover: handleChildHover,
-        dropListId: typedItem.props.dropListId || `${listId}-child-${index}`
+        dropListId: typedItem.props.dropListId || `${listId}-child-${index}`,
+        scrollThreshold: typedItem.props.scrollThreshold || scrollThreshold
       } as Partial<IDropListProps>)
     }
 

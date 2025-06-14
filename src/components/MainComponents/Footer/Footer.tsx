@@ -3,7 +3,7 @@ import styles from './Footer.module.scss'
 import Link from 'next/link'
 import Image from 'next/image'
 
-const logoFavBig = '/logos/logoWithoutText.svg'
+const logoFavBig = '/logos/logo.svg'
 // const logoFavSmall = '/logos/logo_fav.svg'
 
 interface IFooterProps {

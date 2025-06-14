@@ -21,6 +21,7 @@ import {Product} from '@/services/products/product.types'
 import Accordion from '@/components/UI-kit/Texts/Accordions/Accordions'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import Filters from '@/components/screens/Filters/Filters'
+import Footer from '@/components/MainComponents/Footer/Footer'
 
 const Arrow = ({isActive, onClick, extraClass}: {isActive: boolean; onClick: () => void; extraClass?: string}) => {
   return (
@@ -465,6 +466,7 @@ const VendorPageComponent: FC = () => {
           ]}
         />
       </ModalWindowDefault>
+      <Footer />
     </>
   )
 }

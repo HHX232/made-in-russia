@@ -52,6 +52,7 @@ export const renderCategoryItems = (
       return (
         <DropList
           key={category.id}
+          scrollThreshold={200}
           dropListId={dropListId}
           parentDropListId={parentDropListId}
           extraClass={`${styles.extra_list} ${extraClass}`}
@@ -395,6 +396,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     title={<p>Категории</p>}
                     trigger='hover'
                     safeAreaEnabled
+                    scrollThreshold={2000}
                     // safeAreaSize={30}
                     hoverDelay={0}
                     positionIsAbsolute={false}

@@ -9,6 +9,7 @@ import styles from './CardPage.module.scss'
 import ICardFull from '@/services/card/card.types'
 import CommentsSection from './CommentSection/CommentSection'
 import CardBottomPage from './CardBottomPage/CardBottomPage'
+import Footer from '@/components/MainComponents/Footer/Footer'
 // import SEOHeader from '@/components/MainComponents/SEOHeader/SEOHeader'
 
 async function CardContent({id}: {id: string}) {
@@ -50,6 +51,7 @@ export default async function CardPage({params}: {params: Promise<{id: string}>}
           <CommentsSection cardId={id} />
         </Suspense>
       </div>
+      <Footer />
     </div>
   )
 }

@@ -11,8 +11,8 @@ import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import CheckBoxInputUI from '@/components/UI-kit/inputs/CheckBoxInputUI/CheckBoxInputUI'
 import useWindowWidth from '@/hooks/useWindoWidth'
-import {renderCategoryItems} from '@/components/MainComponents/Header/Header'
-import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
+// import {renderCategoryItems} from '@/components/MainComponents/Header/Header'
+// import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 
 const Arrow = ({isActive}: {isActive: boolean}) => {
   return (
@@ -48,15 +48,14 @@ const Filters: FC = () => {
   const queryClient = useQueryClient()
   const {delivery, selectedFilters, searchTitle} = useTypedSelector((state) => state.filters)
   const windowWidth = useWindowWidth()
-  const [categoriesList, setCategoriesList] = useState<Category[]>([])
 
-  useEffect(() => {
-    async function rrrr() {
-      const res = await CategoriesService.getAll()
-      setCategoriesList(res)
-    }
-    rrrr()
-  }, [])
+  // useEffect(() => {
+  //   async function rrrr() {
+  //     const res = await CategoriesService.getAll()
+  //     setCategoriesList(res)
+  //   }
+  //   rrrr()
+  // }, [])
 
   useEffect(() => {
     setIsMounted(true)
@@ -133,7 +132,7 @@ const Filters: FC = () => {
             clearFilters()
             clearDelivery()
           }}
-          className={`${styles.clear__filters}`}
+          className={`${styles.clear__filters} ${styles.clear__filters__button__title}`}
         >
           сброс
         </button>
@@ -141,6 +140,7 @@ const Filters: FC = () => {
       <span className={`${styles.span_over} ${listOpenIf()}`}>
         <div className={`${styles.filters__part}`}>
           <p className={`${styles.filters__part_title}`}>Категории</p>
+
           <div className={`${styles.filters__part_checkboxes}`}>
             {!isLoading &&
               data?.map((filter) => (
@@ -173,19 +173,13 @@ const Filters: FC = () => {
             />
           </div>
         </div>
-        <div className={`${styles.part__drop} ${styles.part__drop__lists}`}>
+        {/* <div className={`${styles.part__drop} ${styles.part__drop__lists}`}>
           <p className={`${styles.filters__part_title_drop}`}>Категории</p>
           <div className={`${styles.filters__part_droplists}`}>
-            {/* <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Сырье'
-              items={renderCategoryItems(categoriesList, false)}
-            /> */}
+         
             {renderCategoryItems(categoriesList, false, 'right', '25')}
           </div>
-        </div>
+        </div> */}
         <div className={`${styles.end__part}`}>
           <div className={`${styles.end__part_title}`}>Способы доставки</div>
           <div className={`${styles.end__part_droplists}`}>
@@ -219,6 +213,15 @@ const Filters: FC = () => {
           </div>
         </div>
       </span>
+      <button
+        onClick={() => {
+          clearFilters()
+          clearDelivery()
+        }}
+        className={`${styles.clear__filters} ${styles.clear__filters__button__bottom}`}
+      >
+        сброс
+      </button>
     </div>
   )
 }
