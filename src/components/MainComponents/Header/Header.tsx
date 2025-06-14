@@ -232,6 +232,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
               <DropList
                 extraClass={`${styles.extra__mobile__list}`}
                 direction='bottom'
+                trigger='hover'
                 title={'Контакты'}
                 items={[
                   <div key={1} className={styles.header__top_item}>
@@ -298,6 +299,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
             extraClass={`${styles.extra__header__language_box}`}
             color='white'
             title={activeLanguage}
+            // direction='left'
             gap='5'
             safeAreaEnabled={true}
             positionIsAbsolute={false}

@@ -12,7 +12,7 @@ import latestViewsSlice from './LatestViews/LatestViews.slice'
 const filtersPersistConfig = {
   key: 'filters',
   storage: storage,
-  blacklist: ['searchTitle']
+  blacklist: ['searchTitle', 'selectedFilters']
 }
 
 const rootReducer = combineReducers({

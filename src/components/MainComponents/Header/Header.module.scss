@@ -17,6 +17,10 @@
    border-radius: 10px;
    box-shadow: -2px 4px 4px rgba(0, 0, 0, 0.10);
 
+   &>ul {
+      transform: translateX(-37%) !important;
+   }
+
    &>div>span {
       color: #FFF !important;
    }
