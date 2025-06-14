@@ -53,11 +53,11 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
       const refreshToken = getRefreshToken()
 
       if (!refreshToken) {
-        console.log('Нет гребанного рефреш токена')
+        console.log('Нет  рефреш токена')
         return
       }
       if (!accessToken) {
-        console.log('Нет гребанного рефреш токена')
+        console.log('Нет  рефреш токена')
         return
       }
 
