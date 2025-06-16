@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import {FC, useEffect, useState} from 'react'
+import {FC, useEffect, useRef, useState} from 'react'
 import styles from './Header.module.scss'
 import Link from 'next/link'
 import createTelText from '@/utils/createTelText'
@@ -12,6 +12,7 @@ import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputU
 import BurgerMenu from '../BurgerMenu/BurgerMenu'
 import Head from 'next/head'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
+import CategoryesMenuDesktop from '@/components/UI-kit/elements/CategoryesMenuDesktop/CategoryesMenuDesktop'
 
 enum Languages {
   RUSSIAN = 'Русский',
@@ -39,7 +40,8 @@ export const renderCategoryItems = (
   gap?: '0' | '5' | '10' | '15' | '20' | '25' | '30' | '35' | '40' | '45' | '50',
   parentPath?: string,
   parentDropListId?: string,
-  extraClass?: string
+  extraClass?: string,
+  isOpenAll?: boolean
 ): React.ReactNode[] => {
   return categories.map((category) => {
     // Формируем полный путь для текущей категории
@@ -51,6 +53,7 @@ export const renderCategoryItems = (
     if (category.children && category.children.length > 0) {
       return (
         <DropList
+          {...(isOpenAll === true && {isOpen: isOpenAll})}
           key={category.id}
           scrollThreshold={200}
           dropListId={dropListId}
@@ -70,7 +73,9 @@ export const renderCategoryItems = (
             direction,
             gap,
             currentPath,
-            dropListId // Передаем ID текущего списка как родительский для детей
+            dropListId,
+            '',
+            isOpenAll
           )}
           trigger='hover'
           hoverDelay={150}
@@ -94,7 +99,9 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `7${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
   const [categoriesList, setCategoriesList] = useState<Category[]>(categories || [])
-
+  const [categoryListIsOpen, setCategoryListIsOpen] = useState<boolean>(false)
+  const categoryListRefDesktop = useRef<HTMLDivElement>(null)
+  const fullHeaderRef = useRef<HTMLDivElement>(null)
   // TODO: Заменить на получение из файлов
   const [activeLanguage, setActiveLanguage] = useState<Languages>(Languages.RUSSIAN)
 
@@ -105,6 +112,27 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     }
     rrrr()
   }, [])
+
+  // Используйте этот useEffect вместо предыдущего для работы с классами:
+
+  // useEffect(() => {
+  //   if (categoryListIsOpen && typeof window !== 'undefined') {
+  //     // Добавляем класс для блокировки скролла
+  //     document.body.classList.add('no-scroll')
+
+  //     // Опционально: можно также добавить padding-right чтобы компенсировать скроллбар
+  //     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+  //     if (scrollbarWidth > 0) {
+  //       document.body.style.paddingRight = `${scrollbarWidth}px`
+  //     }
+
+  //     return () => {
+  //       // Убираем класс при размонтировании или изменении состояния
+  //       document.body.classList.remove('no-scroll')
+  //       document.body.style.paddingRight = ''
+  //     }
+  //   }
+  // }, [categoryListIsOpen])
 
   const organizationSchema = {
     '@context': 'https://schema.org',
@@ -172,7 +200,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
         />
       </Head>
 
-      <header className={`${styles.header}`} itemScope itemType='https://schema.org/WPHeader'>
+      <header ref={fullHeaderRef} className={`${styles.header}`} itemScope itemType='https://schema.org/WPHeader'>
         <div className={`${styles.header__top} container`}>
           <ul className={styles.header__top_list}>
             <li className={styles.header__top_item}>
@@ -389,9 +417,9 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     trigger='hover'
                     isOpen={true}
                     safeAreaEnabled
-                    items={renderCategoryItems(categoriesList, true, 'bottom', '10')}
+                    items={renderCategoryItems(categoriesList, true, 'bottom', '10', '', '', '', true)}
                   />
-                  <DropList
+                  {/* <DropList
                     dropListId='categories-main'
                     title={<p>Категории</p>}
                     trigger='hover'
@@ -410,7 +438,14 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     )}
                     direction='bottom'
                     gap='10'
-                  />
+                  /> */}
+                  <button
+                    onClick={() => {
+                      setCategoryListIsOpen((prev) => !prev)
+                    }}
+                  >
+                    Категории
+                  </button>
                 </div>
                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
                   <Link href='/reviews' itemProp='url'>
@@ -457,6 +492,27 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
               </ul>
             </div>
           </nav>
+        )}
+        {categoryListIsOpen && (
+          <div
+            style={{
+              position: 'absolute',
+              width: '100vw',
+              top: fullHeaderRef.current?.offsetHeight,
+              minHeight: 'fit-content',
+              height: `calc(100vh - ${fullHeaderRef.current?.offsetHeight}px)`,
+              background: '#FFF',
+
+              left: '0',
+              zIndex: '1000000'
+            }}
+            ref={categoryListRefDesktop}
+            className={`${styles.category__list__bottom__desktop}`}
+          >
+            <div className='container'>
+              <CategoryesMenuDesktop setCategoryListIsOpen={setCategoryListIsOpen} categories={categoriesList} />
+            </div>
+          </div>
         )}
       </header>
     </>

@@ -23,12 +23,8 @@ export const useProducts = (params: ProductQueryParams = {}, specialRoute?: stri
     queryKey: ['products', params],
     queryFn: async () => await ProductService.getAll(params, specialRoute),
     placeholderData: (previousData) => previousData ?? undefined,
-    // Включаем ручное управление инвалидацией
-    // staleTime - время, в течение которого данные считаются "свежими"
-    staleTime: 5000 * 60, // 1 минута
-    // refetchOnWindowFocus - перезапрос данных при фокусе окна
+    staleTime: 5000 * 60,
     refetchOnWindowFocus: false,
-    // refetchOnMount - перезапрос данных при монтировании компонента
     refetchOnMount: true
   })
 }

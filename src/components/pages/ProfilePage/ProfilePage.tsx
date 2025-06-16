@@ -82,6 +82,7 @@ interface ProfileHeaderProps {
 interface QuickActionsProps {
   onDevicesClick: (e: React.MouseEvent) => void
   onPaymentClick: (e: React.MouseEvent) => void
+  isForVendor?: boolean
 }
 
 interface ProfileActionsProps {
@@ -89,6 +90,7 @@ interface ProfileActionsProps {
   onLogout: () => void
   needToSave: boolean
   isLoading: boolean
+  isForVendor?: boolean
 }
 
 interface ProfileStatsProps {
@@ -157,7 +159,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({userData}) => {
 }
 
 // Компонент быстрых действий
-export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentClick}) => {
+export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentClick, isForVendor = true}) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [sessions, setSessions] = useState<
@@ -196,42 +198,46 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
 
   return (
     <ul className={styles.fast__buttons__box}>
-      <ModalWindowDefault isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <p className={styles.modal__sessions__title}>Мои сессии</p>
-        <ul className={styles.modal__sessions__list}>
-          {sessions.map((el, i) => {
-            return (
-              <li key={i} className={styles.modal__sessions__list__item}>
-                <p className={`${styles.device__type}`}>
-                  <span className={`${styles.sessions__item__title}`}> Тип устройства:</span>{' '}
-                  <span className={`${styles.sessions__item__value}`}>{el.deviceType}</span>
-                </p>
-                <p className={`${styles.browser}`}>
-                  <span className={`${styles.sessions__item__title}`}> Браузер:</span>{' '}
-                  <span className={`${styles.sessions__item__value}}`}>{el.browser}</span>
-                </p>
-                <p className={`${styles.os}`}>
-                  <span className={`${styles.sessions__item__title}`}> Операционная система:</span>{' '}
-                  <span className={`${styles.sessions__item__value}}`}>{el.os}</span>
-                </p>
-                <p className={`${styles.last__login__date}`}>
-                  <span className={`${styles.sessions__item__title}`}> Последний вход:</span>{' '}
-                  <span className={`${styles.sessions__item__value}`}>
-                    {typeof el.lastLoginDate === 'string'
-                      ? formatDateToRussian(el.lastLoginDate)
-                      : formatDateToRussian(el.lastLoginDate.toISOString())}
-                  </span>
-                </p>
-              </li>
-            )
-          })}
-        </ul>
-      </ModalWindowDefault>
-      <li className={styles.fast__buttons__box__item}>
-        <button className={styles.fast__buttons__box__item__button} onClick={onNewDeviceClick}>
-          Мои сессии
-        </button>
-      </li>
+      {isForVendor && (
+        <ModalWindowDefault isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <p className={styles.modal__sessions__title}>Мои сессии</p>
+          <ul className={styles.modal__sessions__list}>
+            {sessions.map((el, i) => {
+              return (
+                <li key={i} className={styles.modal__sessions__list__item}>
+                  <p className={`${styles.device__type}`}>
+                    <span className={`${styles.sessions__item__title}`}> Тип устройства:</span>{' '}
+                    <span className={`${styles.sessions__item__value}`}>{el.deviceType}</span>
+                  </p>
+                  <p className={`${styles.browser}`}>
+                    <span className={`${styles.sessions__item__title}`}> Браузер:</span>{' '}
+                    <span className={`${styles.sessions__item__value}}`}>{el.browser}</span>
+                  </p>
+                  <p className={`${styles.os}`}>
+                    <span className={`${styles.sessions__item__title}`}> Операционная система:</span>{' '}
+                    <span className={`${styles.sessions__item__value}}`}>{el.os}</span>
+                  </p>
+                  <p className={`${styles.last__login__date}`}>
+                    <span className={`${styles.sessions__item__title}`}> Последний вход:</span>{' '}
+                    <span className={`${styles.sessions__item__value}`}>
+                      {typeof el.lastLoginDate === 'string'
+                        ? formatDateToRussian(el.lastLoginDate)
+                        : formatDateToRussian(el.lastLoginDate.toISOString())}
+                    </span>
+                  </p>
+                </li>
+              )
+            })}
+          </ul>
+        </ModalWindowDefault>
+      )}
+      {isForVendor && (
+        <li className={styles.fast__buttons__box__item}>
+          <button className={styles.fast__buttons__box__item__button} onClick={onNewDeviceClick}>
+            Мои сессии
+          </button>
+        </li>
+      )}
       <li className={styles.fast__buttons__box__item}>
         <button
           className={styles.fast__buttons__box__item__button}
@@ -406,6 +412,7 @@ const ProfilePage: FC = () => {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {productInFavorites} = useTypedSelector((state) => state.favorites)
   const router = useRouter()
+
   useEffect(() => {
     if (!loading && userData) {
       setNeedToSave(false)
@@ -466,6 +473,7 @@ const ProfilePage: FC = () => {
             <ProfileHeader userData={userData} />
             <QuickActions onDevicesClick={handleDevicesClick} onPaymentClick={handlePaymentClick} />
             <ProfileForm setNeedToSave={safeSetNeedToSave} isLoading={loading} userData={userData} regions={REGIONS} />
+
             <ProfileActions
               isLoading={loading}
               needToSave={needToSave}

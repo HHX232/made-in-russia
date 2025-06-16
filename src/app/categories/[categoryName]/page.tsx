@@ -1,15 +1,23 @@
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
+import {notFound} from 'next/navigation'
 
 export default async function CategoryPageSpecial({params}: {params: Promise<{categoryName: string}>}) {
   const {categoryName} = await params
-  const categories = await CategoriesService.getAll()
+  let categories
+  try {
+    categories = await CategoriesService.getById('l1_' + categoryName)
+  } catch {
+    notFound()
+  }
+  console.log('categories first by slug:', categories)
+
   return (
     <CategoryPage
-      idOfFilter={categories.filter((category) => category.slug === categoryName)[0].id}
-      categories={categories.filter((category) => category.slug === categoryName)[0].children}
+      idOfFilter={categories.id}
+      categories={categories.children}
       categoryName={categoryName}
-      categoryTitleName={categories.filter((category) => category.slug === categoryName)[0].name}
+      categoryTitleName={categories.name}
       level={1}
     />
   )

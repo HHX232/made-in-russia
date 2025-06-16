@@ -1,5 +1,6 @@
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
+import {notFound} from 'next/navigation'
 
 export default async function CategoryPageSpecialSecond({
   params
@@ -13,7 +14,12 @@ export default async function CategoryPageSpecialSecond({
 }) {
   const {thirdCategoryName, thirdCAtegoryName} = await params
   console.log('thirdCategoryName:', thirdCategoryName, 'thirdCAtegoryName', thirdCAtegoryName)
-  const categories = await CategoriesService.getById('l3_' + (thirdCategoryName || thirdCAtegoryName))
+  let categories
+  try {
+    categories = await CategoriesService.getById('l3_' + (thirdCategoryName || thirdCAtegoryName))
+  } catch {
+    notFound()
+  }
   console.log('categories third by slug:', categories)
 
   return (

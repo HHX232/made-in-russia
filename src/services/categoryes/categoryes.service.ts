@@ -26,7 +26,7 @@ const cleanCategorySlug = (category: Category): Category => {
 
 const CategoriesService = {
   async getAll(): Promise<Category[]> {
-    const response = await axiosClassic.get<CategoriesResponse>('/categories')
+    const response = await axiosClassic.get<CategoriesResponse>('/all-categories')
     return response.data.map(cleanCategorySlug)
   },
 

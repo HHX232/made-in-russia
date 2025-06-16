@@ -6,10 +6,11 @@ interface UseProductReviewsOptions {
   size?: number
   minRating?: number
   maxRating?: number
+  specialRoute?: string
 }
 
 export function useProductReviews(options: UseProductReviewsOptions = {}) {
-  const {size = 10, minRating, maxRating} = options
+  const {size = 10, minRating, maxRating, specialRoute} = options
 
   const [reviews, setReviews] = useState<Review[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -35,7 +36,8 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
           page: 0,
           size,
           minRating,
-          maxRating
+          maxRating,
+          specialRoute
         })
 
         console.log('Initial reviews response:', data)
@@ -75,7 +77,8 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
       loadingRef: loadingRef.current,
       hasMore,
       page,
-      initialLoadDone: initialLoadDone.current
+      initialLoadDone: initialLoadDone.current,
+      specialRoute
     })
 
     // Проверяем только loadingRef и hasMore, убираем проверку page === 0
@@ -101,7 +104,8 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
         page: nextPage,
         size,
         minRating,
-        maxRating
+        maxRating,
+        specialRoute
       })
 
       console.log(`Page ${nextPage} response:`, data)

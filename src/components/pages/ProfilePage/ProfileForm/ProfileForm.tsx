@@ -28,6 +28,7 @@ interface PhoneInputSectionProps {
   isValidNumber: boolean
   selectedRegion: RegionType
   onChangeTelNumber: (value: string) => void
+  isShowForVendor?: boolean
 }
 interface RegionType {
   imageSrc: string
@@ -40,6 +41,7 @@ interface ProfileFormProps {
   userData?: User
   regions: RegionType[]
   isLoading: boolean
+  isShowForOwner?: boolean
   setNeedToSave: (value: boolean) => void
 }
 const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
@@ -62,11 +64,18 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
       return cleanedPhone.length >= 7
   }
 }
-const PhoneInputSection: FC<PhoneInputSectionProps> = ({telText, isValidNumber, selectedRegion, onChangeTelNumber}) => {
+const PhoneInputSection: FC<PhoneInputSectionProps> = ({
+  telText,
+  isShowForVendor,
+  isValidNumber,
+  selectedRegion,
+  onChangeTelNumber
+}) => {
   return (
     <div className={styles.phone__input__box}>
       <p className={styles.input__title}>Номер мобильного телефона</p>
       <TelephoneInputUI
+        isOnlyShow={!isShowForVendor}
         currentValue={telText}
         extraClass={styles.extra__phone__class}
         error={!isValidNumber ? 'error' : ''}
@@ -77,10 +86,14 @@ const PhoneInputSection: FC<PhoneInputSectionProps> = ({telText, isValidNumber, 
   )
 }
 
-// Обновленный ProfileForm с флагом пользовательского взаимодействия
-// Обновленный ProfileForm с флагом пользовательского взаимодействия
-// Обновленный ProfileForm с флагом пользовательского взаимодействия
-const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions, isLoading, setNeedToSave}) => {
+const ProfileForm: FC<ProfileFormProps> = ({
+  isVendor = false,
+  isShowForOwner = true,
+  userData,
+  regions,
+  isLoading,
+  setNeedToSave
+}) => {
   const [password, setPassword] = useState('')
   const [telText, setTelText] = useState('')
   const [trueTelephoneNumber, setTrueTelephoneNumber] = useState('')
@@ -338,22 +351,24 @@ const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions,
           <InputOtp length={4} onComplete={closeModal} />
         </div>
       </ModalWindowDefault>
-      <TextInputUI
-        extraClass={styles.extra__input}
-        theme='light'
-        currentValue={password}
-        onSetValue={(value) => {
-          setPassword(value)
-          if (value.length > 0) {
-            setUserInteracted(true)
-          }
-        }}
-        isSecret={true}
-        title='Пароль'
-        placeholder='Create new password?'
-        onBlur={handlePasswordBlur}
-        onFocus={handlePasswordFocus}
-      />
+      {isShowForOwner && (
+        <TextInputUI
+          extraClass={styles.extra__input}
+          theme='light'
+          currentValue={password}
+          onSetValue={(value) => {
+            setPassword(value)
+            if (value.length > 0) {
+              setUserInteracted(true)
+            }
+          }}
+          isSecret={true}
+          title='Пароль'
+          placeholder='Create new password?'
+          onBlur={handlePasswordBlur}
+          onFocus={handlePasswordFocus}
+        />
+      )}
       <div className={styles.region__box}>
         <p style={{cursor: 'pointer'}} onClick={() => setListIsOpen(!listIsOpen)} className={styles.input__title}>
           Страна/Регион
@@ -371,6 +386,7 @@ const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions,
           </div>
         ) : (
           <MultiDropSelect
+            isOnlyShow={!isShowForOwner}
             extraClass={styles.profile__region__dropdown__extra}
             options={countryOptions}
             selectedValues={selectedCountries}
@@ -386,6 +402,7 @@ const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions,
 
       <PhoneInputSection
         telText={telText}
+        isShowForVendor={isShowForOwner}
         isValidNumber={isValidNumber}
         selectedRegion={selectedRegion}
         onChangeTelNumber={onChangeTelNumber}
@@ -396,6 +413,7 @@ const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions,
             Категории товаров
           </p>
           <MultiDropSelect
+            isOnlyShow={!isShowForOwner}
             extraClass={styles.profile__region__dropdown__extra}
             options={countryOptions}
             selectedValues={categories}
@@ -411,6 +429,7 @@ const ProfileForm: FC<ProfileFormProps> = ({isVendor = false, userData, regions,
       {isVendor && (
         <div style={{margin: '5px 0 0px 0'}} className={styles.inn__box}>
           <TextInputUI
+            disabled={!isShowForOwner}
             extraClass={`${styles.extra__input} ${styles.extra__input__inn}`}
             theme='light'
             currentValue={inn}

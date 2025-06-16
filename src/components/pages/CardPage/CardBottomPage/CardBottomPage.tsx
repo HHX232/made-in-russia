@@ -220,7 +220,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
         >
           Отзывы
           <span className={`${styles.tabs__box__item__count__comments}`}>
-            {comments.length ? comments.length : '0'}
+            {cardData?.reviewsCount ? cardData?.reviewsCount : '0'}
           </span>
         </div>
         <div

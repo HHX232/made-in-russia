@@ -18,6 +18,7 @@ interface MultiDropSelectProps {
   disabled?: boolean
   direction?: 'left' | 'right' | 'bottom' | 'top'
   extraClass?: string
+  isOnlyShow?: boolean
 }
 
 const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
@@ -27,6 +28,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   placeholder = 'Выберите элементы...',
   disabled = false,
   direction = 'bottom',
+  isOnlyShow = false,
   extraClass
 }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -38,6 +40,8 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
   // Обработчик выбора элемента
   const handleSelectOption = (option: MultiSelectOption) => {
+    if (isOnlyShow) return // Блокируем изменения в режиме только просмотра
+
     const newSelected = isSelected(option)
       ? selectedValues.filter((item) => item.id !== option.id)
       : [...selectedValues, option]
@@ -47,6 +51,8 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
   // Обработчик удаления выбранного элемента
   const handleRemoveOption = (optionId: string | number, e: React.MouseEvent) => {
+    if (isOnlyShow) return // Блокируем изменения в режиме только просмотра
+
     e.stopPropagation()
     const newSelected = selectedValues.filter((item) => item.id !== optionId)
     onChange(newSelected)
@@ -54,7 +60,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
   // Компонент заголовка дропдауна
   const DropdownTitle = () => (
-    <div className={`${styles.dropdownTitle} ${extraClass}`}>
+    <div className={`${styles.dropdownTitle} ${extraClass} ${isOnlyShow ? styles.readOnly : ''}`}>
       {selectedValues.length === 0 ? (
         <span className={styles.placeholder}>{placeholder}</span>
       ) : (
@@ -63,42 +69,46 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
             <span key={item.id} className={styles.selectedItem}>
               {item.icon && <img src={item.icon} alt='' className={styles.itemIcon} />}
               <span className={styles.itemLabel}>{item.label}</span>
-              <button
-                className={styles.removeButton}
-                onClick={(e) => handleRemoveOption(item.id, e)}
-                type='button'
-                aria-label={`Удалить ${item.label}`}
-              >
-                <svg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M9 3L3 9M3 3L9 9'
-                    stroke='currentColor'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-              </button>
+              {!isOnlyShow && (
+                <button
+                  className={styles.removeButton}
+                  onClick={(e) => handleRemoveOption(item.id, e)}
+                  type='button'
+                  aria-label={`Удалить ${item.label}`}
+                >
+                  <svg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M9 3L3 9M3 3L9 9'
+                      stroke='currentColor'
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                </button>
+              )}
             </span>
           ))}
         </div>
       )}
-      <svg
-        className={`${styles.arrow} ${isOpen ? styles.arrowUp : ''}`}
-        width='12'
-        height='8'
-        viewBox='0 0 12 8'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M1 1.5L6 6.5L11 1.5'
-          stroke='currentColor'
-          strokeWidth='1.5'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-      </svg>
+      {!isOnlyShow && (
+        <svg
+          className={`${styles.arrow} ${isOpen ? styles.arrowUp : ''}`}
+          width='12'
+          height='8'
+          viewBox='0 0 12 8'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path
+            d='M1 1.5L6 6.5L11 1.5'
+            stroke='currentColor'
+            strokeWidth='1.5'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+          />
+        </svg>
+      )}
     </div>
   )
 
@@ -112,59 +122,78 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
           <div
             className={styles.optionContent}
             onClick={(e) => {
+              if (isOnlyShow) return // Блокируем клики в режиме только просмотра
               e.stopPropagation()
               handleSelectOption(option)
             }}
+            style={isOnlyShow ? {cursor: 'default'} : undefined}
           >
             {option.icon && <img src={option.icon} alt='' className={styles.optionIcon} />}
             <span className={styles.optionLabel}>{option.label}</span>
           </div>
 
-          <div className={styles.radioWrapper}>
-            <RadioButton
-              label=''
-              name={`multiselect-option-${option.id}`}
-              value={`option-${option.id}`}
-              checked={selected}
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                handleSelectOption(option)
-              }}
-              allowUnchecked={true}
-            />
-          </div>
+          {!isOnlyShow && (
+            <div className={styles.radioWrapper}>
+              <RadioButton
+                label=''
+                name={`multiselect-option-${option.id}`}
+                value={`option-${option.id}`}
+                checked={selected}
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  handleSelectOption(option)
+                }}
+                allowUnchecked={true}
+              />
+            </div>
+          )}
         </div>
       )
     }),
 
-    // Разделитель
-    <div style={{pointerEvents: 'none'}} key='divider' className={styles.divider} />,
+    // Разделитель (только если не в режиме просмотра)
+    ...(!isOnlyShow ? [<div style={{pointerEvents: 'none'}} key='divider' className={styles.divider} />] : []),
 
-    // Кнопки действий
-    <div key='actions' className={styles.actions}>
-      <button
-        type='button'
-        className={styles.actionButton}
-        onClick={(e) => {
-          e.stopPropagation()
-          onChange([])
-        }}
-        disabled={selectedValues.length === 0}
-      >
-        Очистить все
-      </button>
-      <button
-        type='button'
-        className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
-        onClick={(e) => {
-          e.stopPropagation()
-          setIsOpen(false)
-        }}
-      >
-        Готово ({selectedValues.length})
-      </button>
-    </div>
+    // Кнопки действий (только если не в режиме просмотра)
+    ...(!isOnlyShow
+      ? [
+          <div key='actions' className={styles.actions}>
+            <button
+              type='button'
+              className={styles.actionButton}
+              onClick={(e) => {
+                e.stopPropagation()
+                onChange([])
+              }}
+              disabled={selectedValues.length === 0}
+            >
+              Очистить все
+            </button>
+            <button
+              type='button'
+              className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsOpen(false)
+              }}
+            >
+              Готово ({selectedValues.length})
+            </button>
+          </div>
+        ]
+      : [])
   ]
+
+  if (isOnlyShow) {
+    return (
+      <div
+        style={{cursor: 'default'}}
+        className={`${styles.multiDropSelect} ${styles.readOnly} ${disabled ? styles.disabled : ''}`}
+      >
+        <DropdownTitle />
+      </div>
+    )
+  }
 
   return (
     <div className={`${styles.multiDropSelect} ${disabled ? styles.disabled : ''}`}>

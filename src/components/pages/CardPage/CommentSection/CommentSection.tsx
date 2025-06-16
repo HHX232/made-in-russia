@@ -37,6 +37,7 @@ export default function CommentsSection({cardId}: CommentsSectionProps) {
   })
 
   const [cardDataNew, setCardDataNew] = useState<ICardFull | null>(null)
+
   useEffect(() => {
     const loadCardData = async () => {
       try {

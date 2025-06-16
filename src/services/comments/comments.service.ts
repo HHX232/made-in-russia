@@ -67,11 +67,17 @@ export interface ProductReviewsResponse {
   empty?: boolean
 }
 
+// Структура ответа для specialRoute
+export interface SpecialRouteResponse {
+  page: ProductReviewsResponse
+}
+
 export interface GetProductReviewsParams {
   page?: number
   size?: number
   minRating?: number
   maxRating?: number
+  specialRoute?: string
 }
 
 const commentsService = {
@@ -92,11 +98,22 @@ const commentsService = {
         queryParams.append('maxRating', maxRating.toString())
       }
 
-      const response = await instance.get<ProductReviewsResponse>(`/me/product-reviews?${queryParams.toString()}`)
+      if (params.specialRoute) {
+        const response = await instance.get<SpecialRouteResponse>(
+          `${params.specialRoute}/reviews?${queryParams.toString()}`
+        )
 
-      return {
-        data: response.data,
-        error: null
+        return {
+          data: response.data.page,
+          error: null
+        }
+      } else {
+        const response = await instance.get<ProductReviewsResponse>(`/me/product-reviews?${queryParams.toString()}`)
+
+        return {
+          data: response.data,
+          error: null
+        }
       }
     } catch (e) {
       console.error('Error fetching product reviews:', e)

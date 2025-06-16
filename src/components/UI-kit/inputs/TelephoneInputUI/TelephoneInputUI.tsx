@@ -10,6 +10,7 @@ interface ITelephoneProps {
   error?: string
   numberStartWith: TNumberStart
   extraClass?: string
+  isOnlyShow?: boolean
   extraStyle?: React.CSSProperties
 }
 
@@ -51,15 +52,16 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
   error = '',
   numberStartWith = 'other',
   extraClass,
+  isOnlyShow,
   extraStyle
 }) => {
   const id = useId()
 
-  console.log('TelephoneInputUI render:', {
-    currentValue,
-    numberStartWith,
-    currentValueLength: currentValue.length
-  })
+  // console.log('TelephoneInputUI render:', {
+  //   currentValue,
+  //   numberStartWith,
+  //   currentValueLength: currentValue.length
+  // })
 
   // Инициализируем startValue правильным кодом страны
   const [startValue, setStartValue] = useState(() => {
@@ -218,6 +220,7 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
           {startValue.length !== 0 ? startValue : '+'}
         </div>
         <input
+          disabled={isOnlyShow}
           onChange={handleInputChange}
           value={formattedValue}
           id={id}

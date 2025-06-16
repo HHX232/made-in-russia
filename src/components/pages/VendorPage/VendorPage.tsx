@@ -81,7 +81,33 @@ const IntersectionObserverElement = ({observerRef}: {observerRef: (node: HTMLDiv
   )
 }
 
-const VendorPageComponent: FC = () => {
+// {
+//   "id": 12345,
+//   "role": "User",
+//   "email": "user@example.com",
+//   "login": "john_doe",
+//   "phoneNumber": "+79123456789",
+//   "region": "Moscow, Russia",
+//   "registrationDate": "2025-05-04T09:17:20.767615Z",
+//   "lastModificationDate": "2025-05-04T09:17:20.767615Z"
+// }
+
+export interface IVendorData {
+  id: number
+  role: string
+  email: string
+  login: string
+  phoneNumber: string
+  region: string
+  registrationDate: string
+  lastModificationDate: string
+}
+export interface IVendorPageProps {
+  isPageForVendor?: boolean
+  vendorData?: IVendorData
+}
+
+const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vendorData}) => {
   const [needToSave, setNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const [startAnimation, setStartAnimation] = useState(false)
@@ -97,7 +123,6 @@ const VendorPageComponent: FC = () => {
     }
   }, [windowWidth])
 
-  // Используем хук для получения отзывов
   const {
     reviews,
     isLoading: reviewsLoading,
@@ -105,8 +130,8 @@ const VendorPageComponent: FC = () => {
     loadMoreReviews,
     totalElements
   } = useProductReviews({
-    size: 10 // Количество отзывов на страницу
-    // minRating: 3, // Опционально: фильтр по минимальному рейтингу
+    size: 10,
+    specialRoute: `vendor/${vendorData?.id}`
   })
 
   const observerRef = useRef<IntersectionObserver | null>(null)
@@ -240,23 +265,41 @@ const VendorPageComponent: FC = () => {
       <Header />
       <div className='container'>
         <div className={`${styles.vendor__inner} ${styles.profile__inner}`}>
-          <div className={styles.profile__user__box}>
-            <ProfileHeader userData={userData} />
-            <QuickActions onDevicesClick={handleDevicesClick} onPaymentClick={handlePaymentClick} />
-            <ProfileForm
-              isVendor={true}
-              setNeedToSave={safeSetNeedToSave}
-              isLoading={loading}
-              userData={userData}
-              regions={REGIONS}
-            />
-            <ProfileActions
-              isLoading={loading}
-              needToSave={needToSave}
-              onDeleteAccount={handleDeleteAccount}
-              onLogout={handleLogout}
-            />
-          </div>
+          <span style={{width: '100%', height: '100%', position: 'relative'}}>
+            {' '}
+            <div
+              style={{
+                position: !isPageForVendor ? 'sticky' : 'static',
+                top: !isPageForVendor ? '10px' : '0',
+                maxHeight: !isPageForVendor ? 'fit-content' : '100%'
+              }}
+              className={styles.profile__user__box}
+            >
+              <ProfileHeader userData={!!vendorData ? vendorData : userData} />
+              <QuickActions
+                isForVendor={isPageForVendor}
+                onDevicesClick={handleDevicesClick}
+                onPaymentClick={handlePaymentClick}
+              />
+              <ProfileForm
+                isShowForOwner={isPageForVendor}
+                isVendor={true}
+                setNeedToSave={safeSetNeedToSave}
+                isLoading={loading}
+                userData={!!vendorData ? vendorData : userData}
+                regions={REGIONS}
+              />
+              {isPageForVendor && (
+                <ProfileActions
+                  isLoading={loading}
+                  needToSave={needToSave}
+                  onDeleteAccount={handleDeleteAccount}
+                  onLogout={handleLogout}
+                />
+              )}
+            </div>
+          </span>
+
           <div className={styles.vendor__info__second}>
             <div className={styles.vendor__stats}>
               <div className={styles.vendor__stat}>
@@ -341,7 +384,7 @@ const VendorPageComponent: FC = () => {
                 {reviewsLoading && reviews.length === 0 ? (
                   <li className={styles.vendor__comments__loading}>Загрузка комментариев...</li>
                 ) : reviews.length === 0 && !reviewsLoading ? (
-                  <li className={styles.vendor__comments__empty}>Пока нет отзывов о ваших товарах</li>
+                  <li className={styles.vendor__comments__empty}>Пока нет отзывов о товарах</li>
                 ) : (
                   <>
                     {reviews.map((review) => (
@@ -372,12 +415,18 @@ const VendorPageComponent: FC = () => {
           </div>
           <div className={styles.vendor__products__box}>
             <div className={styles.products__titles__box}>
-              <h3 className={styles.vendor__products__title}>Мои товары</h3>
+              {isPageForVendor ? (
+                <h3 className={styles.vendor__products__title}>Мои товары</h3>
+              ) : (
+                <h3 className={styles.vendor__products__title}>Товары продавца</h3>
+              )}
               <SearchInputUI />
             </div>
             <div className={styles.products__list}>
               <Filters />
-              <CardsCatalog specialRoute={'/me/products-summary'} />
+              <CardsCatalog
+                specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}
+              />
             </div>
           </div>
         </div>

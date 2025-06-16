@@ -44,7 +44,7 @@ const publicRoutes = ['/login', '/register']
 
 export async function middleware(request: NextRequest) {
   console.log('🚀 Middleware запущен для пути:', request.nextUrl.pathname)
-  console.log('api url: process.env.NEXT_PUBLIC_API_URL ', process.env.NEXT_PUBLIC_API_URL_SECOND)
+
   try {
     const {pathname} = request.nextUrl
 
@@ -131,8 +131,6 @@ export async function middleware(request: NextRequest) {
             })
             console.log('✅ Авторизация с новым токеном успешна')
 
-            // Проверка роли и перенаправление после обновления токена
-            // Admin имеет доступ ко всем маршрутам
             if (userData.role === 'Admin') {
               console.log('👑 Admin имеет доступ ко всем маршрутам')
               return response
@@ -272,6 +270,52 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
+    if (pathname.startsWith('/data-vendor/')) {
+      console.log('🚀 Middleware запущен для пути:', request.nextUrl.pathname)
+
+      // Извлекаем ID из пути URL
+      const pathSegments = pathname.split('/')
+      const id = pathSegments[2] // Получаем ID из /data-vendor/{id}
+
+      console.log('ищем продавца с id:', id)
+
+      // Проверяем, что ID существует и валиден
+      if (!id || isNaN(Number(id))) {
+        console.log('❌ Невалидный ID продавца:', id)
+        // Вместо notFound() делаем редирект на 404 страницу
+        return NextResponse.redirect(new URL('/404', request.url))
+      }
+
+      try {
+        const {data} = await axiosClassic.get<User>(`/vendor/${id}`)
+        console.log('✅ Найден продавец:', data)
+
+        // TODO РАСКОММЕНТИРОВАТЬ
+        //! const {data: userData} = await instance.get<User>('/me', {
+        //!   headers: {
+        //!     Authorization: `Bearer ${accessToken}`,
+        //!     'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+        //!   }
+        //! })
+        //! if (data.id === userData.id) {
+        //!   return NextResponse.redirect(new URL('/vendor', request.url))
+        //! }
+        return NextResponse.next()
+      } catch (e) {
+        console.error('❌ Ошибка при получении данных продавца:', e)
+
+        // Проверяем статус ошибки
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const error = e as any
+        if (error?.response?.status === 404 || error?.response?.status === 400) {
+          // Продавец не найден или невалидный запрос - редирект на 404
+          return NextResponse.redirect(new URL('/404', request.url))
+        }
+
+        // Для других ошибок просто продолжаем
+        return NextResponse.next()
+      }
+    }
     // Для всех остальных маршрутов
     console.log('🌍 Обычный маршрут, продолжаем выполнение')
     return NextResponse.next()

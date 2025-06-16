@@ -76,7 +76,7 @@ const Filters: FC = () => {
     queryFn: () => FiltersService.getDeliveryMethodIds()
   })
 
-  const {clearFilters, clearDelivery, toggleDelivery} = useActions()
+  const {clearFilters, clearDelivery, toggleDelivery, setSearchTitle} = useActions()
 
   const handleDeliveryChange = (isChecked: boolean, title: string) => {
     toggleDelivery(title)
@@ -131,6 +131,7 @@ const Filters: FC = () => {
           onClick={() => {
             clearFilters()
             clearDelivery()
+            setSearchTitle('')
           }}
           className={`${styles.clear__filters} ${styles.clear__filters__button__title}`}
         >
@@ -217,6 +218,7 @@ const Filters: FC = () => {
         onClick={() => {
           clearFilters()
           clearDelivery()
+          setSearchTitle('')
         }}
         className={`${styles.clear__filters} ${styles.clear__filters__button__bottom}`}
       >

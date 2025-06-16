@@ -179,9 +179,19 @@ const ProductSchema = ({
   )
 }
 
-const ShopProfile = ({name, imageSrc, isLoading}: {name: string; imageSrc: string; isLoading: boolean}) => {
+const ShopProfile = ({
+  name,
+  imageSrc,
+  isLoading,
+  vendorId
+}: {
+  name: string
+  imageSrc: string
+  isLoading: boolean
+  vendorId: string
+}) => {
   return (
-    <Link href={`#`} className={`${styles.shop__profile}`}>
+    <Link href={`/data-vendor/${vendorId}`} className={`${styles.shop__profile}`}>
       {!isLoading ? (
         <Image className={`${styles.profile__image}`} src={imageSrc} alt='mini__comment' width={60} height={60} />
       ) : (
@@ -355,7 +365,6 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   const [isMounted, setIsMounted] = useState(false)
   const [currentDate] = useState<number>(Date.now()) // Фиксируем дату при инициализации
   const windowWidth = useWindowWidth()
-  const shopName = 'Имя продавца' // TODO: Получить из cardData
 
   useEffect(() => {
     setIsMounted(true)
@@ -424,7 +433,12 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
       <ImagesSlider cardMiniData={cardMiniData} isLoading={isReallyLoading} isLargeScreen={isLargeScreen} />
 
       {/* TODO: */}
-      <ShopProfile isLoading={isReallyLoading} name={cardMiniData?.user.login || ''} imageSrc={im4} />
+      <ShopProfile
+        isLoading={isReallyLoading}
+        name={cardMiniData?.user.login || ''}
+        imageSrc={im4}
+        vendorId={cardMiniData?.user.id.toString() || ''}
+      />
 
       <div className={`${styles.variants__box}`}>
         {!isReallyLoading ? (

@@ -8,6 +8,26 @@ html {
 	scroll-behavior: smooth;
 }
 
+// Добавьте в глобальные стили или в отдельный файл стилей:
+
+.no-scroll {
+	overflow: hidden !important;
+
+	// Для предотвращения сдвига контента при скрытии скроллбара
+	&::-webkit-scrollbar {
+		width: 0;
+	}
+}
+
+// Или более продвинутый вариант с учетом ширины скроллбара:
+.body-scroll-lock {
+	overflow: hidden !important;
+	position: fixed !important;
+	width: 100% !important;
+
+	// Для плавности
+	transition: none !important;
+}
 
 .react-loading-skeleton {
 	width: 1000px !important;

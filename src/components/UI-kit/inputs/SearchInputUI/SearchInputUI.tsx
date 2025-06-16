@@ -89,17 +89,21 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
       {inputValue.length > 0 && listIsOpen && (
         <ul className={`${styles.input__list}`}>
           {Array.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).map((el, index) => {
-            const itemText = 'Hello World ' + (index + 1)
+            const itemText = 'Грав'
+            const itemText1 = 'Сух'
+            const itemText2 = 'Медная'
             return (
               <li
                 onClick={() => {
-                  handleSelectItem(itemText)
+                  handleSelectItem(
+                    index === 0 ? itemText : index === 1 ? itemText1 : index === 2 ? itemText2 : 'Hello world'
+                  )
                   setListIsOpen(false)
                 }}
                 key={index}
                 className={`${styles.list__item}`}
               >
-                {itemText}
+                {index === 0 ? itemText : index === 1 ? itemText1 : index === 2 ? itemText2 : 'Hello world'}
               </li>
             )
           })}
