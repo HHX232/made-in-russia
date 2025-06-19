@@ -12,6 +12,8 @@ import {toast} from 'sonner'
 import {saveTokenStorage} from '@/services/auth/auth.helper'
 import {useRouter} from 'next/navigation'
 import Footer from '@/components/MainComponents/Footer/Footer'
+import ResetPasswordForm from './ResetPAsswordForm/ResetPasswordForm'
+import {Category} from '@/services/categoryes/categoryes.service'
 
 const google = '/google_registr.svg'
 const wechat = '/wechat_registr.svg'
@@ -21,16 +23,14 @@ const tg = '/tg.svg'
 const decorImage = '/login__image.jpg'
 const decorImage2 = '/new_login.webp'
 
-const LoginPage = () => {
+const LoginPage = ({categories}: {categories: Category[]}) => {
   const [name, setNameState] = useState('')
   const [password, setPasswordState] = useState('')
   const [telText, setTelText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showResetForm, setShowResetForm] = useState(false)
   const router = useRouter()
-  // useEffect(() => {
-  //   console.log(telText)
-  // }, [telText])
 
   const handleNameChange = (value: SetStateAction<string>) => {
     setNameState(value)
@@ -98,9 +98,21 @@ const LoginPage = () => {
     }
   }
 
+  const handleResetPassword = () => {
+    setShowResetForm(true)
+    setError('')
+    setNameState('')
+    setPasswordState('')
+  }
+
+  const handleBackToLogin = () => {
+    setShowResetForm(false)
+    setError('')
+  }
+
   return (
     <div className={`${styles.login__box}`}>
-      <MinimalHeader />
+      <MinimalHeader categories={categories} />
       <div className={`${styles.login__container} container`}>
         <div className={`${styles.login__inner}`}>
           <Image
@@ -111,74 +123,81 @@ const LoginPage = () => {
             alt='декоративное изображение "Большое количество материалов"'
           />
 
-          <form className={`${styles.login__form__box}`}>
-            <h2 className={`${styles.login__title}`}>Войти в аккаунт</h2>
-            <div className={`${styles.inputs__box}`}>
-              {
-                <>
-                  {' '}
-                  <TextInputUI
-                    extraClass={` ${styles.inputs__text_extra} ${name.length !== 0 && name.length < 3 && styles.extra__name__class} ${error && styles.extra__name__class}`}
-                    isSecret={false}
-                    onSetValue={handleNameChange}
-                    currentValue={name}
-                    placeholder='Введите почту или имя'
-                    title={<p className={`${styles.input__title}`}>Аккаунт</p>}
-                  />
-                  <TextInputUI
-                    extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2} ${error && styles.extra__name__class}`}
-                    isSecret={true}
-                    onSetValue={setPasswordState}
-                    currentValue={password}
-                    errorValue={
-                      password.length < 6 && password.length !== 0 ? 'Пароль должен быть не менее 6 символов' : ''
-                    }
-                    placeholder='Введите пароль'
-                    title={<p className={`${styles.input__title}`}>Пароль</p>}
-                  />
-                  <button onClick={(e: any) => onSubmit(e)} className={`${styles.form__button}`} disabled={isLoading}>
-                    {isLoading ? 'Загрузка...' : 'Войти'}
-                  </button>
-                  <Link className={`${styles.form__button_register}`} href='/register'>
-                    Зарегистрироваться
-                  </Link>
-                  <div className={`${styles.apps__login}`}>
-                    <p className={`${styles.apps__text}`}>Войти через:</p>
-                    <div className={`${styles.apps__images}`}>
-                      <Image
-                        className={`${styles.registr__image}`}
-                        src={google}
-                        width={50}
-                        height={50}
-                        alt='registr with google'
-                      />
-                      <Image
-                        className={`${styles.registr__image}`}
-                        src={tg}
-                        width={50}
-                        height={50}
-                        alt='registr with telegram'
-                      />
-                      <Image
-                        className={`${styles.registr__image}`}
-                        src={wechat}
-                        width={50}
-                        height={50}
-                        alt='registr with telegram'
-                      />
-                      <Image
-                        className={`${styles.registr__image}`}
-                        src={weibo}
-                        width={50}
-                        height={50}
-                        alt='registr with telegram'
-                      />
+          {showResetForm ? (
+            <ResetPasswordForm onBack={handleBackToLogin} />
+          ) : (
+            <form className={`${styles.login__form__box}`}>
+              <h2 className={`${styles.login__title}`}>Войти в аккаунт</h2>
+              <div className={`${styles.inputs__box}`}>
+                {
+                  <>
+                    {' '}
+                    <TextInputUI
+                      extraClass={` ${styles.inputs__text_extra} ${name.length !== 0 && name.length < 3 && styles.extra__name__class} ${error && styles.extra__name__class}`}
+                      isSecret={false}
+                      onSetValue={handleNameChange}
+                      currentValue={name}
+                      placeholder='Введите почту или имя'
+                      title={<p className={`${styles.input__title}`}>Аккаунт</p>}
+                    />
+                    <TextInputUI
+                      extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2} ${error && styles.extra__name__class}`}
+                      isSecret={true}
+                      onSetValue={setPasswordState}
+                      currentValue={password}
+                      errorValue={
+                        password.length < 6 && password.length !== 0 ? 'Пароль должен быть не менее 6 символов' : ''
+                      }
+                      placeholder='Введите пароль'
+                      title={<p className={`${styles.input__title}`}>Пароль</p>}
+                    />
+                    <button onClick={(e: any) => onSubmit(e)} className={`${styles.form__button}`} disabled={isLoading}>
+                      {isLoading ? 'Загрузка...' : 'Войти'}
+                    </button>
+                    <Link className={`${styles.form__button_register}`} href='/register'>
+                      Зарегистрироваться
+                    </Link>
+                    <div className={`${styles.form__reset__password__button}`} onClick={handleResetPassword}>
+                      Забыли пароль? Восстановить
                     </div>
-                  </div>
-                </>
-              }
-            </div>
-          </form>
+                    <div className={`${styles.apps__login}`}>
+                      <p className={`${styles.apps__text}`}>Войти через:</p>
+                      <div className={`${styles.apps__images}`}>
+                        <Image
+                          className={`${styles.registr__image}`}
+                          src={google}
+                          width={50}
+                          height={50}
+                          alt='registr with google'
+                        />
+                        <Image
+                          className={`${styles.registr__image}`}
+                          src={tg}
+                          width={50}
+                          height={50}
+                          alt='registr with telegram'
+                        />
+                        <Image
+                          className={`${styles.registr__image}`}
+                          src={wechat}
+                          width={50}
+                          height={50}
+                          alt='registr with telegram'
+                        />
+                        <Image
+                          className={`${styles.registr__image}`}
+                          src={weibo}
+                          width={50}
+                          height={50}
+                          alt='registr with telegram'
+                        />
+                      </div>
+                    </div>
+                  </>
+                }
+              </div>
+            </form>
+          )}
         </div>
         <div className={`${styles.margin__box}`}></div>
       </div>

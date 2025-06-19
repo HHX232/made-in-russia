@@ -15,6 +15,7 @@ import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/Mo
 import {User} from '@/services/users.types'
 import {useRouter} from 'next/navigation'
 import Footer from '@/components/MainComponents/Footer/Footer'
+import {toast} from 'sonner'
 
 // Константы
 const ASSETS = {
@@ -91,6 +92,11 @@ interface ProfileActionsProps {
   needToSave: boolean
   isLoading: boolean
   isForVendor?: boolean
+  phoneNumber?: string
+  region?: string
+  inn?: string
+  countries?: string[]
+  categories?: string[]
 }
 
 interface ProfileStatsProps {
@@ -159,6 +165,7 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({userData}) => {
 }
 
 // Компонент быстрых действий
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentClick, isForVendor = true}) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
@@ -238,7 +245,7 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
           </button>
         </li>
       )}
-      <li className={styles.fast__buttons__box__item}>
+      {/* <li className={styles.fast__buttons__box__item}>
         <button
           className={styles.fast__buttons__box__item__button}
           onClick={(e) => {
@@ -249,7 +256,7 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
         >
           Способы оплаты
         </button>
-      </li>
+      </li> */}
 
       <ModalWindowDefault isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)}>
         <h3 className={styles.payments__methods__title}>Способы оплаты</h3>
@@ -274,10 +281,68 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
 // Компонент формы профиля
 
 // Компонент действий профиля
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const ProfileActions: FC<ProfileActionsProps> = ({needToSave, onDeleteAccount, onLogout, isLoading}) => {
+export const ProfileActions: FC<ProfileActionsProps> = ({
+  needToSave,
+  onDeleteAccount,
+  onLogout,
+  isLoading,
+  phoneNumber,
+  region,
+  inn,
+  countries,
+  categories,
+  isForVendor
+}) => {
   const onSave = () => {
-    console.log('SAVE')
+    console.log('Saving data:', {phoneNumber, region})
+    let numberStartWith = ''
+    switch (region) {
+      case 'Belarus':
+        numberStartWith = '+375'
+        break
+      case 'Kazakhstan':
+        numberStartWith = '+7'
+        break
+      case 'China':
+        numberStartWith = '+86'
+        break
+      case 'Russia':
+        numberStartWith = '+7'
+        break
+      case 'Other':
+        numberStartWith = '+'
+        break
+    }
+    try {
+      if (isForVendor) {
+        const res = instance.patch('/me', {
+          phoneNumber: numberStartWith + phoneNumber,
+          inn,
+          countries,
+          categories
+        })
+        console.log(res)
+      } else {
+        const res = instance.patch('/me', {
+          phoneNumber: numberStartWith + phoneNumber,
+          region
+        })
+        console.log(res)
+      }
+      toast.success(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Поздравляем!</strong>
+          <span>Данные успешно изменены!</span>
+        </div>,
+        {
+          style: {
+            background: '#2E7D32'
+          }
+        }
+      )
+    } catch {
+      toast.error('Ошибка изменения данных!')
+    }
   }
 
   const [wantQuite, setWantQuite] = useState(false)
@@ -404,14 +469,17 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
   )
 }
 
-const ProfilePage: FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
   const {userData, loading, error} = useUserData()
   const {latestViews, isEmpty} = useTypedSelector((state) => state.latestViews)
   const [needToSave, setNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {productInFavorites} = useTypedSelector((state) => state.favorites)
   const router = useRouter()
+
+  // User custom data
+  const [userPhoneNumber, setUserPhoneNumber] = useState(firstUserData?.phoneNumber)
+  const [userRegion, setUserRegion] = useState(firstUserData?.region)
 
   useEffect(() => {
     if (!loading && userData) {
@@ -456,10 +524,6 @@ const ProfilePage: FC = () => {
     }
   }
 
-  // if (loading) {
-  //   return <div>Loading...</div> // TODO: Добавить компонент загрузки
-  // }
-
   if (error) {
     return <div>Error loading profile</div> // TODO: Добавить компонент ошибки
   }
@@ -470,11 +534,23 @@ const ProfilePage: FC = () => {
       <div className='container'>
         <div className={styles.profile__inner}>
           <div className={styles.profile__user__box}>
-            <ProfileHeader userData={userData} />
+            <ProfileHeader userData={firstUserData || userData} />
             <QuickActions onDevicesClick={handleDevicesClick} onPaymentClick={handlePaymentClick} />
-            <ProfileForm setNeedToSave={safeSetNeedToSave} isLoading={loading} userData={userData} regions={REGIONS} />
+            <ProfileForm
+              setNeedToSave={safeSetNeedToSave}
+              isLoading={loading}
+              userData={firstUserData || userData}
+              regions={REGIONS}
+              onUserDataChange={(data) => {
+                console.log('Обновленные данные:', data)
+                setUserPhoneNumber(data.phoneNumber)
+                setUserRegion(data.region)
+              }}
+            />
 
             <ProfileActions
+              phoneNumber={userPhoneNumber}
+              region={userRegion}
               isLoading={loading}
               needToSave={needToSave}
               onDeleteAccount={handleDeleteAccount}

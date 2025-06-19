@@ -29,7 +29,9 @@ const RegisterUserSecond: React.FC<RegisterUserSecondProps> = ({
         extraClass={`${styles.inputs__text_extra} ${!isEmailValid && email.length !== 0 ? styles.extra__email__error : ''}`}
         extraStyle={{width: '100%'}}
         isSecret={false}
+        autoComplete='on'
         onSetValue={setEmail}
+        inputType='email'
         currentValue={email}
         errorValue={!isEmailValid && email.length !== 0 ? 'почта должна содержать @ и расширение' : ''}
         placeholder='Введите почту...'

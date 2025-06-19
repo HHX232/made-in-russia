@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect, KeyboardEvent, ClipboardEvent, ChangeEvent} from 'react'
 import styles from './inputOTP.module.scss'
+
 interface InputOtpProps {
   length: number
   onComplete: (value: string) => void
@@ -9,6 +10,7 @@ interface InputOtpProps {
 
 const InputOtp: React.FC<InputOtpProps> = ({length = 4, onComplete, disabled = false, className = ''}) => {
   const [otpValues, setOtpValues] = useState<string[]>(Array(length).fill(''))
+  const [isCompleted, setIsCompleted] = useState(false)
   const inputRefs = useRef<HTMLInputElement[]>([])
 
   // Создаем массив ref колбэков
@@ -20,10 +22,13 @@ const InputOtp: React.FC<InputOtpProps> = ({length = 4, onComplete, disabled = f
 
   useEffect(() => {
     const otpValue = otpValues.join('')
-    if (otpValue.length === length) {
+    if (otpValue.length === length && !isCompleted) {
+      setIsCompleted(true)
       onComplete(otpValue)
+    } else if (otpValue.length < length && isCompleted) {
+      setIsCompleted(false)
     }
-  }, [otpValues, length, onComplete])
+  }, [otpValues, length, onComplete, isCompleted])
 
   const changeHandler = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const value = e.target.value

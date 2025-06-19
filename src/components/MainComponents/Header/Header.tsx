@@ -7,7 +7,7 @@ import createTelText from '@/utils/createTelText'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
 // import ShopButtonUI from '@/components/UI-kit/buttons/ShopButtonUI/ShopButtonUI'
-import StarButtonUI from '@/components/UI-kit/buttons/StarButtonUI/StarButtonUI'
+// import StarButtonUI from '@/components/UI-kit/buttons/StarButtonUI/StarButtonUI'
 import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
 import BurgerMenu from '../BurgerMenu/BurgerMenu'
 import Head from 'next/head'
@@ -93,6 +93,7 @@ export const renderCategoryItems = (
     )
   })
 }
+
 const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'made-in-russia'}`
   const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'made_in_russia'}`
@@ -177,6 +178,26 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     ]
   }
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        categoryListIsOpen &&
+        categoryListRefDesktop.current &&
+        !categoryListRefDesktop.current.contains(event.target as Node)
+      ) {
+        setCategoryListIsOpen(false)
+      }
+    }
+
+    // Добавляем слушатель события
+    document.addEventListener('mousedown', handleClickOutside)
+
+    // Удаляем слушатель при размонтировании компонента
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [categoryListIsOpen])
+
   return (
     <>
       <Head>
@@ -201,26 +222,9 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
       </Head>
 
       <header ref={fullHeaderRef} className={`${styles.header}`} itemScope itemType='https://schema.org/WPHeader'>
-        <div className={`${styles.header__top} container`}>
+        {/* <div className={`${styles.header__top} container`}>
           <ul className={styles.header__top_list}>
-            <li className={styles.header__top_item}>
-              <Link
-                className={styles.header__top_link}
-                href={instagramUrl}
-                target='_blank'
-                rel='noopener noreferrer'
-                itemProp='sameAs'
-              >
-                <Image
-                  className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
-                  width={24}
-                  height={24}
-                  src={insta}
-                  alt='Instagram'
-                />
-                {process.env.NEXT_PUBLIC_INSTA || 'made-in-russia'}
-              </Link>
-            </li>
+
             <li className={styles.header__top_item}>
               <Link
                 className={styles.header__top_link}
@@ -322,7 +326,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
               />
             </li>
           </ul>
-          {/* <LanguageButtonUI /> */}
+    
           <DropList
             closeOnMouseLeave={true}
             extraStyle={{zIndex: '99999'}}
@@ -346,7 +350,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
             ]}
             trigger='hover'
           />
-        </div>
+        </div> */}
 
         <div className={`${styles.middle__header}`}>
           <div className={`container ${styles.header__middle_box}`}>
@@ -372,13 +376,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                 height={100}
                 itemProp='logo'
               />
-              {/* <Image
-                className={`${styles.bear__img_text}`}
-                alt='Made In Russia'
-                src={logoText}
-                width={175}
-                height={41}
-              /> */}
+
               <meta itemProp='name' content='Made In Russia' />
               <meta
                 itemProp='url'
@@ -393,7 +391,31 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
             <div className={`${styles.main__middle_content}`}>
               <ProfileButtonUI />
               {/* <ShopButtonUI /> */}
-              <StarButtonUI />
+              {/* <StarButtonUI /> */}
+
+              <DropList
+                closeOnMouseLeave={true}
+                extraStyle={{zIndex: '99999'}}
+                extraClass={`${styles.extra__header__language_box}`}
+                color='white'
+                title={activeLanguage}
+                // direction='left'
+                gap='5'
+                safeAreaEnabled={true}
+                positionIsAbsolute={false}
+                items={[
+                  <p style={{width: '100%'}} onClick={() => setActiveLanguage(Languages.RUSSIAN)} key={1}>
+                    {Languages.RUSSIAN}
+                  </p>,
+                  <p style={{width: '100%'}} onClick={() => setActiveLanguage(Languages.ENGLISH)} key={2}>
+                    {Languages.ENGLISH}
+                  </p>,
+                  <p style={{width: '100%'}} onClick={() => setActiveLanguage(Languages.CHINA)} key={3}>
+                    {Languages.CHINA}
+                  </p>
+                ]}
+                trigger='hover'
+              />
             </div>
             <BurgerMenu />
           </div>
@@ -485,8 +507,99 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                       </div>,
                       <div key={Math.random()} className={`${styles.bottom__list_item}`}>
                         <Link href='/help'>Помощь</Link>
-                      </div>
+                      </div>,
+                      <DropList
+                        key={234}
+                        extraClass={`${styles.extra__mobile__list}`}
+                        direction='bottom'
+                        gap='20'
+                        safeAreaEnabled
+                        trigger='hover'
+                        title={'Контакты'}
+                        items={[
+                          <div key={1} className={styles.header__top_item}>
+                            <Link
+                              style={{width: '100%'}}
+                              className={styles.header__top_link}
+                              href={instagramUrl}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              itemProp='sameAs'
+                            >
+                              <Image
+                                className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
+                                width={24}
+                                height={24}
+                                src={insta}
+                                alt='Instagram'
+                              />
+                              {process.env.NEXT_PUBLIC_INSTA || 'made-in-russia'}
+                            </Link>
+                          </div>,
+                          <div key={Math.random()} className={styles.header__top_item}>
+                            <Link
+                              className={styles.header__top_link}
+                              href={telegramUrl}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              itemProp='sameAs'
+                            >
+                              <Image
+                                className={`${styles.header__top_image} ${styles.header__top_image_telegram}`}
+                                width={24}
+                                height={24}
+                                src={telegram}
+                                alt='Telegram'
+                              />
+                              {process.env.NEXT_PUBLIC_TELEGRAM || 'made-in-russia'}
+                            </Link>
+                          </div>,
+                          <div key={Math.random()} className={styles.header__top_item}>
+                            <Link
+                              className={styles.header__top_link}
+                              href={telephoneUrl}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              itemProp='telephone'
+                            >
+                              <Image
+                                className={`${styles.header__top_image} ${styles.header__top_image_telephone}`}
+                                width={24}
+                                height={24}
+                                src={telephone}
+                                alt='Телефон'
+                              />
+                              {telephoneText}
+                            </Link>
+                          </div>
+                        ]}
+                      />
                     ]}
+                  />
+                </li>
+                <li className={`${styles.drop__bottom_list}`}>
+                  <DropList
+                    closeOnMouseLeave={true}
+                    extraStyle={{zIndex: '99999'}}
+                    // extraClass={`${styles.extra__header__language_box}`}
+                    color='white'
+                    title={activeLanguage}
+                    // direction='left'
+                    gap='5'
+                    safeAreaEnabled={true}
+                    positionIsAbsolute={false}
+                    items={[
+                      <p onClick={() => setActiveLanguage(Languages.RUSSIAN)} key={1}>
+                        {Languages.RUSSIAN}
+                      </p>,
+                      <p onClick={() => setActiveLanguage(Languages.ENGLISH)} key={2}>
+                        {Languages.ENGLISH}
+                      </p>,
+                      <p onClick={() => setActiveLanguage(Languages.CHINA)} key={3}>
+                        {Languages.CHINA}
+                      </p>
+                    ]}
+                    trigger='hover'
                   />
                 </li>
               </ul>
@@ -500,7 +613,8 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
               width: '100vw',
               top: fullHeaderRef.current?.offsetHeight,
               minHeight: 'fit-content',
-              height: `calc(100vh - ${fullHeaderRef.current?.offsetHeight}px)`,
+              // 100vh
+              height: `calc(80vh - ${fullHeaderRef.current?.offsetHeight}px)`,
               background: '#FFF',
 
               left: '0',

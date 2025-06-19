@@ -10,7 +10,7 @@
    padding-right: 10px;
    flex-direction: column;
    gap: 15px;
-   border-right: 1px solid #F4F5F6;
+   border-right: 1px solid #868686;
 }
 
 .titles__box__item {
@@ -53,20 +53,35 @@
 .subtitles__box__item {
    display: flex;
    flex-direction: column;
+   // border-left: 1px solid #868686;
 
 }
 
 .subtitles__box__item__title {
    font-weight: 500;
    padding-bottom: 5px;
-   margin-bottom: 5px;
-   border-bottom: 2px solid #F4F5F6;
+   padding-left: 5px;
+   // margin-bottom: 5px;
+   border-bottom: 1px solid #868686;
 }
 
 .childrens__item__box {
    display: flex;
    flex-direction: column;
    gap: 10px;
+   padding-top: 5px;
+}
+
+.childrens__item {
+   font-size: 14px;
+
+   &>a {
+      font-size: 14px;
+   }
+
+   // border-bottom: 1px solid #868686;
+   padding-bottom: 3px;
+   padding-left: 5px;
 }
 
 .span__subtitles__box {

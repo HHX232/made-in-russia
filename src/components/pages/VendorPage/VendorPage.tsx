@@ -22,6 +22,8 @@ import Accordion from '@/components/UI-kit/Texts/Accordions/Accordions'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import Filters from '@/components/screens/Filters/Filters'
 import Footer from '@/components/MainComponents/Footer/Footer'
+import {Country} from '@/services/users.types'
+import {Category} from '@/services/categoryes/categoryes.service'
 
 const Arrow = ({isActive, onClick, extraClass}: {isActive: boolean; onClick: () => void; extraClass?: string}) => {
   return (
@@ -81,17 +83,6 @@ const IntersectionObserverElement = ({observerRef}: {observerRef: (node: HTMLDiv
   )
 }
 
-// {
-//   "id": 12345,
-//   "role": "User",
-//   "email": "user@example.com",
-//   "login": "john_doe",
-//   "phoneNumber": "+79123456789",
-//   "region": "Moscow, Russia",
-//   "registrationDate": "2025-05-04T09:17:20.767615Z",
-//   "lastModificationDate": "2025-05-04T09:17:20.767615Z"
-// }
-
 export interface IVendorData {
   id: number
   role: string
@@ -101,13 +92,32 @@ export interface IVendorData {
   region: string
   registrationDate: string
   lastModificationDate: string
+  vendorDetails?: {
+    id: number
+    inn: string
+    paymentDetails: string
+    countries: Country[]
+    productCategories: Category[]
+    creationDate: string
+    lastModificationDate: string
+    viewsCount?: number | string
+  }
 }
 export interface IVendorPageProps {
   isPageForVendor?: boolean
   vendorData?: IVendorData
+  numberCode?: string // Новый пропс для кода страны
 }
 
-const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vendorData}) => {
+// Интерфейс для запроса на обновление данных (Пароль не надо отправлять)
+interface Vendor {
+  phoneNumber?: string
+  inn?: string
+  countries?: string[]
+  categories?: string[]
+}
+
+const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vendorData, numberCode = '+7'}) => {
   const [needToSave, setNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const [startAnimation, setStartAnimation] = useState(false)
@@ -116,6 +126,59 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
   const [isCommentsOpen, setIsCommentsOpen] = useState(true)
   const windowWidth = useWindowWidth()
   const [isQuestOpen, setIsQuestOpen] = useState(false)
+
+  // Состояния для текущих значений
+  const [userPhoneNumber, setUserPhoneNumber] = useState(vendorData?.phoneNumber)
+  const [userCountries, setUserCountries] = useState(
+    vendorData?.vendorDetails?.countries?.map((country) => country.name)
+  )
+  const [userCategories, setUserCategories] = useState(
+    vendorData?.vendorDetails?.productCategories?.map((category) => category.name)
+  )
+  const [userInn, setUserInn] = useState(vendorData?.vendorDetails?.inn)
+
+  // Сохраняем начальные значения для сравнения
+  const initialDataRef = useRef<{
+    phoneNumber?: string
+    countries?: string[]
+    categories?: string[]
+    inn?: string
+  }>({})
+
+  // Инициализация начальных данных
+  useEffect(() => {
+    if (!initialLoadComplete && (vendorData || userData)) {
+      const currentData = vendorData || userData
+      initialDataRef.current = {
+        phoneNumber: currentData?.phoneNumber,
+        countries: vendorData?.vendorDetails?.countries?.map((country) => country.name) || [],
+        categories: vendorData?.vendorDetails?.productCategories?.map((category) => category.name) || [],
+        inn: vendorData?.vendorDetails?.inn || ''
+      }
+      setInitialLoadComplete(true)
+    }
+  }, [vendorData, userData, initialLoadComplete])
+
+  // Функция для сравнения массивов
+  const arraysEqual = (a?: string[], b?: string[]) => {
+    if (!a && !b) return true
+    if (!a || !b) return false
+    if (a.length !== b.length) return false
+    return a.every((val, index) => val === b[index])
+  }
+
+  // Проверка изменений
+  useEffect(() => {
+    if (!initialLoadComplete) return
+
+    const hasChanges =
+      userPhoneNumber !== initialDataRef.current.phoneNumber ||
+      userInn !== initialDataRef.current.inn ||
+      !arraysEqual(userCountries, initialDataRef.current.countries) ||
+      !arraysEqual(userCategories, initialDataRef.current.categories)
+
+    setNeedToSave(hasChanges)
+  }, [userPhoneNumber, userInn, userCountries, userCategories, initialLoadComplete])
 
   useEffect(() => {
     if (windowWidth && windowWidth < 700) {
@@ -131,7 +194,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     totalElements
   } = useProductReviews({
     size: 10,
-    specialRoute: `vendor/${vendorData?.id}`
+    ...{specialRoute: !isPageForVendor ? `vendor/${vendorData?.id}` : ''}
   })
 
   const observerRef = useRef<IntersectionObserver | null>(null)
@@ -140,7 +203,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
 
   // Анимированные счетчики
   const animatedViews = useAnimatedCounter({
-    targetValue: 7875,
+    targetValue: Number(vendorData?.vendorDetails?.viewsCount || '0'),
     duration: 300,
     startAnimation
   })
@@ -154,10 +217,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
   // Вычисляем средний рейтинг
   const averageRating =
     reviews.length > 0 ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1) : '4.5'
-
-  // useEffect(() => {
-  //   console.log('userData', userData)
-  // }, [userData])
 
   // Запускаем анимацию после загрузки компонента
   useEffect(() => {
@@ -185,7 +244,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
       (entries) => {
         const [entry] = entries
         if (entry.isIntersecting && hasMore && !reviewsLoading) {
-          // console.log('Loading more reviews via IntersectionObserver')
           loadMoreReviews()
         }
       },
@@ -205,7 +263,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
         observerRef.current.disconnect()
       }
     }
-  }, [hasMore, reviewsLoading, loadMoreReviews, isCommentsOpen]) // Добавили isCommentsOpen в зависимости
+  }, [hasMore, reviewsLoading, loadMoreReviews, isCommentsOpen])
 
   // Отладка: проверяем высоту контейнера и позицию скролла
   useEffect(() => {
@@ -217,7 +275,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
 
       // Если близко к концу и можно загрузить еще - загружаем
       if (isNearBottom && hasMore && !reviewsLoading) {
-        // console.log('Near bottom, loading more via scroll event')
         loadMoreReviews()
       }
     }
@@ -252,12 +309,28 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
   const handleLogout = () => {
     try {
       const response = instance.post('/auth/logout')
-      // console.log(response)
       removeFromStorage()
       router.push('/')
     } catch (e) {
       console.log(e)
     }
+  }
+
+  // Функция для форматирования номера телефона с кодом страны
+  const formatPhoneNumberWithCode = (phoneNumber?: string) => {
+    if (!phoneNumber) return phoneNumber
+
+    // Удаляем все нецифровые символы из номера
+    const cleanNumber = phoneNumber.replace(/\D/g, '')
+
+    // Если номер уже начинается с кода страны (без +), возвращаем как есть
+    const codeWithoutPlus = numberCode.replace('+', '')
+    if (cleanNumber.startsWith(codeWithoutPlus)) {
+      return '+' + cleanNumber
+    }
+
+    // Добавляем код страны к номеру
+    return numberCode + cleanNumber
   }
 
   return (
@@ -284,6 +357,12 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
               <ProfileForm
                 isShowForOwner={isPageForVendor}
                 isVendor={true}
+                onVendorDataChange={(data) => {
+                  setUserPhoneNumber(data.phoneNumber)
+                  setUserCountries(data.countries.map((country) => country.label))
+                  setUserCategories(data.productCategories.map((category) => category.label))
+                  setUserInn(data.inn)
+                }}
                 setNeedToSave={safeSetNeedToSave}
                 isLoading={loading}
                 userData={!!vendorData ? vendorData : userData}
@@ -291,6 +370,11 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
               />
               {isPageForVendor && (
                 <ProfileActions
+                  categories={userCategories}
+                  inn={userInn}
+                  countries={userCountries}
+                  phoneNumber={formatPhoneNumberWithCode(userPhoneNumber)} // Применяем форматирование при отправке
+                  isForVendor={isPageForVendor}
                   isLoading={loading}
                   needToSave={needToSave}
                   onDeleteAccount={handleDeleteAccount}

@@ -26,8 +26,16 @@
    border: 2px solid #2A2E46;
    width: 50%;
    border-radius: 0 20px 20px 0;
-   min-height: 640px;
+   min-height: 680px;
 
+}
+
+.form__reset__password__button {
+   cursor: pointer;
+
+   &:hover {
+      text-decoration: underline;
+   }
 }
 
 .margin__box {
@@ -38,7 +46,7 @@
 
 .decor__image {
    width: 50%;
-   min-height: 640px;
+   min-height: 680px;
 }
 
 .toggle__action__button {

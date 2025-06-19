@@ -9,18 +9,19 @@ interface ICategoryesMenuDesktopProps {
   setCategoryListIsOpen: (value: boolean) => void
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ValuesItem: FC<Category & {parentPath: string}> = ({children, name, slug, parentPath}) => {
-  const [showAll, setShowAll] = useState(false)
-  const itemsToShow = 9
-  const hasMore = children && children.length > itemsToShow
-  const visibleChildren = children && (showAll ? children : children.slice(0, itemsToShow))
+  // const [showAll, setShowAll] = useState(false)
+  // const itemsToShow = 9
+  // const hasMore = children && children.length > itemsToShow
+  // const visibleChildren = children && (showAll ? children : children.slice(0, itemsToShow))
 
   return (
     <div className={`${styles.subtitles__box__item}`}>
       <Link href={`/categories/${parentPath}/${slug}`}>
         <p className={`${styles.subtitles__box__item__title}`}>{name}</p>
       </Link>
-      {children && children.length > 0 && (
+      {/* {children && children.length > 0 && (
         <div className={`${styles.childrens__item__box}`}>
           {visibleChildren?.map((el) => {
             return (
@@ -35,7 +36,7 @@ const ValuesItem: FC<Category & {parentPath: string}> = ({children, name, slug, 
             </button>
           )}
         </div>
-      )}
+      )} */}
     </div>
   )
 }
@@ -167,12 +168,12 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({categories, set
                 <li key={category.id} className={styles.mobile_menu_item}>
                   {hasChildren ? (
                     <>
-                      <div className={styles.mobile_menu_item_content} onClick={() => handleCategoryClick(category)}>
+                      <Link href={`/categories/${category.slug}`} className={styles.mobile_menu_item_content}>
                         <span>{category.name}</span>
-                      </div>
-                      <Link href={`/categories/${category.slug}`} className={styles.mobile_menu_item_arrow}>
-                        →
                       </Link>
+                      <button className={styles.mobile_menu_item_arrow} onClick={() => handleCategoryClick(category)}>
+                        →
+                      </button>
                     </>
                   ) : (
                     <Link href={`/categories/${category.slug}`} className={styles.mobile_menu_item_full}>
@@ -192,18 +193,18 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({categories, set
                 <li key={subcategory.id} className={styles.mobile_menu_item}>
                   {hasChildren ? (
                     <>
-                      <div
-                        className={styles.mobile_menu_item_content}
-                        onClick={() => handleSubcategoryClick(subcategory)}
-                      >
-                        <span>{subcategory.name}</span>
-                      </div>
                       <Link
                         href={`/categories/${selectedCategory.slug}/${subcategory.slug}`}
+                        className={styles.mobile_menu_item_content}
+                      >
+                        <span>{subcategory.name}</span>
+                      </Link>
+                      <button
                         className={styles.mobile_menu_item_arrow}
+                        onClick={() => handleSubcategoryClick(subcategory)}
                       >
                         →
-                      </Link>
+                      </button>
                     </>
                   ) : (
                     <Link

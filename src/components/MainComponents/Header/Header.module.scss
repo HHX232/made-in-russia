@@ -14,12 +14,12 @@
 
 .extra__header__language_box {
    background-color: #AC2525 !important;
-   padding: 5px 13px;
-   border-radius: 10px;
+   padding: 9px 13px;
+   border-radius: 17px;
    box-shadow: -2px 4px 4px rgba(0, 0, 0, 0.10);
 
    &>ul {
-      transform: translateX(-37%) !important;
+      transform: translateX(-45%) !important;
    }
 
    &>div>span {
@@ -104,7 +104,7 @@
    display: flex;
    justify-content: center;
    align-items: center;
-   gap: 25px;
+   gap: 15px;
 }
 
 .searchBox {
@@ -156,22 +156,40 @@
 
 .drop__bottom_list {
    display: none;
+
+   &>div>div>svg>path {
+      fill: #000 !important;
+
+   }
 }
 
-@media(max-width:820px) {
+.bear__img_min {
+   display: none;
+}
+
+@media(max-width:850px) {
    .bear__img {
-      min-height: 66px;
-      min-width: 224px;
+      display: none !important;
       // aspect-ratio: 1/1;
+   }
+
+
+
+   .main__middle_content {
+      min-width: fit-content;
+      margin-right: 10px;
+
+
+   }
+
+   .bear__img_min {
+      display: block;
    }
 
    .bear__img_text {
       display: none;
    }
 
-   .main__middle_content {
-      min-width: 150px !important;
-   }
 
    .searchBox {
       padding: 0 10px;
@@ -181,11 +199,13 @@
 
 }
 
-.bear__img_min {
-   display: none;
+@media (max-width: 750px) {
+   .extra__header__language_box {
+      display: none;
+   }
 }
 
-@media (max-width:670px) {
+@media (max-width:750px) {
    .extra_list__first__drop {
 
       &>ul {
@@ -209,13 +229,13 @@
    }
 
    .bear__img {
-      display: none;
+      display: none !important;
 
    }
 
-   .header__top_item {
-      display: none;
-   }
+   // .header__top_item {
+   //    display: none;
+   // }
 
    .extra__mobile__list {
       &>ul {
@@ -252,7 +272,26 @@
    .extra__bottom__header__list {
       &>ul {
          left: -25px;
+
+
       }
+   }
+}
+
+.extra__mobile__list {
+   &>ul>li {
+      &>div {
+         width: 100% !important;
+
+         &>a {
+            width: 100% !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+         }
+      }
+
+      width: 100% !important;
    }
 }
 

@@ -10,6 +10,7 @@ const hideIcon = '/hide__text.svg'
 const showIcon = '/show__text.svg'
 
 interface ITextInputProps {
+  inputType?: 'text' | 'password' | 'email'
   extraClass?: string
   extraStyle?: CSSProperties
   placeholder: string
@@ -51,6 +52,7 @@ const TextInputUI: FC<ITextInputProps> = ({
   customIconOnAlternativeState,
   linkToHelp = '',
   theme = 'dark',
+  inputType = 'text',
   onBlur,
   onFocus,
   onKeyDown,
@@ -114,7 +116,7 @@ const TextInputUI: FC<ITextInputProps> = ({
       <div className={`${styles.input__inner__box} ${errorValue && styles.error__input__inner__box}`}>
         <input
           placeholder={placeholder}
-          type={isSecret && !textIsShow ? 'password' : 'text'}
+          type={isSecret && !textIsShow ? 'password' : inputType ? inputType : 'text'}
           value={isSecret ? (textIsShow ? currentValue : displayValue) : currentValue}
           onChange={handleChange}
           onBlur={onBlur}

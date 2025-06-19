@@ -6,6 +6,9 @@ import Comment from '@/components/UI-kit/elements/Comment/Comment'
 import Image from 'next/image'
 import Accordion from '@/components/UI-kit/Texts/Accordions/Accordions'
 import ICardFull, {Review} from '@/services/card/card.types'
+import StarRating from '@/components/UI-kit/inputs/StarRating/StarRating'
+import instance from '@/api/api.interceptor'
+import {toast} from 'sonner'
 
 interface ICardBottomPageProps {
   isLoading: boolean
@@ -67,7 +70,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
   const [commentValue, setCommentValue] = useState('')
   const [uploadedFiles, setUploadedFiles] = useState<IUploadedFile[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
-
+  const [starsCountSet, setStarsCountSet] = useState<number>(4)
   const MAX_IMAGE_SIZE = 5 * 1024 * 1024
   const MAX_VIDEO_SIZE = 200 * 1024 * 1024
   const MAX_FILES_COUNT = 20
@@ -165,6 +168,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -205,12 +209,50 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
     }
   }
 
+  const publishComment = async () => {
+    try {
+      const res = await instance.post(`products/${cardData?.id}/reviews`, {
+        text: commentValue,
+        // fileUrls: uploadedFiles.map((file) => file.fileUrl),
+        rating: starsCountSet
+      })
+      console.log(res)
+      toast.success(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Успешно!</strong>
+          <span>Отзыв опубликован</span>
+        </div>,
+        {
+          style: {
+            background: '#2E7D32'
+          }
+        }
+      )
+    } catch (e) {
+      console.log(e)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>Ошибка при публикации отзыва</strong>
+          <span>
+            Перед публикаией необходимо связаться с продавцом, и чтобы возраст аккаунта составлял не менее 7 дней
+          </span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
+    }
+  }
+
   if (comments.length === 0)
     return (
       <p id='cardCommentsSection' className={`${styles.create__first__comment}`}>
         Пока нет отзывов. Станьте первым!
       </p>
     )
+
   return (
     <div id='cardCommentsSection' className={`${styles.card__bottom__box}`}>
       <div className={`${styles.tabs__box}`}>
@@ -230,7 +272,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
           Вопросы
           <span className={`${styles.tabs__box__item__count__comments}`}>
             {' '}
-            {comments.length ? comments.length : '0'}
+            {cardData?.faq.length ? cardData?.faq.length : '0'}
           </span>
         </div>
       </div>
@@ -258,10 +300,14 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
             )}
 
             <div className={`${styles.create__comment__box}`}>
-              <p className={`${styles.create__comment__box__text}`}>
+              {/* <p className={`${styles.create__comment__box__text}`}>
                 Здесь будет превью ранее сделанного заказа: товар, его кол-во, цена, адрес доставки и тп. (превью как в
                 корзине)
-              </p>
+              </p> */}
+              <div className={`${styles.create__comment__box__rating}`}>
+                <p>Пожалуйста,расскажите о вашем опыте с этим товаром</p>
+                <StarRating starsCountSet={starsCountSet} setStarsCountSet={setStarsCountSet} />
+              </div>
 
               <form onSubmit={handleSubmit} className={`${styles.create__comment__form}`}>
                 {uploadedFiles.length > 0 && (
@@ -338,8 +384,10 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
                   />
                   <button
                     type='submit'
+                    onClick={publishComment}
                     className={`${styles.send__comment__button}`}
-                    disabled={!commentValue.trim() && uploadedFiles.length === 0}
+                    // && uploadedFiles.length === 0
+                    disabled={!commentValue.trim()}
                   >
                     <svg
                       className={`${styles.send__comment__image}`}

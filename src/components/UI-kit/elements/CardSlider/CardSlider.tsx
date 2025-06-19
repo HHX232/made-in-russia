@@ -40,7 +40,6 @@ interface SlickCardSliderProps {
   productName?: string
   productId?: string | number
 }
-
 const SlickCardSlider = ({
   isLoading,
   imagesCustom,
@@ -204,7 +203,6 @@ const SlickCardSlider = ({
 
   return (
     <>
-      {/* SEO микроразметка для галереи изображений */}
       <script
         type='application/ld+json'
         dangerouslySetInnerHTML={{
@@ -240,9 +238,21 @@ const SlickCardSlider = ({
                           autoPlay
                           muted
                           loop
+                          playsInline
+                          webkit-playsinline='true'
+                          controls={false}
+                          disablePictureInPicture
+                          controlsList='nodownload nofullscreen noremoteplayback'
                           className={styles.imageSlider__mainVideo}
                           itemProp='contentUrl'
                           aria-label={`Видео товара ${productName} - ${index + 1}`}
+                          style={
+                            {
+                              // Дополнительные стили для предотвращения fullscreen на iOS
+                              WebkitMediaControls: 'none',
+                              WebkitPlaybackTargetAvailability: 'none'
+                            } as React.CSSProperties
+                          }
                         />
                         <meta itemProp='name' content={`Видео товара ${productName} - ${index + 1}`} />
                         <meta itemProp='description' content={`Демонстрация товара ${productName}`} />
@@ -302,8 +312,19 @@ const SlickCardSlider = ({
                       autoPlay
                       muted
                       loop
+                      playsInline // Также добавляем для миниатюр
+                      webkit-playsinline='true'
+                      controls={false}
+                      disablePictureInPicture
+                      controlsList='nodownload nofullscreen noremoteplayback'
                       className={styles.imageSlider__thumbnailVideo}
                       aria-hidden='true'
+                      style={
+                        {
+                          WebkitMediaControls: 'none',
+                          WebkitPlaybackTargetAvailability: 'none'
+                        } as React.CSSProperties
+                      }
                     />
                   ) : (
                     <div

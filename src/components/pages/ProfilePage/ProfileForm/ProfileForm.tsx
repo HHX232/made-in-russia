@@ -10,6 +10,10 @@ import InputOtp from '@/components/UI-kit/inputs/inputOTP/inputOTP'
 import {User} from '@/services/users.types'
 import MultiDropSelect, {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {axiosClassic} from '@/api/api.interceptor'
+import {saveTokenStorage} from '@/middleware'
+import {toast} from 'sonner'
+import {IVendorData} from '../../VendorPage/VendorPage'
 const belarusSvg = '/belarus.svg'
 
 const countryOptions: MultiSelectOption[] = [
@@ -22,7 +26,23 @@ const countryOptions: MultiSelectOption[] = [
   {id: 'poland', label: 'Польша', value: 'Poland', icon: belarusSvg},
   {id: 'ukraine', label: 'Украина', value: 'Ukraine', icon: belarusSvg}
 ]
-
+const categoryOptions: MultiSelectOption[] = [
+  {id: 'lumber', label: 'Пиломатериалы', value: 'Lumber', icon: belarusSvg},
+  {id: 'drywall', label: 'Гипсокартон', value: 'Drywall', icon: belarusSvg},
+  {id: 'insulation', label: 'Утеплители', value: 'Insulation', icon: belarusSvg},
+  {id: 'roofing', label: 'Кровельные материалы', value: 'Roofing', icon: belarusSvg},
+  {id: 'paints', label: 'Лакокрасочные материалы', value: 'Paints', icon: belarusSvg},
+  {id: 'tiles', label: 'Плитка и керамика', value: 'Tiles', icon: belarusSvg},
+  {id: 'plumbing', label: 'Сантехника', value: 'Plumbing', icon: belarusSvg},
+  {id: 'hardware', label: 'Крепеж и метизы', value: 'Hardware', icon: belarusSvg},
+  {id: 'windows', label: 'Окна и двери', value: 'Windows', icon: belarusSvg},
+  {id: 'flooring', label: 'Напольные покрытия', value: 'Flooring', icon: belarusSvg},
+  {id: 'cement', label: 'Цемент и смеси', value: 'Cement', icon: belarusSvg},
+  {id: 'metal', label: 'Металлопрокат', value: 'Metal', icon: belarusSvg},
+  {id: 'tools', label: 'Инструменты', value: 'Tools', icon: belarusSvg},
+  {id: 'electrical', label: 'Электротовары', value: 'Electrical', icon: belarusSvg},
+  {id: 'decor', label: 'Отделочные материалы', value: 'Decor', icon: belarusSvg}
+]
 interface PhoneInputSectionProps {
   telText: string
   isValidNumber: boolean
@@ -36,14 +56,31 @@ interface RegionType {
   altName: string
 }
 
+// Типы для обновленных данных
+interface UpdatedUserData {
+  phoneNumber: string
+  region: string
+  password?: string
+}
+
+interface UpdatedVendorData extends UpdatedUserData {
+  countries: MultiSelectOption[]
+  inn: string
+  productCategories: MultiSelectOption[]
+}
+
 interface ProfileFormProps {
   isVendor?: boolean
-  userData?: User
+  userData?: User | IVendorData
   regions: RegionType[]
   isLoading: boolean
   isShowForOwner?: boolean
   setNeedToSave: (value: boolean) => void
+  // Новые пропсы для возврата данных
+  onUserDataChange?: (data: UpdatedUserData) => void
+  onVendorDataChange?: (data: UpdatedVendorData) => void
 }
+
 const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
   const cleanedPhone = phone.replace(/\D/g, '')
   switch (country) {
@@ -64,6 +101,7 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
       return cleanedPhone.length >= 7
   }
 }
+
 const PhoneInputSection: FC<PhoneInputSectionProps> = ({
   telText,
   isShowForVendor,
@@ -92,7 +130,9 @@ const ProfileForm: FC<ProfileFormProps> = ({
   userData,
   regions,
   isLoading,
-  setNeedToSave
+  setNeedToSave,
+  onUserDataChange,
+  onVendorDataChange
 }) => {
   const [password, setPassword] = useState('')
   const [telText, setTelText] = useState('')
@@ -125,6 +165,30 @@ const ProfileForm: FC<ProfileFormProps> = ({
     phoneNumber: string
     region: string
   } | null>(null)
+
+  // Функция для вызова колбэков с обновленными данными
+  // Вместо вызова в useEffect, вызывайте updateParentData только при реальных изменениях
+  useEffect(() => {
+    if (!userInteracted) return
+
+    const baseData: UpdatedUserData = {
+      phoneNumber: telText,
+      region: selectedRegion.altName,
+      ...(password && {password})
+    }
+
+    if (isVendor && onVendorDataChange) {
+      const vendorData: UpdatedVendorData = {
+        ...baseData,
+        countries: selectedCountries,
+        inn,
+        productCategories: categories
+      }
+      onVendorDataChange(vendorData)
+    } else if (!isVendor && onUserDataChange) {
+      onUserDataChange(baseData)
+    }
+  }, [telText, selectedRegion.altName, password, isVendor, selectedCountries, inn, categories, userInteracted])
 
   // Инициализация vendor данных
   useEffect(() => {
@@ -217,15 +281,8 @@ const ProfileForm: FC<ProfileFormProps> = ({
 
   // Установка региона из userData
   useEffect(() => {
-    // console.log('ProfileForm - region setup:', {
-    //   userDataRegion: userData?.region,
-    //   userInteracted,
-    //   regions
-    // })
-
     if (userData?.region && !userInteracted) {
       const userRegion = regions.find((region) => region.altName === userData.region)
-      // console.log('Found user region:', userRegion)
       if (userRegion) {
         setSelectedRegion(userRegion)
       }
@@ -326,7 +383,18 @@ const ProfileForm: FC<ProfileFormProps> = ({
 
     timerRef.current = setTimeout(() => {
       console.log('Таймер сработал: прошло 2 секунды после потери фокуса инпута пароля')
-      setModalIsOpen(true)
+      try {
+        const res = axiosClassic.post<{accessToken: string; refreshToken: string}>('/auth/recover-password', {
+          email: userData?.email,
+          newPassword: password
+        })
+
+        toast.success('Код отправлен на почту ' + userData?.email)
+        setModalIsOpen(true)
+      } catch {
+        toast.error('Ошибка изменения пароля!')
+        setModalIsOpen(false)
+      }
     }, 2000)
   }
 
@@ -340,6 +408,37 @@ const ProfileForm: FC<ProfileFormProps> = ({
 
   const closeModal = () => {
     setModalIsOpen(false)
+    setPassword('')
+  }
+  const closeModalOtp = async (code: string) => {
+    try {
+      const res = await axiosClassic.post<{accessToken: string; refreshToken: string}>(
+        '/auth/verify-recover-password',
+        {
+          email: userData?.email,
+          recoverCode: code
+        }
+      )
+      saveTokenStorage(res.data)
+
+      toast.success(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Поздравляем!</strong>
+          <span>Пароль успешно изменен!</span>
+        </div>,
+        {
+          style: {
+            background: '#2E7D32'
+          }
+        }
+      )
+      setTimeout(() => {
+        setModalIsOpen(false)
+      }, 1000)
+      setPassword('')
+    } catch {
+      toast.error('Пароль не изменен!')
+    }
   }
 
   return (
@@ -348,7 +447,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
         <p className={`${styles.modal__text}`}>Change password?</p>
         <p className={`${styles.modal__text__mini}`}>Enter the code sent to your email</p>
         <div style={{width: '100%', marginBottom: '10px'}}>
-          <InputOtp length={4} onComplete={closeModal} />
+          <InputOtp length={4} onComplete={closeModalOtp} />
         </div>
       </ModalWindowDefault>
       {isShowForOwner && (
@@ -385,18 +484,20 @@ const ProfileForm: FC<ProfileFormProps> = ({
             />
           </div>
         ) : (
-          <MultiDropSelect
-            isOnlyShow={!isShowForOwner}
-            extraClass={styles.profile__region__dropdown__extra}
-            options={countryOptions}
-            selectedValues={selectedCountries}
-            onChange={(values) => {
-              setSelectedCountries(values)
-              setUserInteracted(true)
-            }}
-            placeholder='Выберите страны...'
-            direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}
-          />
+          <span>
+            <MultiDropSelect
+              isOnlyShow={!isShowForOwner}
+              extraClass={styles.profile__region__dropdown__extra}
+              options={countryOptions}
+              selectedValues={selectedCountries}
+              onChange={(values) => {
+                setSelectedCountries(values)
+                setUserInteracted(true)
+              }}
+              placeholder='Выберите страны...'
+              direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}
+            />
+          </span>
         )}
       </div>
 
@@ -408,14 +509,14 @@ const ProfileForm: FC<ProfileFormProps> = ({
         onChangeTelNumber={onChangeTelNumber}
       />
       {isVendor && (
-        <div className={styles.region__box}>
+        <div className={`${styles.region__box} ${styles.region__box__second}`}>
           <p style={{cursor: 'pointer'}} onClick={() => setListIsOpen(!listIsOpen)} className={styles.input__title}>
             Категории товаров
           </p>
           <MultiDropSelect
             isOnlyShow={!isShowForOwner}
             extraClass={styles.profile__region__dropdown__extra}
-            options={countryOptions}
+            options={categoryOptions}
             selectedValues={categories}
             onChange={(values) => {
               setCategories(values)
@@ -445,4 +546,5 @@ const ProfileForm: FC<ProfileFormProps> = ({
     </div>
   )
 }
+
 export default ProfileForm

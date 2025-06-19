@@ -123,6 +123,7 @@ export async function middleware(request: NextRequest) {
 
           try {
             // Проверяем авторизацию с новым токеном
+            console.log(process.env.INTERNAL_REQUEST_SECRET)
             const {data: userData} = await instance.get<User>('/me', {
               headers: {
                 Authorization: `Bearer ${tokenData.accessToken}`,
@@ -287,7 +288,13 @@ export async function middleware(request: NextRequest) {
       }
 
       try {
-        const {data} = await axiosClassic.get<User>(`/vendor/${id}`)
+        const {data} = await axiosClassic.get<User>(`/vendor/${id}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+          }
+        })
+
         console.log('✅ Найден продавец:', data)
 
         // TODO РАСКОММЕНТИРОВАТЬ

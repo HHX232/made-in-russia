@@ -154,7 +154,7 @@
    display: flex;
    gap: 25px;
 
-   @media (max-width: 900px) {
+   @media (max-width: 1010px) {
       flex-direction: column;
    }
 
@@ -179,7 +179,7 @@
    display: none;
 }
 
-@media (max-width:900px) {
+@media (max-width:1010px) {
 
    .vendor__mini__blocks__box {
       display: flex;

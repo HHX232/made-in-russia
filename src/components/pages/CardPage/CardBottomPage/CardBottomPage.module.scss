@@ -36,6 +36,21 @@
    height: 25px;
 }
 
+.create__comment__box__rating {
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+   align-items: center;
+   margin: 20px 0;
+
+   &>p {
+      text-align: center;
+      font-size: 17px;
+      font-weight: 500;
+   }
+}
+
 .create__first__comment {
    font-size: 35px;
    line-height: 40px;

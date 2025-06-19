@@ -20,6 +20,7 @@ export interface VendorDetails {
   lastModificationDate: string
   countries: Country[]
   productCategories: ProductCategory[]
+  viewsCount?: number | string
 }
 
 // Основной интерфейс User

@@ -18,6 +18,7 @@ import RegisterUserThird from './RegisterUser/RegisterUserThird'
 import RegisterCompany from './RegisterCompany/RegisterCompany'
 import {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import Footer from '@/components/MainComponents/Footer/Footer'
+import {Category} from '@/services/categoryes/categoryes.service'
 
 const decorImage = '/login__image.jpg'
 const belarusSvg = '/belarus.svg'
@@ -27,7 +28,7 @@ interface AuthResponse {
   refreshToken: string
 }
 
-const RegisterPage = () => {
+const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const router = useRouter()
 
   // Form steps state
@@ -257,7 +258,7 @@ const RegisterPage = () => {
 
   return (
     <div className={`${styles.login__box}`}>
-      <MinimalHeader />
+      <MinimalHeader categories={categories} />
       <div className='container'>
         <div className={`${styles.login__inner}`}>
           <div className={styles.decor__image}></div>

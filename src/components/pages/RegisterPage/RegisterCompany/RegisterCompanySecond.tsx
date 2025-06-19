@@ -56,6 +56,8 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
         extraClass={`${styles.inputs__text_extra} ${!isEmailValid && email.length !== 0 ? styles.extra__email__error : ''}`}
         extraStyle={{width: '100%'}}
         isSecret={false}
+        autoComplete='on'
+        inputType='email'
         onSetValue={setEmail}
         currentValue={email}
         errorValue={!isEmailValid && email.length !== 0 ? 'почта должна содержать @ и расширение' : ''}
