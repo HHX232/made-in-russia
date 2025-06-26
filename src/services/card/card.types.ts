@@ -1,8 +1,11 @@
-interface CategoryOld {
+export interface ICategory {
   id: number
   name: string
-  creationDate: string // ISO date-time string
-  lastModificationDate: string // ISO date-time string
+  slug: string
+  imageUrl: string
+  children: ICategory[]
+  creationDate: string
+  lastModificationDate: string
 }
 
 interface DeliveryMethod {
@@ -37,12 +40,35 @@ interface Faq {
   creationDate: string
   lastModificationDate: string
 }
-
+interface DiscountPriceRange {
+  creationDate: string // ISO-8601 дата и время
+  currency: string // Валюта (в данном случае только RUB)
+  discount: number // Размер скидки (в процентах или фиксированной сумме)
+  discountedPrice: number // Цена со скидкой
+  // expiryDate: string // ISO-8601 дата и время окончания действия
+  from: number // Минимальное количество для применения скидки
+  id: number // Уникальный идентификатор
+  lastModificationDate: string // ISO-8601 дата и время последнего изменения
+  // minimumOrderQuantity: number // Минимальный заказ
+  originalPrice: number // Исходная цена
+  to: number // Максимальное количество для применения скидки
+  unit: string // Единица измерения (в данном случае кубометры)
+}
 interface ICardFull {
+  packagingOptions?: {name: string; price: number | string}[]
+  deliveryMethodsDetails?: {name: string; value: string}[]
+  minimumOrderQuantity?: number
   user: Author
+  daysBeforeDiscountExpires: number | string
+  prices: DiscountPriceRange[]
   id: number // read-only
+  similarProducts: {
+    id: number
+    imageUrl: string
+    title: string
+  }[]
   reviewsMedia: Media[]
-  category: CategoryOld
+  category: ICategory
   deliveryMethod: DeliveryMethod
   deliveryMethods: DeliveryMethod[]
   media: Media[]
@@ -51,6 +77,11 @@ interface ICardFull {
   article: string
   faq: Faq[]
   ordersCount: number
+  aboutVendor?: {
+    mainDescription: string
+    furtherDescription: string
+    media: {altText: string; url: string; id: number}[]
+  }
   title: string
   mainDescription: string // required, max 20000 characters (может содержать HTML)
   furtherDescription: string // required, max 5000 characters

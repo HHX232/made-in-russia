@@ -24,6 +24,7 @@ import Filters from '@/components/screens/Filters/Filters'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {Country} from '@/services/users.types'
 import {Category} from '@/services/categoryes/categoryes.service'
+import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 
 const Arrow = ({isActive, onClick, extraClass}: {isActive: boolean; onClick: () => void; extraClass?: string}) => {
   return (
@@ -101,6 +102,7 @@ export interface IVendorData {
     creationDate: string
     lastModificationDate: string
     viewsCount?: number | string
+    faq?: {question: string; answer: string}[]
   }
 }
 export interface IVendorPageProps {
@@ -117,7 +119,7 @@ interface Vendor {
   categories?: string[]
 }
 
-const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vendorData, numberCode = '+7'}) => {
+const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vendorData, numberCode = ''}) => {
   const [needToSave, setNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const [startAnimation, setStartAnimation] = useState(false)
@@ -186,16 +188,25 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     }
   }, [windowWidth])
 
-  const {
-    reviews,
-    isLoading: reviewsLoading,
-    hasMore,
-    loadMoreReviews,
-    totalElements
-  } = useProductReviews({
+  // Формируем параметры для хука useProductReviews с детальным логированием
+  const reviewsParams = {
     size: 10,
-    ...{specialRoute: !isPageForVendor ? `vendor/${vendorData?.id}` : ''}
-  })
+    ...(!isPageForVendor && vendorData?.id ? {specialRoute: `vendor/${vendorData.id}`} : {})
+  }
+
+  // Детальное логирование параметров
+  useEffect(() => {
+    console.log('=== VENDOR PAGE DEBUG ===')
+    console.log('isPageForVendor:', isPageForVendor)
+    console.log('vendorData:', vendorData)
+    console.log('vendorData?.id:', vendorData?.id)
+    console.log('reviewsParams:', reviewsParams)
+    console.log('specialRoute condition:', !isPageForVendor && vendorData?.id)
+    console.log('Calculated specialRoute:', !isPageForVendor && vendorData?.id ? `vendor/${vendorData.id}` : 'none')
+    console.log('========================')
+  }, [isPageForVendor, vendorData, reviewsParams.specialRoute])
+
+  const {reviews, isLoading: reviewsLoading, hasMore, loadMoreReviews, totalElements} = useProductReviews(reviewsParams)
 
   const observerRef = useRef<IntersectionObserver | null>(null)
   const scrollContainerRef = useRef<HTMLUListElement | null>(null)
@@ -216,7 +227,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
 
   // Вычисляем средний рейтинг
   const averageRating =
-    reviews.length > 0 ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1) : '4.5'
+    reviews.length > 0 ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1) : '0'
 
   // Запускаем анимацию после загрузки компонента
   useEffect(() => {
@@ -332,6 +343,18 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     // Добавляем код страны к номеру
     return numberCode + cleanNumber
   }
+
+  // Детальное логирование состояния комментариев
+  useEffect(() => {
+    console.log('=== COMMENTS STATE DEBUG ===')
+    console.log('reviews:', reviews)
+    console.log('reviews.length:', reviews.length)
+    console.log('totalElements:', totalElements)
+    console.log('reviewsLoading:', reviewsLoading)
+    console.log('hasMore:', hasMore)
+    console.log('isCommentsOpen:', isCommentsOpen)
+    console.log('===========================')
+  }, [reviews, totalElements, reviewsLoading, hasMore, isCommentsOpen])
 
   return (
     <>
@@ -509,6 +532,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
             <div className={styles.products__list}>
               <Filters />
               <CardsCatalog
+                canCreateNewProduct={isPageForVendor}
                 specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}
               />
             </div>
@@ -519,85 +543,41 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
         <h3 style={{fontSize: '30px', fontWeight: '500', textAlign: 'center', margin: '10px 60px 40px 60px'}}>
           Частые вопросы
         </h3>
-        <Accordion
-          items={[
-            {
-              title: 'Как зарегистрировать аккаунт?',
-              value:
-                'Нажмите "Регистрация" в правом верхнем углу сайта, заполните форму (имя, email, телефон, пароль) и подтвердите email. После этого аккаунт будет создан.'
-            },
-            {
-              title: 'Как восстановить пароль?',
-              value:
-                'На странице входа нажмите "Забыли пароль?", введите email, указанный при регистрации. Вам придет ссылка для сброса пароля. Следуйте инструкциям в письме.'
-            },
-            {
-              title: 'Как изменить личные данные в профиле?',
-              value:
-                'Зайдите в "Личный кабинет" → "Мои данные". Здесь можно изменить ФИО, контакты и другие данные. Не забудьте сохранить изменения.'
-            },
-            {
-              title: 'Где посмотреть историю заказов?',
-              value:
-                'В личном кабинете в разделе "Мои заказы" хранится полная история с датами, статусами и составом заказов.'
-            },
-            {
-              title: 'Как добавить или удалить адрес доставки?',
-              value:
-                'В личном кабинете откройте "Адреса доставки". Для добавления нажмите "+ Новый адрес", для удаления — значок корзины рядом с адресом.'
-            },
-            {
-              title: 'Почему я не могу войти в аккаунт?',
-              value:
-                'Проверьте правильность email и пароля. Если проблема сохраняется, воспользуйтесь восстановлением пароля или обратитесь в поддержку.'
-            },
-            {
-              title: 'Как подписаться на рассылку акций?',
-              value:
-                'В личном кабинете в "Настройках уведомлений" активируйте опцию "Email-рассылка". Также можно подписаться при оформлении заказа.'
-            },
-            {
-              title: 'Как отменить или изменить заказ?',
-              value:
-                'Если заказ еще не собран, откройте его в "Моих заказах" и нажмите "Отменить". Для изменений свяжитесь с поддержкой по телефону или через чат.'
-            },
-            {
-              title: 'Где ввести промокод или скидочный купон?',
-              value:
-                'В корзине перед оформлением заказа есть поле "Промокод". Введите код и нажмите "Применить". Скидка отразится в итоговой сумме.'
-            },
-            {
-              title: 'Как связать аккаунт с соцсетями?',
-              value:
-                'В "Настройках профиля" выберите "Привязать соцсети" и авторизуйтесь через Facebook, Google или другой доступный сервис.'
-            },
-            {
-              title: 'Как проверить статус заказа?',
-              value:
-                'В личном кабинете в разделе "Мои заказы" найдите нужный заказ. Его текущий статус (например, "В обработке", "Отправлен") будет указан рядом.'
-            },
-            {
-              title: 'Как удалить аккаунт?',
-              value:
-                'Напишите в поддержку с запросом на удаление. Учтите: это приведет к потере истории заказов и бонусных баллов.'
-            },
-            {
-              title: 'Почему не приходит письмо с подтверждением?',
-              value:
-                'Проверьте папку "Спам". Если письма нет, запросите повторную отправку на странице регистрации или входа. Также убедитесь, что email введен верно.'
-            },
-            {
-              title: 'Как изменить email или телефон в профиле?',
-              value:
-                'В "Личном кабинете" → "Мои данные" нажмите "Изменить" рядом с email/телефоном. Для email потребуется подтверждение через новую почту.'
-            },
-            {
-              title: 'Как оформить заказ без регистрации?',
-              value:
-                'При оформлении выберите "Продолжить без регистрации". Однако для отслеживания заказа и скидок рекомендуем создать аккаунт.'
+        {isPageForVendor && (
+          <div className=''>
+            <p style={{fontSize: '20px', fontWeight: '500', textAlign: 'center', margin: '10px 0 20px 0'}}>
+              Добавить вопрос
+            </p>
+            <div className={styles.vendor__faq__add__box}>
+              <TextInputUI theme='lightBlue' placeholder='Вопрос' currentValue='' onSetValue={() => {}} />
+              <TextInputUI theme='lightBlue' placeholder='Ответ' currentValue='' onSetValue={() => {}} />
+              <button className={styles.vendor__faq__add__button}>+</button>
+            </div>
+          </div>
+        )}
+        {isPageForVendor ? (
+          <>
+            <Accordion
+              needDeleteButton={true}
+              onDelete={() => {}}
+              items={
+                vendorData?.vendorDetails?.faq?.map((item) => ({
+                  title: item.question,
+                  value: item.answer
+                })) || []
+              }
+            />
+          </>
+        ) : (
+          <Accordion
+            items={
+              vendorData?.vendorDetails?.faq?.map((item) => ({
+                title: item.question,
+                value: item.answer
+              })) || []
             }
-          ]}
-        />
+          />
+        )}
       </ModalWindowDefault>
       <Footer />
     </>

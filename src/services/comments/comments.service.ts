@@ -102,9 +102,9 @@ const commentsService = {
         const response = await instance.get<SpecialRouteResponse>(
           `${params.specialRoute}/reviews?${queryParams.toString()}`
         )
-
+        console.log('Special route response in service:', response)
         return {
-          data: response.data.page,
+          data: response.data.page || response.data,
           error: null
         }
       } else {

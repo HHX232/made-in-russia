@@ -30,7 +30,7 @@ const ShopButtonUI: FC<ShopButtonUIProps> = ({extraClass = '', svgColor = 'white
         </div>
       )}
       <svg
-        onClick={() => console.log('Click')}
+        // onClick={() => console.log('Click')}
         className={styles.basket__img}
         style={{cursor: 'pointer'}}
         width='26'

@@ -7,9 +7,10 @@ interface IModalWindowDefaultProps {
   children: ReactNode
   isOpen: boolean
   onClose: (e: React.MouseEvent) => void
+  extraClass?: string
 }
 
-const ModalWindowDefault: FC<IModalWindowDefaultProps> = ({children, isOpen, onClose}) => {
+const ModalWindowDefault: FC<IModalWindowDefaultProps> = ({children, isOpen, onClose, extraClass}) => {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -30,7 +31,7 @@ const ModalWindowDefault: FC<IModalWindowDefaultProps> = ({children, isOpen, onC
     onClose(e)
   }
   return createPortal(
-    <div className={`${styles.modal__window__default__back}`} onClick={onBackClick}>
+    <div className={`${styles.modal__window__default__back} ${extraClass}`} onClick={onBackClick}>
       <div className={`${styles.modal__inner}`} onClick={(e) => e.stopPropagation()}>
         <div className={`${styles.modal__header}`}>
           <button className={`${styles.modal__header__close__button}`} onClick={(e) => onClose(e)}>

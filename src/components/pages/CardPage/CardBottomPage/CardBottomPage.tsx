@@ -246,12 +246,12 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
     }
   }
 
-  if (comments.length === 0)
-    return (
-      <p id='cardCommentsSection' className={`${styles.create__first__comment}`}>
-        Пока нет отзывов. Станьте первым!
-      </p>
-    )
+  // if (comments.length === 0)
+  //   return (
+  //     <p id='cardCommentsSection' className={`${styles.create__first__comment}`}>
+  //       Пока нет отзывов. Станьте первым!
+  //     </p>
+  // )
 
   return (
     <div id='cardCommentsSection' className={`${styles.card__bottom__box}`}>
@@ -292,7 +292,9 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
                   ))
                 ) : (
                   <li className={`${styles.no__comments}`}>
-                    <p>Пока нет отзывов. Станьте первым!</p>
+                    <p id='cardCommentsSection' className={`${styles.create__first__comment}`}>
+                      Пока нет отзывов. Станьте первым!
+                    </p>
                   </li>
                 )}
                 {specialLastElement}

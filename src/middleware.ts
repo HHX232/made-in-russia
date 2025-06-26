@@ -3,6 +3,7 @@ import type {NextRequest} from 'next/server'
 import instance, {axiosClassic} from './api/api.interceptor'
 import Cookies from 'js-cookie'
 import {User} from './services/users.types'
+import ICardFull from './services/card/card.types'
 
 export const saveTokenStorage = (data: {accessToken: string; refreshToken: string}) => {
   if (typeof window !== 'undefined') {
@@ -39,7 +40,7 @@ export const removeTokensFromResponse = (response: NextResponse) => {
   return response
 }
 // , '/profile', '/vendor'
-const protectedRoutes = ['/basket', '/profile', '/vendor']
+const protectedRoutes = ['/basket', '/profile', '/vendor', '/create-card']
 const publicRoutes = ['/login', '/register']
 
 export async function middleware(request: NextRequest) {
@@ -57,6 +58,169 @@ export async function middleware(request: NextRequest) {
       refreshTokenExists: !!refreshToken,
       path: pathname
     })
+
+    // Обработка маршрутов create-card
+    if (pathname === '/create-card' || pathname.startsWith('/create-card/')) {
+      console.log('🎨 Обнаружен маршрут create-card:', pathname)
+
+      // Проверка наличия refresh токена
+      if (!refreshToken) {
+        console.log('❌ Нет refresh токена, редирект на /login')
+        return NextResponse.redirect(new URL('/login', request.url))
+      }
+
+      try {
+        // Получаем данные пользователя
+        const {data: userData} = await instance.get<User>('/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+          }
+        })
+
+        console.log('✅ Пользователь авторизован, роль:', userData.role)
+
+        // Проверяем роль пользователя
+        if (userData.role !== 'Vendor' && userData.role !== 'Admin') {
+          console.log('❌ Доступ запрещен для роли:', userData.role)
+          return NextResponse.redirect(new URL('/', request.url))
+        }
+
+        // Если это маршрут с ID товара
+        if (pathname.startsWith('/create-card/') && pathname !== '/create-card') {
+          const pathSegments = pathname.split('/')
+          const productId = pathSegments[2]
+
+          console.log('🔍 Проверка доступа к товару с ID:', productId)
+
+          if (!productId || isNaN(Number(productId))) {
+            console.log('❌ Невалидный ID товара:', productId)
+            return NextResponse.redirect(new URL('/create-card', request.url))
+          }
+
+          try {
+            // Получаем данные о товаре
+            const {data: productData} = await axiosClassic.get<ICardFull>(`/products/${productId}`, {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+              }
+            })
+
+            const productOwnerId = productData?.user.id
+            console.log('📦 Владелец товара:', productOwnerId, 'Текущий пользователь:', userData.id)
+
+            // Админ имеет доступ ко всем товарам
+            if (userData.role === 'Admin') {
+              console.log('👑 Admin имеет доступ к редактированию любого товара')
+              return NextResponse.next()
+            }
+
+            // Проверяем, является ли пользователь владельцем товара
+            if (productOwnerId !== userData.id) {
+              console.log('❌ Пользователь не является владельцем товара, редирект на /create-card')
+              return NextResponse.redirect(new URL('/create-card', request.url))
+            }
+
+            console.log('✅ Пользователь является владельцем товара, доступ разрешен')
+            return NextResponse.next()
+          } catch (error) {
+            console.error('❌ Ошибка при получении данных товара:', error)
+            // Если товар не найден или произошла ошибка, редиректим на /create-card
+            return NextResponse.redirect(new URL('/create-card', request.url))
+          }
+        }
+
+        // Для маршрута /create-card без ID просто разрешаем доступ Vendor и Admin
+        return NextResponse.next()
+      } catch (error) {
+        console.error('❗ Не удалось получить данные пользователя:', error)
+
+        // Пытаемся обновить токен
+        console.log('🔄 Попытка обновления токена')
+        try {
+          const {data: tokenData} = await axiosClassic.patch<{
+            accessToken: string
+          }>(
+            '/me/current-session/refresh',
+            {refreshToken},
+            {
+              headers: {
+                'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+              }
+            }
+          )
+
+          console.log('✅ Токен успешно обновлен')
+
+          // Создаем новый ответ и устанавливаем обновленные токены
+          const response = NextResponse.next()
+          response.cookies.set('accessToken', tokenData.accessToken)
+
+          // Повторяем проверку с новым токеном
+          const {data: userData} = await instance.get<User>('/me', {
+            headers: {
+              Authorization: `Bearer ${tokenData.accessToken}`,
+              'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+            }
+          })
+
+          // Проверяем роль пользователя
+          if (userData.role !== 'Vendor' && userData.role !== 'Admin') {
+            console.log('❌ Доступ запрещен для роли:', userData.role)
+            const redirectResponse = NextResponse.redirect(new URL('/', request.url))
+            redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+            return redirectResponse
+          }
+
+          // Если это маршрут с ID товара
+          if (pathname.startsWith('/create-card/') && pathname !== '/create-card') {
+            const pathSegments = pathname.split('/')
+            const productId = pathSegments[2]
+
+            if (!productId || isNaN(Number(productId))) {
+              const redirectResponse = NextResponse.redirect(new URL('/create-card', request.url))
+              redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              return redirectResponse
+            }
+
+            try {
+              const {data: productData} = await axiosClassic.get<ICardFull>(`/products/${productId}`, {
+                headers: {
+                  Authorization: `Bearer ${tokenData.accessToken}`,
+                  'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+                }
+              })
+
+              const productOwnerId = productData?.user?.id
+
+              if (userData.role === 'Admin') {
+                return response
+              }
+
+              if (productOwnerId !== userData.id) {
+                const redirectResponse = NextResponse.redirect(new URL('/create-card', request.url))
+                redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+                return redirectResponse
+              }
+
+              return response
+            } catch (error) {
+              console.error('❌ Ошибка при получении данных товара:', error)
+              const redirectResponse = NextResponse.redirect(new URL('/create-card', request.url))
+              redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              return redirectResponse
+            }
+          }
+
+          return response
+        } catch (e) {
+          console.error('❌ Не удалось обновить токен:', e)
+          const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+          return removeTokensFromResponse(redirectResponse)
+        }
+      }
+    }
 
     // Обработка защищенных маршрутов
     if (protectedRoutes.some((route) => pathname.startsWith(route))) {
@@ -295,7 +459,7 @@ export async function middleware(request: NextRequest) {
           }
         })
 
-        console.log('✅ Найден продавец:', data)
+        console.log('✅ Найден продавец:', data.role)
 
         // TODO РАСКОММЕНТИРОВАТЬ
         //! const {data: userData} = await instance.get<User>('/me', {

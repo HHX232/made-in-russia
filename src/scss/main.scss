@@ -19,6 +19,99 @@ html {
 	}
 }
 
+// md-editor-custom.module.scss
+// Добавьте эти стили в ваш основной файл стилей или создайте отдельный
+
+// Исправление видимости перегородки между редактором и превью
+.md-editor-resize-operate {
+	background-color: #d9d9d9 !important;
+	width: 2px !important;
+}
+
+.md-editor-toolbar-wrapper {
+	border-bottom: 2px solid #B8B8B8 !important;
+}
+
+.md-editor {
+	border: 2px solid #B8B8B8 !important;
+}
+
+// Дополнительные улучшения для темы
+.md-editor-light {
+	.toolbar-item {
+		&:hover {
+			background-color: #f0f0f0;
+		}
+
+		&.active {
+			background-color: #e6f7ff;
+			color: #1890ff;
+		}
+	}
+}
+
+.md-editor-toolbar {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	row-gap: 15px;
+
+	&-left {
+		width: 100%;
+		justify-content: space-between;
+		flex-wrap: wrap;
+	}
+}
+
+.md-editor-toolbar-left {
+	width: 100% !important;
+	justify-content: space-around !important;
+	flex-wrap: wrap !important;
+}
+
+.md-editor-toolbar-right {
+	margin-left: auto;
+}
+
+.md-editor-preview h1 {
+	line-height: 1.2 !important;
+	margin-bottom: 20px !important;
+	margin-top: 20px !important;
+}
+
+.md-editor-preview h2 {
+	line-height: 1.2 !important;
+	margin-top: 16px !important;
+	margin-bottom: 16px !important;
+}
+
+.md-editor-preview h3 {
+	line-height: 1.2 !important;
+	margin-top: 16px !important;
+	margin-bottom: 16px !important;
+}
+
+.md-editor-preview h4 {
+	line-height: 1.2 !important;
+	margin-top: 10px !important;
+	margin-bottom: 10px !important;
+}
+
+.md-editor-preview h5 {
+	line-height: 1.2 !important;
+	margin-top: 10px !important;
+	margin-bottom: 10px !important;
+}
+
+
+
+.md-editor-preview h6 {
+	line-height: 1.2 !important;
+	margin-top: 10px !important;
+	margin-bottom: 10px !important;
+}
+
 // Или более продвинутый вариант с учетом ширины скроллбара:
 .body-scroll-lock {
 	overflow: hidden !important;
@@ -688,6 +781,83 @@ img {
 			font-size: 17px !important;
 		}
 
+	}
+}
+
+
+/* Стили для контейнера редактора */
+.editor__wrapper {
+
+
+	/* Стилизация изображений в превью */
+	.md-editor-preview img[src^="data:image"] {
+		max-width: 100%;
+		height: auto;
+	}
+
+	/* Стилизация кода с base64 в редакторе */
+	.md-editor-input-wrapper {
+
+		/* Обрезка длинных строк в редакторе */
+		.cm-string,
+		.cm-url {
+			&:has-text("data:image") {
+				display: inline-block;
+				max-width: 200px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				vertical-align: bottom;
+			}
+		}
+
+		/* Альтернативный подход через селектор содержимого */
+		.cm-line:has(.cm-string:contains("data:image")),
+		.cm-line:has(.cm-url:contains("data:image")) {
+
+			.cm-string,
+			.cm-url {
+				display: inline-block;
+				max-width: 200px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+		}
+	}
+
+	/* Стилизация для CodeMirror 6 (если используется) */
+	.cm-editor {
+		.cm-line {
+
+			/* Обрезка только для строк с base64 */
+			.cm-string {
+				&[class*="data:image"] {
+					display: inline-block;
+					max-width: 200px;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+			}
+		}
+	}
+
+}
+
+/* Альтернативное решение через JavaScript + CSS */
+.truncated__base64 {
+	display: inline-block;
+	max-width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	vertical-align: bottom;
+	cursor: pointer;
+	color: #0969da;
+
+	&:hover {
+		text-decoration: underline;
 	}
 }
 

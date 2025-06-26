@@ -8,12 +8,13 @@ import {Product} from '@/services/products/product.types'
 export interface CatalogProps {
   initialProducts: Product[]
   initialHasMore: boolean
+  isShowFilters?: boolean
 }
 
-const Catalog: FC<CatalogProps> = ({initialProducts, initialHasMore}) => {
+const Catalog: FC<CatalogProps> = ({initialProducts, initialHasMore, isShowFilters = true}) => {
   return (
     <div style={{overflow: 'visible'}} className={`container ${styles.catalog__box}`}>
-      <Filters />
+      {isShowFilters && <Filters />}
       <CardsCatalog initialProducts={initialProducts} initialHasMore={initialHasMore} />
     </div>
   )

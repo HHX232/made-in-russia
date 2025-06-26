@@ -6,7 +6,7 @@ import BasketButtonUI from '../../buttons/BasketButtonUI/BasketButtonUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {createPriceWithDot} from '@/utils/createPriceWithDot'
 import {useActions} from '@/hooks/useActions'
-import {useEffect} from 'react'
+// import {useEffect} from 'react'
 const trash = '/trash.svg'
 
 const BasketCard = ({product, onFavClick}: {product: IProductInBasket; onFavClick: () => void}) => {
@@ -14,9 +14,9 @@ const BasketCard = ({product, onFavClick}: {product: IProductInBasket; onFavClic
   const isProductInFavorites = productInFavorites.some((el) => el.id.toString() === product.id.toString())
   const {removeFromBasket} = useActions()
 
-  useEffect(() => {
-    console.log('product ', product)
-  }, [product])
+  // useEffect(() => {
+  //   console.log('product ', product)
+  // }, [product])
 
   return (
     <li className={styles.basket__item}>

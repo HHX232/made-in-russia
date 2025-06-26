@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import {FC, useEffect, useState} from 'react'
 import styles from './Filters.module.scss'
@@ -84,7 +85,7 @@ const Filters: FC = () => {
 
   useEffect(() => {
     queryClient.invalidateQueries({queryKey: ['products']})
-    console.log('Мы сделала не валидными продукты; ' + searchTitle)
+    // console.log('Мы сделала не валидными продукты; ' + searchTitle)
   }, [selectedFilters, delivery, queryClient, searchTitle])
 
   const listOpenIf = (): string => {
@@ -127,7 +128,7 @@ const Filters: FC = () => {
           {shouldShowArrow() && <Arrow isActive={filtersIsOpen} />}
           <h4 className={`${styles.filters__title}`}>Фильтры</h4>
         </div>
-        <button
+        {/* <button
           onClick={() => {
             clearFilters()
             clearDelivery()
@@ -136,7 +137,7 @@ const Filters: FC = () => {
           className={`${styles.clear__filters} ${styles.clear__filters__button__title}`}
         >
           сброс
-        </button>
+        </button> */}
       </div>
       <span className={`${styles.span_over} ${listOpenIf()}`}>
         <div className={`${styles.filters__part}`}>
@@ -181,7 +182,7 @@ const Filters: FC = () => {
             {renderCategoryItems(categoriesList, false, 'right', '25')}
           </div>
         </div> */}
-        <div className={`${styles.end__part}`}>
+        {/* <div className={`${styles.end__part}`}>
           <div className={`${styles.end__part_title}`}>Способы доставки</div>
           <div className={`${styles.end__part_droplists}`}>
             {isDelLoading && (
@@ -195,7 +196,7 @@ const Filters: FC = () => {
                 count={5}
               />
             )}
-            {!isDelLoading && (
+        {!isDelLoading && (
               <>
                 {dataDel?.map((el, i) => {
                   return (
@@ -210,20 +211,34 @@ const Filters: FC = () => {
                   )
                 })}
               </>
-            )}
+            )} 
           </div>
-        </div>
+        </div> */}
       </span>
-      <button
-        onClick={() => {
-          clearFilters()
-          clearDelivery()
-          setSearchTitle('')
-        }}
-        className={`${styles.clear__filters} ${styles.clear__filters__button__bottom}`}
-      >
-        сброс
-      </button>
+      {windowWidth && windowWidth <= 500 && filtersIsOpen && (
+        <button
+          onClick={() => {
+            clearFilters()
+            clearDelivery()
+            setSearchTitle('')
+          }}
+          className={`${styles.clear__filters} ${styles.clear__filters__button__bottom}`}
+        >
+          сброс
+        </button>
+      )}
+      {windowWidth && windowWidth > 500 && (
+        <button
+          onClick={() => {
+            clearFilters()
+            clearDelivery()
+            setSearchTitle('')
+          }}
+          className={`${styles.clear__filters} ${styles.clear__filters__button__bottom}`}
+        >
+          сброс
+        </button>
+      )}
     </div>
   )
 }

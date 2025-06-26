@@ -10,11 +10,11 @@ const hideIcon = '/hide__text.svg'
 const showIcon = '/show__text.svg'
 
 interface ITextInputProps {
-  inputType?: 'text' | 'password' | 'email'
+  inputType?: 'text' | 'password' | 'email' | 'number'
   extraClass?: string
   extraStyle?: CSSProperties
   placeholder: string
-  title: string | ReactNode
+  title?: string | ReactNode
   helpTitle?: string
   isSecret?: boolean
   currentValue: string
@@ -23,7 +23,7 @@ interface ITextInputProps {
   customIcon?: StaticImageData
   customIconOnAlternativeState?: StaticImageData
   linkToHelp?: Url
-  theme?: 'dark' | 'light'
+  theme?: 'dark' | 'light' | 'superWhite' | 'lightBlue'
   // Дополнительные события для input
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
@@ -36,6 +36,7 @@ interface ITextInputProps {
   readOnly?: boolean
   autoComplete?: string
   autoFocus?: boolean
+  idForLabel?: string
 }
 
 const TextInputUI: FC<ITextInputProps> = ({
@@ -60,6 +61,7 @@ const TextInputUI: FC<ITextInputProps> = ({
   onMouseEnter,
   onMouseLeave,
   onClick,
+  idForLabel,
   disabled = false,
   readOnly = false,
   autoComplete,
@@ -74,8 +76,33 @@ const TextInputUI: FC<ITextInputProps> = ({
     setDisplayValue(isSecret && !textIsShow ? currentValue.replace(/./g, '*') : currentValue)
   }, [currentValue, isSecret, textIsShow])
 
+  // Функция для валидации числового ввода
+  const isValidNumberInput = (value: string): boolean => {
+    // Разрешаем пустую строку, цифры, точку, запятую, минус в начале
+    return /^-?[\d.,]*$/.test(value)
+  }
+
+  // Обработчик нажатия клавиш для числового инпута
+  const handleNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Запрещаем ввод 'e', 'E', '+' для числового инпута
+    if (inputType === 'number' && ['e', 'E', '+'].includes(e.key)) {
+      e.preventDefault()
+      return
+    }
+
+    // Вызываем пользовательский обработчик, если он есть
+    if (onKeyDown) {
+      onKeyDown(e)
+    }
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
+
+    // Дополнительная валидация для числового инпута
+    if (inputType === 'number' && value !== '' && !isValidNumberInput(value)) {
+      return // Не обновляем значение, если оно не валидно
+    }
 
     if (isSecret) {
       if (value.length > displayValue.length) {
@@ -99,10 +126,12 @@ const TextInputUI: FC<ITextInputProps> = ({
   return (
     <label
       style={{...extraStyle}}
-      htmlFor={id}
+      htmlFor={idForLabel ? idForLabel : id}
       className={cn(extraClass, styles.input__box, {
         [styles.dark]: theme === 'dark',
-        [styles.light]: theme === 'light'
+        [styles.light]: theme === 'light',
+        [styles.superWhite]: theme === 'superWhite',
+        [styles.lightBlue]: theme === 'lightBlue'
       })}
     >
       <div className={`${styles.titles_box}`}>
@@ -121,7 +150,7 @@ const TextInputUI: FC<ITextInputProps> = ({
           onChange={handleChange}
           onBlur={onBlur}
           onFocus={onFocus}
-          onKeyDown={onKeyDown}
+          onKeyDown={handleNumberKeyDown}
           onKeyUp={onKeyUp}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
@@ -130,8 +159,11 @@ const TextInputUI: FC<ITextInputProps> = ({
           readOnly={readOnly}
           autoComplete={autoComplete}
           autoFocus={autoFocus}
-          className={`${styles.input} ${errorValue && styles.error__input}`}
-          id={id}
+          className={cn(styles.input, {
+            [styles.error__input]: errorValue,
+            [styles.number__input]: inputType === 'number'
+          })}
+          id={idForLabel ? idForLabel : id}
         />
         {isSecret &&
           (!customIcon ? (

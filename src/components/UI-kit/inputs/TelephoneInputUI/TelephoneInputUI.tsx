@@ -15,21 +15,34 @@ interface ITelephoneProps {
 }
 
 // Функция для получения кода страны
+// В TelephoneInputUI.tsx обновите функцию getCountryCode:
+
 const getCountryCode = (country: TNumberStart): string => {
+  // TODO вернуть логи
+  // console.log('getCountryCode called with:', country, 'type:', typeof country)
+
   switch (country) {
     case 'Belarus':
+      // console.log('Returning +375 for Belarus')
       return '+375'
     case 'China':
+      // console.log('Returning +86 for China')
       return '+86'
     case 'Russia':
+      // console.log('Returning +7 for Russia')
+      return '+7'
     case 'Kazakhstan':
+      // console.log('Returning +7 for Kazakhstan')
       return '+7'
     case 'other':
+      // console.log('Returning + for other')
+      return '+'
     default:
-      return ''
+      // ВАЖНО: если пришло неизвестное значение, возвращаем '+'
+      console.warn('Unknown country in getCountryCode:', country)
+      return '+'
   }
 }
-
 // Функция для получения максимальной длины номера
 const getMaxLength = (country: TNumberStart): number => {
   switch (country) {
@@ -66,17 +79,17 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
   // Инициализируем startValue правильным кодом страны
   const [startValue, setStartValue] = useState(() => {
     const code = getCountryCode(numberStartWith)
-    console.log('Initial startValue:', code, 'for country:', numberStartWith)
+    // console.log('Initial startValue:', code, 'for country:', numberStartWith)
     return code
   })
   const [inputValue, setInputValue] = useState(() => {
-    console.log('Initial inputValue:', currentValue)
+    // console.log('Initial inputValue:', currentValue)
     return currentValue
   })
   const [formattedValue, setFormattedValue] = useState(() => {
     // Форматируем начальное значение при инициализации
     const formatted = formatPhoneNumber(currentValue, numberStartWith)
-    console.log('Initial formattedValue:', formatted, 'from:', currentValue)
+    // console.log('Initial formattedValue:', formatted, 'from:', currentValue)
     return formatted
   })
   const [isInitialized, setIsInitialized] = useState(false)
@@ -129,28 +142,28 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
     })
 
     if (currentValue !== inputValue) {
-      console.log('Updating from currentValue:', currentValue)
+      // console.log('Updating from currentValue:', currentValue)
       setInputValue(currentValue)
       const formatted = formatPhoneNumber(currentValue, numberStartWith)
       setFormattedValue(formatted)
-      console.log('Set formatted to:', formatted)
+      // console.log('Set formatted to:', formatted)
     }
   }, [currentValue, numberStartWith])
 
   // Set country code when country changes
   useEffect(() => {
-    console.log('Country change useEffect:', {
-      numberStartWith,
-      isInitialized,
-      currentInputValue: inputValue,
-      currentValue
-    })
+    // console.log('Country change useEffect:', {
+    //   numberStartWith,
+    //   isInitialized,
+    //   currentInputValue: inputValue,
+    //   currentValue
+    // })
 
     // Устанавливаем код страны
     const code = getCountryCode(numberStartWith)
     const maxLength = getMaxLength(numberStartWith)
 
-    console.log('Setting country code:', code)
+    // console.log('Setting country code:', code)
     setStartValue(code)
 
     // Если это не первая инициализация
@@ -163,11 +176,11 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
       // Форматируем значение
       const newFormattedValue = formatPhoneNumber(cleanedValue, numberStartWith)
 
-      console.log('Country change - updating values:', {
-        valueToUse,
-        cleanedValue,
-        newFormattedValue
-      })
+      // console.log('Country change - updating values:', {
+      //   valueToUse,
+      //   cleanedValue,
+      //   newFormattedValue
+      // })
 
       setInputValue(cleanedValue)
       setFormattedValue(newFormattedValue)
@@ -178,16 +191,16 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
         const cleanedValue = currentValue.replace(/\D/g, '').slice(0, maxLength)
         const newFormattedValue = formatPhoneNumber(cleanedValue, numberStartWith)
 
-        console.log('First init with value:', {
-          currentValue,
-          cleanedValue,
-          newFormattedValue
-        })
+        // console.log('First init with value:', {
+        //   currentValue,
+        //   cleanedValue,
+        //   newFormattedValue
+        // })
 
         setInputValue(cleanedValue)
         setFormattedValue(newFormattedValue)
       }
-      console.log('First initialization completed')
+      // console.log('First initialization completed')
       setIsInitialized(true)
     }
   }, [numberStartWith, currentValue])

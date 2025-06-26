@@ -213,19 +213,25 @@ const ShopProfile = ({
   )
 }
 
-const VariantsBox = ({imagesUrls = []}: {imagesUrls: string[]}) => {
+const VariantsBox = ({imagesUrls = [], idArray = []}: {imagesUrls: string[]; idArray: number[]}) => {
   return (
     <div className={`${styles.variants__content__box}`}>
       {imagesUrls.map((el, i) => {
         return (
-          <Image
-            key={i}
-            className={`${styles.variants__content__box__item} ${i == 2 && styles.variants__content__box__item__active} `}
-            src={el}
-            alt='variant'
-            width={60}
-            height={60}
-          />
+          <Link href={`/card/${idArray[i]}`} key={i}>
+            {el.includes('mp4') || el.includes('webm') || el.includes('mov') ? (
+              <video src={el} autoPlay loop muted playsInline preload='metadata' width={60} height={60} />
+            ) : (
+              <Image
+                // ${i == 2 && styles.variants__content__box__item__active}
+                className={`${styles.variants__content__box__item}  `}
+                src={el}
+                alt='variant'
+                width={60}
+                height={60}
+              />
+            )}
+          </Link>
         )
       })}
     </div>
@@ -367,11 +373,14 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   const windowWidth = useWindowWidth()
 
   useEffect(() => {
+    console.log('cardData', cardData)
+  }, [cardData])
+  useEffect(() => {
     setIsMounted(true)
   }, [])
 
   useEffect(() => {
-    console.log('cardData', cardData)
+    // console.log('cardData', cardData)
     if (cardData) {
       setCardMiniData(cardData)
     }
@@ -422,7 +431,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
         ) : (
           <Skeleton style={{width: 100000, maxWidth: '350px'}} height={20} />
         )}
-        {!isReallyLoading ? <p className={`${styles.card__del__count}`}>{cardMiniData!.ordersCount} заказов</p> : <></>}
+        {/* {!isReallyLoading ? <p className={`${styles.card__del__count}`}>{cardMiniData!.ordersCount} заказов</p> : <></>} */}
         {!isReallyLoading ? (
           <p className={`${styles.card__comments__count}`}> {cardMiniData!.reviewsCount} отзывов</p>
         ) : (
@@ -442,12 +451,15 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
       <div className={`${styles.variants__box}`}>
         {!isReallyLoading ? (
-          <h2 className={`${styles.variants__title}`}>Варианты:</h2>
+          <h2 className={`${styles.variants__title}`}>Похожее:</h2>
         ) : (
           <Skeleton height={24} width={100} />
         )}
         {!isReallyLoading ? (
-          <VariantsBox imagesUrls={[var1, var2, var3, var1, var2, var3]} />
+          <VariantsBox
+            idArray={cardData?.similarProducts?.map((el) => el.id) || []}
+            imagesUrls={cardData?.similarProducts?.map((el) => el.imageUrl) || []}
+          />
         ) : (
           <div className={`${styles.variants__content__box}`}>
             <Skeleton height={60} width={60} />
@@ -463,9 +475,9 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             titleMain=''
             items={[
               {title: 'Артикул ', value: cardMiniData!.article},
-              {title: cardMiniData.characteristics[0].name, value: cardMiniData.characteristics[0].value},
-              {title: cardMiniData.characteristics[1].name, value: cardMiniData.characteristics[1].value},
-              {title: cardMiniData.characteristics[2].name, value: cardMiniData.characteristics[2].value}
+              {title: cardMiniData?.characteristics[0]?.name, value: cardMiniData?.characteristics[0]?.value},
+              {title: cardMiniData?.characteristics[1]?.name, value: cardMiniData?.characteristics[1]?.value},
+              {title: cardMiniData?.characteristics[2]?.name, value: cardMiniData?.characteristics[2]?.value}
             ]}
           />
         ) : (
@@ -492,34 +504,36 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     <div className={`${styles.card__state}`}>
       <div className={`${styles.card__state__big}`}>
         <ul className={`${styles.prices__list}`}>
-          {priceList.items.map((el, i) => {
+          {cardData?.prices.map((el, i) => {
             return (
               <li className={`${styles.prices__list_item}`} key={i}>
                 {!isReallyLoading ? (
-                  <p className={`${styles.price__list__title}`}>{el.title}</p>
+                  <p className={`${styles.price__list__title}`}>
+                    {el.to == 999999 ? el.from + ' ' + el.unit + '+' : el.from + '-' + el.to + ' ' + el.unit}
+                  </p>
                 ) : (
                   <Skeleton style={{width: 100000, maxWidth: '45px'}} height={30} />
                 )}
                 {!isReallyLoading ? (
                   <p className={`${styles.price__list__value__start}`}>
                     <span
-                      className={`${styles.price__original__price} ${el.currentPrice !== el.originalPrice && styles.price__original__with__discount}`}
+                      className={`${styles.price__original__price} ${el.discountedPrice !== el.originalPrice && styles.price__original__with__discount}`}
                     >
-                      {createPriceWithDot(el.originalPrice as string)}
+                      {createPriceWithDot(el.originalPrice.toString())}
                     </span>
-                    {el.originalPrice !== el.currentPrice ? (
+                    {el.originalPrice !== el.discountedPrice ? (
                       <span className={`${styles.discount__price}`}>
-                        {createPriceWithDot(el.currentPrice as string)}
+                        {createPriceWithDot(el.discountedPrice.toString())}
                       </span>
                     ) : (
                       ''
                     )}
                     <span className={`${styles.price__unit}`}>
                       {renderPriceUnit(
-                        el.priceUnit,
+                        el.currency + '/' + el.unit,
                         [
                           styles.price__currency__first,
-                          el.currentPrice !== el.originalPrice ? styles.price__currency__first__active : ''
+                          el.discountedPrice !== el.originalPrice ? styles.price__currency__first__active : ''
                         ],
                         [styles.price__unitMeasure]
                       )}
@@ -535,7 +549,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
         <div className={`${styles.discount__date__box}`}>
           <span className={`${styles.date__count}`}>
             {!isReallyLoading ? (
-              getDatesDifference({startDate: currentDate, endDate: priceList.discountExpiration?.toString()}) + ' дней'
+              cardData?.daysBeforeDiscountExpires?.toString() + ' дней'
             ) : (
               <Skeleton style={{width: 100000, maxWidth: '45px'}} height={16} />
             )}
@@ -546,26 +560,15 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
         </div>
         <div className={`${styles.min__weight}`}>
           {!isReallyLoading ? (
-            `Минимальный объем заказа 1т.`
+            `Минимальный объем заказа ${cardData?.minimumOrderQuantity}${cardData?.prices[0].unit}`
           ) : (
             <Skeleton style={{width: 100000, maxWidth: '100%'}} height={16} />
           )}
         </div>
 
         <div className='styles.buttons__box'>
-          {/* {!isReallyLoading && cardMiniData ? (
-            <BasketButtonUI
-              textColor='dark'
-              iconColor='dark'
-              extraClass={`${styles.extra__shop__button}`}
-              product={cardMiniData}
-            />
-          ) : (
-            <Skeleton height={48} width={150} />
-          )} */}
           {!isReallyLoading ? (
             <button
-              // style={{marginTop: '10px'}}
               onClick={(event) => {
                 event.preventDefault()
               }}
@@ -585,51 +588,51 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
           <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
         )}
         <ul className={`${styles.state__mini__list}`}>
-          <li className={`${styles.state__mini__list__item}`}>
-            {!isReallyLoading ? (
-              <p className={`${styles.state__mini__list__item__text}`}>по России</p>
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-            )}
-            {!isReallyLoading ? (
-              <p className={`${styles.state__mini__list__item__value}`}>1-3 недели</p>
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '100px'}} height={16} />
-            )}
-          </li>
-          <li className={`${styles.state__mini__list__item}`}>
-            {!isReallyLoading ? (
-              <p className={`${styles.state__mini__list__item__text}`}>по Китаю </p>
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-            )}
-            {!isReallyLoading ? (
-              <p className={`${styles.state__mini__list__item__value}`}>2-6 недели</p>
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '100px'}} height={16} />
-            )}
-          </li>
+          {cardData?.deliveryMethodsDetails?.map((el, i) => {
+            return (
+              <li key={el.name.toString() + i} className={`${styles.state__mini__list__item}`}>
+                {!isReallyLoading ? (
+                  <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
+                ) : (
+                  <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
+                )}
+                {!isReallyLoading ? (
+                  <p className={`${styles.state__mini__list__item__value}`}>{el.value}</p>
+                ) : (
+                  <Skeleton style={{width: 100000, maxWidth: '100px'}} height={16} />
+                )}
+              </li>
+            )
+          })}
         </ul>
         {!isReallyLoading ? (
           <h4 className={`${styles.state__mini__title}`}>Варианты упаковки</h4>
         ) : (
           <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
         )}
+
         <ul className={`${styles.state__mini__list}`}>
-          <li className={`${styles.state__mini__list__item}`}>
-            {!isReallyLoading ? (
-              <p className={`${styles.state__mini__list__item__text}`}>Паллеты</p>
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-            )}
-          </li>
-          <li className={`${styles.state__mini__list__item}`}>
+          {cardData?.packagingOptions?.map((el, i) => {
+            return (
+              <li className={`${styles.state__mini__list__item}`} key={el.name.toString() + i}>
+                {!isReallyLoading ? (
+                  <>
+                    <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
+                    <p className={`${styles.state__mini__list__item__text}`}>{el.price}</p>
+                  </>
+                ) : (
+                  <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
+                )}
+              </li>
+            )
+          })}
+          {/* <li className={`${styles.state__mini__list__item}`}>
             {!isReallyLoading ? (
               <p className={`${styles.state__mini__list__item__text}`}>Коробки</p>
             ) : (
               <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
             )}
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>
@@ -638,7 +641,21 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   return (
     <>
       {/* Микроразметка Schema.org */}
-      <ProductSchema cardData={cardMiniData} priceList={priceList} shopName={cardMiniData?.user.login || ''} />
+      <ProductSchema
+        cardData={cardMiniData}
+        priceList={{
+          items:
+            cardData?.prices.map((el) => {
+              return {
+                title: el.from + '-' + el.to + ' ' + el.unit,
+                currentPrice: el.discountedPrice.toString(),
+                originalPrice: el.originalPrice.toString(),
+                priceUnit: el.currency + '/' + el.unit
+              }
+            }) || []
+        }}
+        shopName={cardMiniData?.user.login || ''}
+      />
 
       <div className={`${styles.card__slider__box}`}>
         <CardSlider

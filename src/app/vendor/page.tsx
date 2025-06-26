@@ -25,7 +25,7 @@ export default async function VendorPage() {
   const trimPhonePrefix = (phoneNumber: string | undefined): string | undefined => {
     if (!phoneNumber) return phoneNumber
 
-    const prefixesToTrim = ['+375', '+7', '+86']
+    const prefixesToTrim = ['+375', '+7', '+86', '+']
 
     for (const prefix of prefixesToTrim) {
       if (phoneNumber.startsWith(prefix)) {
@@ -37,6 +37,7 @@ export default async function VendorPage() {
     return phoneNumber
   }
 
+  console.log('Full vendor Data', vendorData)
   const newVendorData: IVendorData = {
     ...vendorData?.data,
     phoneNumber: trimPhonePrefix(vendorData?.data.phoneNumber) || '',
@@ -49,5 +50,6 @@ export default async function VendorPage() {
     lastModificationDate: vendorData?.data.lastModificationDate || ''
   }
   console.log('newVendorData:', newVendorData, 'vendorDetails', newVendorData.vendorDetails)
+
   return <VendorPageComponent isPageForVendor={true} vendorData={newVendorData} numberCode={numberCode} />
 }

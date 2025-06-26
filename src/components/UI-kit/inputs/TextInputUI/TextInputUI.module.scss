@@ -1,4 +1,6 @@
-.dark {
+.dark,
+.lightBlue,
+.superWhite {
    .input__box {
       display: flex;
       flex-direction: column;
@@ -42,6 +44,7 @@
       background-color: transparent;
       border: none;
       width: 100%;
+      /* Запрет изменения размера */
 
 
       &::placeholder {
@@ -136,5 +139,37 @@
       padding: 0 15px;
       font-weight: 600;
       color: #000;
+   }
+}
+
+
+.superWhite {
+   .input__inner__box {
+      border: 1px solid #2A2E46;
+      background-color: #fff;
+      box-shadow: 0 2px 4px #00000015;
+   }
+}
+
+.lightBlue {
+   .input__inner__box {
+      border: 1px solid #2A2E46;
+      background-color: #F3F6FA;
+      box-shadow: none !important;
+   }
+}
+
+.number__input {
+
+   // Убираем стрелочки в Chrome, Safari, Edge
+   &::-webkit-outer-spin-button,
+   &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+   }
+
+   // Убираем стрелочки в Firefox
+   &[type="number"] {
+      -moz-appearance: textfield;
    }
 }

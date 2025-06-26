@@ -8,6 +8,8 @@
 }
 
 .accordionItem {
+   display: flex;
+   flex-direction: column;
    border: 1px solid #000;
    border-radius: 10px;
    overflow: hidden;
@@ -17,6 +19,23 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
    }
+}
+
+.delete__faq__button {
+   padding: 10px 15px;
+   font-size: 24px;
+   line-height: 27px;
+   background-color: #AC2525;
+   margin-left: 15px;
+   border-radius: 10px;
+   text-align: center;
+   aspect-ratio: 1/1;
+   color: #fff;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   max-width: fit-content;
+   max-height: fit-content;
 }
 
 .accordionHeader {

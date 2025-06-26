@@ -164,7 +164,7 @@ const CategoryPage = ({
                     style={{
                       backgroundImage: `
                        ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-                       url(${category.image ? category.image : (!category.image && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''})
+                       url(${category.imageUrl ? category.imageUrl : (!category.imageUrl && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''})
                        `,
                       color: level === 1 ? '#FFF' : '#000'
                     }}
@@ -208,7 +208,7 @@ const CategoryPage = ({
             </ul>
           )}
 
-          <Catalog initialProducts={[]} initialHasMore={true} />
+          <Catalog isShowFilters={false} initialProducts={[]} initialHasMore={true} />
         </div>
       </div>
 

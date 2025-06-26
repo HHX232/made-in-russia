@@ -79,7 +79,7 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
           ref={inputRef}
           onClick={() => setListIsOpen(true)}
           onChange={handleInputChange}
-          placeholder={`${placeholder || 'Введите текст...'}`}
+          placeholder={`${placeholder || 'Поиск по сайту'}`}
           disabled={disabled}
           className={styles.search__input}
           autoComplete='off'

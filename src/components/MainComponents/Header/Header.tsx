@@ -198,6 +198,10 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     }
   }, [categoryListIsOpen])
 
+  const handleToggleCategories = () => {
+    setCategoryListIsOpen(!categoryListIsOpen)
+  }
+
   return (
     <>
       <Head>
@@ -463,7 +467,8 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                   /> */}
                   <button
                     onClick={() => {
-                      setCategoryListIsOpen((prev) => !prev)
+                      // setCategoryListIsOpen((prev) => !prev)
+                      handleToggleCategories()
                     }}
                   >
                     Категории
@@ -624,7 +629,13 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
             className={`${styles.category__list__bottom__desktop}`}
           >
             <div className='container'>
-              <CategoryesMenuDesktop setCategoryListIsOpen={setCategoryListIsOpen} categories={categoriesList} />
+              <CategoryesMenuDesktop
+                categories={categoriesList}
+                setCategoryListIsOpen={setCategoryListIsOpen}
+                isOpen={categoryListIsOpen}
+                onToggle={handleToggleCategories}
+              />
+              {/* <CategoryesMenuDesktop setCategoryListIsOpen={setCategoryListIsOpen} categories={categoriesList} /> */}
             </div>
           </div>
         )}

@@ -188,8 +188,8 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             login: name,
             password,
             region: selectedRegion.altName,
-            phoneNumber: fullPhoneNumber,
-            type: 'user'
+            phoneNumber: fullPhoneNumber
+            // type: 'user'
           }
         : {
             email,
@@ -198,8 +198,8 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             password,
             countries: selectedCountries.map((c) => c.value),
             productCategories: selectedCategories.map((c) => c.value),
-            phoneNumber: fullPhoneNumber,
-            type: 'company'
+            phoneNumber: fullPhoneNumber
+            // type: 'company'
           }
 
       const response = await axiosClassic.post(isUser ? '/auth/register' : '/auth/register-vendor', registrationData)

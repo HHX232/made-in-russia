@@ -102,6 +102,30 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
   }
 }
 
+// Функция для безопасного преобразования altName в TNumberStart
+const getSafeNumberStart = (regionAltName: string): TNumberStart => {
+  console.log('getSafeNumberStart called with:', regionAltName)
+
+  const validTypes: TNumberStart[] = ['China', 'Belarus', 'Russia', 'Kazakhstan', 'other']
+
+  // Проверяем точное соответствие
+  if (validTypes.includes(regionAltName as TNumberStart)) {
+    console.log('Found exact match:', regionAltName)
+    return regionAltName as TNumberStart
+  }
+
+  // Проверяем с учетом регистра
+  const normalizedAltName = regionAltName.charAt(0).toUpperCase() + regionAltName.slice(1).toLowerCase()
+  if (validTypes.includes(normalizedAltName as TNumberStart)) {
+    console.log('Found normalized match:', normalizedAltName)
+    return normalizedAltName as TNumberStart
+  }
+
+  // Если altName не соответствует TNumberStart, возвращаем 'other'
+  console.log('No match found, returning other')
+  return 'other'
+}
+
 const PhoneInputSection: FC<PhoneInputSectionProps> = ({
   telText,
   isShowForVendor,
@@ -109,6 +133,12 @@ const PhoneInputSection: FC<PhoneInputSectionProps> = ({
   selectedRegion,
   onChangeTelNumber
 }) => {
+  const numberStartWith = getSafeNumberStart(selectedRegion.altName)
+  // console.log('PhoneInputSection:', {
+  //   selectedRegion: selectedRegion.altName,
+  //   numberStartWith: numberStartWith
+  // })
+
   return (
     <div className={styles.phone__input__box}>
       <p className={styles.input__title}>Номер мобильного телефона</p>
@@ -118,7 +148,7 @@ const PhoneInputSection: FC<PhoneInputSectionProps> = ({
         extraClass={styles.extra__phone__class}
         error={!isValidNumber ? 'error' : ''}
         onSetValue={onChangeTelNumber}
-        numberStartWith={selectedRegion.altName as TNumberStart}
+        numberStartWith={numberStartWith}
       />
     </div>
   )
@@ -138,14 +168,67 @@ const ProfileForm: FC<ProfileFormProps> = ({
   const [telText, setTelText] = useState('')
   const [trueTelephoneNumber, setTrueTelephoneNumber] = useState('')
   const [isValidNumber, setIsValidNumber] = useState(true)
+
+  // Функция для определения региона по номеру телефона
+  const detectRegionFromPhone = (phoneNumber: string): string => {
+    if (!phoneNumber) return 'other'
+
+    const cleaned = phoneNumber.replace(/\D/g, '')
+    console.log('detectRegionFromPhone - cleaned number:', cleaned)
+
+    // Проверяем известные коды стран
+    if (cleaned.startsWith('375')) return 'Belarus'
+    if (cleaned.startsWith('86')) return 'China'
+    if (cleaned.startsWith('7')) {
+      console.log('Detected Russia/Kazakhstan from phone starting with 7')
+      return 'Russia' // или Kazakhstan
+    }
+
+    // Если номер не начинается с известного кода - это "other"
+    return 'other'
+  }
+
   const [selectedRegion, setSelectedRegion] = useState<RegionType>(() => {
-    // Если есть userData с регионом, используем его, иначе берем первый из списка
+    // Для вендора пытаемся взять первую страну из vendorDetails
+    if (isVendor && userData?.vendorDetails && userData?.vendorDetails?.countries?.length > 0) {
+      const firstCountryName = userData.vendorDetails.countries[0].name
+      const vendorRegion = regions.find(
+        (region) => region.altName === firstCountryName || region.title === firstCountryName
+      )
+      if (vendorRegion) {
+        console.log('Found vendor region from countries:', vendorRegion.altName)
+        return vendorRegion
+      }
+    }
+
+    // Приоритет 1: Проверяем сохраненный регион пользователя (для обычных пользователей)
     if (userData?.region) {
       const userRegion = regions.find((region) => region.altName === userData.region)
-      return userRegion || regions[0]
+      if (userRegion) {
+        return userRegion
+      }
     }
+
+    // Приоритет 2: Если регион не найден, пытаемся определить по номеру телефона
+    if (userData?.phoneNumber) {
+      const detectedRegionName = detectRegionFromPhone(userData.phoneNumber)
+      const detectedRegion = regions.find((r) => r.altName === detectedRegionName)
+      if (detectedRegion) {
+        console.log('Detected region from phone:', detectedRegion.altName)
+        return detectedRegion
+      }
+    }
+
+    // Приоритет 3: Ищем регион "other" как значение по умолчанию
+    const otherRegion = regions.find((r) => r.altName === 'other')
+    if (otherRegion) {
+      return otherRegion
+    }
+
+    // Последний вариант: берем первый из списка
     return regions[0]
   })
+
   const [listIsOpen, setListIsOpen] = useState(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -167,7 +250,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
   } | null>(null)
 
   // Функция для вызова колбэков с обновленными данными
-  // Вместо вызова в useEffect, вызывайте updateParentData только при реальных изменениях
   useEffect(() => {
     if (!userInteracted) return
 
@@ -250,10 +332,18 @@ const ProfileForm: FC<ProfileFormProps> = ({
   // Инициализация данных пользователя
   useEffect(() => {
     if (userData && !isPhoneInitialized) {
-      // Сохраняем оригинальные данные
+      // Определяем правильный регион для оригинальных данных
+      let originalRegion = userData.region
+
+      if (!originalRegion || !regions.find((r) => r.altName === originalRegion)) {
+        // Если регион не указан или не найден в списке,
+        // определяем его по номеру телефона
+        originalRegion = detectRegionFromPhone(userData.phoneNumber || '')
+      }
+
       setOriginalData({
         phoneNumber: userData.phoneNumber || '',
-        region: userData.region || regions[0].altName
+        region: originalRegion
       })
 
       // Устанавливаем текущие значения
@@ -281,13 +371,42 @@ const ProfileForm: FC<ProfileFormProps> = ({
 
   // Установка региона из userData
   useEffect(() => {
-    if (userData?.region && !userInteracted) {
-      const userRegion = regions.find((region) => region.altName === userData.region)
-      if (userRegion) {
-        setSelectedRegion(userRegion)
+    if (userData && !userInteracted) {
+      let regionToSet: RegionType | undefined
+
+      // Для вендора сначала проверяем countries
+      if (isVendor && userData?.vendorDetails && userData.vendorDetails?.countries?.length > 0) {
+        const firstCountryName = userData.vendorDetails.countries[0].name
+        regionToSet = regions.find((region) => region.altName === firstCountryName || region.title === firstCountryName)
+        if (regionToSet) {
+          console.log('Setting vendor region from countries:', regionToSet.altName)
+        }
+      }
+
+      // Если не нашли для вендора или это обычный пользователь
+      if (!regionToSet && userData.region) {
+        regionToSet = regions.find((region) => region.altName === userData.region)
+      }
+
+      // Если не нашли - определяем по номеру телефона
+      if (!regionToSet && userData.phoneNumber) {
+        const detectedRegionName = detectRegionFromPhone(userData.phoneNumber)
+        regionToSet = regions.find((r) => r.altName === detectedRegionName)
+        if (regionToSet) {
+          console.log('Setting region from phone detection:', regionToSet.altName)
+        }
+      }
+
+      // Если все еще не нашли - используем "other"
+      if (!regionToSet) {
+        regionToSet = regions.find((r) => r.altName === 'other')
+      }
+
+      if (regionToSet) {
+        setSelectedRegion(regionToSet)
       }
     }
-  }, [userData, regions, userInteracted])
+  }, [userData, regions, userInteracted, isVendor])
 
   // Вычисление национального номера
   useEffect(() => {
@@ -325,6 +444,17 @@ const ProfileForm: FC<ProfileFormProps> = ({
     }
   }, [])
 
+  // Для отладки
+  useEffect(() => {
+    console.log('ProfileForm Debug:', {
+      userData_phoneNumber: userData?.phoneNumber,
+      userData_region: userData?.region,
+      detected_region: userData?.phoneNumber ? detectRegionFromPhone(userData.phoneNumber) : 'N/A',
+      selected_region: selectedRegion.altName,
+      regions_available: regions.map((r) => r.altName)
+    })
+  }, [userData, selectedRegion, regions])
+
   // Обновленный handleRegionSelect
   const handleRegionSelect = (region: RegionType) => {
     // Устанавливаем флаг взаимодействия при выборе региона
@@ -334,7 +464,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
 
     // При смене региона проверяем валидность текущего номера
     const cleanedNumber = telText.replace(/\D/g, '')
-    const isValid = validatePhoneLength(cleanedNumber, region.altName as TNumberStart)
+    const isValid = validatePhoneLength(cleanedNumber, getSafeNumberStart(region.altName))
     setIsValidNumber(isValid)
   }
 
@@ -346,7 +476,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
     }
 
     const cleanedNumber = val.replace(/\D/g, '')
-    const countryForValidation = selectedRegion.altName as TNumberStart
+    const countryForValidation = getSafeNumberStart(selectedRegion.altName)
 
     // Валидация должна происходить на очищенном номере БЕЗ форматирования
     const isValid = validatePhoneLength(cleanedNumber, countryForValidation)
@@ -410,6 +540,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
     setModalIsOpen(false)
     setPassword('')
   }
+
   const closeModalOtp = async (code: string) => {
     try {
       const res = await axiosClassic.post<{accessToken: string; refreshToken: string}>(

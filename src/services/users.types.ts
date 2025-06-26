@@ -21,6 +21,7 @@ export interface VendorDetails {
   countries: Country[]
   productCategories: ProductCategory[]
   viewsCount?: number | string
+  faq?: {question: string; answer: string}[]
 }
 
 // Основной интерфейс User

@@ -13,9 +13,11 @@ interface AccordionItem {
 interface AccordionProps {
   items: AccordionItem[]
   multiActive?: boolean
+  needDeleteButton?: boolean
+  onDelete?: (item: AccordionItem) => void
 }
 
-const Accordion: React.FC<AccordionProps> = ({items, multiActive = false}) => {
+const Accordion: React.FC<AccordionProps> = ({items, multiActive = false, needDeleteButton = false, onDelete}) => {
   const [activeItems, setActiveItems] = useState<number[]>(() => {
     return items.map((item, index) => (item.isDefaultActive ? index : -1)).filter((index) => index !== -1)
   })
@@ -40,6 +42,18 @@ const Accordion: React.FC<AccordionProps> = ({items, multiActive = false}) => {
           >
             <span className={styles.title}>{item.title}</span>
             <span className={styles.icon}>{isActive(index) ? '-' : '+'}</span>
+            {needDeleteButton && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onDelete?.(item)
+                }}
+                className={styles.delete__faq__button}
+              >
+                -
+              </button>
+            )}
           </div>
           <div className={`${styles.accordionContent} ${isActive(index) ? styles.open : styles.closed}`}>
             <div className={styles.contentInner}>{item.value}</div>

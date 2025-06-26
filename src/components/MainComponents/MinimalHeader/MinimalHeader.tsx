@@ -66,10 +66,10 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                 onClick={() => {
                   if (i === 0) {
                     setCategoryListIsOpen((prev) => !prev)
-                    console.log(categoryListIsOpen)
+                    // console.log(categoryListIsOpen)
                   }
 
-                  console.log('message')
+                  // console.log('message')
                 }}
                 key={i}
                 className={`${styles.header__list__item}`}
@@ -99,10 +99,10 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                       if (i === 0) {
                         setCategoryListIsOpen((prev) => !prev)
                         setMenuIsOpen(false)
-                        console.log(categoryListIsOpen)
+                        // console.log(categoryListIsOpen)
                       }
 
-                      console.log('message')
+                      // console.log('message')
                     }}
                     key={i}
                     className={`${styles.header__list__item}`}

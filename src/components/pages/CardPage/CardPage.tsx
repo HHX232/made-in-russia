@@ -42,7 +42,7 @@ export default async function CardPage({params}: {params: Promise<{id: string}>}
 
   return (
     <div className={`${styles.card__box}`}>
-      <Header isShowBottom={false} />
+      <Header />
       <div className='container'>
         <CardContent id={id} />
         <Suspense

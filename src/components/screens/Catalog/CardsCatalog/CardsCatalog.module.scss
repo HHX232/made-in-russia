@@ -9,6 +9,64 @@
    place-items: center;
 }
 
+.cardsCatalog__create__link,
+.cardsCatalog__create {
+   width: 100%;
+   height: 100%;
+}
+
+
+.cardsCatalog__create {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   padding: 20px;
+   background-color: #f5f6f7;
+   border-radius: 20px;
+   box-shadow: -2px 4px 4px #00000015;
+   border: 2px solid #f5f6f7;
+   transition: all .2s;
+
+   &:hover {
+      border-color: rgba(42, 46, 70, 0.4705882353);
+   }
+
+   &:hover>.cardsCatalog__create__image {
+      font-size: 50px;
+   }
+}
+
+.cardsCatalog__create__image {
+   transition: all .3s;
+   width: 100%;
+   background-color: #e6e5e5;
+   border-radius: 20px;
+   justify-content: center;
+   align-items: center;
+   text-align: center;
+   display: flex;
+   font-size: 40px;
+   color: #fff;
+   aspect-ratio: 1/1;
+   margin-bottom: 10px;
+}
+
+.cardsCatalog__create__text {
+   width: 100%;
+   height: 15px;
+   background-color: #e6e5e5;
+   border-radius: 5px;
+   margin: 3px 0;
+}
+
+.cardsCatalog__create__button {
+   width: 100%;
+   height: 30px;
+   background-color: #e6e5e5;
+   border-radius: 5px;
+   margin-top: auto;
+}
+
 @media(max-width: 850px) {
 
    .cardsCatalog__box {

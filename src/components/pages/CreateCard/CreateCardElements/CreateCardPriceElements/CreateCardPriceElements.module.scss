@@ -1,0 +1,131 @@
+.arrow__none {
+   display: none !important;
+}
+
+
+.create__prices__box {
+   display: flex;
+   margin-top: 60px;
+   width: 100%;
+   justify-content: space-between;
+   gap: 30px;
+
+   @media (max-width: 1000px) {
+      flex-direction: column;
+   }
+}
+
+.rows__inputs__box__inner {
+   display: flex;
+   flex-direction: column;
+   gap: 50px;
+}
+
+.create__label__title__box {
+   display: flex;
+   align-items: center;
+   gap: 50px;
+}
+
+.create__label__title {
+   font-weight: 500;
+   font-size: 24px;
+   line-height: 29px;
+}
+
+.rows__inputs__box__inner__description {
+   margin-top: 80px;
+}
+
+.rows__inputs__box__inner__description__extra {
+
+
+   &>div>label {
+      max-width: 450px;
+      min-width: 140px;
+      width: 100%;
+      margin: 0 auto;
+   }
+}
+
+.right__box {
+   max-width: 490px;
+   width: 100%;
+   gap: 20px;
+   min-width: 340px;
+   display: flex;
+   flex-direction: column;
+   // flex-grow: 3;
+   flex-shrink: 2;
+   position: sticky;
+   top: 10px;
+   max-height: fit-content;
+
+   @media (max-width: 1000px) {
+      margin: 0 auto;
+   }
+}
+
+.minus__extra {
+
+   width: 29px;
+   height: 29px;
+}
+
+.rows__extra__del {
+   gap: 10px !important;
+}
+
+.seller__date__box__inner {
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+}
+
+.seller__date__box__inner__date {
+   display: grid;
+   grid-template-columns: 1fr 1.5fr;
+   align-items: center;
+   width: 100%;
+   justify-content: space-between;
+}
+
+.seller__title {
+   display: flex;
+   align-items: center;
+   gap: 30px;
+   margin-bottom: 20px;
+}
+
+
+.seller__date__box,
+.del__box,
+.package__box {
+   display: flex;
+   flex-direction: column;
+   padding: 20px 25px;
+   border-radius: 10px;
+   border: 1px solid #2A2E46;
+}
+
+.drop__extra__image__modal__second {
+   width: 300px !important;
+   height: 300px !important;
+   aspect-ratio: 1/1;
+}
+
+.drop__extra {
+   max-width: none !important;
+
+   &>ul {
+      max-width: none !important;
+      transform: translate(-100%, -20%);
+      width: max-content !important;
+   }
+}
+
+.seller__title__text {
+   font-size: 24px;
+   font-weight: 500;
+   line-height: 29px;
+}

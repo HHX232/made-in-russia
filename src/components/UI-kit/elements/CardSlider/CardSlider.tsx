@@ -70,7 +70,7 @@ const SlickCardSlider = ({
         : 'https://yourdomain.com'
 
     const mediaObjects = images.map((media, index) => {
-      const isVideo = media.includes('.mp4')
+      const isVideo = media.includes('.mp4') || media.includes('.webm') || media.includes('.mov')
       const fullUrl = media.startsWith('http') ? media : `${baseUrl}${media}`
 
       if (isVideo) {
@@ -221,7 +221,7 @@ const SlickCardSlider = ({
         <div className={styles.imageSlider__main}>
           <Slider ref={mainSliderRef} {...mainSettings}>
             {images.map((image, index) => {
-              const isVideo = image.includes('.mp4')
+              const isVideo = image.includes('.mp4') || image.includes('.webm') || image.includes('.mov')
               const isActive = index === activeIndex
 
               return (
@@ -288,7 +288,7 @@ const SlickCardSlider = ({
         <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
           <Slider ref={thumbnailSliderRef} {...thumbnailSettings}>
             {images.map((image, index) => {
-              const isVideo = image.includes('.mp4')
+              const isVideo = image.includes('.mp4') || image.includes('.webm') || image.includes('.mov')
 
               return (
                 <div

@@ -125,9 +125,10 @@
 }
 
 .clear__filters__button__bottom {
-   @media (max-width: 500px) {
-      display: none;
-   }
+   order: 1 !important;
+   // @media (max-width: 500px) {
+   //    display: none;
+   // }
 }
 
 .clear__filters__button__title {
@@ -161,7 +162,7 @@
 .title__box {
    display: flex;
    align-items: center;
-
+   width: 100%;
    gap: 12px;
 }
 
@@ -213,7 +214,7 @@
    margin-bottom: 33px;
 }
 
-@media (max-width:900px) {
+@media (max-width:1010px) {
 
    .filters__box {
       position: static;
@@ -228,7 +229,7 @@
    .span_over {
       display: flex;
       width: 100%;
-      justify-content: space-between;
+      justify-content: space-around;
    }
 }
 
@@ -275,6 +276,6 @@
    }
 
    .titles__box {
-      justify-content: space-between;
+      justify-content: space-around;
    }
 }

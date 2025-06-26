@@ -14,7 +14,8 @@ const nextConfig: NextConfig = {
       'images.unsplash.com',
       'youtu.be',
       'v.ftcdn.net',
-      'plus.unsplash.com'
+      'plus.unsplash.com',
+      'res.cloudinary.com'
     ]
   }
 }

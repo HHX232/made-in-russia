@@ -1,0 +1,157 @@
+.editor__wrapper {
+
+
+   /* Стилизация изображений в превью */
+   .md-editor-preview img[src^="data:image"] {
+      max-width: 100%;
+      height: auto;
+   }
+
+   /* Стилизация кода с base64 в редакторе */
+   .md-editor-input-wrapper {
+
+      /* Обрезка длинных строк в редакторе */
+      .cm-string,
+      .cm-url {
+         &:has-text("data:image") {
+            display: inline-block;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: bottom;
+         }
+      }
+
+      /* Альтернативный подход через селектор содержимого */
+      .cm-line:has(.cm-string:contains("data:image")),
+      .cm-line:has(.cm-url:contains("data:image")) {
+
+         .cm-string,
+         .cm-url {
+            display: inline-block;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+         }
+      }
+   }
+
+   /* Стилизация для CodeMirror 6 (если используется) */
+   .cm-editor {
+      .cm-line {
+
+         /* Обрезка только для строк с base64 */
+         .cm-string {
+            &[class*="data:image"] {
+               display: inline-block;
+               max-width: 200px;
+               overflow: hidden;
+               text-overflow: ellipsis;
+               white-space: nowrap;
+            }
+         }
+      }
+   }
+
+}
+
+.right {
+   display: flex;
+   flex-shrink: 1;
+   min-width: 300px;
+}
+
+.descr__el__title__right {
+   gap: 20px !important;
+   width: 100%;
+   justify-content: space-between;
+   max-height: fit-content;
+}
+
+.truncated__base64 {
+   display: inline-block;
+   max-width: 200px;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+   vertical-align: bottom;
+   cursor: pointer;
+   color: #0969da;
+
+   &:hover {
+      text-decoration: underline;
+   }
+}
+
+.descr__el__title {
+   display: flex;
+   align-items: center;
+   gap: 40px;
+   margin-bottom: 20px;
+}
+
+.descr__title {
+   font-size: 24px;
+   font-weight: 500;
+}
+
+.left {
+   width: 100%;
+}
+
+.left__top__descr,
+.left__bottom__descr {
+   margin-bottom: 35px;
+}
+
+.create__descriptions__box {
+   margin-top: 50px;
+   display: flex;
+   width: 100%;
+   gap: 20px;
+}
+
+.drop__extra>div>svg {
+   display: none !important;
+}
+
+// Добавьте эти стили к существующим
+
+.has__error {
+   .editor__wrapper {
+      position: relative;
+
+      // Визуальная индикация ошибки будет применена через конфиг редактора
+   }
+}
+
+.error__message {
+   color: #ff4444;
+   font-size: 14px;
+   margin: 8px 0 0 0;
+   padding: 0 8px;
+}
+
+.required {
+   color: #000;
+}
+
+.required__error {
+   color: #ff4444 !important;
+   font-weight: normal;
+   margin-left: 4px;
+   // display: block !important;
+}
+
+.optional {
+   color: #666;
+   font-size: 14px;
+   font-weight: normal;
+   margin-left: 8px;
+}
+
+.editor__wrapper {
+   width: 100%;
+}

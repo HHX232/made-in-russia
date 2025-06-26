@@ -66,7 +66,8 @@ export const REGIONS: RegionType[] = [
   {imageSrc: ASSETS.belarusSvg, title: 'Беларусь', altName: 'Belarus'},
   {imageSrc: ASSETS.belarusSvg, title: 'Казахстан', altName: 'Kazakhstan'},
   {imageSrc: ASSETS.belarusSvg, title: 'Китай', altName: 'China'},
-  {imageSrc: ASSETS.belarusSvg, title: 'Россия', altName: 'Russia'}
+  {imageSrc: ASSETS.belarusSvg, title: 'Россия', altName: 'Russia'},
+  {imageSrc: ASSETS.belarusSvg, title: 'Другая страна', altName: 'other'}
 ]
 
 // Типы
@@ -294,7 +295,7 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
   isForVendor
 }) => {
   const onSave = () => {
-    console.log('Saving data:', {phoneNumber, region})
+    // console.log('Saving data:', {phoneNumber, region})
     let numberStartWith = ''
     switch (region) {
       case 'Belarus':

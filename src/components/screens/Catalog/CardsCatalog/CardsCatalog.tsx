@@ -10,17 +10,22 @@ import {useSelector} from 'react-redux'
 import {TypeRootState} from '@/store/store'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useActions} from '@/hooks/useActions'
+import Link from 'next/link'
 
 interface CardsCatalogProps {
   initialProducts?: Product[]
   initialHasMore?: boolean
   specialRoute?: string
+  canCreateNewProduct?: boolean
+  onPreventCardClick?: (item: Product) => void
 }
 
 const CardsCatalog: FC<CardsCatalogProps> = ({
   initialProducts = [],
   initialHasMore = true,
-  specialRoute = undefined
+  specialRoute = undefined,
+  canCreateNewProduct = false,
+  onPreventCardClick
 }) => {
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
@@ -98,6 +103,19 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   const showSkeleton = (isLoading || (isFetching && isFiltersChanged)) && allProducts.length === 0
 
+  // useEffect(() => {
+  //   initialProducts.map((item) => {
+  //     console.log('item.previewImageUrl', item.previewImageUrl)
+  //     if (
+  //       item.previewImageUrl.includes('mp4') ||
+  //       item.previewImageUrl.includes('mov') ||
+  //       item.previewImageUrl.includes('avi')
+  //     ) {
+  //       console.log('Это ВИДЕО!')
+  //     }
+  //   })
+  // }, [initialProducts])
+
   useEffect(() => {
     if (pageResponse) {
       // При получении первой страницы (после сброса фильтров), заменяем список
@@ -149,6 +167,17 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   }
   return (
     <div className={styled.cardsCatalog__box}>
+      {canCreateNewProduct && (
+        <Link className={`${styled.cardsCatalog__create__link}`} href='/create-card'>
+          <div className={`${styled.cardsCatalog__create}`}>
+            <div className={`${styled.cardsCatalog__create__image}`}>+</div>
+            <div className={`${styled.cardsCatalog__create__text}`}></div>
+            <div className={`${styled.cardsCatalog__create__text}`}></div>
+            <div className={`${styled.cardsCatalog__create__text}`}></div>
+            <div className={`${styled.cardsCatalog__create__button}`}></div>
+          </div>
+        </Link>
+      )}
       {!showSkeleton &&
         allProducts.map((product, index) => {
           const uniqueKey = `${product.id}-${index}`
@@ -157,6 +186,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
             return (
               <div style={{height: '100%'}} key={uniqueKey} ref={lastElementRef}>
                 <Card
+                  onPreventCardClick={onPreventCardClick}
                   isLoading={false}
                   id={product.id}
                   title={product.title}
@@ -175,6 +205,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
           } else {
             return (
               <Card
+                onPreventCardClick={onPreventCardClick}
+                canUpdateProduct={canCreateNewProduct}
                 isLoading={false}
                 key={uniqueKey}
                 id={product.id}

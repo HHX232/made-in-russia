@@ -1,0 +1,162 @@
+.error__message {
+   font-size: 16px;
+   margin-top: 20px;
+   color: #AC2525;
+}
+
+.rows__inputs {
+   width: 100%;
+
+   &__titles {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 20px;
+      // Ширина должна совпадать с шириной блока инпутов (без кнопки)
+      padding-right: 59px; // 39px (ширина кнопки) + 20px (gap)
+      padding-left: 30px;
+   }
+
+   &__title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #818181;
+      margin: 0;
+      text-align: center;
+   }
+
+   &__container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px; // Уменьшен gap до 10px
+   }
+
+   &__box {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+   }
+
+   &__row {
+      display: grid;
+      gap: 20px;
+      flex: 1;
+   }
+
+   &__remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+      flex-shrink: 0;
+
+      &:hover {
+         opacity: 0.7;
+      }
+   }
+
+   &__add {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto 0 auto;
+      transition: transform 0.3s ease;
+
+      &:hover {
+         transform: scale(1.1);
+      }
+   }
+
+   // Стили для серой линии
+   .gray__bottom__line {
+      height: 1px;
+      background-color: #969696;
+      margin-top: 10px;
+      // Ширина линии должна совпадать с шириной блока инпутов (без кнопки)
+      margin-right: 59px; // 39px (ширина кнопки) + 20px (gap)
+   }
+
+   // Адаптив для планшетов
+   @media (max-width: 768px) {
+      &__titles {
+         gap: 15px;
+         font-size: 12px;
+         padding-right: 49px; // 34px (уменьшенная кнопка) + 15px (gap)
+         padding-left: 20px;
+      }
+
+      &__container {
+         gap: 8px;
+      }
+
+      &__row {
+         gap: 15px;
+      }
+
+      &__box {
+         gap: 15px;
+      }
+
+      &__remove {
+         img {
+            width: 34px;
+            height: 34px;
+         }
+      }
+
+      &__add {
+         padding: 15px;
+
+         img {
+            width: 34px;
+            height: 34px;
+         }
+      }
+
+      .gray__bottom__line {
+
+         margin-right: 49px; // 34px + 15px (gap)
+      }
+   }
+
+   // Адаптив для мобильных устройств
+   @media (max-width: 480px) {
+      &__titles {
+         display: none; // Скрываем заголовки на мобильных
+      }
+
+      &__container {
+         gap: 15px; // Увеличиваем gap на мобильных для лучшей читаемости
+      }
+
+      &__box {
+         flex-direction: column;
+         align-items: stretch;
+         gap: 10px;
+      }
+
+      &__row {
+         gap: 10px;
+         // Меняем на колонку для лучшей читаемости
+         grid-template-columns: 1fr;
+      }
+
+      &__remove {
+         align-self: center;
+         margin-top: 5px;
+      }
+
+      .gray__bottom__line {
+         margin-right: 0; // На мобильных линия на всю ширину
+         margin-bottom: 5px;
+      }
+   }
+}

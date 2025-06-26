@@ -1,0 +1,89 @@
+.drop__extra__modal__catalog {
+   &>div {
+      width: 90vw !important;
+   }
+
+
+}
+
+.create__similar__products__box {
+   display: flex;
+   width: 100%;
+   gap: 20px;
+   max-width: 100%;
+   overflow-x: auto;
+   flex-direction: column;
+   padding-bottom: 10px;
+   margin-top: 5px;
+
+}
+
+.list__items {
+   // padding-left: 3px;
+   margin-left: 4px;
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+   grid-auto-rows: minmax(312px, min-content);
+   /* Максимальная высота строки */
+   gap: 22px;
+   width: 100%;
+   place-items: center;
+}
+
+
+
+.cardsCatalog__create {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   padding: 20px;
+   background-color: #f5f6f7;
+   border-radius: 20px;
+   box-shadow: -2px 4px 4px #00000015;
+   border: 2px solid #f5f6f7;
+   transition: all .2s;
+   cursor: pointer;
+   min-width: 220px;
+   min-height: 250px;
+   height: 100%;
+
+
+   &:hover {
+      border-color: rgba(42, 46, 70, 0.4705882353);
+   }
+
+   &:hover>.cardsCatalog__create__image {
+      font-size: 50px;
+   }
+}
+
+.cardsCatalog__create__image {
+   transition: all .3s;
+   width: 100%;
+   background-color: #e6e5e5;
+   border-radius: 20px;
+   justify-content: center;
+   align-items: center;
+   text-align: center;
+   display: flex;
+   font-size: 40px;
+   color: #fff;
+   aspect-ratio: 1/1;
+   margin-bottom: 10px;
+}
+
+.cardsCatalog__create__text {
+   width: 100%;
+   height: 15px;
+   background-color: #e6e5e5;
+   border-radius: 5px;
+   margin: 3px 0;
+}
+
+.cardsCatalog__create__button {
+   width: 100%;
+   height: 30px;
+   background-color: #e6e5e5;
+   border-radius: 5px;
+   margin-top: auto;
+}

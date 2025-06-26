@@ -14,7 +14,7 @@
    min-width: 0px;
    min-height: 0px;
    display: flex;
-   flex-shrink: 0;
+   flex-shrink: 0.3;
    width: fit-content;
    position: sticky;
    max-height: fit-content;
@@ -224,7 +224,7 @@
    display: flex;
    flex-direction: column;
    flex-shrink: 1;
-   max-width: 300px;
+   max-width: 400px;
    width: 100%;
    position: sticky;
    max-height: fit-content;
@@ -278,10 +278,12 @@
    width: 100%;
    gap: 15px;
    flex-direction: column;
+   white-space: nowrap;
 }
 
 .prices__list_item {
    display: flex;
+   white-space: nowrap;
    width: 100%;
    justify-content: space-between;
    gap: 15px;
