@@ -39,6 +39,7 @@ interface CreateCardPriceElementsProps {
   initialPackagingMatrix?: string[][]
   inputType?: TInputType[]
   onSetPackagingMatrix?: (packagingMatrix: string[][]) => void
+  onSetSaleDate?: (saleDate: string) => void
 }
 
 const CreateCardPriceElements: FC<CreateCardPriceElementsProps> = ({
@@ -55,7 +56,8 @@ const CreateCardPriceElements: FC<CreateCardPriceElementsProps> = ({
   initialDelieveryMatrix,
   initialPackagingMatrix,
   inputType,
-  onSetPackagingMatrix
+  onSetPackagingMatrix,
+  onSetSaleDate
 }) => {
   const [pricesMatrix, setPricesMatrix] = useState<string[][]>(pricesArray || [])
   const [descriptionMatrix, setDescriptionMatrix] = useState<string[][]>(descriptionArray || [])
@@ -179,6 +181,7 @@ const CreateCardPriceElements: FC<CreateCardPriceElementsProps> = ({
   // Обработчики изменений с валидацией
   const handleSaleDateChange = (value: string) => {
     setSaleDate(value)
+    onSetSaleDate?.(value)
     if (saleDateError) {
       validateSaleDate(value)
     }

@@ -590,19 +590,19 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
         discountExpirationDate: saleDate ? (!isNaN(parseInt(saleDate)) ? parseInt(saleDate) : 30) : 0,
         similarProducts: Array.from(similarProducts).map((product) => product.id)
       }
-
+      const isUpdate = !!initialData?.id
       // Добавляем oldProductMedia только если есть оставшиеся изображения
-      if (objectRemainingInitialImages.length > 0) {
+      if (objectRemainingInitialImages.length > 0 && isUpdate) {
         data.oldProductMedia = objectRemainingInitialImages
-        if (companyDataImages.length === 0) {
+        if (companyDataImages.length === 0 && isUpdate) {
           data.oldAboutVendorMedia = []
         }
       }
 
       // Добавляем oldAboutVendorMedia только если есть оставшиеся изображения компании
-      if (companyDataImages.length > 0) {
+      if (companyDataImages.length > 0 && isUpdate) {
         data.oldAboutVendorMedia = companyDataImages
-        if (objectRemainingInitialImages.length === 0) {
+        if (objectRemainingInitialImages.length === 0 && isUpdate) {
           data.oldAboutVendorMedia = []
         }
       }
@@ -613,11 +613,14 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       const jsonBlob = new Blob([JSON.stringify(data)], {type: 'application/json'})
       formData.append('data', jsonBlob)
 
-      // Добавляем файлы
+      // Добавляем только файлы для productMedia
       uploadedFiles.forEach((file) => {
-        formData.append('productMedia', file)
+        if (file instanceof File) {
+          formData.append('productMedia', file)
+        }
       })
 
+      // Добавляем только файлы для aboutVendorMedia
       companyData.images.forEach((item) => {
         if (item.image && item.image instanceof File) {
           formData.append('aboutVendorMedia', item.image)
@@ -626,11 +629,18 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
       const token = await getAccessToken()
 
-      // Показываем toast о процессе отправки
-      const loadingToast = toast.loading('Сохранение товара...')
+      // Определяем метод и URL в зависимости от наличия initialData
 
-      const response = await fetch('https://exporteru-prorumble.amvera.io/api/v1/products', {
-        method: 'POST',
+      const method = isUpdate ? 'PUT' : 'POST'
+      const url = isUpdate
+        ? `https://exporteru-prorumble.amvera.io/api/v1/products/${initialData.id}`
+        : 'https://exporteru-prorumble.amvera.io/api/v1/products'
+
+      // Показываем toast о процессе отправки
+      const loadingToast = toast.loading(isUpdate ? 'Обновление товара...' : 'Сохранение товара...')
+
+      const response = await fetch(url, {
+        method: method,
         headers: {
           Authorization: token ? `Bearer ${token}` : ''
           // Не указываем Content-Type для FormData
@@ -656,11 +666,11 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
       }
 
-      // Успешное создание
+      // Успешное создание/обновление
       toast.success(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
           <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Поздравляем!</strong>
-          <span>Товар успешно создан!</span>
+          <span>Товар успешно {isUpdate ? 'обновлен' : 'создан'}!</span>
         </div>,
         {
           style: {
@@ -841,6 +851,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               onSetDescriptionArray={handleDescriptionMatrixChange}
               onSetPricesArray={handlePricesArrayChange}
               onSetPackagingMatrix={handlePackagingMatrixChange}
+              onSetSaleDate={setSaleDate}
               pricesError={errors.pricesArray}
               descriptionMatrixError={errors.descriptionMatrix}
             />
