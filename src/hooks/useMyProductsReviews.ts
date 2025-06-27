@@ -9,6 +9,14 @@ interface ProductReviewsResponse {
     number: number
     totalElements: number
     totalPages: number
+    content?: Review[]
+    page?: {
+      size: number
+      number: number
+      totalElements: number
+      totalPages: number
+      content?: Review[]
+    }
   }
   pageable?: {
     offset: number
