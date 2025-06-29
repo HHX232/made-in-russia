@@ -18,9 +18,9 @@ export default function PureSEOHeader() {
         <div className='container'>
           <ul className='contacts-list'>
             <li>
-              <a href='https://www.instagram.com/made-in-russia' target='_blank' rel='noopener noreferrer'>
+              <a href='https://www.instagram.com/Exporteru' target='_blank' rel='noopener noreferrer'>
                 <img src='/insta.svg' alt='Instagram' width='24' height='24' />
-                made-in-russia
+                Exporteru
               </a>
             </li>
             <li>
@@ -46,7 +46,7 @@ export default function PureSEOHeader() {
         <div className='container'>
           <a href='/' className='logo-link'>
             <img src='/Logo_Bear.svg' alt='Logo with Bear' width='69' height='69' />
-            <img src='/logoText.svg' alt='Made In Russia' width='175' height='41' />
+            <img src='/logoText.svg' alt='Exporteru' width='175' height='41' />
           </a>
 
           <form action='/search' method='GET' className='search-form'>

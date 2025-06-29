@@ -1,5 +1,5 @@
 'use client'
-import {CSSProperties, FC, ReactNode, useEffect, useId, useState} from 'react'
+import {CSSProperties, memo, ReactNode, useCallback, useEffect, useId, useState} from 'react'
 import styles from './TextInputUI.module.scss'
 import Image, {StaticImageData} from 'next/image'
 import cn from 'clsx'
@@ -39,158 +39,158 @@ interface ITextInputProps {
   idForLabel?: string
 }
 
-const TextInputUI: FC<ITextInputProps> = ({
-  extraClass,
-  extraStyle,
-  placeholder = '',
-  title = '',
-  helpTitle,
-  isSecret = false,
-  currentValue,
-  onSetValue,
-  errorValue,
-  customIcon,
-  customIconOnAlternativeState,
-  linkToHelp = '',
-  theme = 'dark',
-  inputType = 'text',
-  onBlur,
-  onFocus,
-  onKeyDown,
-  onKeyUp,
-  onMouseEnter,
-  onMouseLeave,
-  onClick,
-  idForLabel,
-  disabled = false,
-  readOnly = false,
-  autoComplete,
-  autoFocus = false
-}) => {
-  const [textIsShow, setTextIsShow] = useState(false)
-  const [displayValue, setDisplayValue] = useState(isSecret ? currentValue.replace(/./g, '*') : currentValue)
-  const id = useId()
+const TextInputUI = memo<ITextInputProps>(
+  ({
+    extraClass,
+    extraStyle,
+    placeholder = '',
+    title = '',
+    helpTitle,
+    isSecret = false,
+    currentValue,
+    onSetValue,
+    errorValue,
+    customIcon,
+    customIconOnAlternativeState,
+    linkToHelp = '',
+    theme = 'dark',
+    inputType = 'text',
+    onBlur,
+    onFocus,
+    onKeyDown,
+    onKeyUp,
+    onMouseEnter,
+    onMouseLeave,
+    onClick,
+    idForLabel,
+    disabled = false,
+    readOnly = false,
+    autoComplete,
+    autoFocus = false
+  }) => {
+    const [textIsShow, setTextIsShow] = useState(false)
+    const [displayValue, setDisplayValue] = useState(isSecret ? currentValue.replace(/./g, '*') : currentValue)
+    const id = useId()
 
-  // Обновляем displayValue при изменении currentValue извне
-  useEffect(() => {
-    setDisplayValue(isSecret && !textIsShow ? currentValue.replace(/./g, '*') : currentValue)
-  }, [currentValue, isSecret, textIsShow])
+    useEffect(() => {
+      setDisplayValue(isSecret && !textIsShow ? currentValue.replace(/./g, '*') : currentValue)
+    }, [isSecret, textIsShow, currentValue])
 
-  // Функция для валидации числового ввода
-  const isValidNumberInput = (value: string): boolean => {
-    // Разрешаем пустую строку, цифры, точку, запятую, минус в начале
-    return /^-?[\d.,]*$/.test(value)
-  }
+    const isValidNumberInput = useCallback((value: string): boolean => {
+      return /^-?[\d.,]*$/.test(value)
+    }, [])
 
-  // Обработчик нажатия клавиш для числового инпута
-  const handleNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Запрещаем ввод 'e', 'E', '+' для числового инпута
-    if (inputType === 'number' && ['e', 'E', '+'].includes(e.key)) {
-      e.preventDefault()
-      return
-    }
+    const handleNumberKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (inputType === 'number' && ['e', 'E', '+'].includes(e.key)) {
+          e.preventDefault()
+          return
+        }
+        if (onKeyDown) {
+          onKeyDown(e)
+        }
+      },
+      [inputType, onKeyDown]
+    )
 
-    // Вызываем пользовательский обработчик, если он есть
-    if (onKeyDown) {
-      onKeyDown(e)
-    }
-  }
+    const handleChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
+        if (inputType === 'number' && value !== '' && !isValidNumberInput(value)) {
+          return
+        }
 
-    // Дополнительная валидация для числового инпута
-    if (inputType === 'number' && value !== '' && !isValidNumberInput(value)) {
-      return // Не обновляем значение, если оно не валидно
-    }
+        if (isSecret) {
+          // Упрощенная логика для секретного ввода
+          if (value.length > displayValue.length) {
+            const addedChars = value.slice(displayValue.length)
+            onSetValue(currentValue + addedChars)
+          } else {
+            onSetValue(currentValue.slice(0, value.length))
+          }
+        } else {
+          onSetValue(value)
+        }
+      },
+      [inputType, isValidNumberInput, isSecret, displayValue, currentValue, onSetValue]
+    )
 
-    if (isSecret) {
-      if (value.length > displayValue.length) {
-        const addedChars = value.slice(displayValue.length)
-        const newValue = currentValue + addedChars
-        onSetValue(newValue)
-      } else {
-        const newValue = value.length === 0 ? '' : currentValue.slice(0, value.length)
-        onSetValue(newValue)
-      }
-    } else {
-      // Для обычного ввода просто обновляем значение
-      onSetValue(value)
-    }
-  }
+    const toggleTextVisibility = useCallback(() => {
+      setTextIsShow((prev) => !prev)
+    }, [])
 
-  const toggleTextVisibility = () => {
-    setTextIsShow(!textIsShow)
-  }
-
-  return (
-    <label
-      style={{...extraStyle}}
-      htmlFor={idForLabel ? idForLabel : id}
-      className={cn(extraClass, styles.input__box, {
-        [styles.dark]: theme === 'dark',
-        [styles.light]: theme === 'light',
-        [styles.superWhite]: theme === 'superWhite',
-        [styles.lightBlue]: theme === 'lightBlue'
-      })}
-    >
-      <div className={`${styles.titles_box}`}>
-        {typeof title === typeof 'string' ? <p className={`${styles.input__title}`}>{title}</p> : title}
-        {helpTitle && (
-          <Link href={linkToHelp} className={`${styles.help__title}`}>
-            {helpTitle}
-          </Link>
-        )}
-      </div>
-      <div className={`${styles.input__inner__box} ${errorValue && styles.error__input__inner__box}`}>
-        <input
-          placeholder={placeholder}
-          type={isSecret && !textIsShow ? 'password' : inputType ? inputType : 'text'}
-          value={isSecret ? (textIsShow ? currentValue : displayValue) : currentValue}
-          onChange={handleChange}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          onKeyDown={handleNumberKeyDown}
-          onKeyUp={onKeyUp}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-          onClick={onClick}
-          disabled={disabled}
-          readOnly={readOnly}
-          autoComplete={autoComplete}
-          autoFocus={autoFocus}
-          className={cn(styles.input, {
-            [styles.error__input]: errorValue,
-            [styles.number__input]: inputType === 'number'
-          })}
-          id={idForLabel ? idForLabel : id}
-        />
-        {isSecret &&
-          (!customIcon ? (
-            <div className={`${styles.secret__box}`} onClick={toggleTextVisibility}>
-              {textIsShow ? (
-                <Image style={{cursor: 'pointer'}} width={22} height={18} alt='Hide text' src={hideIcon} />
-              ) : (
-                <Image style={{cursor: 'pointer'}} width={22} height={18} alt='Show text' src={showIcon} />
-              )}
-            </div>
-          ) : (
-            <div className={`${styles.secret__box}`} onClick={toggleTextVisibility}>
-              {textIsShow ? (
-                customIconOnAlternativeState ? (
-                  <Image src={customIconOnAlternativeState} alt='Hide text' />
+    return (
+      <label
+        style={{...extraStyle}}
+        htmlFor={idForLabel ? idForLabel : id}
+        className={cn(extraClass, styles.input__box, {
+          [styles.dark]: theme === 'dark',
+          [styles.light]: theme === 'light',
+          [styles.superWhite]: theme === 'superWhite',
+          [styles.lightBlue]: theme === 'lightBlue'
+        })}
+      >
+        <div className={`${styles.titles_box}`}>
+          {typeof title === typeof 'string' ? <p className={`${styles.input__title}`}>{title}</p> : title}
+          {helpTitle && (
+            <Link href={linkToHelp} className={`${styles.help__title}`}>
+              {helpTitle}
+            </Link>
+          )}
+        </div>
+        <div className={`${styles.input__inner__box} ${errorValue && styles.error__input__inner__box}`}>
+          <input
+            placeholder={placeholder}
+            type={isSecret && !textIsShow ? 'password' : inputType ? inputType : 'text'}
+            value={isSecret ? (textIsShow ? currentValue : displayValue) : currentValue}
+            onChange={handleChange}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            onKeyDown={handleNumberKeyDown}
+            onKeyUp={onKeyUp}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onClick={onClick}
+            disabled={disabled}
+            readOnly={readOnly}
+            autoComplete={autoComplete}
+            autoFocus={autoFocus}
+            className={cn(styles.input, {
+              [styles.error__input]: errorValue,
+              [styles.number__input]: inputType === 'number'
+            })}
+            id={idForLabel ? idForLabel : id}
+          />
+          {isSecret &&
+            (!customIcon ? (
+              <div className={`${styles.secret__box}`} onClick={toggleTextVisibility}>
+                {textIsShow ? (
+                  <Image style={{cursor: 'pointer'}} width={22} height={18} alt='Hide text' src={hideIcon} />
                 ) : (
-                  <Image src={customIcon} alt='Hide text' />
-                )
-              ) : (
-                <Image src={customIcon} alt='Show text' />
-              )}
-            </div>
-          ))}
-      </div>
-      {errorValue && <div className={`${styles.error__text}`}>{errorValue}</div>}
-    </label>
-  )
-}
+                  <Image style={{cursor: 'pointer'}} width={22} height={18} alt='Show text' src={showIcon} />
+                )}
+              </div>
+            ) : (
+              <div className={`${styles.secret__box}`} onClick={toggleTextVisibility}>
+                {textIsShow ? (
+                  customIconOnAlternativeState ? (
+                    <Image src={customIconOnAlternativeState} alt='Hide text' />
+                  ) : (
+                    <Image src={customIcon} alt='Hide text' />
+                  )
+                ) : (
+                  <Image src={customIcon} alt='Show text' />
+                )}
+              </div>
+            ))}
+        </div>
+        {errorValue && <div className={`${styles.error__text}`}>{errorValue}</div>}
+      </label>
+    )
+  }
+)
+
+TextInputUI.displayName = 'TextInputUIMemo'
 
 export default TextInputUI

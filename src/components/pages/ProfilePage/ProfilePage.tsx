@@ -417,7 +417,7 @@ const ProfileStats: FC<ProfileStatsProps> = ({favoriteCount}) => {
   }, [])
   return (
     <div className={styles.profile__data__mini}>
-      <Link href={'#'} className={styles.profile__data__box_item__span}>
+      <Link href={'/favorites'} className={styles.profile__data__box_item__span}>
         <span className={styles.profile__data__favourite}>
           <span className={styles.profile__data__favourite__span}>
             <h3 className={styles.mini__link__info__title}>Избранное</h3>
@@ -548,7 +548,6 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
                 setUserRegion(data.region)
               }}
             />
-
             <ProfileActions
               phoneNumber={userPhoneNumber}
               region={userRegion}

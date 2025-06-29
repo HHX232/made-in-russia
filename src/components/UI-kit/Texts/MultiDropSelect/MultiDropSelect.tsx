@@ -19,6 +19,8 @@ interface MultiDropSelectProps {
   direction?: 'left' | 'right' | 'bottom' | 'top'
   extraClass?: string
   isOnlyShow?: boolean
+  showSearchInput?: boolean
+  onSetSearchInput?: (value: string) => void
 }
 
 const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
@@ -29,10 +31,12 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   disabled = false,
   direction = 'bottom',
   isOnlyShow = false,
-  extraClass
+  extraClass,
+  showSearchInput = false,
+  onSetSearchInput
 }) => {
   const [isOpen, setIsOpen] = useState(false)
-
+  const [searchQuery, setSearchQuery] = useState('')
   // Проверка, выбран ли элемент
   const isSelected = (option: MultiSelectOption) => {
     return selectedValues.some((selected) => selected.id === option.id)
@@ -115,41 +119,55 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   // Создаем массив элементов для DropList
   const dropListItems = [
     // Каждая опция - отдельный элемент
-    ...options.map((option) => {
-      const selected = isSelected(option)
-      return (
-        <div key={option.id} className={`${styles.optionItem} ${selected ? styles.optionSelected : ''}`}>
-          <div
-            className={styles.optionContent}
-            onClick={(e) => {
-              if (isOnlyShow) return // Блокируем клики в режиме только просмотра
-              e.stopPropagation()
-              handleSelectOption(option)
-            }}
-            style={isOnlyShow ? {cursor: 'default'} : undefined}
-          >
-            {option.icon && <img src={option.icon} alt='' className={styles.optionIcon} />}
-            <span className={styles.optionLabel}>{option.label}</span>
-          </div>
-
-          {!isOnlyShow && (
-            <div className={styles.radioWrapper}>
-              <RadioButton
-                label=''
-                name={`multiselect-option-${option.id}`}
-                value={`option-${option.id}`}
-                checked={selected}
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  handleSelectOption(option)
-                }}
-                allowUnchecked={true}
-              />
+    showSearchInput && (
+      <input
+        type='text'
+        placeholder='Поиск категории...'
+        value={searchQuery}
+        onChange={(e) => {
+          setSearchQuery(e.target.value)
+          onSetSearchInput?.(e.target.value)
+        }}
+        className={styles.cat__search}
+      />
+    ),
+    ...options
+      .filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
+      .map((option) => {
+        const selected = isSelected(option)
+        return (
+          <div key={option.id} className={`${styles.optionItem} ${selected ? styles.optionSelected : ''}`}>
+            <div
+              className={styles.optionContent}
+              onClick={(e) => {
+                if (isOnlyShow) return // Блокируем клики в режиме только просмотра
+                e.stopPropagation()
+                handleSelectOption(option)
+              }}
+              style={isOnlyShow ? {cursor: 'default'} : undefined}
+            >
+              {option.icon && <img src={option.icon} alt='' className={styles.optionIcon} />}
+              <span className={styles.optionLabel}>{option.label}</span>
             </div>
-          )}
-        </div>
-      )
-    }),
+
+            {!isOnlyShow && (
+              <div className={styles.radioWrapper}>
+                <RadioButton
+                  label=''
+                  name={`multiselect-option-${option.id}`}
+                  value={`option-${option.id}`}
+                  checked={selected}
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    handleSelectOption(option)
+                  }}
+                  allowUnchecked={true}
+                />
+              </div>
+            )}
+          </div>
+        )
+      }),
 
     // Разделитель (только если не в режиме просмотра)
     ...(!isOnlyShow ? [<div style={{pointerEvents: 'none'}} key='divider' className={styles.divider} />] : []),

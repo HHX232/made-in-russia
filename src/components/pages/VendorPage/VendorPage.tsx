@@ -61,7 +61,12 @@ const helpListButtonData = [
   {
     linkTo: '#',
     iconSrc: '/profile/help_chat_svg.svg',
-    text: 'Написать в поддержку'
+    text: 'Поддержка'
+  },
+  {
+    linkTo: '/favorites',
+    iconSrc: '/profile/gray_star_for_profile.svg',
+    text: 'Избранное'
   },
   {
     linkTo: '#',
@@ -427,11 +432,11 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
             <div className={styles.vendor__second__help}>
               {helpListButtonData.map((item, index) => (
                 <HelpListButton
-                  extraClass={`${styles.vendor__second__help__item}`}
+                  extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''}`}
                   key={index}
                   {...item}
                   onClick={() => {
-                    if (index === 1) {
+                    if (index === 2) {
                       setIsQuestOpen(true)
                     }
                   }}
@@ -458,7 +463,11 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
               </div>
               <div className={styles.vendor__second__help}>
                 {helpListButtonData.map((item, index) => (
-                  <HelpListButton extraClass={`${styles.vendor__second__help__item}`} key={index} {...item} />
+                  <HelpListButton
+                    extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''}`}
+                    key={index}
+                    {...item}
+                  />
                 ))}
               </div>
             </div>
@@ -467,7 +476,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
             <div
               style={{
                 height: !isCommentsOpen ? 'fit-content' : '100%',
-                maxHeight: reviews.length === 0 ? 'none' : '590px'
+                maxHeight: reviews.length === 0 ? 'none' : isPageForVendor ? '644px' : '590px'
               }}
               className={`${styles.list__box}`}
             >

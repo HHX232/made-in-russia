@@ -14,6 +14,8 @@ import {axiosClassic} from '@/api/api.interceptor'
 import {saveTokenStorage} from '@/middleware'
 import {toast} from 'sonner'
 import {IVendorData} from '../../VendorPage/VendorPage'
+import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
+import CreateCardProductCategory from '../../CreateCard/CreateCardProductCategory/CreateCardProductCategory'
 const belarusSvg = '/belarus.svg'
 
 const countryOptions: MultiSelectOption[] = [
@@ -168,6 +170,47 @@ const ProfileForm: FC<ProfileFormProps> = ({
   const [telText, setTelText] = useState('')
   const [trueTelephoneNumber, setTrueTelephoneNumber] = useState('')
   const [isValidNumber, setIsValidNumber] = useState(true)
+  const [allCategories, setAllCategories] = useState<Category[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [categoriesMultiSelect, setCategoriesMultiSelect] = useState<MultiSelectOption[]>([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categories = await CategoriesService.getAll()
+        setAllCategories(categories)
+        setCategoriesMultiSelect(
+          categories.map((category) => ({
+            id: category.id,
+            label: category.name,
+            value: category.name,
+            icon: belarusSvg
+          }))
+        )
+        setError(null)
+      } catch (err) {
+        setError('Ошибка загрузки категорий')
+        console.error('Error fetching categories:', err)
+      }
+    }
+
+    fetchCategories()
+  }, [])
+
+  const flattenCategories = (categories: Category[], level = 0): Array<Category & {level: number}> => {
+    const result: Array<Category & {level: number}> = []
+
+    categories.forEach((category) => {
+      result.push({...category, level})
+      if (category.children && category.children.length > 0) {
+        result.push(...flattenCategories(category.children, level + 1))
+      }
+    })
+
+    return result
+  }
+
+  const flattenedCategories = flattenCategories(allCategories)
 
   // Функция для определения региона по номеру телефона
   const detectRegionFromPhone = (phoneNumber: string): string => {
@@ -645,9 +688,15 @@ const ProfileForm: FC<ProfileFormProps> = ({
             Категории товаров
           </p>
           <MultiDropSelect
+            showSearchInput
             isOnlyShow={!isShowForOwner}
             extraClass={styles.profile__region__dropdown__extra}
-            options={categoryOptions}
+            options={flattenedCategories.map((category) => ({
+              id: category.id,
+              label: category.name,
+              value: category.name,
+              icon: ''
+            }))}
             selectedValues={categories}
             onChange={(values) => {
               setCategories(values)

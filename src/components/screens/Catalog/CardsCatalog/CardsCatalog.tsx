@@ -184,7 +184,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
           // Для последнего элемента добавляем ref
           if (index === allProducts.length - 1) {
             return (
-              <div style={{height: '100%'}} key={uniqueKey} ref={lastElementRef}>
+              <div style={{height: '100%', width: '100%'}} key={uniqueKey} ref={lastElementRef}>
                 <Card
                   onPreventCardClick={onPreventCardClick}
                   isLoading={false}

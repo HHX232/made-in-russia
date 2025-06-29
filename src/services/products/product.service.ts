@@ -46,6 +46,17 @@ const ProductService = {
       method: 'GET'
     })
     return data
+  },
+
+  async getByIds(productIds: number[]): Promise<Product[]> {
+    const {data} = await axiosClassic<Product[]>({
+      url: `${PRODUCTS}/ids`,
+      method: 'GET',
+      params: {
+        ids: productIds.join(',')
+      }
+    })
+    return data
   }
 }
 

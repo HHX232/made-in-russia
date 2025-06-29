@@ -95,7 +95,7 @@ export const renderCategoryItems = (
 }
 
 const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
-  const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'made-in-russia'}`
+  const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}`
   const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'made_in_russia'}`
   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `7${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
@@ -138,7 +138,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Made In Russia',
+    name: 'Exporteru',
     url: typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL,
     sameAs: [instagramUrl, telegramUrl],
     contactPoint: {
@@ -244,7 +244,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                   src={telegram}
                   alt='Telegram'
                 />
-                {process.env.NEXT_PUBLIC_TELEGRAM || 'made-in-russia'}
+                {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
               </Link>
             </li>
             <li className={styles.header__top_item}>
@@ -287,7 +287,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                         src={insta}
                         alt='Instagram'
                       />
-                      {process.env.NEXT_PUBLIC_INSTA || 'made-in-russia'}
+                      {process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}
                     </Link>
                   </div>,
                   <div key={Math.random()} className={styles.header__top_item}>
@@ -305,7 +305,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                         src={telegram}
                         alt='Telegram'
                       />
-                      {process.env.NEXT_PUBLIC_TELEGRAM || 'made-in-russia'}
+                      {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
                     </Link>
                   </div>,
                   <div key={Math.random()} className={styles.header__top_item}>
@@ -381,7 +381,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                 itemProp='logo'
               />
 
-              <meta itemProp='name' content='Made In Russia' />
+              <meta itemProp='name' content='Exporteru' />
               <meta
                 itemProp='url'
                 content={typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}
@@ -538,7 +538,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                                 src={insta}
                                 alt='Instagram'
                               />
-                              {process.env.NEXT_PUBLIC_INSTA || 'made-in-russia'}
+                              {process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}
                             </Link>
                           </div>,
                           <div key={Math.random()} className={styles.header__top_item}>
@@ -556,7 +556,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                                 src={telegram}
                                 alt='Telegram'
                               />
-                              {process.env.NEXT_PUBLIC_TELEGRAM || 'made-in-russia'}
+                              {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
                             </Link>
                           </div>,
                           <div key={Math.random()} className={styles.header__top_item}>

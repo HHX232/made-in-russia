@@ -32,7 +32,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
             height={100}
             itemProp='logo'
           /> */}
-          <meta itemProp='name' content='Made In Russia' />
+          <meta itemProp='name' content='Exporteru' />
           <meta
             itemProp='url'
             content={typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}

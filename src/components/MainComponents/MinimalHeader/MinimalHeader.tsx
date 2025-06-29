@@ -57,7 +57,7 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
             height={65}
             itemProp='logo'
           />{' '}
-          {/* <Image src={logoText} width={172} height={41} alt='logo Made In Russia' /> */}
+          {/* <Image src={logoText} width={172} height={41} alt='logo Exporteru' /> */}
         </Link>
         <ul className={`${styles.header__list} ${styles.header__list__big}`}>
           {linksItems.map((el, i) => {
