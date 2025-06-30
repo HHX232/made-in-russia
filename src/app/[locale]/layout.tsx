@@ -9,12 +9,12 @@ import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import '@/components/UI-kit/loaders/nprogress-provider.scss'
 import 'md-editor-rt/lib/style.css'
-import {Toaster} from 'sonner'
-import NProgressProvider from '@/components/UI-kit/loaders/nprogress-provider'
+// import {Toaster} from 'sonner'
 import ProductService from '@/services/products/product.service'
 import {NO_INDEX_PAGE} from '@/constants/seo.constants'
-import {NextIntlClientProvider} from 'next-intl'
-// import {NextIntlClientProvider} from 'next-intl'
+import {hasLocale, NextIntlClientProvider} from 'next-intl'
+import {routing} from '@/i18n/routing'
+import {notFound} from 'next/navigation'
 
 export default async function RootLayout({
   children,
@@ -24,21 +24,16 @@ export default async function RootLayout({
   params: Promise<{locale: string}>
 }) {
   const {locale} = await params
-
+  if (!hasLocale(routing.locales, locale)) {
+    notFound()
+  }
   return (
-    <html lang={locale}>
-      <body>
-        <NProgressProvider />
-
-        <DefaultProvider>
-          <NextIntlClientProvider>
-            {children}
-            <Toaster theme={'dark'} position={'top-right'} duration={3500} />
-          </NextIntlClientProvider>
-        </DefaultProvider>
-        <div id='modal_portal'></div>
-      </body>
-    </html>
+    <DefaultProvider>
+      <NextIntlClientProvider>
+        {children}
+        {/* <Toaster theme={'dark'} position={'top-right'} duration={3500} /> */}
+      </NextIntlClientProvider>
+    </DefaultProvider>
   )
 }
 

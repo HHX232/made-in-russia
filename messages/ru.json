@@ -1,0 +1,89 @@
+{
+   "HomePage": {
+     "title": "Привет мир!",
+     "profile": "Перейти на страницу профиля",
+     "search": "Поиск по сайту",
+     "login": "Войти",
+     "category": "Категории",
+     "reviews": "Отзывы",
+     "delivery": "Доставка",
+     "about": "О нас",
+     "help": "Помощь"
+   },
+   "Footer": {
+    "ugreement": "Пользовательское соглашение",
+    "privacy": "Политика конфиденциальности",
+    "contact": "Связаться с нами"
+   },
+   "Filters":{
+    "filtersTitle":"Фильтры",
+    "filtersCategory":"Категории",
+    "filtersPrice":"Стоимость",
+    "filtersReset":"Сброс"
+   },
+   "LoginPage":{
+    "loginTitle":"Войти в аккаунт",
+    "loginAccount":"Аккаунт",
+    "loginPassword":"Пароль",
+    "loginButton":"Войти",
+    "loginForgotPassword":"Забыли пароль? Восстановить",
+    "loginRegister":"Зарегистрироваться",
+    "loginWithSocial":"Войти через:",
+    "writeEmailOrNickname":"Введите почту или имя",
+    "writePassword":"Введите пароль",
+    "passwordError":"Пароль должен быть не менее 6 символов",
+    "nicknameError":"Пожалуйста, введите имя или почту",
+    "autorithationError": "Ошибка авторизации",
+    "decorationImage":"декоративное изображение 'Большое количество материалов'",
+    "loading":"Загрузка..."
+   },
+   "RegisterUserPage":{
+    "registerTitle":"Регистрация",
+    "registerTitleCompany":"Регистрация компании",
+    "registerRegion":"Страна/Регион",
+    "registerFullName":"Полное имя",
+    "password":"Пароль аккаунта",
+    "passwordPlaceholder":"Введите пароль, 6-20 символов",
+    "phoneNumber":"Номер мобильного телефона",
+    "imVendor":"Я продавец",
+    "passwordError":"Пароль должен быть не менее 6 символов",
+    "imUser":"Я покупатель",
+    "haveAccount":"Есть аккаунт? Войти!",
+    "email":"Почта",
+    "emailDescription":"Предпочтительна бизнес-электронная почта.",
+    "checkPolicy":"Я согласен с пользовательским соглашением и политикой конфиденциальности.",
+    "emailError":"почта должна содержать @ и расширение",
+    "nameError":"Имя не должно содержать цифр или специальных символов",
+    "codeText":"Код подтверждения был отправлен на ваш адрес электронной почты",
+    "haveProblemWithCode":"Есть проблемы с получением кода?",
+    "defaultRegisterError":"Ошибка регистрации",
+    "loading":"Загрузка...",
+    "next":"Далее",
+    "emailNext":"Проверка электронной почты",
+    "confirm":"Подтвердить",
+
+
+    "inn":"ИНН компании",
+    "innPlaceholder":"Введите ИНН компании",
+    "innError":"ИНН должен содержать минимум 9 цифр",
+    "companyCountryes":"Страны присутствия",
+    "companyCountryesPlaceholder":"Выберите страны...",
+    "companyName":"Название компании",
+    "companyNamePlaceholder":"Введите название компании...",
+    "companyNameError":"Название компании должно содержать минимум 3 символа",
+    "companyTel":"Контактный телефон",
+
+    "corporateEmail":"Корпоративная почта",
+    "corporateEmailPlaceholder":"Введите корпоративную почту...",
+    "categories":"Категории товаров",
+    "categoriesPlaceholder":"Выберите категории товаров...",
+    "categoriesSubtext":"Выберите основные категории материалов, с которыми работает ваша компания"
+   },
+   "MinimalHeader":{
+    "category": "Категории",
+    "reviews": "Отзывы",
+    "delivery": "Доставка",
+    "about": "О нас",
+    "help": "Помощь"
+   }
+ }

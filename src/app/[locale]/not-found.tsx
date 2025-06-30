@@ -1,11 +1,9 @@
 'use client'
-// import Footer from '@/components/MainComponents/Footer/Footer'
-// import Header from '@/components/MainComponents/Header/Header'
+import Footer from '@/components/MainComponents/Footer/Footer'
+import Header from '@/components/MainComponents/Header/Header'
 import Link from 'next/link'
 import styles from '@/scss/notFound.module.scss'
 import {useState, useEffect, useRef, useCallback} from 'react'
-import Footer from '@/components/MainComponents/Footer/Footer'
-import Header from '@/components/MainComponents/Header/Header'
 
 interface Dot {
   id: string
@@ -247,9 +245,9 @@ export default function NotFound() {
         <Header />
         <main className={styles.mainContent}>
           <div className={styles.contentWrapper}>
-            {/* <div style={{height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <div style={{height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
               Loading...
-            </div> */}
+            </div>
             <p className={styles.description}>
               Страница не найдена или удалена. Проверьте правильность URL или вернитесь на главную.
             </p>

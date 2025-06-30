@@ -14,6 +14,7 @@ import {useRouter} from 'next/navigation'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import ResetPasswordForm from './ResetPAsswordForm/ResetPasswordForm'
 import {Category} from '@/services/categoryes/categoryes.service'
+import {useTranslations} from 'next-intl'
 
 const google = '/google_registr.svg'
 const wechat = '/wechat_registr.svg'
@@ -31,7 +32,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
   const [error, setError] = useState('')
   const [showResetForm, setShowResetForm] = useState(false)
   const router = useRouter()
-
+  const t = useTranslations('LoginPage')
   const handleNameChange = (value: SetStateAction<string>) => {
     setNameState(value)
     setError('')
@@ -45,12 +46,12 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
     e.preventDefault()
 
     if (!name) {
-      setError('Пожалуйста, введите имя или почту')
+      setError(t('nicknameError'))
       return
     }
 
     if (password.length < 6) {
-      setError('Пароль должен быть не менее 6 символов')
+      setError(t('passwordError'))
       return
     }
 
@@ -92,7 +93,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
         }
       )
 
-      setError(error.response?.data?.message || 'Ошибка авторизации')
+      setError(error.response?.data?.message || t('autorithationError'))
     } finally {
       setIsLoading(false)
     }
@@ -120,14 +121,14 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
             src={decorImage2}
             width={580}
             height={745}
-            alt='декоративное изображение "Большое количество материалов"'
+            alt={t('decorationImage')}
           />
 
           {showResetForm ? (
             <ResetPasswordForm onBack={handleBackToLogin} />
           ) : (
             <form className={`${styles.login__form__box}`}>
-              <h2 className={`${styles.login__title}`}>Войти в аккаунт</h2>
+              <h2 className={`${styles.login__title}`}>{t('loginTitle')}</h2>
               <div className={`${styles.inputs__box}`}>
                 {
                   <>
@@ -137,31 +138,29 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                       isSecret={false}
                       onSetValue={handleNameChange}
                       currentValue={name}
-                      placeholder='Введите почту или имя'
-                      title={<p className={`${styles.input__title}`}>Аккаунт</p>}
+                      placeholder={t('writeEmailOrNickname')}
+                      title={<p className={`${styles.input__title}`}>{t('loginAccount')}</p>}
                     />
                     <TextInputUI
                       extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2} ${error && styles.extra__name__class}`}
                       isSecret={true}
                       onSetValue={setPasswordState}
                       currentValue={password}
-                      errorValue={
-                        password.length < 6 && password.length !== 0 ? 'Пароль должен быть не менее 6 символов' : ''
-                      }
-                      placeholder='Введите пароль'
-                      title={<p className={`${styles.input__title}`}>Пароль</p>}
+                      errorValue={password.length < 6 && password.length !== 0 ? t('passwordError') : ''}
+                      placeholder={t('writePassword')}
+                      title={<p className={`${styles.input__title}`}>{t('loginPassword')}</p>}
                     />
                     <button onClick={(e: any) => onSubmit(e)} className={`${styles.form__button}`} disabled={isLoading}>
-                      {isLoading ? 'Загрузка...' : 'Войти'}
+                      {isLoading ? t('loading') : t('loginButton')}
                     </button>
                     <Link className={`${styles.form__button_register}`} href='/register'>
-                      Зарегистрироваться
+                      {t('loginRegister')}
                     </Link>
                     <div className={`${styles.form__reset__password__button}`} onClick={handleResetPassword}>
-                      Забыли пароль? Восстановить
+                      {t('loginForgotPassword')}
                     </div>
                     <div className={`${styles.apps__login}`}>
-                      <p className={`${styles.apps__text}`}>Войти через:</p>
+                      <p className={`${styles.apps__text}`}>{t('loginWithSocial')}</p>
                       <div className={`${styles.apps__images}`}>
                         <Image
                           className={`${styles.registr__image}`}

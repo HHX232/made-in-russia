@@ -4,6 +4,7 @@ import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import MultiDropSelect, {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {useTranslations} from 'next-intl'
 
 const belarusSvg = '/belarus.svg'
 
@@ -40,6 +41,7 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
   useEffect(() => {
     setIsClient(true)
   }, [])
+  const t = useTranslations('RegisterUserPage')
   // Опции стран для мультивыбора
   const countryOptions: MultiSelectOption[] = [
     {id: 'belarus', label: 'Беларусь', value: 'Belarus', icon: belarusSvg},
@@ -73,18 +75,18 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
         isSecret={false}
         onSetValue={handleInnChange}
         currentValue={inn}
-        placeholder='Введите ИНН компании...'
-        errorValue={inn.length !== 0 && inn.length < 9 ? 'ИНН должен содержать минимум 9 цифр' : ''}
-        title={<p className={`${styles.input__title}`}>ИНН компании</p>}
+        placeholder={t('innPlaceholder')}
+        errorValue={inn.length !== 0 && inn.length < 9 ? t('innError') : ''}
+        title={<p className={`${styles.input__title}`}>{t('inn')}</p>}
       />
 
       <div className={`${styles.some__drop__box}`}>
-        <p className={`${styles.input__title}`}>Страны присутствия</p>
+        <p className={`${styles.input__title}`}>{t('companyCountryes')}</p>
         <MultiDropSelect
           options={countryOptions}
           selectedValues={selectedCountries}
           onChange={setSelectedCountries}
-          placeholder='Выберите страны...'
+          placeholder={t('companyCountryesPlaceholder')}
           direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'left'}
         />
       </div>
@@ -94,12 +96,12 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
         isSecret={false}
         onSetValue={handleNameChange}
         currentValue={name}
-        placeholder='Введите название компании...'
-        title={<p className={`${styles.input__title}`}>Название компании</p>}
+        placeholder={t('companyNamePlaceholder')}
+        title={<p className={`${styles.input__title}`}>{t('companyName')}</p>}
       />
 
       <div className={`${styles.some__drop__box}`}>
-        <p className={`${styles.input__title}`}>Контактный телефон</p>
+        <p className={`${styles.input__title}`}>{t('companyTel')}</p>
         <TelephoneInputUI
           currentValue={telText}
           error={!isValidNumber ? 'error' : ''}
@@ -116,7 +118,7 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
           opacity: inn.length < 9 || name.length < 3 || !isValidNumber || selectedCountries.length === 0 ? 0.7 : 1
         }}
       >
-        Далее
+        {t('next')}
       </button>
     </>
   )

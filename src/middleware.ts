@@ -4,6 +4,34 @@ import instance, {axiosClassic} from './api/api.interceptor'
 import Cookies from 'js-cookie'
 import {User} from './services/users.types'
 import ICardFull from './services/card/card.types'
+import createIntlMiddleware from 'next-intl/middleware'
+// роутинг есть в документации
+import {routing} from './i18n/routing'
+
+const intlMiddleware = createIntlMiddleware(routing)
+
+const getLocaleFromPathname = (pathname: string): string | null => {
+  const segments = pathname.split('/').filter(Boolean)
+  const firstSegment = segments[0]
+
+  if (['en', 'ru', 'zh'].includes(firstSegment)) {
+    return firstSegment
+  }
+  return null
+}
+const createLocalizedURL = (path: string, locale: string | null): string => {
+  if (locale) {
+    return `/${locale}${path.startsWith('/') ? path : `/${path}`}`
+  }
+  return path.startsWith('/') ? path : `/${path}`
+}
+const getPathnameWithoutLocale = (pathname: string): string => {
+  const locale = getLocaleFromPathname(pathname)
+  if (locale) {
+    return pathname.replace(`/${locale}`, '') || '/'
+  }
+  return pathname
+}
 
 export const saveTokenStorage = (data: {accessToken: string; refreshToken: string}) => {
   if (typeof window !== 'undefined') {
@@ -46,8 +74,20 @@ const publicRoutes = ['/login', '/register']
 export async function middleware(request: NextRequest) {
   console.log('🚀 Middleware запущен для пути:', request.nextUrl.pathname)
 
+  if (request.nextUrl.pathname.startsWith('/api')) {
+    return NextResponse.next() // Пропускаем для API
+  }
+
+  // Сначала применяем intl middleware для обработки локализации
+  const intlResponse = intlMiddleware(request)
+  if (intlResponse && intlResponse.status !== 200) {
+    return intlResponse
+  }
   try {
     const {pathname} = request.nextUrl
+    const locale = getLocaleFromPathname(pathname)
+    const pathnameWithoutLocale = getPathnameWithoutLocale(pathname)
+    console.log('🌐 Обнаружена локаль:', locale, 'Путь без локали:', pathnameWithoutLocale)
 
     // Проверяем наличие токенов в запросе
     const accessToken = request.cookies.get('accessToken')?.value || ''
@@ -56,19 +96,19 @@ export async function middleware(request: NextRequest) {
     console.log('📌 Проверка токенов:', {
       accessTokenExists: !!accessToken,
       refreshTokenExists: !!refreshToken,
-      path: pathname
+      path: pathnameWithoutLocale
     })
 
     // Обработка маршрутов create-card
-    if (pathname === '/create-card' || pathname.startsWith('/create-card/')) {
-      console.log('🎨 Обнаружен маршрут create-card:', pathname)
+    if (pathnameWithoutLocale === '/create-card' || pathnameWithoutLocale.startsWith('/create-card/')) {
+      console.log('🎨 Обнаружен маршрут create-card:', pathnameWithoutLocale)
 
       // Проверка наличия refresh токена
       if (!refreshToken) {
         console.log('❌ Нет refresh токена, редирект на /login')
-        return NextResponse.redirect(new URL('/login', request.url))
+        const loginUrl = createLocalizedURL('/login', locale)
+        return NextResponse.redirect(new URL(loginUrl, request.url))
       }
-
       try {
         // Получаем данные пользователя
         const {data: userData} = await instance.get<User>('/me', {
@@ -83,19 +123,21 @@ export async function middleware(request: NextRequest) {
         // Проверяем роль пользователя
         if (userData.role !== 'Vendor' && userData.role !== 'Admin') {
           console.log('❌ Доступ запрещен для роли:', userData.role)
-          return NextResponse.redirect(new URL('/', request.url))
+          const homeUrl = createLocalizedURL('/', locale)
+          return NextResponse.redirect(new URL(homeUrl, request.url))
         }
 
         // Если это маршрут с ID товара
-        if (pathname.startsWith('/create-card/') && pathname !== '/create-card') {
-          const pathSegments = pathname.split('/')
+        if (pathnameWithoutLocale.startsWith('/create-card/') && pathnameWithoutLocale !== '/create-card') {
+          const pathSegments = pathnameWithoutLocale.split('/')
           const productId = pathSegments[2]
 
           console.log('🔍 Проверка доступа к товару с ID:', productId)
 
           if (!productId || isNaN(Number(productId))) {
             console.log('❌ Невалидный ID товара:', productId)
-            return NextResponse.redirect(new URL('/create-card', request.url))
+            const createCardUrl = createLocalizedURL('/create-card', locale)
+            return NextResponse.redirect(new URL(createCardUrl, request.url))
           }
 
           try {
@@ -113,26 +155,28 @@ export async function middleware(request: NextRequest) {
             // Админ имеет доступ ко всем товарам
             if (userData.role === 'Admin') {
               console.log('👑 Admin имеет доступ к редактированию любого товара')
-              return NextResponse.next()
+              return intlResponse || NextResponse.next()
             }
 
             // Проверяем, является ли пользователь владельцем товара
             if (productOwnerId !== userData.id) {
               console.log('❌ Пользователь не является владельцем товара, редирект на /create-card')
-              return NextResponse.redirect(new URL('/create-card', request.url))
+              const createCardUrl = createLocalizedURL('/create-card', locale)
+              return NextResponse.redirect(new URL(createCardUrl, request.url))
             }
 
             console.log('✅ Пользователь является владельцем товара, доступ разрешен')
-            return NextResponse.next()
+            return intlResponse || NextResponse.next()
           } catch (error) {
             console.error('❌ Ошибка при получении данных товара:', error)
             // Если товар не найден или произошла ошибка, редиректим на /create-card
-            return NextResponse.redirect(new URL('/create-card', request.url))
+            const createCardUrl = createLocalizedURL('/create-card', locale)
+            return NextResponse.redirect(new URL(createCardUrl, request.url))
           }
         }
 
         // Для маршрута /create-card без ID просто разрешаем доступ Vendor и Admin
-        return NextResponse.next()
+        return intlResponse || NextResponse.next()
       } catch (error) {
         console.error('❗ Не удалось получить данные пользователя:', error)
 
@@ -154,7 +198,7 @@ export async function middleware(request: NextRequest) {
           console.log('✅ Токен успешно обновлен')
 
           // Создаем новый ответ и устанавливаем обновленные токены
-          const response = NextResponse.next()
+          const response = intlResponse || NextResponse.next()
           response.cookies.set('accessToken', tokenData.accessToken)
 
           // Повторяем проверку с новым токеном
@@ -168,18 +212,20 @@ export async function middleware(request: NextRequest) {
           // Проверяем роль пользователя
           if (userData.role !== 'Vendor' && userData.role !== 'Admin') {
             console.log('❌ Доступ запрещен для роли:', userData.role)
-            const redirectResponse = NextResponse.redirect(new URL('/', request.url))
+            const homeUrl = createLocalizedURL('/', locale)
+            const redirectResponse = NextResponse.redirect(new URL(homeUrl, request.url))
             redirectResponse.cookies.set('accessToken', tokenData.accessToken)
             return redirectResponse
           }
 
           // Если это маршрут с ID товара
-          if (pathname.startsWith('/create-card/') && pathname !== '/create-card') {
-            const pathSegments = pathname.split('/')
+          if (pathnameWithoutLocale.startsWith('/create-card/') && pathnameWithoutLocale !== '/create-card') {
+            const pathSegments = pathnameWithoutLocale.split('/')
             const productId = pathSegments[2]
 
             if (!productId || isNaN(Number(productId))) {
-              const redirectResponse = NextResponse.redirect(new URL('/create-card', request.url))
+              const createCardUrl = createLocalizedURL('/create-card', locale)
+              const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
               return redirectResponse
             }
@@ -199,7 +245,8 @@ export async function middleware(request: NextRequest) {
               }
 
               if (productOwnerId !== userData.id) {
-                const redirectResponse = NextResponse.redirect(new URL('/create-card', request.url))
+                const createCardUrl = createLocalizedURL('/create-card', locale)
+                const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
                 redirectResponse.cookies.set('accessToken', tokenData.accessToken)
                 return redirectResponse
               }
@@ -207,7 +254,8 @@ export async function middleware(request: NextRequest) {
               return response
             } catch (error) {
               console.error('❌ Ошибка при получении данных товара:', error)
-              const redirectResponse = NextResponse.redirect(new URL('/create-card', request.url))
+              const createCardUrl = createLocalizedURL('/create-card', locale)
+              const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
               return redirectResponse
             }
@@ -216,20 +264,22 @@ export async function middleware(request: NextRequest) {
           return response
         } catch (e) {
           console.error('❌ Не удалось обновить токен:', e)
-          const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+          const loginUrl = createLocalizedURL('/login', locale)
+          const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
           return removeTokensFromResponse(redirectResponse)
         }
       }
     }
 
     // Обработка защищенных маршрутов
-    if (protectedRoutes.some((route) => pathname.startsWith(route))) {
-      console.log('🛡️ Обнаружен защищенный маршрут:', pathname)
+    if (protectedRoutes.some((route) => pathnameWithoutLocale.startsWith(route))) {
+      console.log('🛡️ Обнаружен защищенный маршрут:', pathnameWithoutLocale)
 
       // Проверка наличия refresh токена
       if (!refreshToken) {
         console.log('❌ Нет refresh токена, редирект на /login')
-        return NextResponse.redirect(new URL('/login', request.url))
+        const loginUrl = createLocalizedURL('/login', locale)
+        return NextResponse.redirect(new URL(loginUrl, request.url))
       }
 
       console.log('🔄 Проверка авторизации пользователя с accessToken')
@@ -247,18 +297,20 @@ export async function middleware(request: NextRequest) {
         // Admin имеет доступ ко всем маршрутам
         if (userData.role === 'Admin') {
           console.log('👑 Admin имеет доступ ко всем маршрутам')
-          return NextResponse.next()
+          return intlResponse || NextResponse.next()
         }
 
-        if (userData.role === 'Vendor' && pathname === '/profile') {
+        if (userData.role === 'Vendor' && pathnameWithoutLocale === '/profile') {
           console.log('🔀 Перенаправление User с ролью Vendor на /vendor')
-          return NextResponse.redirect(new URL('/vendor', request.url))
-        } else if (userData.role === 'User' && pathname === '/vendor') {
+          const vendorUrl = createLocalizedURL('/vendor', locale)
+          return NextResponse.redirect(new URL(vendorUrl, request.url))
+        } else if (userData.role === 'User' && pathnameWithoutLocale === '/vendor') {
           console.log('🔀 Перенаправление User с ролью User на /profile')
-          return NextResponse.redirect(new URL('/profile', request.url))
+          const profileUrl = createLocalizedURL('/profile', locale)
+          return NextResponse.redirect(new URL(profileUrl, request.url))
         }
 
-        return NextResponse.next()
+        return intlResponse || NextResponse.next()
       } catch (error) {
         console.error('❗ Не удалось получить данные пользователя с текущим accessToken:', error)
 
@@ -280,7 +332,7 @@ export async function middleware(request: NextRequest) {
           console.log('✅ Токен успешно обновлен')
 
           // Создаем новый ответ и устанавливаем обновленные токены
-          const response = NextResponse.next()
+          const response = intlResponse || NextResponse.next()
           response.cookies.set('accessToken', tokenData.accessToken)
           // refreshToken остается прежним, если сервер не вернул новый
           console.log('🔐 Новый accessToken установлен в cookies')
@@ -301,14 +353,18 @@ export async function middleware(request: NextRequest) {
               return response
             }
 
-            if (userData.role === 'Vendor' && pathname === '/profile') {
+            if (userData.role === 'Vendor' && pathnameWithoutLocale === '/profile') {
               console.log('🔀 Перенаправление User с ролью Vendor на /vendor')
-              const redirectResponse = NextResponse.redirect(new URL('/vendor', request.url))
+              const redirectResponse = NextResponse.redirect(
+                new URL(createLocalizedURL('/vendor', locale), request.url)
+              )
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
               return redirectResponse
-            } else if (userData.role === 'User' && pathname === '/vendor') {
+            } else if (userData.role === 'User' && pathnameWithoutLocale === '/vendor') {
               console.log('🔀 Перенаправление User с ролью User на /profile')
-              const redirectResponse = NextResponse.redirect(new URL('/profile', request.url))
+              const redirectResponse = NextResponse.redirect(
+                new URL(createLocalizedURL('/profile', locale), request.url)
+              )
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
               return redirectResponse
             }
@@ -316,25 +372,27 @@ export async function middleware(request: NextRequest) {
             return response
           } catch (e) {
             console.error('❌ Не удалось авторизоваться даже с новым токеном:', e)
-            const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+            const loginUrl = createLocalizedURL('/login', locale)
+            const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
             return removeTokensFromResponse(redirectResponse)
           }
         } catch (e) {
           console.error('❌ Не удалось обновить токен:', e)
-          const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+          const loginUrl = createLocalizedURL('/login', locale)
+          const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
           return removeTokensFromResponse(redirectResponse)
         }
       }
     }
 
     // Обработка публичных маршрутов (login, register)
-    if (publicRoutes.some((route) => pathname.startsWith(route))) {
-      console.log('🌐 Обнаружен публичный маршрут:', pathname)
+    if (publicRoutes.some((route) => pathnameWithoutLocale.startsWith(route))) {
+      console.log('🌐 Обнаружен публичный маршрут:', pathnameWithoutLocale)
 
       // Если нет токенов, разрешаем доступ к публичным маршрутам
       if (!accessToken && !refreshToken) {
         console.log('✅ Доступ к публичному маршруту разрешен (нет токенов)')
-        return NextResponse.next()
+        return intlResponse || NextResponse.next()
       }
 
       // Если есть refreshToken, проверяем авторизацию
@@ -353,16 +411,20 @@ export async function middleware(request: NextRequest) {
           // Перенаправление в зависимости от роли
           if (userData.role === 'Admin') {
             console.log('👑 Admin перенаправляется на главную')
-            return NextResponse.redirect(new URL('/', request.url))
+            const homeUrl = createLocalizedURL('/', locale)
+            return NextResponse.redirect(new URL(homeUrl, request.url))
           } else if (userData.role === 'Vendor') {
             console.log('🔀 Перенаправление Vendor на /vendor')
-            return NextResponse.redirect(new URL('/vendor', request.url))
+            const vendorUrl = createLocalizedURL('/vendor', locale)
+            return NextResponse.redirect(new URL(vendorUrl, request.url))
           } else if (userData.role === 'User') {
             console.log('🔀 Перенаправление User на /profile')
-            return NextResponse.redirect(new URL('/profile', request.url))
+            const profileUrl = createLocalizedURL('/profile', locale)
+            return NextResponse.redirect(new URL(profileUrl, request.url))
           }
 
-          return NextResponse.redirect(new URL('/', request.url))
+          const homeUrl = createLocalizedURL('/', locale)
+          return NextResponse.redirect(new URL(homeUrl, request.url))
         } catch (error) {
           console.error(
             '❗ Не удалось получить данные пользователя с текущим accessToken на публичном маршруте:',
@@ -409,7 +471,8 @@ export async function middleware(request: NextRequest) {
               }
 
               // Создаем редирект и устанавливаем обновленные токены
-              const response = NextResponse.redirect(new URL(redirectUrl, request.url))
+              const redirectUrlNew = createLocalizedURL(redirectUrl, locale)
+              const response = NextResponse.redirect(new URL(redirectUrlNew, request.url))
               response.cookies.set('accessToken', tokenData.accessToken)
               // refreshToken остается прежним
               console.log('🔐 Новый accessToken установлен в cookies на публичном маршруте')
@@ -418,28 +481,28 @@ export async function middleware(request: NextRequest) {
             } catch (userError) {
               console.error('❌ Не удалось получить данные пользователя после обновления токена:', userError)
               // На публичном маршруте мы просто разрешаем доступ, если получение данных не удалось
-              const response = NextResponse.next()
+              const response = intlResponse || NextResponse.next()
               return removeTokensFromResponse(response)
             }
           } catch (e) {
             console.error('❌ Не удалось обновить токен на публичном маршруте:', e)
             // На публичном маршруте мы просто разрешаем доступ, если обновление не удалось
             // При этом удаляем невалидные токены
-            const response = NextResponse.next()
+            const response = intlResponse || NextResponse.next()
             return removeTokensFromResponse(response)
           }
         }
       }
 
       console.log('✅ Доступ к публичному маршруту разрешен')
-      return NextResponse.next()
+      return intlResponse || NextResponse.next()
     }
 
-    if (pathname.startsWith('/data-vendor/')) {
+    if (pathnameWithoutLocale.startsWith('/data-vendor/')) {
       console.log('🚀 Middleware запущен для пути:', request.nextUrl.pathname)
 
       // Извлекаем ID из пути URL
-      const pathSegments = pathname.split('/')
+      const pathSegments = pathnameWithoutLocale.split('/')
       const id = pathSegments[2] // Получаем ID из /data-vendor/{id}
 
       console.log('ищем продавца с id:', id)
@@ -448,7 +511,7 @@ export async function middleware(request: NextRequest) {
       if (!id || isNaN(Number(id))) {
         console.log('❌ Невалидный ID продавца:', id)
         // Вместо notFound() делаем редирект на 404 страницу
-        return NextResponse.redirect(new URL('/404', request.url))
+        return NextResponse.redirect(new URL(createLocalizedURL('/404', locale), request.url))
       }
 
       try {
@@ -471,7 +534,7 @@ export async function middleware(request: NextRequest) {
         //! if (data.id === userData.id) {
         //!   return NextResponse.redirect(new URL('/vendor', request.url))
         //! }
-        return NextResponse.next()
+        return intlResponse || NextResponse.next()
       } catch (e) {
         console.error('❌ Ошибка при получении данных продавца:', e)
 
@@ -480,20 +543,21 @@ export async function middleware(request: NextRequest) {
         const error = e as any
         if (error?.response?.status === 404 || error?.response?.status === 400) {
           // Продавец не найден или невалидный запрос - редирект на 404
-          return NextResponse.redirect(new URL('/404', request.url))
+
+          return NextResponse.redirect(new URL(createLocalizedURL('/404', locale), request.url))
         }
 
         // Для других ошибок просто продолжаем
-        return NextResponse.next()
+        return intlResponse || NextResponse.next()
       }
     }
     // Для всех остальных маршрутов
     console.log('🌍 Обычный маршрут, продолжаем выполнение')
-    return NextResponse.next()
+    return intlResponse || NextResponse.next()
   } catch (error) {
     console.error('💥 Критическая ошибка в middleware:', error)
     // В случае критической ошибки просто продолжаем выполнение
-    return NextResponse.next()
+    return intlResponse || NextResponse.next()
   }
 }
 

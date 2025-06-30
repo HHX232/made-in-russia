@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import styles from '../RegisterPage.module.scss'
 import InputOtp from '@/components/UI-kit/inputs/inputOTP/inputOTP'
+import {useTranslations} from 'next-intl'
 
 interface RegisterUserThirdProps {
   email: string
@@ -19,11 +20,12 @@ const RegisterUserThird: React.FC<RegisterUserThirdProps> = ({
   onBack,
   onConfirm
 }) => {
+  const t = useTranslations('RegisterUserPage')
   return (
     <>
       <div className={`${styles.inputOtp_section}`}>
         <p className={`${styles.otp__text}`}>
-          Код подтверждения был отправлен на ваш адрес электронной почты {email ? email : 'ваша почта@gmail.com'}
+          {t('codeText')} {email ? email : 'ваша почта@gmail.com'}
         </p>
         <InputOtp length={4} onComplete={handleOtpComplete} />
       </div>
@@ -56,12 +58,12 @@ const RegisterUserThird: React.FC<RegisterUserThirdProps> = ({
           className={`${styles.checked__email}`}
           onClick={onConfirm}
         >
-          Подтвердить
+          {t('confirm')}
         </button>
       </span>
 
       <Link href={'#'} className={styles.problem__link}>
-        Есть проблемы с получением кода?
+        {t('haveProblemWithCode')}
       </Link>
     </>
   )

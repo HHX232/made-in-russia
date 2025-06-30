@@ -4,6 +4,7 @@ import styles from '../RegisterPage.module.scss'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
+import {useTranslations} from 'next-intl'
 
 const belarusSvg = '/belarus.svg'
 
@@ -122,6 +123,7 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
     {imageSrc: belarusSvg, title: 'Россия', altName: 'Russia'}
   ]
 
+  const t = useTranslations('RegisterUserPage')
   const handleRegionSelect = (region: RegionType) => {
     setSelectedRegion(region)
     setListIsOpen(false)
@@ -130,7 +132,7 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
   return (
     <>
       <div className={`${styles.some__drop__box}`}>
-        <p className={`${styles.input__title}`}>Страна/Регион</p>
+        <p className={`${styles.input__title}`}>{t('registerRegion')}</p>
 
         <div className={`${styles.drop__box}`}>
           <RegionDropList
@@ -148,8 +150,8 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
         isSecret={false}
         onSetValue={handleNameChange}
         currentValue={name}
-        placeholder='Введите имя...'
-        title={<p className={`${styles.input__title}`}>Полное имя</p>}
+        placeholder={t('registerFullName') + '...'}
+        title={<p className={`${styles.input__title}`}>{t('registerFullName')}</p>}
       />
 
       <TextInputUI
@@ -157,13 +159,13 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
         isSecret={true}
         onSetValue={setPassword}
         currentValue={password}
-        errorValue={password.length < 6 && password.length !== 0 ? 'Пароль должен быть не менее 6 символов' : ''}
-        placeholder='Введите пароль, 6-20 символов'
-        title={<p className={`${styles.input__title}`}>Пароль аккаунта</p>}
+        errorValue={password.length < 6 && password.length !== 0 ? t('passwordError') : ''}
+        placeholder={t('passwordPlaceholder')}
+        title={<p className={`${styles.input__title}`}>{t('password')}</p>}
       />
 
       <div className={`${styles.some__drop__box}`}>
-        <p className={`${styles.input__title}`}>Номер мобильного телефона</p>
+        <p className={`${styles.input__title}`}>{t('phoneNumber')}</p>
         <TelephoneInputUI
           currentValue={telText}
           error={!isValidNumber ? 'error' : ''}
@@ -173,7 +175,7 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
       </div>
 
       <button onClick={onSubmit} className={`${styles.form__button}`}>
-        Далее
+        {t('next')}
       </button>
     </>
   )

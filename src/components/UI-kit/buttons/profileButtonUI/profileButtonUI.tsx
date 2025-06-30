@@ -5,6 +5,7 @@ import Image from 'next/image'
 import {getAccessToken, getRefreshToken, removeFromStorage, saveTokenStorage} from '@/services/auth/auth.helper'
 import instance, {axiosClassic} from '@/api/api.interceptor'
 import {useRouter} from 'next/navigation'
+import {useTranslations} from 'next-intl'
 
 const ava = '/avatars/avatar-v.svg'
 const ava1 = '/avatars/avatar-v-1.svg'
@@ -41,6 +42,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   const [randomAvatar, setRandomAvatar] = useState<string>(ava)
   const [userName, setUserName] = useState<null | string>(null)
   const router = useRouter()
+  const t = useTranslations('HomePage')
 
   useEffect(() => {
     setRandomAvatar(avatarsArray[Math.floor(Math.random() * avatarsArray.length)])
@@ -135,7 +137,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
       {!userData?.login && (
         <>
           <Image className={styles.image} src={userLogin} alt='Please login' width={28} height={28} />
-          <p className={styles.profile_text}>Войти</p>
+          <p className={styles.profile_text}>{t('login')}</p>
         </>
       )}
     </div>

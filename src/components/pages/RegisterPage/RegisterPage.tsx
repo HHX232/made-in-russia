@@ -19,6 +19,7 @@ import RegisterCompany from './RegisterCompany/RegisterCompany'
 import {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {Category} from '@/services/categoryes/categoryes.service'
+import {useTranslations} from 'next-intl'
 
 const decorImage = '/login__image.jpg'
 const belarusSvg = '/belarus.svg'
@@ -30,7 +31,7 @@ interface AuthResponse {
 
 const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const router = useRouter()
-
+  const t = useTranslations('RegisterUserPage')
   // Form steps state
   const [showNextStep, setShowNextStep] = useState(false)
   const [showFinalStep, setShowFinalStep] = useState(false)
@@ -113,7 +114,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
 
   const handleNameChange = (value: string) => {
     if (isUser && /[0-9!@#$%^&*()_+=|<>?{}\[\]~\/]/.test(value)) {
-      setErrorInName('Имя не должно содержать цифр или специальных символов')
+      setErrorInName(t('nameError'))
     } else {
       setErrorInName(null)
       setNameState(value)
@@ -210,11 +211,11 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Registration failed:', error.response?.data?.message)
-      const errorMessage = error.response?.data?.message || 'Ошибка регистрации'
+      const errorMessage = error.response?.data?.message || t('defaultRegisterError')
 
       toast.error(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Ошибка регистрации</strong>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('defaultRegisterError')}</strong>
           <span>{errorMessage}</span>
         </div>,
         {
@@ -272,14 +273,14 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
                 }}
                 className={`${styles.toggle__action__button}`}
               >
-                {isUser ? 'Я продавец' : 'Я покупатель'}
+                {isUser ? t('imVendor') : t('imUser')}
               </button>
               <Link href='/login' className={`${styles.toggle__action__button}`}>
-                есть аккаунт? Войти!
+                {t('haveAccount')}
               </Link>
             </div>
 
-            <h2 className={`${styles.login__title}`}>{isUser ? 'Регистрация' : 'Регистрация компании'}</h2>
+            <h2 className={`${styles.login__title}`}>{isUser ? t('registerTitle') : t('registerTitleCompany')}</h2>
 
             <div className={`${styles.inputs__box}`}>
               {/* Для пользователей */}

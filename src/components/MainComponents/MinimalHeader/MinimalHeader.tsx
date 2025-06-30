@@ -5,17 +5,18 @@ import Link from 'next/link'
 import {useEffect, useRef, useState} from 'react'
 import CategoryesMenuDesktop from '@/components/UI-kit/elements/CategoryesMenuDesktop/CategoryesMenuDesktop'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
+import {useTranslations} from 'next-intl'
 
 const logoFavBig = '/logos/logoWithoutText.svg'
 const MinimalHeader = ({categories}: {categories?: Category[]}) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [linksItems, setLinksItems] = useState(['Категории', 'Отзывы', 'Доставка', 'О нас', 'Помощь'])
+  const [linksItems, setLinksItems] = useState(['category', 'reviews', 'delivery', 'about', 'help'])
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [categoryListIsOpen, setCategoryListIsOpen] = useState<boolean>(false)
   const fullHeaderRef = useRef<HTMLDivElement>(null)
   const categoryListRefDesktop = useRef<HTMLDivElement>(null)
   const [categoriesList, setCategoriesList] = useState<Category[]>(categories || [])
-
+  const t = useTranslations('MinimalHeader')
   useEffect(() => {
     async function rrrr() {
       const res = await CategoriesService.getAll()
@@ -74,7 +75,7 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                 key={i}
                 className={`${styles.header__list__item}`}
               >
-                <Link href={'#'}>{el}</Link>
+                <Link href={'#'}>{t(el)}</Link>
               </li>
             )
           })}

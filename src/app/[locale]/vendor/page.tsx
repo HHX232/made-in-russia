@@ -17,7 +17,7 @@ export default async function VendorPage() {
         'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
       }
     })
-    console.log('vendorData:', vendorData?.data)
+    // console.log('vendorData:', vendorData?.data)
   } catch (e) {
     console.log('Error fetching vendor data:', e)
   }
@@ -49,7 +49,7 @@ export default async function VendorPage() {
     registrationDate: vendorData?.data.registrationDate || '',
     lastModificationDate: vendorData?.data.lastModificationDate || ''
   }
-  console.log('newVendorData:', newVendorData, 'vendorDetails', newVendorData.vendorDetails)
+  // console.log('newVendorData:', newVendorData, 'vendorDetails', newVendorData.vendorDetails)
 
   return <VendorPageComponent isPageForVendor={true} vendorData={newVendorData} numberCode={numberCode} />
 }

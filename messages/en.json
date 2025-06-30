@@ -1,0 +1,88 @@
+{
+  "HomePage": {
+    "title": "Hello world!",
+    "profile": "Go to profile page",
+    "search": "Site search",
+    "login": "Log in",
+    "category": "Categories",
+    "reviews": "Reviews",
+    "delivery": "Delivery",
+    "about": "About us",
+    "help": "Help"
+  },
+  "Footer": {
+    "ugreement": "User agreement",
+    "privacy": "Privacy policy",
+    "contact": "Contact us"
+  },
+  "Filters": {
+    "filtersTitle": "Filters",
+    "filtersCategory": "Categories",
+    "filtersPrice": "Price",
+    "filtersReset": "Reset"
+},
+"LoginPage": {
+    "loginTitle": "Log in to your account",
+    "loginAccount": "Account",
+    "loginPassword": "Password",
+    "loginButton": "Log in",
+    "loginForgotPassword": "Forgot password? Recover",
+    "loginRegister": "Register",
+    "loginWithSocial": "Log in with:",
+    "writeEmailOrNickname": "Enter email or username",
+    "writePassword": "Enter password",
+    "passwordError": "Password must be at least 6 characters",
+    "nicknameError": "Please enter your username or email",
+    "autorithationError": "Authorization error",
+    "decorationImage": "decorative image 'Wide range of materials'",
+    "loading":"Loading..."
+},
+"RegisterUserPage": {
+    "registerTitle": "Registration",
+    "registerTitleCompany": "Company Registration",
+    "registerRegion": "Country/Region",
+    "registerFullName": "Full name",
+    "password": "Account password",
+    "phoneNumber": "Mobile phone number",
+    "passwordError": "Password must be at least 6 characters",
+    "passwordPlaceholder": "Enter password, 6-20 characters",
+    "imVendor": "I am a vendor",
+    "imUser": "I am a buyer",
+    "haveAccount": "Already have an account? Log in!",
+    "email": "Email",
+    "emailDescription": "Business email is preferred.",
+    "checkPolicy": "I agree to the Terms of Service and Privacy Policy.",
+    "emailError": "Email must contain '@' and a domain extension",
+    "nameError": "Name should not contain numbers or special characters",
+    "codeText": "A verification code has been sent to your email address",
+    "haveProblemWithCode": "Having trouble receiving the code?",
+    "defaultRegisterError": "Registration error",
+    "loading": "Loading...",
+    "next": "Next",
+    "emailNext": "Email verification",
+    "confirm": "Confirm",
+      "inn": "Company Tax ID",
+      "innPlaceholder": "Enter company Tax ID",
+      "innError": "Tax ID must contain at least 9 digits",
+      "companyCountryes": "Operating Countries",
+      "companyCountryesPlaceholder": "Select countries...",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Enter company name...",
+      "companyNameError": "Company name must be at least 3 characters",
+      "companyTel": "Contact Phone Number",
+      "corporateEmail": "Corporate email",
+  "corporateEmailPlaceholder": "Enter corporate email...",
+  "categories": "Product categories",
+  "categoriesPlaceholder": "Select product categories...",
+  "categoriesSubtext": "Select the main material categories your company works with"
+    
+},
+"MinimalHeader":{
+  "category": "Categories",
+  "reviews": "Reviews",
+  "delivery": "Delivery",
+  "about": "About us",
+  "help": "Help"
+  }
+
+}

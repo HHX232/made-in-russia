@@ -2,6 +2,7 @@ import React from 'react'
 import styles from '../RegisterPage.module.scss'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI'
+import {useTranslations} from 'next-intl'
 
 interface RegisterUserSecondProps {
   email: string
@@ -22,7 +23,7 @@ const RegisterUserSecond: React.FC<RegisterUserSecondProps> = ({
 }) => {
   const isEmailValid = email.includes('@') && email.includes('.') && email.length !== 0
   const canProceed = selectedOption === 'Personal' && isEmailValid
-
+  const t = useTranslations('RegisterUserPage')
   return (
     <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column'}}>
       <TextInputUI
@@ -33,15 +34,15 @@ const RegisterUserSecond: React.FC<RegisterUserSecondProps> = ({
         onSetValue={setEmail}
         inputType='email'
         currentValue={email}
-        errorValue={!isEmailValid && email.length !== 0 ? 'почта должна содержать @ и расширение' : ''}
-        placeholder='Введите почту...'
-        title={<p className={`${styles.input__title}`}>Почта</p>}
+        errorValue={!isEmailValid && email.length !== 0 ? t('emailError') : ''}
+        placeholder={t('email') + '...'}
+        title={<p className={`${styles.input__title}`}>{t('email')}</p>}
       />
 
-      <p className={`${styles.input__subtitle}`}>Предпочтительна бизнес-электронная почта.</p>
+      <p className={`${styles.input__subtitle}`}>{t('emailDescription')}</p>
 
       <RadioButton
-        label='Я согласен с пользовательским соглашением и политикой конфиденциальности. '
+        label={t('checkPolicy')}
         name='Personal'
         value='Personal'
         textColor='dark'
@@ -78,7 +79,7 @@ const RegisterUserSecond: React.FC<RegisterUserSecondProps> = ({
           className={`${styles.checked__email}`}
           onClick={onNext}
         >
-          Проверка электронной почты
+          {t('emailNext')}
         </button>
       </span>
     </div>

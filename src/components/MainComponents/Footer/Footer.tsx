@@ -2,6 +2,7 @@ import {CSSProperties, FC} from 'react'
 import styles from './Footer.module.scss'
 import Link from 'next/link'
 import Image from 'next/image'
+import {useTranslations} from 'next-intl'
 
 const logoFavBig = '/logos/logo.svg'
 // const logoFavSmall = '/logos/logo_fav.svg'
@@ -12,6 +13,7 @@ interface IFooterProps {
 }
 
 const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
+  const t = useTranslations('Footer')
   return (
     <footer style={{...extraStyle}} className={`${styles.footer} ${extraClass}`}>
       <div className={`${styles.footer__inner} container`}>
@@ -40,13 +42,13 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
         </Link>
         <ul className={`${styles.footer__links}`}>
           <Link className={`${styles.footer__link}`} href={'/'}>
-            <li>Пользовательское соглашение</li>
+            <li>{t('ugreement')}</li>
           </Link>
           <Link className={`${styles.footer__link}`} href={'/'}>
-            <li>Политика конфиденциальности</li>
+            <li>{t('privacy')}</li>
           </Link>
           <Link className={`${styles.footer__link}`} href={'/'}>
-            <li>Связаться с нами</li>
+            <li>{t('contact')}</li>
           </Link>
         </ul>
       </div>

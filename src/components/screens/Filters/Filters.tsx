@@ -12,6 +12,7 @@ import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import CheckBoxInputUI from '@/components/UI-kit/inputs/CheckBoxInputUI/CheckBoxInputUI'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {useTranslations} from 'next-intl'
 // import {renderCategoryItems} from '@/components/MainComponents/Header/Header'
 // import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 
@@ -49,7 +50,7 @@ const Filters: FC = () => {
   const queryClient = useQueryClient()
   const {delivery, selectedFilters, searchTitle} = useTypedSelector((state) => state.filters)
   const windowWidth = useWindowWidth()
-
+  const t = useTranslations('Filters')
   // useEffect(() => {
   //   async function rrrr() {
   //     const res = await CategoriesService.getAll()
@@ -126,7 +127,7 @@ const Filters: FC = () => {
       <div className={getTitlesBoxClassName()}>
         <div onClick={toggleFilters} className={`${styles.title__box}`}>
           {shouldShowArrow() && <Arrow isActive={filtersIsOpen} />}
-          <h4 className={`${styles.filters__title}`}>Фильтры</h4>
+          <h4 className={`${styles.filters__title}`}>{t('filtersTitle')}</h4>
         </div>
         {/* <button
           onClick={() => {
@@ -141,7 +142,7 @@ const Filters: FC = () => {
       </div>
       <span className={`${styles.span_over} ${listOpenIf()}`}>
         <div className={`${styles.filters__part}`}>
-          <p className={`${styles.filters__part_title}`}>Категории</p>
+          <p className={`${styles.filters__part_title}`}>{t('filtersCategory')}</p>
 
           <div className={`${styles.filters__part_checkboxes}`}>
             {!isLoading &&
@@ -165,7 +166,7 @@ const Filters: FC = () => {
           <div className={`${styles.filters__part_droplists}`}>
             <RangeInput
               filterName='priceRange'
-              title='Стоимость'
+              title={t('filtersPrice')}
               min={0}
               max={100000}
               step={10}
@@ -224,7 +225,7 @@ const Filters: FC = () => {
           }}
           className={`${styles.clear__filters} ${styles.clear__filters__button__bottom}`}
         >
-          сброс
+          {t('filtersReset')}
         </button>
       )}
       {windowWidth && windowWidth > 500 && (
@@ -236,7 +237,7 @@ const Filters: FC = () => {
           }}
           className={`${styles.clear__filters} ${styles.clear__filters__button__bottom}`}
         >
-          сброс
+          {t('filtersReset')}
         </button>
       )}
     </div>

@@ -16,7 +16,7 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
         'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
       }
     })
-    console.log('vendorData:', vendorData.data)
+    // console.log('vendorData:', vendorData.data)
   } catch {}
 
   const trimPhonePrefix = (phoneNumber: string | undefined): string | undefined => {

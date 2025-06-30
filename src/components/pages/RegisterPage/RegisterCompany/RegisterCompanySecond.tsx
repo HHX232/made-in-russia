@@ -4,6 +4,7 @@ import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI'
 import MultiDropSelect, {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {useTranslations} from 'next-intl'
 
 interface RegisterCompanySecondProps {
   email: string
@@ -49,7 +50,7 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
     {id: 'chemical', label: 'Химические материалы', value: 'chemical'},
     {id: 'construction', label: 'Строительные материалы', value: 'construction'}
   ]
-
+  const t = useTranslations('RegisterUserPage')
   return (
     <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '22px'}}>
       <TextInputUI
@@ -60,9 +61,9 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
         inputType='email'
         onSetValue={setEmail}
         currentValue={email}
-        errorValue={!isEmailValid && email.length !== 0 ? 'почта должна содержать @ и расширение' : ''}
-        placeholder='Введите корпоративную почту...'
-        title={<p className={`${styles.input__title}`}>Корпоративная почта</p>}
+        errorValue={!isEmailValid && email.length !== 0 ? t('emailError') : ''}
+        placeholder={t('corporateEmailPlaceholder')}
+        title={<p className={`${styles.input__title}`}>{t('corporateEmail')}</p>}
       />
 
       {/* <p className={`${styles.input__subtitle}`}>Используйте официальную почту компании для верификации.</p> */}
@@ -72,27 +73,27 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
         isSecret={true}
         onSetValue={setPassword}
         currentValue={password}
-        errorValue={password.length < 6 && password.length !== 0 ? 'Пароль должен быть не менее 6 символов' : ''}
-        placeholder='Введите пароль, 6-20 символов'
-        title={<p className={`${styles.input__title}`}>Пароль аккаунта</p>}
+        errorValue={password.length < 6 && password.length !== 0 ? t('passwordError') : ''}
+        placeholder={t('passwordPlaceholder')}
+        title={<p className={`${styles.input__title}`}>{t('password')}</p>}
       />
 
       <div className={`${styles.some__drop__box}`} style={{marginTop: '16px', marginBottom: '16px'}}>
-        <p className={`${styles.input__title}`}>Категории товаров</p>
+        <p className={`${styles.input__title}`}>{t('categories')}</p>
         <MultiDropSelect
           options={categoryOptions}
           selectedValues={selectedCategories}
           onChange={setSelectedCategories}
-          placeholder='Выберите категории товаров...'
+          placeholder={t('categoriesPlaceholder')}
           direction={isClient && windowWidth !== undefined && windowWidth > 1050 ? 'left' : 'bottom'}
         />
         <p className={`${styles.input__subtitle}`} style={{marginTop: '8px'}}>
-          Выберите основные категории материалов, с которыми работает ваша компания
+          {t('categoriesSubtext')}
         </p>
       </div>
 
       <RadioButton
-        label='Я согласен с условиями сотрудничества и политикой конфиденциальности для бизнес-партнеров.'
+        label={t('checkPolicy')}
         name='Business'
         value='Personal'
         checked={selectedOption === 'Personal'}
@@ -130,7 +131,7 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
           className={`${styles.checked__email}`}
           onClick={onNext}
         >
-          Проверка электронной почты
+          {t('emailNext')}
         </button>
       </span>
     </div>

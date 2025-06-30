@@ -5,6 +5,7 @@ import Image from 'next/image'
 import {useActions} from '@/hooks/useActions'
 import {useDebounce} from '@/utils/debounce'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useTranslations} from 'next-intl'
 
 const loop = '/loop.svg'
 interface ISearchProps {
@@ -20,7 +21,7 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
   const id = useId()
   const {setSearchTitle} = useActions()
   const {searchTitle} = useTypedSelector((state) => state.filters)
-
+  const t = useTranslations('HomePage')
   useEffect(() => {
     setInputValue(searchTitle)
   }, [])
@@ -79,7 +80,7 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
           ref={inputRef}
           onClick={() => setListIsOpen(true)}
           onChange={handleInputChange}
-          placeholder={`${placeholder || 'Поиск по сайту'}`}
+          placeholder={`${placeholder || t('search')}`}
           disabled={disabled}
           className={styles.search__input}
           autoComplete='off'

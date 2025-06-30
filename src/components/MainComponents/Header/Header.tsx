@@ -13,13 +13,24 @@ import BurgerMenu from '../BurgerMenu/BurgerMenu'
 import Head from 'next/head'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 import CategoryesMenuDesktop from '@/components/UI-kit/elements/CategoryesMenuDesktop/CategoryesMenuDesktop'
+import {usePathname, useRouter} from 'next/navigation'
+import {useTranslations} from 'next-intl'
 
 enum Languages {
   RUSSIAN = 'Русский',
   ENGLISH = 'English',
   CHINA = '中文'
 }
-
+const languageToLocale = {
+  [Languages.RUSSIAN]: 'ru',
+  [Languages.ENGLISH]: 'en',
+  [Languages.CHINA]: 'zh'
+}
+const localeToLanguage = {
+  ru: Languages.RUSSIAN,
+  en: Languages.ENGLISH,
+  zh: Languages.CHINA
+}
 const insta = '/insta.svg'
 const telephone = '/phone.svg'
 const telegram = '/telegram.svg'
@@ -96,16 +107,26 @@ export const renderCategoryItems = (
 
 const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}`
-  const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'made_in_russia'}`
+  const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}`
   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `7${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
   const [categoriesList, setCategoriesList] = useState<Category[]>(categories || [])
   const [categoryListIsOpen, setCategoryListIsOpen] = useState<boolean>(false)
   const categoryListRefDesktop = useRef<HTMLDivElement>(null)
   const fullHeaderRef = useRef<HTMLDivElement>(null)
-  // TODO: Заменить на получение из файлов
-  const [activeLanguage, setActiveLanguage] = useState<Languages>(Languages.RUSSIAN)
-
+  const pathname = usePathname()
+  // ! Language
+  const [activeLanguage, setActiveLanguage] = useState<Languages>(
+    localeToLanguage[pathname.split('/')[1] as keyof typeof localeToLanguage]
+  )
+  const t = useTranslations('HomePage')
+  console.log('t type', typeof t)
+  // useEffect(() => {
+  //   const locale = pathname.split('/')[1]
+  //   console.log(locale)
+  //   setActiveLanguage(localeToLanguage[locale as keyof typeof localeToLanguage])
+  // }, [pathname])
+  const router = useRouter()
   useEffect(() => {
     async function rrrr() {
       const res = await CategoriesService.getAll()
@@ -355,7 +376,6 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
             trigger='hover'
           />
         </div> */}
-
         <div className={`${styles.middle__header}`}>
           <div className={`container ${styles.header__middle_box}`}>
             <Link
@@ -389,7 +409,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
             </Link>
 
             <div className={`${styles.searchBox}`} role='search' aria-label='Поиск по сайту'>
-              <SearchInputUI />
+              <SearchInputUI placeholder={t('search')} />
             </div>
 
             <div className={`${styles.main__middle_content}`}>
@@ -408,13 +428,34 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                 safeAreaEnabled={true}
                 positionIsAbsolute={false}
                 items={[
-                  <p style={{width: '100%'}} onClick={() => setActiveLanguage(Languages.RUSSIAN)} key={1}>
+                  <p
+                    style={{width: '100%'}}
+                    onClick={() => {
+                      setActiveLanguage(Languages.RUSSIAN)
+                      router.push(`/${languageToLocale[Languages.RUSSIAN]}`)
+                    }}
+                    key={1}
+                  >
                     {Languages.RUSSIAN}
                   </p>,
-                  <p style={{width: '100%'}} onClick={() => setActiveLanguage(Languages.ENGLISH)} key={2}>
+                  <p
+                    style={{width: '100%'}}
+                    onClick={() => {
+                      setActiveLanguage(Languages.ENGLISH)
+                      router.push(`/${languageToLocale[Languages.ENGLISH]}`)
+                    }}
+                    key={2}
+                  >
                     {Languages.ENGLISH}
                   </p>,
-                  <p style={{width: '100%'}} onClick={() => setActiveLanguage(Languages.CHINA)} key={3}>
+                  <p
+                    style={{width: '100%'}}
+                    onClick={() => {
+                      setActiveLanguage(Languages.CHINA)
+                      router.push(`/${languageToLocale[Languages.CHINA]}`)
+                    }}
+                    key={3}
+                  >
                     {Languages.CHINA}
                   </p>
                 ]}
@@ -438,60 +479,41 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                 <div className={`${styles.bottom__list_item}`}>
                   <DropList
                     dropListId='categories-seo'
-                    title={<p>Категории</p>}
+                    title={<p>{t('category')}</p>}
                     extraStyle={{position: 'absolute', top: '-1000vh', left: '-1000vw', opacity: '0'}}
                     trigger='hover'
                     isOpen={true}
                     safeAreaEnabled
                     items={renderCategoryItems(categoriesList, true, 'bottom', '10', '', '', '', true)}
                   />
-                  {/* <DropList
-                    dropListId='categories-main'
-                    title={<p>Категории</p>}
-                    trigger='hover'
-                    safeAreaEnabled
-                    scrollThreshold={2000}
-                    // safeAreaSize={30}
-                    hoverDelay={0}
-                    positionIsAbsolute={false}
-                    extraClass={`${styles.extra_list__first__drop}`}
-                    items={renderCategoryItems(
-                      categoriesList,
-                      true, // positionIsAbsolute
-                      'right', // direction
-                      undefined, // parentPath
-                      '' // parentDropListId для корневого списка,
-                    )}
-                    direction='bottom'
-                    gap='10'
-                  /> */}
+
                   <button
                     onClick={() => {
                       // setCategoryListIsOpen((prev) => !prev)
                       handleToggleCategories()
                     }}
                   >
-                    Категории
+                    {t('category')}
                   </button>
                 </div>
                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
                   <Link href='/reviews' itemProp='url'>
-                    <span itemProp='name'>Отзывы</span>
+                    <span itemProp='name'>{t('reviews')}</span>
                   </Link>
                 </li>
                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
                   <Link href='/delivery' itemProp='url'>
-                    <span itemProp='name'>Доставка</span>
+                    <span itemProp='name'>{t('delivery')}</span>
                   </Link>
                 </li>
                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
                   <Link href='/about' itemProp='url'>
-                    <span itemProp='name'>О нас</span>
+                    <span itemProp='name'>{t('about')}</span>
                   </Link>
                 </li>
                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
                   <Link href='/help' itemProp='url'>
-                    <span itemProp='name'>Помощь</span>
+                    <span itemProp='name'>{t('help')}</span>
                   </Link>
                 </li>
                 <li className={`${styles.drop__bottom_list}`}>
@@ -594,13 +616,31 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     safeAreaEnabled={true}
                     positionIsAbsolute={false}
                     items={[
-                      <p onClick={() => setActiveLanguage(Languages.RUSSIAN)} key={1}>
+                      <p
+                        onClick={() => {
+                          setActiveLanguage(Languages.RUSSIAN)
+                          router.push(`/${languageToLocale[Languages.RUSSIAN]}`)
+                        }}
+                        key={1}
+                      >
                         {Languages.RUSSIAN}
                       </p>,
-                      <p onClick={() => setActiveLanguage(Languages.ENGLISH)} key={2}>
+                      <p
+                        onClick={() => {
+                          setActiveLanguage(Languages.ENGLISH)
+                          router.push(`/${languageToLocale[Languages.ENGLISH]}`)
+                        }}
+                        key={2}
+                      >
                         {Languages.ENGLISH}
                       </p>,
-                      <p onClick={() => setActiveLanguage(Languages.CHINA)} key={3}>
+                      <p
+                        onClick={() => {
+                          setActiveLanguage(Languages.CHINA)
+                          router.push(`/${languageToLocale[Languages.CHINA]}`)
+                        }}
+                        key={3}
+                      >
                         {Languages.CHINA}
                       </p>
                     ]}
