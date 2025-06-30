@@ -1,9 +1,7 @@
 import '@/fonts/fonts.scss'
-
 import DefaultProvider from '@/providers/DefaultProvider'
 import '@/scss/_variables.scss'
 import '@/scss/main.scss'
-
 import 'react-loading-skeleton/dist/skeleton.css'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
@@ -14,31 +12,28 @@ import NProgressProvider from '@/components/UI-kit/loaders/nprogress-provider'
 import ProductService from '@/services/products/product.service'
 import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 import {NextIntlClientProvider} from 'next-intl'
+import {headers} from 'next/headers'
 // import {NextIntlClientProvider} from 'next-intl'
 
-export default async function RootLayout({
-  children,
-  params
-}: {
-  children: React.ReactNode
-  params: Promise<{locale: string}>
-}) {
-  const {locale} = await params
-
+export default async function RootLayout({children}: {children: React.ReactNode}) {
+  const headersList = await headers()
+  const locale = headersList.get('x-locale') || 'en'
   return (
-    <html lang={locale}>
-      <body>
-        <NProgressProvider />
+    <>
+      <html lang={locale}>
+        <body>
+          <NProgressProvider />
 
-        <DefaultProvider>
-          <NextIntlClientProvider>
-            {children}
-            <Toaster theme={'dark'} position={'top-right'} duration={3500} />
-          </NextIntlClientProvider>
-        </DefaultProvider>
-        <div id='modal_portal'></div>
-      </body>
-    </html>
+          <DefaultProvider>
+            <NextIntlClientProvider>
+              {children}
+              <Toaster theme={'dark'} position={'top-right'} duration={3500} />
+            </NextIntlClientProvider>
+          </DefaultProvider>
+          <div id='modal_portal'></div>
+        </body>
+      </html>
+    </>
   )
 }
 

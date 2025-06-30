@@ -1,16 +1,20 @@
 'use client'
 import {FC, ReactNode} from 'react'
 import styles from './Promo.module.scss'
-import Slider from 'react-slick'
 import {StaticImageData} from 'next/image'
 import Link from 'next/link'
 // import {useWindowWidth} from '@/hooks/useWindoWidth'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
+import dynamic from 'next/dynamic'
 
-const promo1 = '/ads1.jpg'
-const promo2 = '/ads2.jpg'
-const promo3 = '/ads3.jpg'
+const Slider = dynamic(() => import('react-slick').then((mod) => mod.default), {
+  ssr: false
+})
+
+const promo1 = '/ads1.webp'
+const promo2 = '/ads2.webp'
+const promo3 = '/ads3.webp'
 
 interface IPromoItem {
   title?: string | ReactNode

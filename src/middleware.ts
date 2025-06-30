@@ -75,7 +75,12 @@ export async function middleware(request: NextRequest) {
   console.log('🚀 Middleware запущен для пути:', request.nextUrl.pathname)
 
   if (request.nextUrl.pathname.startsWith('/api')) {
-    return NextResponse.next() // Пропускаем для API
+    const response = NextResponse.next()
+    const locale = getLocaleFromPathname(request.nextUrl.pathname)
+    if (locale) {
+      response.headers.set('x-locale', locale)
+    }
+    return response // Пропускаем для API
   }
 
   // Сначала применяем intl middleware для обработки локализации
@@ -107,7 +112,9 @@ export async function middleware(request: NextRequest) {
       if (!refreshToken) {
         console.log('❌ Нет refresh токена, редирект на /login')
         const loginUrl = createLocalizedURL('/login', locale)
-        return NextResponse.redirect(new URL(loginUrl, request.url))
+        const response = NextResponse.redirect(new URL(loginUrl, request.url))
+        response.headers.set('x-locale', locale || 'en')
+        return response
       }
       try {
         // Получаем данные пользователя
@@ -124,7 +131,9 @@ export async function middleware(request: NextRequest) {
         if (userData.role !== 'Vendor' && userData.role !== 'Admin') {
           console.log('❌ Доступ запрещен для роли:', userData.role)
           const homeUrl = createLocalizedURL('/', locale)
-          return NextResponse.redirect(new URL(homeUrl, request.url))
+          const response = NextResponse.redirect(new URL(homeUrl, request.url))
+          response.headers.set('x-locale', locale || 'en')
+          return response
         }
 
         // Если это маршрут с ID товара
@@ -137,7 +146,9 @@ export async function middleware(request: NextRequest) {
           if (!productId || isNaN(Number(productId))) {
             console.log('❌ Невалидный ID товара:', productId)
             const createCardUrl = createLocalizedURL('/create-card', locale)
-            return NextResponse.redirect(new URL(createCardUrl, request.url))
+            const response = NextResponse.redirect(new URL(createCardUrl, request.url))
+            response.headers.set('x-locale', locale || 'en')
+            return response
           }
 
           try {
@@ -155,28 +166,38 @@ export async function middleware(request: NextRequest) {
             // Админ имеет доступ ко всем товарам
             if (userData.role === 'Admin') {
               console.log('👑 Admin имеет доступ к редактированию любого товара')
-              return intlResponse || NextResponse.next()
+              const response = NextResponse.next()
+              response.headers.set('x-locale', locale || 'en')
+              return response
             }
 
             // Проверяем, является ли пользователь владельцем товара
             if (productOwnerId !== userData.id) {
               console.log('❌ Пользователь не является владельцем товара, редирект на /create-card')
               const createCardUrl = createLocalizedURL('/create-card', locale)
-              return NextResponse.redirect(new URL(createCardUrl, request.url))
+              const response = NextResponse.redirect(new URL(createCardUrl, request.url))
+              response.headers.set('x-locale', locale || 'en')
+              return response
             }
 
             console.log('✅ Пользователь является владельцем товара, доступ разрешен')
-            return intlResponse || NextResponse.next()
+            const response = NextResponse.next()
+            response.headers.set('x-locale', locale || 'en')
+            return response
           } catch (error) {
             console.error('❌ Ошибка при получении данных товара:', error)
             // Если товар не найден или произошла ошибка, редиректим на /create-card
             const createCardUrl = createLocalizedURL('/create-card', locale)
-            return NextResponse.redirect(new URL(createCardUrl, request.url))
+            const response = NextResponse.redirect(new URL(createCardUrl, request.url))
+            response.headers.set('x-locale', locale || 'en')
+            return response
           }
         }
 
         // Для маршрута /create-card без ID просто разрешаем доступ Vendor и Admin
-        return intlResponse || NextResponse.next()
+        const response = intlResponse || NextResponse.next()
+        response.headers.set('x-locale', locale || 'en')
+        return response
       } catch (error) {
         console.error('❗ Не удалось получить данные пользователя:', error)
 
@@ -227,6 +248,7 @@ export async function middleware(request: NextRequest) {
               const createCardUrl = createLocalizedURL('/create-card', locale)
               const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              redirectResponse.headers.set('x-locale', locale || 'en')
               return redirectResponse
             }
 
@@ -241,6 +263,7 @@ export async function middleware(request: NextRequest) {
               const productOwnerId = productData?.user?.id
 
               if (userData.role === 'Admin') {
+                response.headers.set('x-locale', locale || 'en')
                 return response
               }
 
@@ -248,24 +271,27 @@ export async function middleware(request: NextRequest) {
                 const createCardUrl = createLocalizedURL('/create-card', locale)
                 const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
                 redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+                redirectResponse.headers.set('x-locale', locale || 'en')
                 return redirectResponse
               }
 
-              return response
+              return response.headers.set('x-locale', locale || 'en')
             } catch (error) {
               console.error('❌ Ошибка при получении данных товара:', error)
               const createCardUrl = createLocalizedURL('/create-card', locale)
               const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              redirectResponse.headers.set('x-locale', locale || 'en')
               return redirectResponse
             }
           }
 
-          return response
+          return response.headers.set('x-locale', locale || 'en')
         } catch (e) {
           console.error('❌ Не удалось обновить токен:', e)
           const loginUrl = createLocalizedURL('/login', locale)
           const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
+          redirectResponse.headers.set('x-locale', locale || 'en')
           return removeTokensFromResponse(redirectResponse)
         }
       }
@@ -279,7 +305,9 @@ export async function middleware(request: NextRequest) {
       if (!refreshToken) {
         console.log('❌ Нет refresh токена, редирект на /login')
         const loginUrl = createLocalizedURL('/login', locale)
-        return NextResponse.redirect(new URL(loginUrl, request.url))
+        const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
+        redirectResponse.headers.set('x-locale', locale || 'en')
+        return redirectResponse
       }
 
       console.log('🔄 Проверка авторизации пользователя с accessToken')
@@ -297,7 +325,9 @@ export async function middleware(request: NextRequest) {
         // Admin имеет доступ ко всем маршрутам
         if (userData.role === 'Admin') {
           console.log('👑 Admin имеет доступ ко всем маршрутам')
-          return intlResponse || NextResponse.next()
+          const response = intlResponse || NextResponse.next()
+          response.headers.set('x-locale', locale || 'en')
+          return response
         }
 
         if (userData.role === 'Vendor' && pathnameWithoutLocale === '/profile') {
@@ -307,7 +337,9 @@ export async function middleware(request: NextRequest) {
         } else if (userData.role === 'User' && pathnameWithoutLocale === '/vendor') {
           console.log('🔀 Перенаправление User с ролью User на /profile')
           const profileUrl = createLocalizedURL('/profile', locale)
-          return NextResponse.redirect(new URL(profileUrl, request.url))
+          const response = NextResponse.redirect(new URL(profileUrl, request.url))
+          response.headers.set('x-locale', locale || 'en')
+          return response
         }
 
         return intlResponse || NextResponse.next()
@@ -350,6 +382,7 @@ export async function middleware(request: NextRequest) {
 
             if (userData.role === 'Admin') {
               console.log('👑 Admin имеет доступ ко всем маршрутам')
+              response.headers.set('x-locale', locale || 'en')
               return response
             }
 
@@ -359,6 +392,7 @@ export async function middleware(request: NextRequest) {
                 new URL(createLocalizedURL('/vendor', locale), request.url)
               )
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              redirectResponse.headers.set('x-locale', locale || 'en')
               return redirectResponse
             } else if (userData.role === 'User' && pathnameWithoutLocale === '/vendor') {
               console.log('🔀 Перенаправление User с ролью User на /profile')
@@ -366,6 +400,7 @@ export async function middleware(request: NextRequest) {
                 new URL(createLocalizedURL('/profile', locale), request.url)
               )
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              redirectResponse.headers.set('x-locale', locale || 'en')
               return redirectResponse
             }
 
@@ -412,19 +447,27 @@ export async function middleware(request: NextRequest) {
           if (userData.role === 'Admin') {
             console.log('👑 Admin перенаправляется на главную')
             const homeUrl = createLocalizedURL('/', locale)
-            return NextResponse.redirect(new URL(homeUrl, request.url))
+            const redirectResponse = NextResponse.redirect(new URL(homeUrl, request.url))
+            redirectResponse.headers.set('x-locale', locale || 'en')
+            return redirectResponse
           } else if (userData.role === 'Vendor') {
             console.log('🔀 Перенаправление Vendor на /vendor')
             const vendorUrl = createLocalizedURL('/vendor', locale)
-            return NextResponse.redirect(new URL(vendorUrl, request.url))
+            const redirectResponse = NextResponse.redirect(new URL(vendorUrl, request.url))
+            redirectResponse.headers.set('x-locale', locale || 'en')
+            return redirectResponse
           } else if (userData.role === 'User') {
             console.log('🔀 Перенаправление User на /profile')
             const profileUrl = createLocalizedURL('/profile', locale)
-            return NextResponse.redirect(new URL(profileUrl, request.url))
+            const redirectResponse = NextResponse.redirect(new URL(profileUrl, request.url))
+            redirectResponse.headers.set('x-locale', locale || 'en')
+            return redirectResponse
           }
 
           const homeUrl = createLocalizedURL('/', locale)
-          return NextResponse.redirect(new URL(homeUrl, request.url))
+          const redirectResponse = NextResponse.redirect(new URL(homeUrl, request.url))
+          redirectResponse.headers.set('x-locale', locale || 'en')
+          return redirectResponse
         } catch (error) {
           console.error(
             '❗ Не удалось получить данные пользователя с текущим accessToken на публичном маршруте:',
@@ -511,7 +554,9 @@ export async function middleware(request: NextRequest) {
       if (!id || isNaN(Number(id))) {
         console.log('❌ Невалидный ID продавца:', id)
         // Вместо notFound() делаем редирект на 404 страницу
-        return NextResponse.redirect(new URL(createLocalizedURL('/404', locale), request.url))
+        const redirectResponse = NextResponse.redirect(new URL(createLocalizedURL('/404', locale), request.url))
+        redirectResponse.headers.set('x-locale', locale || 'en')
+        return redirectResponse
       }
 
       try {
@@ -534,7 +579,9 @@ export async function middleware(request: NextRequest) {
         //! if (data.id === userData.id) {
         //!   return NextResponse.redirect(new URL('/vendor', request.url))
         //! }
-        return intlResponse || NextResponse.next()
+        const intlResponseNew = intlResponse || NextResponse.next()
+        intlResponseNew.headers.set('x-locale', locale || 'en')
+        return intlResponseNew
       } catch (e) {
         console.error('❌ Ошибка при получении данных продавца:', e)
 
@@ -544,20 +591,29 @@ export async function middleware(request: NextRequest) {
         if (error?.response?.status === 404 || error?.response?.status === 400) {
           // Продавец не найден или невалидный запрос - редирект на 404
 
-          return NextResponse.redirect(new URL(createLocalizedURL('/404', locale), request.url))
+          const redirectResponse = NextResponse.redirect(new URL(createLocalizedURL('/404', locale), request.url))
+          redirectResponse.headers.set('x-locale', locale || 'en')
+          return redirectResponse
         }
 
         // Для других ошибок просто продолжаем
-        return intlResponse || NextResponse.next()
+        const intlResponseNew = intlResponse || NextResponse.next()
+        intlResponseNew.headers.set('x-locale', locale || 'en')
+        return intlResponseNew
       }
     }
     // Для всех остальных маршрутов
     console.log('🌍 Обычный маршрут, продолжаем выполнение')
-    return intlResponse || NextResponse.next()
+    const intlResponseNew = intlResponse || NextResponse.next()
+    intlResponseNew.headers.set('x-locale', locale || 'en')
+    return intlResponseNew
   } catch (error) {
     console.error('💥 Критическая ошибка в middleware:', error)
     // В случае критической ошибки просто продолжаем выполнение
-    return intlResponse || NextResponse.next()
+    const intlResponseNew = intlResponse || NextResponse.next()
+    const locale = getLocaleFromPathname(request.nextUrl.pathname)
+    intlResponseNew.headers.set('x-locale', locale || 'en')
+    return intlResponseNew
   }
 }
 

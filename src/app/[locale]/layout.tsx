@@ -16,7 +16,7 @@ import {hasLocale, NextIntlClientProvider} from 'next-intl'
 import {routing} from '@/i18n/routing'
 import {notFound} from 'next/navigation'
 
-export default async function RootLayout({
+export default async function RootLayoutLanguage({
   children,
   params
 }: {
@@ -27,6 +27,7 @@ export default async function RootLayout({
   if (!hasLocale(routing.locales, locale)) {
     notFound()
   }
+
   return (
     <DefaultProvider>
       <NextIntlClientProvider>

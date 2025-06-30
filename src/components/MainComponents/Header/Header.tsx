@@ -120,7 +120,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     localeToLanguage[pathname.split('/')[1] as keyof typeof localeToLanguage]
   )
   const t = useTranslations('HomePage')
-  console.log('t type', typeof t)
+  // console.log('t type', typeof t)
   // useEffect(() => {
   //   const locale = pathname.split('/')[1]
   //   console.log(locale)

@@ -1,6 +1,5 @@
 'use client'
-import React, {FC, useState, useRef, useEffect, ReactNode, CSSProperties, useCallback} from 'react'
-
+import React, {FC, useState, useRef, useEffect, ReactNode, CSSProperties, useCallback, useId} from 'react'
 import styles from './DropList.module.scss'
 import cn from 'clsx'
 
@@ -119,9 +118,10 @@ const DropList: FC<IDropListProps> = ({
   // Реф для отслеживания активного дочернего элемента
   const activeChildRef = useRef<string | null>(null)
 
-  // Генерируем уникальный ID если не предоставлен
-  const listIdRef = useRef(dropListId || `droplist-${Math.random().toString(36).substr(2, 9)}`)
-  const listId = listIdRef.current
+  // Используем useId для генерации стабильного ID
+  const reactId = useId()
+  // Генерируем уникальный ID, используя либо переданный dropListId, либо стабильный ID из React
+  const listId = dropListId || `droplist-${reactId.replace(/:/g, '-')}`
 
   // Проверка, является ли список особенным (categories-seo)
   const isSpecialList = listId === 'categories-seo'
