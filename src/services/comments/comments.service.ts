@@ -78,6 +78,7 @@ export interface GetProductReviewsParams {
   minRating?: number
   maxRating?: number
   specialRoute?: string
+  currentLang?: string
 }
 
 const commentsService = {
@@ -100,7 +101,12 @@ const commentsService = {
 
       if (params.specialRoute) {
         const response = await instance.get<SpecialRouteResponse>(
-          `${params.specialRoute}/reviews?${queryParams.toString()}`
+          `${params.specialRoute}/reviews?${queryParams.toString()}`,
+          {
+            headers: {
+              'Accept-Language': params.currentLang || 'en'
+            }
+          }
         )
         console.log('Special route response in service:', response)
         return {
@@ -108,7 +114,11 @@ const commentsService = {
           error: null
         }
       } else {
-        const response = await instance.get<ProductReviewsResponse>(`/me/product-reviews?${queryParams.toString()}`)
+        const response = await instance.get<ProductReviewsResponse>(`/me/product-reviews?${queryParams.toString()}`, {
+          headers: {
+            'Accept-Language': params.currentLang || 'en'
+          }
+        })
 
         return {
           data: response.data,

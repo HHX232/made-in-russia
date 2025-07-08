@@ -6,6 +6,7 @@ import styles from '@/scss/notFound.module.scss'
 import {useState, useEffect, useRef, useCallback} from 'react'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import Header from '@/components/MainComponents/Header/Header'
+import {useTranslations} from 'next-intl'
 
 interface Dot {
   id: string
@@ -239,8 +240,7 @@ export default function NotFound() {
   const svgHeight = isMobile ? 150 : 250
   const paddingStyle = isMobile ? '40px 20px' : ''
   const marginLeft = isMobile ? '40px' : '70px'
-
-  // Не рендерим SVG до тех пор, пока не получим размер окна
+  const t = useTranslations('NotFoundPage')
   if (windowWidth === 0) {
     return (
       <div className={styles.notFoundContainer}>
@@ -250,11 +250,9 @@ export default function NotFound() {
             {/* <div style={{height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
               Loading...
             </div> */}
-            <p className={styles.description}>
-              Страница не найдена или удалена. Проверьте правильность URL или вернитесь на главную.
-            </p>
+            <p className={styles.description}>{t('mainText')}</p>
             <Link href='/' className={styles.homeButton}>
-              Вернуться на главную
+              {t('goBack')}{' '}
             </Link>
           </div>
         </main>
@@ -312,13 +310,11 @@ export default function NotFound() {
           </div>
 
           {/* Контент */}
-          <p className={styles.description}>
-            Страница не найдена или удалена. Проверьте правильность URL или вернитесь на главную.
-          </p>
+          <p className={styles.description}>{t('mainText')}</p>
 
           {/* Кнопка */}
           <Link href='/' className={styles.homeButton}>
-            Вернуться на главную
+            {t('goBack')}
           </Link>
         </div>
       </main>

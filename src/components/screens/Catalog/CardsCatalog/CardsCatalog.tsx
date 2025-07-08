@@ -11,6 +11,7 @@ import {TypeRootState} from '@/store/store'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useActions} from '@/hooks/useActions'
 import Link from 'next/link'
+import {useTranslations} from 'next-intl'
 
 interface CardsCatalogProps {
   initialProducts?: Product[]
@@ -55,7 +56,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     deliveryMethodIds: delivery?.join(',') ? delivery?.join(',') : '',
     title: searchTitle
   })
-
+  const t = useTranslations('HomePage')
   useEffect(() => {
     const numericKeys = Object.keys(selectedFilters)
       .filter((key) => !isNaN(Number(key)))
@@ -165,6 +166,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   if (isError) {
     return <div style={{marginBottom: '50px'}}>Еще не опубликовали первый товар</div>
   }
+
   return (
     <div className={styled.cardsCatalog__box}>
       {canCreateNewProduct && (
@@ -248,7 +250,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
       {!showSkeleton && allProducts.length === 0 && (
         <div className={styled.cardsCatalog__empty}>
-          <p>По вашему запросу ничего не найдено</p>
+          <p>{t('noResultsCatalog')}</p>
         </div>
       )}
     </div>

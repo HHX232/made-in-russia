@@ -11,6 +11,7 @@ import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/Mo
 import {useImageModal} from '@/hooks/useImageModal'
 import getDatesDifference from '@/utils/getDatesDifference'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {useTranslations} from 'next-intl'
 const vopros = '/vopros.svg'
 
 interface PriceData {
@@ -76,7 +77,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     // Локальные ошибки для полей справа
     const [saleDateError, setSaleDateError] = useState<string>('')
     const [minVolumeError, setMinVolumeError] = useState<string>('')
-
+    const t = useTranslations('CreateCardPriceElementsText')
     // Обработчик для матрицы цен
     const handlePriceSetValue = (rowIndex: number, inputIndex: number, value: string) => {
       const newMatrix = [...pricesMatrix]
@@ -158,12 +159,12 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     // Валидация полей справа
     const validateSaleDate = (value: string) => {
       if (!value.trim()) {
-        setSaleDateError('Укажите количество дней до окончания акции')
+        setSaleDateError(t('daysBeforeSale'))
         return false
       }
       const days = parseInt(value)
       if (isNaN(days) || days <= 0) {
-        setSaleDateError('Количество дней должно быть положительным числом')
+        setSaleDateError(t('daysBeforeSaleNotMinus'))
         return false
       }
       setSaleDateError('')
@@ -172,7 +173,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
 
     const validateMinVolume = (value: string) => {
       if (!value.trim()) {
-        setMinVolumeError('Укажите минимальный объем заказа')
+        setMinVolumeError(t('minimalVolume'))
         return false
       }
       setMinVolumeError('')
@@ -228,7 +229,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
         <div className={styles.rows__inputs__box}>
           <div className={styles.rows__inputs__box__inner}>
             <div className={`${styles.create__label__title__box}`}>
-              <p className={`${styles.create__label__title}`}>Список цен на товар</p>
+              <p className={`${styles.create__label__title}`}>{t('pricesList')}</p>
               <DropList
                 direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
                 safeAreaEnabled
@@ -240,7 +241,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                   <Image
                     onClick={() => openModal(HELP_IMAGES.prices)}
                     src={HELP_IMAGES.prices}
-                    alt='vopros'
+                    alt='question'
                     width={300}
                     height={300}
                     key={1}
@@ -253,7 +254,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               maxRows={5}
               inputType={inputType}
               initialRowsCount={3}
-              titles={['количество единиц', 'Цена без скидки', 'Цена со скидкой', 'Валюта', 'Единица измерения']}
+              titles={[t('elementCount'), t('originalPrice'), t('priceWithDiscount'), t('currency'), t('unit')]}
               rowsInitialValues={pricesMatrix}
               onSetValue={handlePriceSetValue}
               onRowsChange={handlePriceRowsChange}
@@ -263,7 +264,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
           </div>
           <div className={`${styles.rows__inputs__box__inner} ${styles.rows__inputs__box__inner__description}`}>
             <div className={`${styles.create__label__title__box}`}>
-              <p className={`${styles.create__label__title}`}>Таблица описания и характеристик</p>
+              <p className={`${styles.create__label__title}`}>{t('characteristickTable')}</p>
               <DropList
                 direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
                 safeAreaEnabled
@@ -275,7 +276,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                   <Image
                     onClick={() => openModal(HELP_IMAGES.charactersTable)}
                     src={HELP_IMAGES.charactersTable}
-                    alt='vopros'
+                    alt='question'
                     width={300}
                     height={300}
                     key={1}
@@ -309,7 +310,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 styles.rows__inputs__box__inner__description__extra
               ]}
               initialRowsCount={5}
-              titles={['Название', 'Характеристика']}
+              titles={[t('title'), t('characteristic')]}
               rowsInitialValues={descriptionMatrix}
               onSetValue={handleDescriptionSetValue}
               onRowsChange={handleDescriptionRowsChange}
@@ -322,7 +323,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
         <div className={styles.right__box}>
           <div className={styles.seller__date__box}>
             <div className={styles.seller__title}>
-              <p className={styles.seller__title__text}>Информация о ценах </p>
+              <p className={styles.seller__title__text}>{t('infoAboutPrices')} </p>
               <DropList
                 direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
                 safeAreaEnabled
@@ -330,12 +331,12 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 positionIsAbsolute={false}
                 trigger='hover'
                 arrowClassName={`${styles.arrow__none}`}
-                title={<Image src={vopros} alt='vopros' width={27} height={27} />}
+                title={<Image src={vopros} alt='question' width={27} height={27} />}
                 items={[
                   <Image
                     src={HELP_IMAGES.saleDate}
                     className={styles.drop__extra__image__modal__second}
-                    alt='vopros'
+                    alt='question'
                     width={600}
                     onClick={() => openModal(HELP_IMAGES.saleDate)}
                     height={600}
@@ -346,24 +347,24 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             </div>
             <div className={styles.seller__date__box__inner}>
               <div className={styles.seller__date__box__inner__date}>
-                <p className={styles.seller__date__box__inner__date__text}>До окончания акции</p>
+                <p className={styles.seller__date__box__inner__date__text}>{t('daysCountBeforeSale')}</p>
                 <TextInputUI
                   inputType='number'
                   currentValue={saleDate}
                   onSetValue={handleSaleDateChange}
                   theme='lightBlue'
-                  placeholder='До окончания ... дней'
+                  placeholder={t('daysCountBeforeSalePlaceholder')}
                   errorValue={saleDateError}
                 />
               </div>
               <div className={styles.seller__date__box__inner__date}>
-                <p className={styles.seller__date__box__inner__date__text}>Минимальный объем</p>
+                <p className={styles.seller__date__box__inner__date__text}>{t('minimalVolumeTitle')}</p>
                 <TextInputUI
                   inputType='number'
                   currentValue={minVolume.split(' ')[0] !== 'undefined' ? minVolume : ''}
                   onSetValue={handleMinVolumeChange}
                   theme='lightBlue'
-                  placeholder='Минимальный объем заказа ...'
+                  placeholder={t('minimalVolumePlaceholder')}
                   errorValue={minVolumeError}
                 />
               </div>
@@ -371,7 +372,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
           </div>
           <div className={styles.del__box}>
             <div className={styles.seller__title}>
-              <p className={styles.seller__title__text}>Информация о доставке</p>
+              <p className={styles.seller__title__text}>{t('deliveryInfo')}</p>
               <DropList
                 direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
                 safeAreaEnabled
@@ -379,12 +380,12 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 positionIsAbsolute={false}
                 trigger='hover'
                 arrowClassName={`${styles.arrow__none}`}
-                title={<Image src={vopros} alt='vopros' width={27} height={27} />}
+                title={<Image src={vopros} alt='question' width={27} height={27} />}
                 items={[
                   <Image
                     onClick={() => openModal(HELP_IMAGES.delivery)}
                     src={HELP_IMAGES.delivery}
-                    alt='vopros'
+                    alt='question'
                     width={300}
                     height={300}
                     key={1}
@@ -409,14 +410,14 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               rowsInitialValues={deliveryMatrix}
               onSetValue={() => {}}
               onRowsChange={handleDeliveryRowsChange}
-              titles={['Название', 'Сроки']}
+              titles={[t('title'), t('daysDelivery')]}
               errorMessage={deliveryError}
               minFilledRows={1}
             />
           </div>
           <div className={styles.package__box}>
             <div className={styles.seller__title}>
-              <p className={styles.seller__title__text}>Варианты упаковки</p>
+              <p className={styles.seller__title__text}>{t('packagingOptions')}</p>
               <DropList
                 direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
                 safeAreaEnabled
@@ -455,7 +456,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               onSetValue={() => {}}
               rowsInitialValues={packagingMatrix}
               onRowsChange={handlePackagingRowsChange}
-              titles={['Название', 'Цена']}
+              titles={[t('title'), t('price')]}
               errorMessage={packagingError}
               minFilledRows={1}
             />

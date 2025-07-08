@@ -9,6 +9,7 @@ import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/Mo
 import {HELP_IMAGES} from '../CreateCard'
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {useTranslations} from 'next-intl'
 
 const vopros = '/vopros.svg'
 
@@ -55,6 +56,7 @@ const CreateCompanyDescription: FC<CreateCompanyDescriptionProps> = ({
       })
     }
   }
+  const t = useTranslations('CreateCompanyDescription')
 
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
   // Обработчик изменения нижнего описания
@@ -161,7 +163,7 @@ const CreateCompanyDescription: FC<CreateCompanyDescriptionProps> = ({
         )}
       </ModalWindowDefault>
       <div className={`${styles.descr__el__title} ${styles.descr__el__title__right}`}>
-        <p className={`${styles.descr__title}`}>Описания компании</p>
+        <p className={`${styles.descr__title}`}>{t('infoAboutCompanyPlaceholder')}</p>
         <DropList
           direction={indowWidth && indowWidth < 768 ? 'bottom' : 'right'}
           safeAreaEnabled
@@ -185,11 +187,11 @@ const CreateCompanyDescription: FC<CreateCompanyDescriptionProps> = ({
         />
       </div>
       <div className={`${styles.create__inner}`}>
-        <div className={`${styles.inner__title}`}>Информация о компании</div>
+        <div className={`${styles.inner__title}`}>{t('infoAboutCompany')}</div>
         <TextAreaUI
           extraClass={`${styles.inner__title__input__extra__big}`}
           currentValue={data.topDescription}
-          placeholder='Описание компании'
+          placeholder={t('infoAboutCompanyPlaceholder')}
           onSetValue={handleTopDescriptionChange}
           theme='superWhite'
         />
@@ -207,7 +209,7 @@ const CreateCompanyDescription: FC<CreateCompanyDescriptionProps> = ({
               <TextInputUI
                 extraClass={`${styles.company__images__element__title__extra}`}
                 currentValue={item.description}
-                placeholder='Описание'
+                placeholder={t('descriptionPlaceholder')}
                 onSetValue={(value) => handleImageDescriptionChange(index, value)}
                 theme='superWhite'
               />
@@ -217,7 +219,7 @@ const CreateCompanyDescription: FC<CreateCompanyDescriptionProps> = ({
         <TextAreaUI
           extraClass={`${styles.inner__title__input__extra__big}`}
           currentValue={data.bottomDescription}
-          placeholder='Описание компании'
+          placeholder={t('infoAboutCompanyPlaceholder')}
           onSetValue={handleBottomDescriptionChange}
           theme='superWhite'
         />

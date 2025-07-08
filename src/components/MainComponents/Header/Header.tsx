@@ -15,6 +15,9 @@ import CategoriesService, {Category} from '@/services/categoryes/categoryes.serv
 import CategoryesMenuDesktop from '@/components/UI-kit/elements/CategoryesMenuDesktop/CategoryesMenuDesktop'
 import {usePathname, useRouter} from 'next/navigation'
 import {useTranslations} from 'next-intl'
+import createNewLangUrl from '@/utils/createNewLangUrl'
+import {TLocale} from '../MinimalHeader/MinimalHeader'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 enum Languages {
   RUSSIAN = 'Русский',
@@ -120,41 +123,16 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     localeToLanguage[pathname.split('/')[1] as keyof typeof localeToLanguage]
   )
   const t = useTranslations('HomePage')
-  // console.log('t type', typeof t)
-  // useEffect(() => {
-  //   const locale = pathname.split('/')[1]
-  //   console.log(locale)
-  //   setActiveLanguage(localeToLanguage[locale as keyof typeof localeToLanguage])
-  // }, [pathname])
+
   const router = useRouter()
+  const currentLang = useCurrentLanguage()
   useEffect(() => {
     async function rrrr() {
-      const res = await CategoriesService.getAll()
+      const res = await CategoriesService.getAll(currentLang)
       setCategoriesList(res)
     }
     rrrr()
   }, [])
-
-  // Используйте этот useEffect вместо предыдущего для работы с классами:
-
-  // useEffect(() => {
-  //   if (categoryListIsOpen && typeof window !== 'undefined') {
-  //     // Добавляем класс для блокировки скролла
-  //     document.body.classList.add('no-scroll')
-
-  //     // Опционально: можно также добавить padding-right чтобы компенсировать скроллбар
-  //     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
-  //     if (scrollbarWidth > 0) {
-  //       document.body.style.paddingRight = `${scrollbarWidth}px`
-  //     }
-
-  //     return () => {
-  //       // Убираем класс при размонтировании или изменении состояния
-  //       document.body.classList.remove('no-scroll')
-  //       document.body.style.paddingRight = ''
-  //     }
-  //   }
-  // }, [categoryListIsOpen])
 
   const organizationSchema = {
     '@context': 'https://schema.org',
@@ -432,7 +410,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     style={{width: '100%'}}
                     onClick={() => {
                       setActiveLanguage(Languages.RUSSIAN)
-                      router.push(`/${languageToLocale[Languages.RUSSIAN]}`)
+                      router.push(createNewLangUrl(languageToLocale[Languages.RUSSIAN] as TLocale, pathname))
                     }}
                     key={1}
                   >
@@ -442,7 +420,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     style={{width: '100%'}}
                     onClick={() => {
                       setActiveLanguage(Languages.ENGLISH)
-                      router.push(`/${languageToLocale[Languages.ENGLISH]}`)
+                      router.push(createNewLangUrl(languageToLocale[Languages.ENGLISH] as TLocale, pathname))
                     }}
                     key={2}
                   >
@@ -452,7 +430,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     style={{width: '100%'}}
                     onClick={() => {
                       setActiveLanguage(Languages.CHINA)
-                      router.push(`/${languageToLocale[Languages.CHINA]}`)
+                      router.push(createNewLangUrl(languageToLocale[Languages.CHINA] as TLocale, pathname))
                     }}
                     key={3}
                   >
@@ -502,12 +480,75 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                   </Link>
                 </li>
                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
-                  <Link href='/delivery' itemProp='url'>
-                    <span itemProp='name'>{t('delivery')}</span>
-                  </Link>
+                  <DropList
+                    key={'id5 contacts'}
+                    extraClass={`${styles.extra__mobile__list}`}
+                    direction='bottom'
+                    gap='20'
+                    positionIsAbsolute={false}
+                    trigger='hover'
+                    title={t('contacts')}
+                    items={[
+                      <div key={1} className={styles.header__top_item}>
+                        <Link
+                          style={{width: '100%'}}
+                          className={styles.header__top_link}
+                          href={instagramUrl}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          itemProp='sameAs'
+                        >
+                          <Image
+                            className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
+                            width={24}
+                            height={24}
+                            src={insta}
+                            alt='Instagram'
+                          />
+                          {process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}
+                        </Link>
+                      </div>,
+                      <div key={Math.random()} className={styles.header__top_item}>
+                        <Link
+                          className={styles.header__top_link}
+                          href={telegramUrl}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          itemProp='sameAs'
+                        >
+                          <Image
+                            className={`${styles.header__top_image} ${styles.header__top_image_telegram}`}
+                            width={24}
+                            height={24}
+                            src={telegram}
+                            alt='Telegram'
+                          />
+                          {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
+                        </Link>
+                      </div>,
+                      <div key={Math.random()} className={styles.header__top_item}>
+                        <Link
+                          className={styles.header__top_link}
+                          href={telephoneUrl}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          itemProp='telephone'
+                        >
+                          <Image
+                            className={`${styles.header__top_image} ${styles.header__top_image_telephone}`}
+                            width={24}
+                            height={24}
+                            src={telephone}
+                            alt='Телефон'
+                          />
+                          {telephoneText}
+                        </Link>
+                      </div>
+                    ]}
+                  />
                 </li>
                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
-                  <Link href='/about' itemProp='url'>
+                  <Link href='/about-us' itemProp='url'>
                     <span itemProp='name'>{t('about')}</span>
                   </Link>
                 </li>
@@ -521,28 +562,29 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     extraClass={`${styles.extra__bottom__header__list}`}
                     trigger='hover'
                     positionIsAbsolute={false}
-                    title='Еще'
+                    title={t('more')}
                     items={[
-                      <div key={Math.random()} className={`${styles.bottom__list_item}`}>
-                        <Link href='/reviews'>Отзывы</Link>
+                      <div key={'id1 comments'} className={`${styles.bottom__list_item}`}>
+                        <Link href='/reviews'>{t('reviews')}</Link>
                       </div>,
-                      <div key={Math.random()} className={`${styles.bottom__list_item}`}>
-                        <Link href='/delivery'>Доставка</Link>
+                      <div key={'id2 delivery'} className={`${styles.bottom__list_item}`}>
+                        <Link href='/delivery'>{t('delivery')}</Link>
                       </div>,
-                      <div key={Math.random()} className={`${styles.bottom__list_item}`}>
-                        <Link href='/about'>О нас</Link>
+                      <div key={'id3 about'} className={`${styles.bottom__list_item}`}>
+                        <Link href='/about'>{t('about')}</Link>
                       </div>,
-                      <div key={Math.random()} className={`${styles.bottom__list_item}`}>
-                        <Link href='/help'>Помощь</Link>
+                      <div key={'id4 help'} className={`${styles.bottom__list_item}`}>
+                        <Link href='/help'>{t('help')}</Link>
                       </div>,
+
                       <DropList
-                        key={234}
+                        key={'id5 contacts'}
                         extraClass={`${styles.extra__mobile__list}`}
                         direction='bottom'
                         gap='20'
                         safeAreaEnabled
                         trigger='hover'
-                        title={'Контакты'}
+                        title={t('contacts')}
                         items={[
                           <div key={1} className={styles.header__top_item}>
                             <Link
@@ -619,7 +661,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                       <p
                         onClick={() => {
                           setActiveLanguage(Languages.RUSSIAN)
-                          router.push(`/${languageToLocale[Languages.RUSSIAN]}`)
+                          router.push(createNewLangUrl(languageToLocale[Languages.RUSSIAN] as TLocale, pathname))
                         }}
                         key={1}
                       >
@@ -628,7 +670,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                       <p
                         onClick={() => {
                           setActiveLanguage(Languages.ENGLISH)
-                          router.push(`/${languageToLocale[Languages.ENGLISH]}`)
+                          router.push(createNewLangUrl(languageToLocale[Languages.ENGLISH] as TLocale, pathname))
                         }}
                         key={2}
                       >
@@ -637,7 +679,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                       <p
                         onClick={() => {
                           setActiveLanguage(Languages.CHINA)
-                          router.push(`/${languageToLocale[Languages.CHINA]}`)
+                          router.push(createNewLangUrl(languageToLocale[Languages.CHINA] as TLocale, pathname))
                         }}
                         key={3}
                       >

@@ -8,6 +8,7 @@ interface AccordionItem {
   title: string
   value: string
   isDefaultActive?: boolean
+  id: string
 }
 
 interface AccordionProps {
@@ -48,6 +49,7 @@ const Accordion: React.FC<AccordionProps> = ({items, multiActive = false, needDe
                   e.preventDefault()
                   e.stopPropagation()
                   onDelete?.(item)
+                  // setActiveItems(activeItems.filter((i) => i !== index))
                 }}
                 className={styles.delete__faq__button}
               >

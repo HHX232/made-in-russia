@@ -15,6 +15,70 @@
    align-items: center;
 }
 
+.extra__mobile__list {
+   &>ul {
+      min-width: 200px;
+      gap: 10px;
+      display: flex;
+      flex-direction: column;
+
+      &>li>div>a {
+         color: #000 !important;
+         margin: 0 auto !important;
+         text-align: center;
+         width: 100%;
+
+
+      }
+
+      &>li>div {
+         width: 100%;
+         display: flex;
+         align-items: center;
+         justify-content: space-around;
+      }
+   }
+}
+
+.header__top_item {
+   display: flex;
+   align-items: center;
+   gap: 5px;
+   font-size: 15px;
+   transition: all .15s;
+
+   &:hover {
+      color: #AC2525;
+   }
+}
+
+.header__top_image_insta {
+   width: 20px;
+   height: 20px;
+}
+
+.header__top_image_telegram {
+   width: 21px;
+   height: 18px;
+}
+
+.header__top_image_telephone {
+   width: 19px;
+   height: 19px;
+}
+
+.extra__header__language_box {
+   &>ul>li>p {
+      color: #000 !important;
+   }
+
+   &_2 {
+      &>div>span {
+         color: #FFF !important;
+      }
+   }
+}
+
 .header__list {
    margin: 0 auto;
    display: flex;

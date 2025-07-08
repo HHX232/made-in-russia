@@ -1,8 +1,12 @@
-import {FC} from 'react'
+'use client'
+import {FC, useEffect, useState} from 'react'
 import styles from './ProfilePageBottom.module.scss'
 import Image from 'next/image'
 import {Review} from '@/services/card/card.types'
 import Comment from '@/components/UI-kit/elements/Comment/Comment'
+import {useTranslations} from 'next-intl'
+import instance from '@/api/api.interceptor'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 type delStatus = 'Оформлен' | 'Доставлен' | 'Отменен' | 'Доставка'
 
@@ -113,6 +117,8 @@ const DeliveryListItem: FC<IDeliveryListItemProps> = ({
 //     byDate: '2025-06-03'
 //   }
 // ]
+
+// TODO заменить на запрос с сервера!!!!!!!!
 export const reviewsExample: Review[] = [
   {
     id: 1,
@@ -333,14 +339,34 @@ export const reviewsExample: Review[] = [
   }
 ]
 const ProfilePageBottomDelivery: FC = () => {
+  const t = useTranslations('ProfilePage.ProfilePageBottomDelivery')
+  const [reviews, setReviews] = useState<Review[]>([])
+  const currentLang = useCurrentLanguage()
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await instance.get<Review[]>('/me/reviews', {
+          headers: {
+            'Accept-Language': currentLang
+          }
+        })
+        setReviews(response.data)
+      } catch (error) {
+        console.error('Error fetching reviews:', error)
+      }
+    }
+    fetchReviews()
+  }, [currentLang])
   return (
     <div className={`${styles.delivery__box}`}>
-      <h3 className={`${styles.delivery__box__title}`}>Мои комментарии</h3>
+      <h3 className={`${styles.delivery__box__title}`}>{t('title')}</h3>
       <ul className={`${styles.delivery__list}`}>
         {/* {deliveryListData.map((el, i) => {
           return <DeliveryListItem key={i} {...el} />
         })} */}
-        {reviewsExample.map((el, i) => {
+        {reviews.length === 0 && <p>{t('noReviews')}</p>}
+        {reviews.map((el, i) => {
           return <Comment key={i} {...el} />
         })}
       </ul>

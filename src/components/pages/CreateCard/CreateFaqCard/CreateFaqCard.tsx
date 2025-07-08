@@ -7,6 +7,7 @@ import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/Mo
 import {useImageModal} from '@/hooks/useImageModal'
 import {HELP_IMAGES} from '../CreateCard'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {useTranslations} from 'next-intl'
 
 const vopros = '/vopros.svg'
 
@@ -18,7 +19,7 @@ interface CreateFaqCardProps {
 const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
   const indowWidth = useWindowWidth()
-
+  const t = useTranslations('CreateFaqCard')
   return (
     <div className={`${styles.create}`}>
       <ModalWindowDefault isOpen={isModalOpen} onClose={closeModal}>
@@ -33,7 +34,7 @@ const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
         )}
       </ModalWindowDefault>
       <div className={`${styles.descr__el__title} ${styles.descr__el__title__right}`}>
-        <p className={`${styles.descr__title}`}>Быстрые вопросы</p>
+        <p className={`${styles.descr__title}`}>{t('faqTitle')}</p>
         <DropList
           direction={indowWidth && indowWidth < 768 ? 'bottom' : 'right'}
           safeAreaEnabled
@@ -60,7 +61,7 @@ const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
         inputsInRowCount={2}
         maxRows={15}
         initialRowsCount={5}
-        titles={['Вопрос', 'Ответ']}
+        titles={[t('question'), t('answer')]}
         rowsInitialValues={values}
         onSetValue={() => {}}
         onRowsChange={onChange}

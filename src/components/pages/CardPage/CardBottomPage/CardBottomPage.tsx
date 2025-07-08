@@ -9,6 +9,8 @@ import ICardFull, {Review} from '@/services/card/card.types'
 import StarRating from '@/components/UI-kit/inputs/StarRating/StarRating'
 import instance from '@/api/api.interceptor'
 import {toast} from 'sonner'
+import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 interface ICardBottomPageProps {
   isLoading: boolean
@@ -34,7 +36,6 @@ const AutoResizeTextarea = ({
   placeholder?: string
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-
   const autoResize = () => {
     const textarea = textareaRef.current
     if (textarea) {
@@ -77,28 +78,72 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
   const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mov']
   const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES]
-
+  const t = useTranslations('CardPage.CardBottomPage')
+  // TODO проверить заголовок
+  const currentLang = useCurrentLanguage()
   const validateFile = (file: File): boolean => {
     const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)
     const isVideo = ALLOWED_VIDEO_TYPES.includes(file.type)
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       console.error(`Файл "${file.name}" имеет неподдерживаемый формат`)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('fileUploadErrorType', {fileName: file.name})}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return false
     }
 
     if (file.type === 'image/svg+xml') {
-      console.error(`SVG файлы не поддерживаются`)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('svgError')}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return false
     }
 
     if (isImage && file.size > MAX_IMAGE_SIZE) {
       console.error(`Изображение "${file.name}" превышает размер 5MB`)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('bigImage')}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return false
     }
 
     if (isVideo && file.size > MAX_VIDEO_SIZE) {
-      console.error(`Видео "${file.name}" превышает размер 200MB`)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('bigVideo')}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return false
     }
 
@@ -109,7 +154,17 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
     const files = Array.from(e.target.files || [])
 
     if (uploadedFiles.length + files.length > MAX_FILES_COUNT) {
-      console.error(`Можно загрузить не более ${MAX_FILES_COUNT} файлов`)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('bigFiles', {maxFilesCount: MAX_FILES_COUNT})}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return
     }
 
@@ -153,7 +208,10 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
     try {
       const response = await fetch('/api/upload-files', {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: {
+          'Accept-Language': currentLang
+        }
       })
 
       if (!response.ok) {
@@ -168,7 +226,6 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -214,13 +271,16 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
       const res = await instance.post(`products/${cardData?.id}/reviews`, {
         text: commentValue,
         // fileUrls: uploadedFiles.map((file) => file.fileUrl),
-        rating: starsCountSet
+        rating: starsCountSet,
+        headers: {
+          'Accept-Language': currentLang
+        }
       })
       console.log(res)
       toast.success(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Успешно!</strong>
-          <span>Отзыв опубликован</span>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('success')}</strong>
+          <span>{t('successPublished')}</span>
         </div>,
         {
           style: {
@@ -228,14 +288,13 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
           }
         }
       )
-    } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
       console.log(e)
       toast.error(
         <div style={{lineHeight: 1.5}}>
-          <strong style={{display: 'block', marginBottom: 4}}>Ошибка при публикации отзыва</strong>
-          <span>
-            Перед публикаией необходимо связаться с продавцом, и чтобы возраст аккаунта составлял не менее 7 дней
-          </span>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('errorPublished')}</strong>
+          <span>{e.response?.data?.message || t('errorPublishedText')}</span>
         </div>,
         {
           style: {
@@ -246,13 +305,6 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
     }
   }
 
-  // if (comments.length === 0)
-  //   return (
-  //     <p id='cardCommentsSection' className={`${styles.create__first__comment}`}>
-  //       Пока нет отзывов. Станьте первым!
-  //     </p>
-  // )
-
   return (
     <div id='cardCommentsSection' className={`${styles.card__bottom__box}`}>
       <div className={`${styles.tabs__box}`}>
@@ -260,7 +312,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
           onClick={() => setActiveIndex(1)}
           className={`fontInstrument ${styles.tabs__box__item} ${activeIndex === 1 ? styles.tabs__box__item__active : ''}`}
         >
-          Отзывы
+          {t('revues')}
           <span className={`${styles.tabs__box__item__count__comments}`}>
             {cardData?.reviewsCount ? cardData?.reviewsCount : '0'}
           </span>
@@ -269,7 +321,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
           onClick={() => setActiveIndex(2)}
           className={`fontInstrument ${styles.tabs__box__item} ${activeIndex === 2 ? styles.tabs__box__item__active : ''}`}
         >
-          Вопросы
+          {t('questions')}
           <span className={`${styles.tabs__box__item__count__comments}`}>
             {' '}
             {cardData?.faq.length ? cardData?.faq.length : '0'}
@@ -293,7 +345,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
                 ) : (
                   <li className={`${styles.no__comments}`}>
                     <p id='cardCommentsSection' className={`${styles.create__first__comment}`}>
-                      Пока нет отзывов. Станьте первым!
+                      {t('noComments')}
                     </p>
                   </li>
                 )}
@@ -307,7 +359,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
                 корзине)
               </p> */}
               <div className={`${styles.create__comment__box__rating}`}>
-                <p>Пожалуйста,расскажите о вашем опыте с этим товаром</p>
+                <p>{t('pleaseCreateComment')}</p>
                 <StarRating starsCountSet={starsCountSet} setStarsCountSet={setStarsCountSet} />
               </div>
 
@@ -419,7 +471,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
               </div>
             ) : (
               <Accordion
-                items={cardData?.faq.map((el) => ({title: el.question, value: el.answer})) || []}
+                items={cardData?.faq.map((el) => ({title: el.question, value: el.answer, id: el.id.toString()})) || []}
                 multiActive={false}
               />
             )}

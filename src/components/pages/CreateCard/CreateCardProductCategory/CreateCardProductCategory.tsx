@@ -2,6 +2,8 @@ import {FC, useState, useEffect} from 'react'
 import styles from './CreateCardProductCategory.module.scss'
 import {ICategory} from '@/services/card/card.types'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
+import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 interface CreateCardProductCategoryProps {
   initialProductCategory?: ICategory
@@ -15,16 +17,17 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
+  const t = useTranslations('CreateCardProductCategory')
+  const currentLang = useCurrentLanguage()
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         setIsLoading(true)
-        const categories = await CategoriesService.getAll()
+        const categories = await CategoriesService.getAll(currentLang)
         setAllCategories(categories)
         setError(null)
       } catch (err) {
-        setError('Ошибка загрузки категорий')
+        setError(t('errorLoadingCategoryes'))
         console.error('Error fetching categories:', err)
       } finally {
         setIsLoading(false)
@@ -74,7 +77,7 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
   if (isLoading) {
     return (
       <div className={styles.cat__box}>
-        <div className={styles.cat__loading}>Загрузка категорий...</div>
+        <div className={styles.cat__loading}>{t('loadingCategories')}</div>
       </div>
     )
   }
@@ -91,7 +94,7 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     <div className={styles.cat__box}>
       <div className={styles.cat__selected}>
         {!selectedCategory ? (
-          <p className={styles.cat__empty}>Категория не выбрана</p>
+          <p className={styles.cat__empty}>{t('emptyCategory')}</p>
         ) : (
           <div className={styles.cat__selectedItem}>
             {selectedCategory.imageUrl && (
@@ -102,7 +105,7 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
               type='button'
               onClick={handleRemoveCategory}
               className={styles.cat__remove}
-              aria-label='Удалить категорию'
+              aria-label={'removeCategory'}
             >
               ×
             </button>
@@ -114,7 +117,7 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
         <div className={styles.cat__searchWrapper}>
           <input
             type='text'
-            placeholder='Поиск категории...'
+            placeholder={t('foundCategoryProcessing')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsDropdownOpen(true)}
@@ -126,7 +129,7 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
               <div className={styles.cat__backdrop} onClick={() => setIsDropdownOpen(false)} />
               <div className={styles.cat__dropdown}>
                 {filteredCategories.length === 0 ? (
-                  <div className={styles.cat__noResults}>Категории не найдены</div>
+                  <div className={styles.cat__noResults}>{t('categoryNotFound')}</div>
                 ) : (
                   <div className={styles.cat__dropdownList}>
                     {filteredCategories.map((category) => (

@@ -6,20 +6,54 @@ import {useEffect, useRef, useState} from 'react'
 import CategoryesMenuDesktop from '@/components/UI-kit/elements/CategoryesMenuDesktop/CategoryesMenuDesktop'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
+import DropList from '@/components/UI-kit/Texts/DropList/DropList'
+import {usePathname, useRouter} from 'next/navigation'
+import createTelText from '@/utils/createTelText'
+import createNewLangUrl from '@/utils/createNewLangUrl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+const insta = '/insta.svg'
+const telephone = '/phone.svg'
+const telegram = '/telegram.svg'
 
+enum Languages {
+  RUSSIAN = 'Русский',
+  ENGLISH = 'English',
+  CHINA = '中文'
+}
+export type TLocale = 'ru' | 'en' | 'zh'
+const languageToLocale = {
+  [Languages.RUSSIAN]: 'ru',
+  [Languages.ENGLISH]: 'en',
+  [Languages.CHINA]: 'zh'
+}
+const localeToLanguage = {
+  ru: Languages.RUSSIAN,
+  en: Languages.ENGLISH,
+  zh: Languages.CHINA
+}
 const logoFavBig = '/logos/logoWithoutText.svg'
 const MinimalHeader = ({categories}: {categories?: Category[]}) => {
+  const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}`
+  const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}`
+  const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `7${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
+  const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [linksItems, setLinksItems] = useState(['category', 'reviews', 'delivery', 'about', 'help'])
+  const [linksItems, setLinksItems] = useState(['category', 'reviews', 'delivery', 'about-us', 'help'])
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [categoryListIsOpen, setCategoryListIsOpen] = useState<boolean>(false)
   const fullHeaderRef = useRef<HTMLDivElement>(null)
   const categoryListRefDesktop = useRef<HTMLDivElement>(null)
   const [categoriesList, setCategoriesList] = useState<Category[]>(categories || [])
   const t = useTranslations('MinimalHeader')
+  const pathname = usePathname()
+  const [activeLanguage, setActiveLanguage] = useState<Languages>(
+    localeToLanguage[pathname.split('/')[1] as keyof typeof localeToLanguage]
+  )
+  const router = useRouter()
+  const currentLang = useCurrentLanguage()
   useEffect(() => {
     async function rrrr() {
-      const res = await CategoriesService.getAll()
+      const res = await CategoriesService.getAll(currentLang)
       setCategoriesList(res)
     }
     rrrr()
@@ -62,6 +96,77 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
         </Link>
         <ul className={`${styles.header__list} ${styles.header__list__big}`}>
           {linksItems.map((el, i) => {
+            if (el === 'delivery') {
+              return (
+                <DropList
+                  key={'id5 contacts'}
+                  extraClass={`${styles.extra__mobile__list}`}
+                  direction='bottom'
+                  gap='20'
+                  color='white'
+                  positionIsAbsolute={false}
+                  trigger='hover'
+                  title={t('contacts')}
+                  items={[
+                    <div key={1} className={styles.header__top_item}>
+                      <Link
+                        style={{width: '100%'}}
+                        className={styles.header__top_link}
+                        href={instagramUrl}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        itemProp='sameAs'
+                      >
+                        <Image
+                          className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
+                          width={24}
+                          height={24}
+                          src={insta}
+                          alt='Instagram'
+                        />
+                        {process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}
+                      </Link>
+                    </div>,
+                    <div key={Math.random()} className={styles.header__top_item}>
+                      <Link
+                        className={styles.header__top_link}
+                        href={telegramUrl}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        itemProp='sameAs'
+                      >
+                        <Image
+                          className={`${styles.header__top_image} ${styles.header__top_image_telegram}`}
+                          width={24}
+                          height={24}
+                          src={telegram}
+                          alt='Telegram'
+                        />
+                        {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
+                      </Link>
+                    </div>,
+                    <div key={Math.random()} className={styles.header__top_item}>
+                      <Link
+                        className={styles.header__top_link}
+                        href={telephoneUrl}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        itemProp='telephone'
+                      >
+                        <Image
+                          className={`${styles.header__top_image} ${styles.header__top_image_telephone}`}
+                          width={24}
+                          height={24}
+                          src={telephone}
+                          alt='Телефон'
+                        />
+                        {telephoneText}
+                      </Link>
+                    </div>
+                  ]}
+                />
+              )
+            }
             return (
               <li
                 onClick={() => {
@@ -75,21 +180,113 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                 key={i}
                 className={`${styles.header__list__item}`}
               >
-                <Link href={'#'}>{t(el)}</Link>
+                <Link href={`${el}`}>{t(el)}</Link>
               </li>
             )
           })}
+          <DropList
+            closeOnMouseLeave={true}
+            extraStyle={{zIndex: '99999'}}
+            extraClass={`${styles.extra__header__language_box}`}
+            color='white'
+            title={activeLanguage}
+            // direction='left'
+            gap='5'
+            safeAreaEnabled={true}
+            positionIsAbsolute={false}
+            items={[
+              <p
+                style={{width: '100%'}}
+                onClick={() => {
+                  setActiveLanguage(Languages.RUSSIAN)
+                  router.push(createNewLangUrl(languageToLocale[Languages.RUSSIAN] as TLocale, pathname))
+                }}
+                key={1}
+              >
+                {Languages.RUSSIAN}
+              </p>,
+              <p
+                style={{width: '100%'}}
+                onClick={() => {
+                  setActiveLanguage(Languages.ENGLISH)
+                  router.push(createNewLangUrl(languageToLocale[Languages.ENGLISH] as TLocale, pathname))
+                }}
+                key={2}
+              >
+                {Languages.ENGLISH}
+              </p>,
+              <p
+                style={{width: '100%'}}
+                onClick={() => {
+                  setActiveLanguage(Languages.CHINA)
+                  router.push(createNewLangUrl(languageToLocale[Languages.CHINA] as TLocale, pathname))
+                }}
+                key={3}
+              >
+                {Languages.CHINA}
+              </p>
+            ]}
+            trigger='hover'
+          />
         </ul>
+
         <div className={`${styles.burger__menu} `}>
-          <div
-            onClick={() => {
-              setMenuIsOpen((prev) => !prev)
-            }}
-            className={`${styles.burger}`}
-          >
-            <div className={`${styles.burger__item}`}></div>
-            <div className={`${styles.burger__item}`}></div>
-            <div className={`${styles.burger__item}`}></div>
+          <div style={{display: 'flex', alignItems: 'center', gap: '50px'}} className=''>
+            <DropList
+              closeOnMouseLeave={true}
+              extraStyle={{zIndex: '99999'}}
+              extraClass={`${styles.extra__header__language_box} ${styles.extra__header__language_box_2}`}
+              color='white'
+              title={activeLanguage}
+              // direction='left'
+              gap='5'
+              safeAreaEnabled={true}
+              positionIsAbsolute={false}
+              items={[
+                <p
+                  style={{width: '100%'}}
+                  onClick={() => {
+                    setActiveLanguage(Languages.RUSSIAN)
+                    router.push(createNewLangUrl(languageToLocale[Languages.RUSSIAN] as TLocale, pathname))
+                  }}
+                  key={1}
+                >
+                  {Languages.RUSSIAN}
+                </p>,
+                <p
+                  style={{width: '100%'}}
+                  onClick={() => {
+                    setActiveLanguage(Languages.ENGLISH)
+                    router.push(createNewLangUrl(languageToLocale[Languages.ENGLISH] as TLocale, pathname))
+                  }}
+                  key={2}
+                >
+                  {Languages.ENGLISH}
+                </p>,
+                <p
+                  style={{width: '100%'}}
+                  onClick={() => {
+                    setActiveLanguage(Languages.CHINA)
+                    router.push(createNewLangUrl(languageToLocale[Languages.CHINA] as TLocale, pathname))
+                  }}
+                  key={3}
+                >
+                  {Languages.CHINA}
+                </p>
+              ]}
+              trigger='hover'
+            />
+
+            <div
+              onClick={() => {
+                setMenuIsOpen((prev) => !prev)
+              }}
+              className={`${styles.burger}`}
+            >
+              <div className={`${styles.burger__item}`}></div>
+              <div className={`${styles.burger__item}`}></div>
+              <div className={`${styles.burger__item}`}></div>
+            </div>
           </div>
           <div className={`${styles.burger__menu__list} ${menuIsOpen ? styles.burger__menu__list__active : ''}`}>
             <ul className={`${styles.header__list} ${styles.header__list__mini}`}>

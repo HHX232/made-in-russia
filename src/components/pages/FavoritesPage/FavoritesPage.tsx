@@ -7,6 +7,8 @@ import {useTypedSelector} from '@/hooks/useTypedSelector'
 import Card from '@/components/UI-kit/elements/card/card'
 import ProductService from '@/services/products/product.service'
 import {Product} from '@/services/products/product.types'
+import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 const FavoritesPage: FC = () => {
   const {productInFavorites} = useTypedSelector((state) => state.favorites)
   const [productsIds, setProductsIds] = useState<number[]>([])
@@ -15,7 +17,8 @@ const FavoritesPage: FC = () => {
   const headerHeight = headerRef.current?.offsetHeight
   const footerRef = useRef<HTMLDivElement>(null)
   const footerHeight = footerRef.current?.offsetHeight
-
+  const t = useTranslations('Favorites')
+  const currentLang = useCurrentLanguage()
   useEffect(() => {
     const ids = productInFavorites.map((product) => product.id)
     setProductsIds(ids)
@@ -28,7 +31,7 @@ const FavoritesPage: FC = () => {
         return
       }
       try {
-        const products = await ProductService.getByIds(productsIds)
+        const products = await ProductService.getByIds(productsIds, currentLang)
         setFreshProducts(products)
       } catch (error) {
         console.error('Error fetching products:', error)
@@ -46,7 +49,7 @@ const FavoritesPage: FC = () => {
         style={{minHeight: `calc(100vh - ${headerHeight}px - ${footerHeight}px - 40px)`}}
         className={`container ${styles.fav__box}`}
       >
-        <h1 className={styles.fav__title}>Избранные товары</h1>
+        <h1 className={styles.fav__title}>{t('title')}</h1>
         <div className={styles.fav__cards}>
           {freshProducts.length != 0 &&
             freshProducts.map((product) => (
@@ -62,7 +65,7 @@ const FavoritesPage: FC = () => {
                 fullProduct={product}
               />
             ))}
-          {productInFavorites.length === 0 && <p>Нет избранных товаров</p>}
+          {productInFavorites.length === 0 && <p>{t('noFavorites')}</p>}
           {productInFavorites.length !== 0 &&
             freshProducts.length === 0 &&
             productInFavorites.map((product) => (

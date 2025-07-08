@@ -8,13 +8,14 @@ export default async function VendorPage() {
   // Правильный способ получения cookies в серверном компоненте
   const cookieStore = await cookies()
   const accessToken = cookieStore.get('accessToken')?.value || ''
-
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
   try {
     console.log('accessToken:', accessToken)
     vendorData = await instance.get<IVendorData>('/me', {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+        'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
+        'Accept-Language': locale
       }
     })
     // console.log('vendorData:', vendorData?.data)

@@ -15,6 +15,9 @@ import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 import {hasLocale, NextIntlClientProvider} from 'next-intl'
 import {routing} from '@/i18n/routing'
 import {notFound} from 'next/navigation'
+import {getMessages} from 'next-intl/server'
+import {SmartTranslationProvider} from '@/providers/SmartTranslationProvider'
+import {cookies} from 'next/headers'
 
 export default async function RootLayoutLanguage({
   children,
@@ -24,6 +27,7 @@ export default async function RootLayoutLanguage({
   params: Promise<{locale: string}>
 }) {
   const {locale} = await params
+  const messages = await getMessages()
   if (!hasLocale(routing.locales, locale)) {
     notFound()
   }
@@ -31,21 +35,32 @@ export default async function RootLayoutLanguage({
   return (
     <DefaultProvider>
       <NextIntlClientProvider>
-        {children}
-        {/* <Toaster theme={'dark'} position={'top-right'} duration={3500} /> */}
+        {/* <MessageProvider initialMessages={messages}> */}
+        <SmartTranslationProvider initialMessages={messages}>
+          {children}
+          {/* <Toaster theme={'dark'} position={'top-right'} duration={3500} /> */}
+        </SmartTranslationProvider>
+        {/* </MessageProvider> */}
       </NextIntlClientProvider>
     </DefaultProvider>
   )
 }
 
 export async function generateMetadata() {
+  const cookieStore = await cookies()
+
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+
   try {
-    const initialPage1 = await ProductService.getAll({page: 0, size: 10})
+    const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale})
 
     return {
       // TODO Убрать ноу индекс
       ...NO_INDEX_PAGE,
-      title: 'Exporteru',
+      title: {
+        absolute: 'Exporteru',
+        template: `%s | Exporteru`
+      },
       description:
         'Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками. ' +
         `Предоставляем товары наподобие ${initialPage1.content.map((item) => item.title).join(', ')} и многое другое!`,
@@ -118,7 +133,10 @@ export async function generateMetadata() {
   } catch (error) {
     console.error('Error fetching card data:', error)
     return {
-      title: 'Exporteru'
+      title: {
+        absolute: 'Exporteru',
+        template: `%s | Exporteru`
+      }
     }
   }
 }

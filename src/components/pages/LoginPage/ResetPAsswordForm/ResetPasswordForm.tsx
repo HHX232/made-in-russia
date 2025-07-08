@@ -8,6 +8,7 @@ import {toast} from 'sonner'
 import InputOtp from '@/components/UI-kit/inputs/inputOTP/inputOTP'
 import {saveTokenStorage} from '@/middleware'
 import {useRouter} from 'next/router'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 interface ResetPasswordFormProps {
   onBack: () => void
@@ -24,6 +25,7 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
     setEmail(value)
     setError('')
   }
+  const currentLang = useCurrentLanguage()
 
   const handlePasswordChange = (value: SetStateAction<string>) => {
     setNewPassword(value)
@@ -57,10 +59,18 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
     setError('')
 
     try {
-      await axiosClassic.post('/auth/recover-password', {
-        email: email,
-        newPassword: newPassword
-      })
+      await axiosClassic.post(
+        '/auth/recover-password',
+        {
+          email: email,
+          newPassword: newPassword
+        },
+        {
+          headers: {
+            'Accept-Language': currentLang
+          }
+        }
+      )
 
       toast.success('Код подтверждения отправлен на вашу почту')
       setStep('verify')
@@ -95,6 +105,11 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
         {
           email: email,
           recoverCode: code
+        },
+        {
+          headers: {
+            'Accept-Language': currentLang
+          }
         }
       )
       saveTokenStorage(res.data)

@@ -82,6 +82,86 @@
    width: 100%;
 }
 
+/* Стили для слайдера */
+.category__slider {
+   width: 100%;
+   margin: 0 auto;
+   overflow: hidden;
+}
+
+.category__slide {
+   padding: 0 10px;
+   outline: none;
+   height: 100%;
+}
+
+.category__slide__content {
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+   height: 100%;
+}
+
+.category__item__slider {
+   width: 100% !important;
+   min-width: unset !important;
+   max-width: unset !important;
+   height: calc(50% - 10px) !important;
+   /* 50% высоты минус половина gap */
+   min-height: 80px;
+   flex-shrink: 0;
+}
+
+/* Стили для точек навигации */
+.category__slider .slick-dots {
+   bottom: -50px;
+   z-index: 1000;
+   position: static !important;
+}
+
+// .category__slider .slick-dots li button:before {
+//    color: #999;
+//    font-size: 12px;
+// }
+
+// .category__slider .slick-dots li.slick-active button:before {
+//    color: #333;
+// }
+
+/* Стили для стрелок */
+.category__slider .slick-arrow {
+   z-index: 1;
+   width: 40px;
+   height: 40px;
+   background: rgba(255, 255, 255, 0.8);
+   border-radius: 50%;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.category__slider .slick-arrow:before {
+   font-size: 20px;
+   color: #333;
+}
+
+.category__slider .slick-prev {
+   left: 10px;
+}
+
+.category__slider .slick-next {
+   right: 10px;
+}
+
+/* Контейнер для слайдера */
+.category__slider .slick-list {
+   overflow: hidden;
+   margin: 0 -10px;
+}
+
+.category__slider .slick-track {
+   display: flex;
+   align-items: stretch;
+}
+
 @media (max-width: 800px) {
    .category__list__first {
       display: grid;
@@ -100,18 +180,14 @@
    }
 
    .category__title__main {
-
       font-size: 28px;
       line-height: 36px;
-
    }
 
    .category__item__title {
       font-size: 18px;
       line-height: 22px;
-
    }
-
 
    .category__list {
       display: grid;
@@ -144,5 +220,42 @@
             white-space: unset;
          }
       }
+   }
+
+   /* Адаптивные стили для слайдера */
+   .category__slider .slick-prev {
+      left: 5px;
+   }
+
+   .category__slider .slick-next {
+      right: 5px;
+   }
+
+   .category__slider .slick-arrow {
+      width: 30px;
+      height: 30px;
+   }
+
+   .category__slider .slick-arrow:before {
+      font-size: 16px;
+   }
+}
+
+@media (max-width: 600px) {
+   .category__slider .slick-prev {
+      left: 2px;
+   }
+
+   .category__slider .slick-next {
+      right: 2px;
+   }
+
+   .category__slide__content {
+      gap: 15px;
+   }
+
+   .category__item__slider {
+      height: calc(50% - 7.5px) !important;
+      /* Учитываем уменьшенный gap */
    }
 }

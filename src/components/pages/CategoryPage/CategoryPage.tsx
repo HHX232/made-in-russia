@@ -8,6 +8,8 @@ import {usePathname} from 'next/navigation'
 import {Category} from '@/services/categoryes/categoryes.service'
 import {useActions} from '@/hooks/useActions'
 import Footer from '@/components/MainComponents/Footer/Footer'
+import useWindowWidth from '@/hooks/useWindoWidth'
+import Slider from 'react-slick'
 
 const CATEGORYESCONST = [
   {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: '/category/cat1.jpg'},
@@ -39,7 +41,7 @@ const CategoryPage = ({
   const itemRefs = useRef<(HTMLLIElement | null)[]>([])
   const pathname = usePathname()
   const {clearFilters, setFilter} = useActions()
-
+  const windowWidth = useWindowWidth()
   useEffect(() => {
     return () => {
       clearFilters()
@@ -136,6 +138,33 @@ const CategoryPage = ({
       setActiveFilterId(category.id || null)
     }
   }
+  const mainSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 2, // Показывать 2 слайда одновременно
+    slidesToScroll: 1, // Прокручивать по одному слайду
+    arrows: true,
+    fade: false, // Убираем fade для корректной работы с несколькими слайдами
+    responsive: [
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  }
+
+  // Функция для группировки категорий по 2 в слайд
+  const groupCategoriesIntoSlides = (categories: Category[]) => {
+    const slides = []
+    for (let i = 0; i < categories.length; i += 2) {
+      slides.push(categories.slice(i, i + 2))
+    }
+    return slides
+  }
 
   return (
     <div>
@@ -153,7 +182,7 @@ const CategoryPage = ({
           )}
 
           {/* Рендер для level < 3 с ссылками */}
-          {level < 3 && categoriesToDisplay.length > 0 && (
+          {level < 3 && categoriesToDisplay.length > 0 && windowWidth && windowWidth > 900 && (
             <ul
               ref={listRef}
               className={`${styles.category__list} ${level === 1 ? styles.category__list__first : ''} ${level > 1 ? styles.category__list__more_than_first : ''} ${level === 2 ? styles.category__list__second : ''}`}
@@ -163,9 +192,9 @@ const CategoryPage = ({
                   <li
                     style={{
                       backgroundImage: `
-                       ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-                       url(${category.imageUrl ? category.imageUrl : (!category.imageUrl && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''})
-                       `,
+                                       ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
+                                       url(${category.imageUrl ? category.imageUrl : (!category.imageUrl && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''})
+                                       `,
                       color: level === 1 ? '#FFF' : '#000'
                     }}
                     ref={(el) => {
@@ -186,6 +215,37 @@ const CategoryPage = ({
             </ul>
           )}
 
+          {level < 3 && categoriesToDisplay.length > 0 && windowWidth && windowWidth < 900 && (
+            <Slider {...mainSettings} className={`${styles.category__slider} category__slider__main ${level === 1 && "category__slider__first"}`}>
+              {groupCategoriesIntoSlides(categoriesToDisplay).map((slideCategories, slideIndex) => (
+                <div key={slideIndex} className={styles.category__slide}>
+                  <div className={styles.category__slide__content}>
+                    {slideCategories.map((category, index) => (
+                      <Link key={category.id || category.slug} href={buildHref(category)}>
+                        <div
+                          style={{
+                            backgroundImage: `
+                                                   ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
+                                                   url(${category.imageUrl ? category.imageUrl : (!category.imageUrl && level === 1 && CATEGORYESCONST[slideIndex * 2 + index]?.imageSrc) || ''})
+                                                   `,
+                            color: level === 1 ? '#FFF' : '#000'
+                          }}
+                          className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${level === 1 ? styles.category__item__with__image : ''} ${styles.category__item__slider}`}
+                        >
+                          <p
+                            className={`${styles.category__item__title} ${level === 2 ? styles.category__item__title__second : ''}`}
+                          >
+                            {category.name}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </Slider>
+          )}
+
           {/* Рендер для level === 3 с фильтрами */}
           {level === 3 && categoriesToDisplay.length > 0 && (
             <ul ref={listRef} className={`${styles.category__list} ${styles.category__list__more_than_first}`}>
@@ -194,7 +254,6 @@ const CategoryPage = ({
                   key={category.id || category.slug}
                   onClick={() => handleFilterClick(category)}
                   style={{
-                    // backgroundImage: `url(${category.image ? category.image : (!category.image && CATEGORYESCONST[index]?.imageSrc) || ''})`,
                     backgroundColor: activeFilterId === category.id ? 'rgba(255, 182, 193, 0.3)' : 'transparent',
                     cursor: 'pointer'
                   }}

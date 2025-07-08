@@ -15,6 +15,7 @@ import Footer from '@/components/MainComponents/Footer/Footer'
 import ResetPasswordForm from './ResetPAsswordForm/ResetPasswordForm'
 import {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 const google = '/google_registr.svg'
 const wechat = '/wechat_registr.svg'
@@ -33,6 +34,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
   const [showResetForm, setShowResetForm] = useState(false)
   const router = useRouter()
   const t = useTranslations('LoginPage')
+  const currentLang = useCurrentLanguage()
   const handleNameChange = (value: SetStateAction<string>) => {
     setNameState(value)
     setError('')
@@ -62,15 +64,31 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
       let response
 
       if (isEmail(name)) {
-        response = await axiosClassic.post('/auth/login-with-email', {
-          email: name,
-          password: password
-        })
+        response = await axiosClassic.post(
+          '/auth/login-with-email',
+          {
+            email: name,
+            password: password
+          },
+          {
+            headers: {
+              'Accept-Language': currentLang
+            }
+          }
+        )
       } else {
-        response = await axiosClassic.post('/auth/login-with-login', {
-          login: name,
-          password: password
-        })
+        response = await axiosClassic.post(
+          '/auth/login-with-login',
+          {
+            login: name,
+            password: password
+          },
+          {
+            headers: {
+              'Accept-Language': currentLang
+            }
+          }
+        )
       }
 
       const {accessToken, refreshToken} = response.data as any

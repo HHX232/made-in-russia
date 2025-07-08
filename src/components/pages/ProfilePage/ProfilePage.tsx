@@ -16,6 +16,8 @@ import {User} from '@/services/users.types'
 import {useRouter} from 'next/navigation'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {toast} from 'sonner'
+import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 // Константы
 const ASSETS = {
@@ -102,6 +104,7 @@ interface ProfileActionsProps {
 
 interface ProfileStatsProps {
   favoriteCount: number
+  registrationDate: string
 }
 
 interface RecentlyViewedProps {
@@ -116,6 +119,7 @@ export const useUserData = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const accessToken = getAccessToken()
+  const currentLang = useCurrentLanguage()
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -124,7 +128,8 @@ export const useUserData = () => {
         const response = await instance.get<User>('/me', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+            'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
+            'Accept-Language': currentLang
           }
         })
         setUserData(response.data)
@@ -168,8 +173,10 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({userData}) => {
 // Компонент быстрых действий
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentClick, isForVendor = true}) => {
+  const t = useTranslations('ProfilePage')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+  const currentLang = useCurrentLanguage()
   const [sessions, setSessions] = useState<
     {
       id: string
@@ -196,7 +203,11 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
           ipAddress: string
           lastLoginDate: string | Date
         }[]
-      >('/me/sessions')
+      >('/me/sessions', {
+        headers: {
+          'Accept-Language': currentLang
+        }
+      })
       setSessions(response.data)
       setIsModalOpen(true)
     } catch (e) {
@@ -208,25 +219,25 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
     <ul className={styles.fast__buttons__box}>
       {isForVendor && (
         <ModalWindowDefault isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <p className={styles.modal__sessions__title}>Мои сессии</p>
+          <p className={styles.modal__sessions__title}>{t('mySessions')}</p>
           <ul className={styles.modal__sessions__list}>
             {sessions.map((el, i) => {
               return (
                 <li key={i} className={styles.modal__sessions__list__item}>
                   <p className={`${styles.device__type}`}>
-                    <span className={`${styles.sessions__item__title}`}> Тип устройства:</span>{' '}
+                    <span className={`${styles.sessions__item__title}`}> {t('deviceType')}:</span>{' '}
                     <span className={`${styles.sessions__item__value}`}>{el.deviceType}</span>
                   </p>
                   <p className={`${styles.browser}`}>
-                    <span className={`${styles.sessions__item__title}`}> Браузер:</span>{' '}
+                    <span className={`${styles.sessions__item__title}`}> {t('browser')}:</span>{' '}
                     <span className={`${styles.sessions__item__value}}`}>{el.browser}</span>
                   </p>
                   <p className={`${styles.os}`}>
-                    <span className={`${styles.sessions__item__title}`}> Операционная система:</span>{' '}
+                    <span className={`${styles.sessions__item__title}`}> {t('os')}:</span>{' '}
                     <span className={`${styles.sessions__item__value}}`}>{el.os}</span>
                   </p>
                   <p className={`${styles.last__login__date}`}>
-                    <span className={`${styles.sessions__item__title}`}> Последний вход:</span>{' '}
+                    <span className={`${styles.sessions__item__title}`}> {t('lastLoginDate')}:</span>{' '}
                     <span className={`${styles.sessions__item__value}`}>
                       {typeof el.lastLoginDate === 'string'
                         ? formatDateToRussian(el.lastLoginDate)
@@ -242,7 +253,7 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
       {isForVendor && (
         <li className={styles.fast__buttons__box__item}>
           <button className={styles.fast__buttons__box__item__button} onClick={onNewDeviceClick}>
-            Мои сессии
+            {t('mySessions')}
           </button>
         </li>
       )}
@@ -255,12 +266,12 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
             onPaymentClick(e)
           }}
         >
-          Способы оплаты
+          {t('paymentsMethods')}
         </button>
       </li> */}
 
       <ModalWindowDefault isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)}>
-        <h3 className={styles.payments__methods__title}>Способы оплаты</h3>
+        <h3 className={styles.payments__methods__title}>{t('paymentsMethodsTitle')}</h3>
 
         <ul className={styles.payments__methods__list}>
           {ASSETS.paymentsList.map((el, i) => {
@@ -294,6 +305,8 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
   categories,
   isForVendor
 }) => {
+  const t = useTranslations('ProfilePage')
+  const currentLang = useCurrentLanguage()
   const onSave = () => {
     // console.log('Saving data:', {phoneNumber, region})
     let numberStartWith = ''
@@ -316,24 +329,40 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
     }
     try {
       if (isForVendor) {
-        const res = instance.patch('/me', {
-          phoneNumber: numberStartWith + phoneNumber,
-          inn,
-          countries,
-          categories
-        })
+        const res = instance.patch(
+          '/me',
+          {
+            phoneNumber: numberStartWith + phoneNumber,
+            inn,
+            countries,
+            categories
+          },
+          {
+            headers: {
+              'Accept-Language': currentLang
+            }
+          }
+        )
         console.log(res)
       } else {
-        const res = instance.patch('/me', {
-          phoneNumber: numberStartWith + phoneNumber,
-          region
-        })
+        const res = instance.patch(
+          '/me',
+          {
+            phoneNumber: numberStartWith + phoneNumber,
+            region
+          },
+          {
+            headers: {
+              'Accept-Language': currentLang
+            }
+          }
+        )
         console.log(res)
       }
       toast.success(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Поздравляем!</strong>
-          <span>Данные успешно изменены!</span>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('congratulations')}</strong>
+          <span>{t('dataSuccessfullyChanged')}</span>
         </div>,
         {
           style: {
@@ -342,7 +371,7 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
         }
       )
     } catch {
-      toast.error('Ошибка изменения данных!')
+      toast.error(t('dataErrorChange'))
     }
   }
 
@@ -357,7 +386,7 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
         }}
       >
         <p style={{textAlign: 'center', fontWeight: '500', fontSize: '24px', margin: '10px 0 40px 0'}}>
-          Вы уверены что хотите выйти?
+          {t('wannaGetOut')}
         </p>
         <div style={{display: 'flex', justifyContent: 'center', gap: '40px'}}>
           <button
@@ -371,7 +400,7 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
             }}
             onClick={() => setWantQuite(false)}
           >
-            Отменить
+            {t('cancel')}
           </button>
           <button
             style={{
@@ -384,24 +413,24 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
             }}
             onClick={onLogout}
           >
-            Выйти
+            {t('logout')}
           </button>
         </div>
       </ModalWindowDefault>
       <ul className={styles.buttons__logouts__box}>
         <li className={styles.buttons__logouts__box__item}>
           <button className={styles.buttons__logouts__box__button} onClick={onDeleteAccount}>
-            Удалить аккаунт
+            {t('deleteAccount')}
           </button>
         </li>
       </ul>
       <div className={styles.buttons__box__save__logout}>
         <button onClick={() => setWantQuite(true)} className={styles.logout__button}>
-          Выйти
+          {t('logout')}
         </button>
         {needToSave && !isLoading && (
           <button className={styles.save__button} onClick={onSave}>
-            Сохранить
+            {t('save')}
           </button>
         )}
       </div>
@@ -410,29 +439,34 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
 }
 
 // Компонент статистики профиля
-const ProfileStats: FC<ProfileStatsProps> = ({favoriteCount}) => {
+const ProfileStats: FC<ProfileStatsProps> = ({favoriteCount, registrationDate}) => {
   const [isClient, setIsClient] = useState(false)
   useEffect(() => {
     setIsClient(true)
   }, [])
+  const t = useTranslations('ProfilePage')
   return (
     <div className={styles.profile__data__mini}>
       <Link href={'/favorites'} className={styles.profile__data__box_item__span}>
         <span className={styles.profile__data__favourite}>
           <span className={styles.profile__data__favourite__span}>
-            <h3 className={styles.mini__link__info__title}>Избранное</h3>
+            <h3 className={styles.mini__link__info__title}>{t('favorites')}</h3>
             <Image width={25} height={23} src={ASSETS.redStar} alt='go to favorite' />
           </span>
-          <p className={styles.profile__data__favourite__subtitle}>{isClient ? favoriteCount : 0} товар</p>
+          <p className={styles.profile__data__favourite__subtitle}>
+            {isClient ? favoriteCount : 0} {t('products')}
+          </p>
         </span>
       </Link>
       <Link href={'#'} className={styles.profile__data__box_item__span}>
         <span className={styles.profile__data__basket}>
           <span className={styles.profile__data__favourite__span}>
-            <h3 className={styles.mini__link__info__title}>Покупки</h3>
+            <h3 className={styles.mini__link__info__title}>
+              {registrationDate.length > 0 ? t('shopping', {memberSince: new Date(registrationDate)}) : ''}
+            </h3>
             <Image width={25} height={23} src={ASSETS.basket} alt='go to basket' />
           </span>
-          <p className={styles.profile__data__favourite__subtitle}>Смотреть</p>
+          <p className={styles.profile__data__favourite__subtitle}>{t('saw')} </p>
         </span>
       </Link>
     </div>
@@ -445,9 +479,10 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
   useEffect(() => {
     setIsClient(true)
   }, [])
+  const t = useTranslations('ProfilePage')
   return (
     <div className={styles.profile__data__latest}>
-      <h3 className={styles.mini__link__info__title__latest}>Недавно просмотренные</h3>
+      <h3 className={styles.mini__link__info__title__latest}>{t('recentlyViewed')}</h3>
       <ul className={styles.latest__list}>
         {isClient &&
           latestViews.map((product) => (
@@ -464,7 +499,7 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
               fullProduct={product}
             />
           ))}
-        {isClient && isEmpty && <p className={styles.empty__message}>Нет просмотренных товаров</p>}
+        {isClient && isEmpty && <p className={styles.empty__message}>{t('notHaveRecentlyViewed')}</p>}
       </ul>
     </div>
   )
@@ -481,6 +516,8 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
   // User custom data
   const [userPhoneNumber, setUserPhoneNumber] = useState(firstUserData?.phoneNumber)
   const [userRegion, setUserRegion] = useState(firstUserData?.region)
+
+  const t = useTranslations('ProfilePage')
 
   useEffect(() => {
     if (!loading && userData) {
@@ -512,11 +549,19 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
   const handleDeleteAccount = () => {
     // TODO: Implement delete account logic
   }
-
+  const currentLang = useCurrentLanguage()
   const handleLogout = () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const response = instance.post('/auth/logout')
+      const response = instance.post(
+        '/auth/logout',
+        {},
+        {
+          headers: {
+            'Accept-Language': currentLang
+          }
+        }
+      )
       // console.log(response)
       removeFromStorage()
       router.push('/')
@@ -526,7 +571,7 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
   }
 
   if (error) {
-    return <div>Error loading profile</div> // TODO: Добавить компонент ошибки
+    return <div>{t('errorLoadingProfile')}</div>
   }
 
   return (
@@ -559,7 +604,10 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
           </div>
 
           <div className={styles.profile__shops__data}>
-            <ProfileStats favoriteCount={productInFavorites.length} />
+            <ProfileStats
+              favoriteCount={productInFavorites.length}
+              registrationDate={userData?.registrationDate || ''}
+            />
             <RecentlyViewed latestViews={latestViews} isEmpty={isEmpty} />
           </div>
 

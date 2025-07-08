@@ -19,6 +19,30 @@ html {
 	}
 }
 
+.category__slider__main .slick-dots {
+	position: static !important;
+}
+
+.category__slider__main {
+	.slick-track {
+		height: 220px;
+	}
+
+	.slick-slide {
+		&>div {
+			height: 100%;
+			padding-bottom: 6px;
+		}
+
+	}
+}
+
+.category__slider__first {
+	.slick-track {
+		height: 270px;
+	}
+}
+
 // md-editor-custom.module.scss
 // Добавьте эти стили в ваш основной файл стилей или создайте отдельный
 

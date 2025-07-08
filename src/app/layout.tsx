@@ -12,7 +12,7 @@ import NProgressProvider from '@/components/UI-kit/loaders/nprogress-provider'
 import ProductService from '@/services/products/product.service'
 import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 import {NextIntlClientProvider} from 'next-intl'
-import {headers} from 'next/headers'
+import {cookies, headers} from 'next/headers'
 // import {NextIntlClientProvider} from 'next-intl'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
@@ -38,13 +38,20 @@ export default async function RootLayout({children}: {children: React.ReactNode}
 }
 
 export async function generateMetadata() {
+  const cookieStore = await cookies()
+
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+
   try {
-    const initialPage1 = await ProductService.getAll({page: 0, size: 10})
+    const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale})
 
     return {
       // TODO Убрать ноу индекс
       ...NO_INDEX_PAGE,
-      title: 'Exporteru',
+      title: {
+        absolute: 'Exporteru',
+        template: `%s | Exporteru`
+      },
       description:
         'Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками. ' +
         `Предоставляем товары наподобие ${initialPage1.content.map((item) => item.title).join(', ')} и многое другое!`,

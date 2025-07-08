@@ -6,6 +6,7 @@ import {getAccessToken, getRefreshToken, removeFromStorage, saveTokenStorage} fr
 import instance, {axiosClassic} from '@/api/api.interceptor'
 import {useRouter} from 'next/navigation'
 import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 const ava = '/avatars/avatar-v.svg'
 const ava1 = '/avatars/avatar-v-1.svg'
@@ -43,7 +44,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   const [userName, setUserName] = useState<null | string>(null)
   const router = useRouter()
   const t = useTranslations('HomePage')
-
+  const currentLang = useCurrentLanguage()
   useEffect(() => {
     setRandomAvatar(avatarsArray[Math.floor(Math.random() * avatarsArray.length)])
   }, [])
@@ -65,7 +66,11 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
 
       try {
         // console.log('accessToken', accessToken, 'refreshToken', refreshToken)
-        const response = await instance.get<User>('/me')
+        const response = await instance.get<User>('/me', {
+          headers: {
+            'Accept-Language': currentLang
+          }
+        })
         setUserData(response.data)
       } catch (error) {
         console.error('Failed to fetch user data:', error)
@@ -78,7 +83,15 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
         try {
           const {data: tokenData} = await axiosClassic.patch<{
             accessToken: string
-          }>('/me/current-session/refresh', {refreshToken})
+          }>(
+            '/me/current-session/refresh',
+            {refreshToken},
+            {
+              headers: {
+                'Accept-Language': currentLang
+              }
+            }
+          )
 
           // console.log('NEW tokenData', tokenData)
           saveTokenStorage({
@@ -86,7 +99,11 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
             refreshToken: refreshToken
           })
 
-          const response = await instance.get<User>('/me')
+          const response = await instance.get<User>('/me', {
+            headers: {
+              'Accept-Language': currentLang
+            }
+          })
           setUserData(response.data)
           // console.log('мы сохранили новые токены')
         } catch (e) {

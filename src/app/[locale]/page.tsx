@@ -1,13 +1,18 @@
 import HomePage from '@/components/pages/HomePage/HomePage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
 import ProductService from '@/services/products/product.service'
+import {cookies} from 'next/headers'
 
 // import ProductService from '@/services/products/product.service'
 
 export default async function Home() {
-  const initialPage1 = await ProductService.getAll({page: 0, size: 10})
-  const initialPage2 = await ProductService.getAll({page: 1, size: 10})
-  const categories = await CategoriesService.getAll()
+  const cookieStore = await cookies()
+
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+
+  const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale})
+  const initialPage2 = await ProductService.getAll({page: 1, size: 10, currentLang: locale})
+  const categories = await CategoriesService.getAll(locale)
 
   return (
     <>

@@ -9,6 +9,7 @@ import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/Mo
 import {useImageModal} from '@/hooks/useImageModal'
 import {HELP_IMAGES} from '../CreateCard'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {useTranslations} from 'next-intl'
 
 const vopros = '/vopros.svg'
 
@@ -119,9 +120,8 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
       // Проверка типа файлов
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
       const invalidFiles = files.filter((file) => !validTypes.includes(file.type))
-
       if (invalidFiles.length > 0) {
-        alert(`Следующие файлы имеют неподдерживаемый формат: ${invalidFiles.map((f) => f.name).join(', ')}`)
+        alert(`This files are have invalid type: ${invalidFiles.map((f) => f.name).join(', ')}`)
         // Фильтруем только подходящие файлы
         files = files.filter((file) => validTypes.includes(file.type))
       }
@@ -266,7 +266,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
 
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
   const indowWidth = useWindowWidth()
-
+  const t = useTranslations('CreateDescription')
   return (
     <div className={styles.create__descriptions__box}>
       <ModalWindowDefault isOpen={isModalOpen} onClose={closeModal}>
@@ -284,7 +284,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
         <div className={`${styles.left__top__descr} ${showDescriptionError ? styles.has__error : ''}`}>
           <div className={`${styles.descr__el__title}`}>
             <p className={`${styles.descr__title}`}>
-              Описание{' '}
+              {t('descriptionPlaceholder')}{' '}
               <span className={`${styles.required} ${showDescriptionError ? styles.required__error : ''}`}>*</span>
             </p>
             <DropList
@@ -312,7 +312,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
               {...errorEditorConfig}
               value={description}
               onChange={handleDescriptionChange}
-              placeholder='Введите описание...'
+              placeholder={t('writeDescription')}
               onUploadImg={onUploadImg}
             />
           </div>
@@ -321,7 +321,8 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
         <div className={`${styles.left__bottom__descr}`}>
           <div className={`${styles.descr__el__title}`}>
             <p className={`${styles.descr__title}`}>
-              Дополнительное описание <span className={styles.optional}>(необязательно)</span>
+              {t('secondDescr')}
+              <span className={styles.optional}>({t('secondDescrSpan')})</span>
             </p>
             <DropList
               direction={indowWidth && indowWidth < 768 ? 'bottom' : 'right'}
@@ -347,7 +348,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
             {...editorConfig}
             value={additionalDescription}
             onChange={handleAdditionalDescriptionChange}
-            placeholder='Введите дополнительное описание...'
+            placeholder={t('writeSecondDescr')}
             onUploadImg={onUploadImg}
           />
         </div>

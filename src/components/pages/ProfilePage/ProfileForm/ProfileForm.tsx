@@ -15,7 +15,8 @@ import {saveTokenStorage} from '@/middleware'
 import {toast} from 'sonner'
 import {IVendorData} from '../../VendorPage/VendorPage'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
-import CreateCardProductCategory from '../../CreateCard/CreateCardProductCategory/CreateCardProductCategory'
+import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 const belarusSvg = '/belarus.svg'
 
 const countryOptions: MultiSelectOption[] = [
@@ -140,10 +141,10 @@ const PhoneInputSection: FC<PhoneInputSectionProps> = ({
   //   selectedRegion: selectedRegion.altName,
   //   numberStartWith: numberStartWith
   // })
-
+  const t = useTranslations('ProfilePage.ProfileForm')
   return (
     <div className={styles.phone__input__box}>
-      <p className={styles.input__title}>Номер мобильного телефона</p>
+      <p className={styles.input__title}>{t('phoneNumber')}</p>
       <TelephoneInputUI
         isOnlyShow={!isShowForVendor}
         currentValue={telText}
@@ -173,11 +174,12 @@ const ProfileForm: FC<ProfileFormProps> = ({
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [error, setError] = useState<string | null>(null)
   const [categoriesMultiSelect, setCategoriesMultiSelect] = useState<MultiSelectOption[]>([])
-
+  const currentLang = useCurrentLanguage()
+  const t = useTranslations('ProfilePage.ProfileForm')
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const categories = await CategoriesService.getAll()
+        const categories = await CategoriesService.getAll(currentLang)
         setAllCategories(categories)
         setCategoriesMultiSelect(
           categories.map((category) => ({
@@ -189,7 +191,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
         )
         setError(null)
       } catch (err) {
-        setError('Ошибка загрузки категорий')
+        setError(t('errorLoadingCAtegoryes'))
         console.error('Error fetching categories:', err)
       }
     }
@@ -557,15 +559,23 @@ const ProfileForm: FC<ProfileFormProps> = ({
     timerRef.current = setTimeout(() => {
       console.log('Таймер сработал: прошло 2 секунды после потери фокуса инпута пароля')
       try {
-        const res = axiosClassic.post<{accessToken: string; refreshToken: string}>('/auth/recover-password', {
-          email: userData?.email,
-          newPassword: password
-        })
+        const res = axiosClassic.post<{accessToken: string; refreshToken: string}>(
+          '/auth/recover-password',
+          {
+            email: userData?.email,
+            newPassword: password
+          },
+          {
+            headers: {
+              'Accept-Language': currentLang
+            }
+          }
+        )
 
-        toast.success('Код отправлен на почту ' + userData?.email)
+        toast.success(t('codeInEmail') + userData?.email)
         setModalIsOpen(true)
       } catch {
-        toast.error('Ошибка изменения пароля!')
+        toast.error(t('errorUpdatePassword'))
         setModalIsOpen(false)
       }
     }, 2000)
@@ -591,14 +601,19 @@ const ProfileForm: FC<ProfileFormProps> = ({
         {
           email: userData?.email,
           recoverCode: code
+        },
+        {
+          headers: {
+            'Accept-Language': currentLang
+          }
         }
       )
       saveTokenStorage(res.data)
 
       toast.success(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Поздравляем!</strong>
-          <span>Пароль успешно изменен!</span>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('congratulations')}</strong>
+          <span>{t('passwordChangeSuccess')}</span>
         </div>,
         {
           style: {
@@ -611,15 +626,15 @@ const ProfileForm: FC<ProfileFormProps> = ({
       }, 1000)
       setPassword('')
     } catch {
-      toast.error('Пароль не изменен!')
+      toast.error(t('dontChangePassword'))
     }
   }
 
   return (
     <div className={styles.create__box}>
       <ModalWindowDefault isOpen={modalIsOpen} onClose={closeModal}>
-        <p className={`${styles.modal__text}`}>Change password?</p>
-        <p className={`${styles.modal__text__mini}`}>Enter the code sent to your email</p>
+        <p className={`${styles.modal__text}`}>{t('wannaChangePassword')}</p>
+        <p className={`${styles.modal__text__mini}`}>{t('enterCodeFromEmail')}</p>
         <div style={{width: '100%', marginBottom: '10px'}}>
           <InputOtp length={4} onComplete={closeModalOtp} />
         </div>
@@ -636,15 +651,15 @@ const ProfileForm: FC<ProfileFormProps> = ({
             }
           }}
           isSecret={true}
-          title='Пароль'
-          placeholder='Create new password?'
+          title={t('password')}
+          placeholder={t('createNewPassword')}
           onBlur={handlePasswordBlur}
           onFocus={handlePasswordFocus}
         />
       )}
       <div className={styles.region__box}>
         <p style={{cursor: 'pointer'}} onClick={() => setListIsOpen(!listIsOpen)} className={styles.input__title}>
-          Страна/Регион
+          {t('regions')}
         </p>
         {!isVendor ? (
           <div className={styles.region__box__input}>
@@ -668,7 +683,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
                 setSelectedCountries(values)
                 setUserInteracted(true)
               }}
-              placeholder='Выберите страны...'
+              placeholder={t('selectRegions')}
               direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}
             />
           </span>
@@ -685,7 +700,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
       {isVendor && (
         <div className={`${styles.region__box} ${styles.region__box__second}`}>
           <p style={{cursor: 'pointer'}} onClick={() => setListIsOpen(!listIsOpen)} className={styles.input__title}>
-            Категории товаров
+            {t('categoryes')}
           </p>
           <MultiDropSelect
             showSearchInput
@@ -702,7 +717,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
               setCategories(values)
               setUserInteracted(true)
             }}
-            placeholder='Выберите категории товаров...'
+            placeholder={t('selectCategoryes')}
             direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}
           />
         </div>
@@ -718,8 +733,8 @@ const ProfileForm: FC<ProfileFormProps> = ({
               setInn(value)
               setUserInteracted(true)
             }}
-            title='ИНН'
-            placeholder='Введите ИНН'
+            title={t('inn')}
+            placeholder={t('innPlaceholder')}
           />
         </div>
       )}

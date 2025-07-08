@@ -1,6 +1,7 @@
 import {Review} from '@/services/card/card.types'
 import commentsService from '@/services/comments/comments.service'
 import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCurrentLanguage} from './useCurrentLanguage'
 
 interface ProductReviewsResponse {
   content: Review[]
@@ -97,6 +98,7 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
     return data?.totalElements || data?.page?.totalElements || 0
   }
 
+  const currentLang = useCurrentLanguage()
   // Логирование входных параметров
   useEffect(() => {
     console.log('=== useProductReviews HOOK DEBUG ===')
@@ -110,15 +112,15 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
   useEffect(() => {
     const loadInitialReviews = async (retryCount = 0) => {
       try {
-        console.log('=== INITIAL LOAD START ===')
-        console.log('Loading initial reviews with params:', {
-          page: 0,
-          size,
-          minRating,
-          maxRating,
-          specialRoute,
-          retryCount
-        })
+        // console.log('=== INITIAL LOAD START ===')
+        // console.log('Loading initial reviews with params:', {
+        //   page: 0,
+        //   size,
+        //   minRating,
+        //   maxRating,
+        //   specialRoute,
+        //   retryCount
+        // })
 
         setIsLoading(true)
         setReviews([])
@@ -127,43 +129,44 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
         loadingRef.current = false
         initialLoadDone.current = false
 
-        console.log('Calling commentsService.getCommentsByMyProducts...')
+        // console.log('Calling commentsService.getCommentsByMyProducts...')
         const response = await commentsService.getCommentsByMyProducts({
           page: 0,
           size,
           minRating,
           maxRating,
-          specialRoute
+          specialRoute,
+          currentLang
         })
-        console.log('Service call completed')
+        // console.log('Service call completed')
 
         const data = extractDataFromResponse(response)
 
-        console.log('=== SERVER RESPONSE ===')
-        console.log('Raw response:', response)
-        console.log('Full response data:', data)
-        console.log('Response type:', 'page' in data ? 'SpecialRouteResponse' : 'ProductReviewsResponse')
+        // console.log('=== SERVER RESPONSE ===')
+        // console.log('Raw response:', response)
+        // console.log('Full response data:', data)
+        // console.log('Response type:', 'page' in data ? 'SpecialRouteResponse' : 'ProductReviewsResponse')
 
         const content = getContentFromData(data)
         const totalElementsValue = getTotalElementsFromData(data)
 
-        console.log('Extracted content:', content)
-        console.log('Content length:', content.length)
-        console.log('Total elements:', totalElementsValue)
-        console.log('======================')
+        // console.log('Extracted content:', content)
+        // console.log('Content length:', content.length)
+        // console.log('Total elements:', totalElementsValue)
+        // console.log('======================')
 
         // Сохраняем полный ответ сервера
         setFullResponseData(data)
 
         // Проверяем, если ответ пустой и это первая попытка
         if (content.length === 0 && totalElementsValue === 0 && retryCount === 0) {
-          console.log('=== EMPTY RESPONSE DETECTED ===')
-          console.log('First request returned empty, scheduling retry in 200ms...')
-          console.log('===============================')
+          // console.log('=== EMPTY RESPONSE DETECTED ===')
+          // console.log('First request returned empty, scheduling retry in 200ms...')
+          // console.log('===============================')
 
           // Делаем повторную попытку через 200мс
           setTimeout(() => {
-            console.log('Executing retry...')
+            // console.log('Executing retry...')
             loadInitialReviews(1)
           }, 200)
           return
@@ -179,14 +182,14 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
           const hasMoreElements = loadedCount < totalElementsValue
           setHasMore(hasMoreElements)
 
-          console.log('=== LOAD RESULTS ===')
-          console.log(`Total elements: ${totalElementsValue}`)
-          console.log(`Loaded count: ${loadedCount}`)
-          console.log(`Has more: ${hasMoreElements}`)
-          console.log(`Retry count: ${retryCount}`)
-          console.log('==================')
+          // console.log('=== LOAD RESULTS ===')
+          // console.log(`Total elements: ${totalElementsValue}`)
+          // console.log(`Loaded count: ${loadedCount}`)
+          // console.log(`Has more: ${hasMoreElements}`)
+          // console.log(`Retry count: ${retryCount}`)
+          // console.log('==================')
         } else {
-          console.log('No content in response, setting empty reviews')
+          // console.log('No content in response, setting empty reviews')
           setReviews([])
           setHasMore(false)
           setTotalElements(0)
@@ -196,15 +199,15 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
         console.log('Initial load completed')
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        console.error('=== ERROR LOADING REVIEWS ===')
-        console.error('Error type:', error?.constructor?.name)
-        console.error('Error message:', error?.message)
-        console.error('Error response:', error?.response)
-        console.error('Error response data:', error?.response?.data)
-        console.error('Error response status:', error?.response?.status)
+        // console.error('=== ERROR LOADING REVIEWS ===')
+        // console.error('Error type:', error?.constructor?.name)
+        // console.error('Error message:', error?.message)
+        // console.error('Error response:', error?.response)
+        // console.error('Error response data:', error?.response?.data)
+        // console.error('Error response status:', error?.response?.status)
         console.error('Full error object:', error)
-        console.error('Retry count:', retryCount)
-        console.error('===========================')
+        // console.error('Retry count:', retryCount)
+        // console.error('===========================')
 
         setReviews([])
         setHasMore(false)
@@ -221,15 +224,15 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
 
   // Загрузка следующих страниц
   const loadMoreReviews = useCallback(async () => {
-    console.log('=== LOAD MORE CALLED ===')
-    console.log('Current state:', {
-      loadingRef: loadingRef.current,
-      hasMore,
-      page,
-      initialLoadDone: initialLoadDone.current,
-      specialRoute,
-      currentReviewsCount: reviews.length
-    })
+    // console.log('=== LOAD MORE CALLED ===')
+    // console.log('Current state:', {
+    //   loadingRef: loadingRef.current,
+    //   hasMore,
+    //   page,
+    //   initialLoadDone: initialLoadDone.current,
+    //   specialRoute,
+    //   currentReviewsCount: reviews.length
+    // })
 
     // Проверяем только loadingRef и hasMore
     if (loadingRef.current || !hasMore) {
@@ -261,19 +264,20 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
         size,
         minRating,
         maxRating,
-        specialRoute
+        specialRoute,
+        currentLang
       })
 
       const data = extractDataFromResponse(response)
 
-      console.log(`=== PAGE ${nextPage} RESPONSE ===`)
-      console.log('Raw response:', response)
-      console.log('Response data:', data)
-      console.log('Response type:', 'page' in data ? 'SpecialRouteResponse' : 'ProductReviewsResponse')
+      // console.log(`=== PAGE ${nextPage} RESPONSE ===`)
+      // console.log('Raw response:', response)
+      // console.log('Response data:', data)
+      // console.log('Response type:', 'page' in data ? 'SpecialRouteResponse' : 'ProductReviewsResponse')
 
       const content = getContentFromData(data)
-      console.log('Content length:', content.length)
-      console.log('================================')
+      // console.log('Content length:', content.length)
+      // console.log('================================')
 
       // Обновляем полный ответ сервера
       setFullResponseData(data)
@@ -282,11 +286,11 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
         setReviews((prev) => {
           const existingIds = new Set(prev.map((review) => review.id))
           const newReviews = content.filter((review) => !existingIds.has(review.id))
-          console.log(`Adding ${newReviews.length} new reviews`)
-          console.log(
-            'New reviews IDs:',
-            newReviews.map((r) => r.id)
-          )
+          // console.log(`Adding ${newReviews.length} new reviews`)
+          // console.log(
+          //   'New reviews IDs:',
+          //   newReviews.map((r) => r.id)
+          // )
           return [...prev, ...newReviews]
         })
 
@@ -299,24 +303,24 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
         const hasMoreElements = totalLoaded < totalElementsValue
         setHasMore(hasMoreElements)
 
-        console.log('=== PAGINATION UPDATE ===')
-        console.log(`Total elements: ${totalElementsValue}`)
-        console.log(`Total loaded: ${totalLoaded}`)
-        console.log(`Has more: ${hasMoreElements}`)
-        console.log('========================')
+        // console.log('=== PAGINATION UPDATE ===')
+        // console.log(`Total elements: ${totalElementsValue}`)
+        // console.log(`Total loaded: ${totalLoaded}`)
+        // console.log(`Has more: ${hasMoreElements}`)
+        // console.log('========================')
       } else {
-        console.log('No content in response or empty content array')
+        // console.log('No content in response or empty content array')
         setHasMore(false)
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error('=== ERROR LOADING MORE ===')
-      console.error('Error type:', error?.constructor?.name)
-      console.error('Error message:', error?.message)
+      // console.error('=== ERROR LOADING MORE ===')
+      // console.error('Error type:', error?.constructor?.name)
+      // console.error('Error message:', error?.message)
       console.error('Error response:', error?.response)
-      console.error('Error response data:', error?.response?.data)
-      console.error('Error response status:', error?.response?.status)
-      console.error('Full error object:', error)
+      // console.error('Error response data:', error?.response?.data)
+      // console.error('Error response status:', error?.response?.status)
+      // console.error('Full error object:', error)
       console.error('=========================')
       setHasMore(false)
     } finally {
@@ -328,14 +332,14 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
 
   // Логирование текущего состояния
   useEffect(() => {
-    console.log('=== CURRENT HOOK STATE ===')
-    console.log('Reviews count:', reviews.length)
-    console.log('Total elements:', totalElements)
-    console.log('Current page:', page)
-    console.log('Has more:', hasMore)
-    console.log('Is loading:', isLoading)
-    console.log('Full response data:', fullResponseData)
-    console.log('========================')
+    // console.log('=== CURRENT HOOK STATE ===')
+    // console.log('Reviews count:', reviews.length)
+    // console.log('Total elements:', totalElements)
+    // console.log('Current page:', page)
+    // console.log('Has more:', hasMore)
+    // console.log('Is loading:', isLoading)
+    // console.log('Full response data:', fullResponseData)
+    // console.log('========================')
   }, [reviews.length, totalElements, page, hasMore, isLoading, fullResponseData])
 
   return {

@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import Header from '@/components/MainComponents/Header/Header'
-import {FC, useCallback, useEffect, useState, useRef} from 'react'
+import {FC, useCallback, useEffect, useState, useRef, useMemo} from 'react'
 import ProfileForm from '../ProfilePage/ProfileForm/ProfileForm'
 import {ProfileHeader, QuickActions, ProfileActions, useUserData, REGIONS} from '../ProfilePage/ProfilePage'
 import styles from './VendorPage.module.scss'
@@ -25,6 +26,10 @@ import Footer from '@/components/MainComponents/Footer/Footer'
 import {Country} from '@/services/users.types'
 import {Category} from '@/services/categoryes/categoryes.service'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
+import Link from 'next/link'
+import {useTranslations} from 'next-intl'
+import {toast} from 'sonner'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 const Arrow = ({isActive, onClick, extraClass}: {isActive: boolean; onClick: () => void; extraClass?: string}) => {
   return (
@@ -56,24 +61,6 @@ const Arrow = ({isActive, onClick, extraClass}: {isActive: boolean; onClick: () 
 }
 
 const yellowStars = '/comments/yellow__start.svg'
-
-const helpListButtonData = [
-  {
-    linkTo: '#',
-    iconSrc: '/profile/help_chat_svg.svg',
-    text: 'Поддержка'
-  },
-  {
-    linkTo: '/favorites',
-    iconSrc: '/profile/gray_star_for_profile.svg',
-    text: 'Избранное'
-  },
-  {
-    linkTo: '#',
-    iconSrc: '/profile/quest.svg',
-    text: 'Частые вопросы'
-  }
-]
 
 // Компонент для IntersectionObserver
 const IntersectionObserverElement = ({observerRef}: {observerRef: (node: HTMLDivElement | null) => void}) => {
@@ -107,7 +94,7 @@ export interface IVendorData {
     creationDate: string
     lastModificationDate: string
     viewsCount?: number | string
-    faq?: {question: string; answer: string}[]
+    faq?: {question: string; answer: string; id: string}[]
   }
 }
 export interface IVendorPageProps {
@@ -143,6 +130,11 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     vendorData?.vendorDetails?.productCategories?.map((category) => category.name)
   )
   const [userInn, setUserInn] = useState(vendorData?.vendorDetails?.inn)
+  const [activeFaq, setActiveFaq] = useState(vendorData?.vendorDetails?.faq)
+
+  useEffect(() => {
+    console.log('vendorData', vendorData)
+  }, [vendorData])
 
   // Сохраняем начальные значения для сравнения
   const initialDataRef = useRef<{
@@ -166,13 +158,13 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     }
   }, [vendorData, userData, initialLoadComplete])
 
-  // Функция для сравнения массивов
-  const arraysEqual = (a?: string[], b?: string[]) => {
+  // Функция для сравнения массивов - мемоизируем
+  const arraysEqual = useCallback((a?: string[], b?: string[]) => {
     if (!a && !b) return true
     if (!a || !b) return false
     if (a.length !== b.length) return false
     return a.every((val, index) => val === b[index])
-  }
+  }, [])
 
   // Проверка изменений
   useEffect(() => {
@@ -185,7 +177,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
       !arraysEqual(userCategories, initialDataRef.current.categories)
 
     setNeedToSave(hasChanges)
-  }, [userPhoneNumber, userInn, userCountries, userCategories, initialLoadComplete])
+  }, [userPhoneNumber, userInn, userCountries, userCategories, initialLoadComplete, arraysEqual])
 
   useEffect(() => {
     if (windowWidth && windowWidth < 700) {
@@ -193,11 +185,14 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     }
   }, [windowWidth])
 
-  // Формируем параметры для хука useProductReviews с детальным логированием
-  const reviewsParams = {
-    size: 10,
-    ...(!isPageForVendor && vendorData?.id ? {specialRoute: `vendor/${vendorData.id}`} : {})
-  }
+  // Мемоизируем параметры для хука useProductReviews
+  const reviewsParams = useMemo(
+    () => ({
+      size: 10,
+      ...(!isPageForVendor && vendorData?.id ? {specialRoute: `vendor/${vendorData.id}`} : {})
+    }),
+    [isPageForVendor, vendorData?.id]
+  )
 
   // Детальное логирование параметров
   useEffect(() => {
@@ -209,17 +204,24 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     console.log('specialRoute condition:', !isPageForVendor && vendorData?.id)
     console.log('Calculated specialRoute:', !isPageForVendor && vendorData?.id ? `vendor/${vendorData.id}` : 'none')
     console.log('========================')
-  }, [isPageForVendor, vendorData, reviewsParams.specialRoute])
+  }, [isPageForVendor, vendorData, reviewsParams])
 
   const {reviews, isLoading: reviewsLoading, hasMore, loadMoreReviews, totalElements} = useProductReviews(reviewsParams)
 
   const observerRef = useRef<IntersectionObserver | null>(null)
   const scrollContainerRef = useRef<HTMLUListElement | null>(null)
   const observerTargetRef = useRef<HTMLDivElement | null>(null)
+  const [newQuestionValue, setNewQuestionValue] = useState('')
+  const [newAnswerValue, setNewAnswerValue] = useState('')
 
-  // Анимированные счетчики
+  // Анимированные счетчики - мемоизируем значения
+  const viewsCount = useMemo(
+    () => Number(vendorData?.vendorDetails?.viewsCount || '0'),
+    [vendorData?.vendorDetails?.viewsCount]
+  )
+
   const animatedViews = useAnimatedCounter({
-    targetValue: Number(vendorData?.vendorDetails?.viewsCount || '0'),
+    targetValue: viewsCount,
     duration: 300,
     startAnimation
   })
@@ -230,9 +232,12 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     startAnimation
   })
 
-  // Вычисляем средний рейтинг
-  const averageRating =
-    reviews.length > 0 ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1) : '0'
+  // Вычисляем средний рейтинг - мемоизируем
+  const averageRating = useMemo(
+    () =>
+      reviews.length > 0 ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1) : '0',
+    [reviews]
+  )
 
   // Запускаем анимацию после загрузки компонента
   useEffect(() => {
@@ -299,15 +304,16 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     return () => container.removeEventListener('scroll', handleScroll)
   }, [hasMore, reviewsLoading, loadMoreReviews])
 
-  const handleDevicesClick = (e: React.MouseEvent) => {
+  // Мемоизируем обработчики событий
+  const handleDevicesClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     // TODO: Implement devices logic
-  }
+  }, [])
 
-  const handlePaymentClick = (e: React.MouseEvent) => {
+  const handlePaymentClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     // TODO: Implement payment logic
-  }
+  }, [])
 
   const safeSetNeedToSave = useCallback(
     (value: boolean) => {
@@ -318,48 +324,180 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     [initialLoadComplete]
   )
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = useCallback(() => {
     // TODO: Implement delete account logic
-  }
+  }, [])
+  const currentLang = useCurrentLanguage()
 
-  const handleLogout = () => {
+  const handleCreateNewQuestion = useCallback(() => {
     try {
-      const response = instance.post('/auth/logout')
+      const response = instance.post(
+        '/vendor/faq',
+        {
+          question: newQuestionValue,
+          answer: newAnswerValue
+        },
+        {
+          headers: {
+            'Accept-Language': currentLang
+          }
+        }
+      )
+      console.log(response)
+      toast.success(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('success')}</strong>
+          <span>{t('successPublishedNewQuest')}</span>
+        </div>,
+        {
+          style: {
+            background: '#2E7D32'
+          }
+        }
+      )
+      setNewQuestionValue('')
+      setNewAnswerValue('')
+    } catch (e) {
+      console.log(e)
+      toast.error('Ошибка при создании вопроса')
+    }
+  }, [newQuestionValue, newAnswerValue])
+
+  const handleDeleteQuestion = useCallback((questionId: string) => {
+    try {
+      const response = instance.delete(`/vendor/faq/${questionId}`, {
+        headers: {
+          'Accept-Language': currentLang
+        }
+      })
+      console.log(response)
+      toast.success(t('sucessDeleatFaq'))
+    } catch (e) {
+      console.log(e)
+      toast.error(t('errorDeleatFaq'))
+    }
+  }, [])
+
+  const handleLogout = useCallback(() => {
+    try {
+      const response = instance.post(
+        '/auth/logout',
+        {},
+        {
+          headers: {
+            'Accept-Language': currentLang
+          }
+        }
+      )
       removeFromStorage()
       router.push('/')
     } catch (e) {
       console.log(e)
     }
-  }
+  }, [router])
 
-  // Функция для форматирования номера телефона с кодом страны
-  const formatPhoneNumberWithCode = (phoneNumber?: string) => {
-    if (!phoneNumber) return phoneNumber
+  // Функция для форматирования номера телефона с кодом страны - мемоизируем
+  const formatPhoneNumberWithCode = useCallback(
+    (phoneNumber?: string) => {
+      if (!phoneNumber) return phoneNumber
 
-    // Удаляем все нецифровые символы из номера
-    const cleanNumber = phoneNumber.replace(/\D/g, '')
+      // Удаляем все нецифровые символы из номера
+      const cleanNumber = phoneNumber.replace(/\D/g, '')
 
-    // Если номер уже начинается с кода страны (без +), возвращаем как есть
-    const codeWithoutPlus = numberCode.replace('+', '')
-    if (cleanNumber.startsWith(codeWithoutPlus)) {
-      return '+' + cleanNumber
-    }
+      // Если номер уже начинается с кода страны (без +), возвращаем как есть
+      const codeWithoutPlus = numberCode.replace('+', '')
+      if (cleanNumber.startsWith(codeWithoutPlus)) {
+        return '+' + cleanNumber
+      }
 
-    // Добавляем код страны к номеру
-    return numberCode + cleanNumber
-  }
+      // Добавляем код страны к номеру
+      return numberCode + cleanNumber
+    },
+    [numberCode]
+  )
 
   // Детальное логирование состояния комментариев
-  useEffect(() => {
-    console.log('=== COMMENTS STATE DEBUG ===')
-    console.log('reviews:', reviews)
-    console.log('reviews.length:', reviews.length)
-    console.log('totalElements:', totalElements)
-    console.log('reviewsLoading:', reviewsLoading)
-    console.log('hasMore:', hasMore)
-    console.log('isCommentsOpen:', isCommentsOpen)
-    console.log('===========================')
-  }, [reviews, totalElements, reviewsLoading, hasMore, isCommentsOpen])
+  // useEffect(() => {
+  //   console.log('=== COMMENTS STATE DEBUG ===')
+  //   console.log('reviews:', reviews)
+  //   console.log('reviews.length:', reviews.length)
+  //   console.log('totalElements:', totalElements)
+  //   console.log('reviewsLoading:', reviewsLoading)
+  //   console.log('hasMore:', hasMore)
+  //   console.log('isCommentsOpen:', isCommentsOpen)
+  //   console.log('===========================')
+  // }, [reviews, totalElements, reviewsLoading, hasMore, isCommentsOpen])
+
+  const t = useTranslations('VendorPage')
+
+  // Мемоизируем данные для кнопок помощи
+  const helpListButtonData = useMemo(
+    () => [
+      {
+        linkTo: '#',
+        iconSrc: '/profile/help_chat_svg.svg',
+        text: t('help')
+      },
+      {
+        linkTo: '/favorites',
+        iconSrc: '/profile/gray_star_for_profile.svg',
+        text: t('favorites')
+      },
+      {
+        linkTo: '#',
+        iconSrc: '/profile/quest.svg',
+        text: t('quest')
+      }
+    ],
+    [t]
+  )
+
+  // Мемоизируем обработчики для кнопок помощи
+  const handleHelpButtonClick = useCallback((index: number) => {
+    if (index === 2) {
+      setIsQuestOpen(true)
+    }
+  }, [])
+
+  const handleCommentsToggle = useCallback(() => {
+    if (windowWidth && windowWidth <= 700) {
+      setIsCommentsOpen(!isCommentsOpen)
+    }
+  }, [windowWidth, isCommentsOpen])
+
+  // Мемоизируем обработчик изменения данных вендора
+  const handleVendorDataChange = useCallback((data: any) => {
+    setUserPhoneNumber(data.phoneNumber)
+    setUserCountries(data.countries.map((country: any) => country.label))
+    setUserCategories(data.productCategories.map((category: any) => category.label))
+    setUserInn(data.inn)
+  }, [])
+
+  // Мемоизируем обработчик удаления вопроса в FAQ
+  const handleFaqDelete = useCallback(
+    (item: any) => {
+      handleDeleteQuestion(item.id)
+      setActiveFaq(activeFaq?.filter((itemMap) => itemMap.id !== item.id))
+    },
+    [activeFaq, handleDeleteQuestion]
+  )
+
+  // Мемоизируем элементы FAQ
+  const faqItems = useMemo(
+    () =>
+      activeFaq?.map((item) => ({
+        title: item.question,
+        value: item.answer,
+        id: item.id
+      })) || [],
+    [activeFaq]
+  )
+
+  // Мемоизируем форматированный номер телефона
+  const formattedPhoneNumber = useMemo(
+    () => formatPhoneNumberWithCode(userPhoneNumber),
+    [userPhoneNumber, formatPhoneNumberWithCode]
+  )
 
   return (
     <>
@@ -367,7 +505,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
       <div className='container'>
         <div className={`${styles.vendor__inner} ${styles.profile__inner}`}>
           <span style={{width: '100%', height: '100%', position: 'relative'}}>
-            {' '}
             <div
               style={{
                 position: !isPageForVendor ? 'sticky' : 'static',
@@ -385,12 +522,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
               <ProfileForm
                 isShowForOwner={isPageForVendor}
                 isVendor={true}
-                onVendorDataChange={(data) => {
-                  setUserPhoneNumber(data.phoneNumber)
-                  setUserCountries(data.countries.map((country) => country.label))
-                  setUserCategories(data.productCategories.map((category) => category.label))
-                  setUserInn(data.inn)
-                }}
+                onVendorDataChange={handleVendorDataChange}
                 setNeedToSave={safeSetNeedToSave}
                 isLoading={loading}
                 userData={!!vendorData ? vendorData : userData}
@@ -401,7 +533,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
                   categories={userCategories}
                   inn={userInn}
                   countries={userCountries}
-                  phoneNumber={formatPhoneNumberWithCode(userPhoneNumber)} // Применяем форматирование при отправке
+                  phoneNumber={formattedPhoneNumber}
                   isForVendor={isPageForVendor}
                   isLoading={loading}
                   needToSave={needToSave}
@@ -415,11 +547,11 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
           <div className={styles.vendor__info__second}>
             <div className={styles.vendor__stats}>
               <div className={styles.vendor__stat}>
-                <h3 className={styles.vendor__stat__title}>Просмотры аккаунта за месяц</h3>
+                <h3 className={styles.vendor__stat__title}>{t('accountViews')}</h3>
                 <div className={styles.vendor__stat__value}>{animatedViews.toLocaleString()}</div>
               </div>
               <div className={styles.vendor__stat}>
-                <h3 className={styles.vendor__stat__title}>Комментарии и рейтинг за месяц</h3>
+                <h3 className={styles.vendor__stat__title}>{t('accountComments')}</h3>
                 <div className={`${styles.vendor__stat__value} ${styles.vendor__stat__value__second}`}>
                   <div className={styles.vendor__stat__value__text}>{animatedComments.toLocaleString()}</div>
                   <div className={styles.vendor__stat__value__text__second}>
@@ -430,28 +562,36 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
               </div>
             </div>
             <div className={styles.vendor__second__help}>
-              {helpListButtonData.map((item, index) => (
-                <HelpListButton
-                  extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''}`}
-                  key={index}
-                  {...item}
-                  onClick={() => {
-                    if (index === 2) {
-                      setIsQuestOpen(true)
-                    }
-                  }}
-                />
-              ))}
+              {helpListButtonData.map((item, index) =>
+                index !== 1 ? (
+                  <HelpListButton
+                    extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''}`}
+                    key={index}
+                    {...item}
+                    onClick={() => handleHelpButtonClick(index)}
+                  />
+                ) : isPageForVendor ? (
+                  <Link key={index} href={'/favorites'}>
+                    <HelpListButton
+                      extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''}`}
+                      key={index}
+                      {...item}
+                    />
+                  </Link>
+                ) : (
+                  <p></p>
+                )
+              )}
             </div>
 
             <div className={`${styles.vendor__mini__blocks__box}`}>
               <div className={styles.vendor__stats}>
                 <div className={styles.vendor__stat}>
-                  <h3 className={styles.vendor__stat__title}>Просмотры аккаунта за месяц</h3>
+                  <h3 className={styles.vendor__stat__title}>{t('accountViews')}</h3>
                   <div className={styles.vendor__stat__value}>{animatedViews.toLocaleString()}</div>
                 </div>
                 <div className={styles.vendor__stat}>
-                  <h3 className={styles.vendor__stat__title}>Комментарии и рейтинг за месяц</h3>
+                  <h3 className={styles.vendor__stat__title}>{t('accountComments')}</h3>
                   <div className={`${styles.vendor__stat__value} ${styles.vendor__stat__value__second}`}>
                     <div className={styles.vendor__stat__value__text}>{animatedComments.toLocaleString()}</div>
                     <div className={styles.vendor__stat__value__text__second}>
@@ -467,6 +607,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
                     extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''}`}
                     key={index}
                     {...item}
+                    onClick={() => handleHelpButtonClick(index)}
                   />
                 ))}
               </div>
@@ -482,14 +623,10 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
             >
               <div
                 style={{cursor: windowWidth && windowWidth <= 700 ? 'pointer' : 'default'}}
-                onClick={() => {
-                  if (windowWidth && windowWidth <= 700) {
-                    setIsCommentsOpen(!isCommentsOpen)
-                  }
-                }}
+                onClick={handleCommentsToggle}
                 className={`${styles.titles__some__box}`}
               >
-                <h3 className={`${styles.comments__title}`}>Комментарии</h3>
+                <h3 className={`${styles.comments__title}`}>{t('comments')}</h3>
                 <Arrow extraClass={`${styles.comments__arrow}`} isActive={isCommentsOpen} onClick={() => {}} />
               </div>
               <ul
@@ -498,9 +635,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
                 ref={scrollContainerRef}
               >
                 {reviewsLoading && reviews.length === 0 ? (
-                  <li className={styles.vendor__comments__loading}>Загрузка комментариев...</li>
+                  <li className={styles.vendor__comments__loading}>{t('loadComments')}</li>
                 ) : reviews.length === 0 && !reviewsLoading ? (
-                  <li className={styles.vendor__comments__empty}>Пока нет отзывов о товарах</li>
+                  <li className={styles.vendor__comments__empty}>{t('noComments')}</li>
                 ) : (
                   <>
                     {reviews.map((review) => (
@@ -522,7 +659,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
 
                     {/* Индикатор загрузки дополнительных комментариев */}
                     {reviewsLoading && reviews.length > 0 && (
-                      <li className={styles.vendor__comments__loading__more}>Загружаем ещё отзывы...</li>
+                      <li className={styles.vendor__comments__loading__more}>{t('loadMoreCommets')}</li>
                     )}
                   </>
                 )}
@@ -532,9 +669,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
           <div className={styles.vendor__products__box}>
             <div className={styles.products__titles__box}>
               {isPageForVendor ? (
-                <h3 className={styles.vendor__products__title}>Мои товары</h3>
+                <h3 className={styles.vendor__products__title}>{t('myProducts')}</h3>
               ) : (
-                <h3 className={styles.vendor__products__title}>Товары продавца</h3>
+                <h3 className={styles.vendor__products__title}>{t('noMyProducts')}</h3>
               )}
               <SearchInputUI />
             </div>
@@ -548,44 +685,43 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
           </div>
         </div>
       </div>
-      <ModalWindowDefault isOpen={isQuestOpen} onClose={() => setIsQuestOpen(false)}>
+      {/* CREATE */}
+      <ModalWindowDefault
+        extraClass={`${styles.modalExtra}`}
+        isOpen={isQuestOpen}
+        onClose={() => setIsQuestOpen(false)}
+      >
         <h3 style={{fontSize: '30px', fontWeight: '500', textAlign: 'center', margin: '10px 60px 40px 60px'}}>
-          Частые вопросы
+          {t('quest')}
         </h3>
         {isPageForVendor && (
           <div className=''>
             <p style={{fontSize: '20px', fontWeight: '500', textAlign: 'center', margin: '10px 0 20px 0'}}>
-              Добавить вопрос
+              {t('addQuest')}
             </p>
             <div className={styles.vendor__faq__add__box}>
-              <TextInputUI theme='lightBlue' placeholder='Вопрос' currentValue='' onSetValue={() => {}} />
-              <TextInputUI theme='lightBlue' placeholder='Ответ' currentValue='' onSetValue={() => {}} />
-              <button className={styles.vendor__faq__add__button}>+</button>
+              <TextInputUI
+                theme='lightBlue'
+                placeholder={t('question')}
+                currentValue={newQuestionValue}
+                onSetValue={setNewQuestionValue}
+              />
+              <TextInputUI
+                theme='lightBlue'
+                placeholder={t('answer')}
+                currentValue={newAnswerValue}
+                onSetValue={setNewAnswerValue}
+              />
+              <button onClick={handleCreateNewQuestion} className={styles.vendor__faq__add__button}>
+                +
+              </button>
             </div>
           </div>
         )}
         {isPageForVendor ? (
-          <>
-            <Accordion
-              needDeleteButton={true}
-              onDelete={() => {}}
-              items={
-                vendorData?.vendorDetails?.faq?.map((item) => ({
-                  title: item.question,
-                  value: item.answer
-                })) || []
-              }
-            />
-          </>
+          <Accordion needDeleteButton={true} onDelete={handleFaqDelete} items={faqItems} />
         ) : (
-          <Accordion
-            items={
-              vendorData?.vendorDetails?.faq?.map((item) => ({
-                title: item.question,
-                value: item.answer
-              })) || []
-            }
-          />
+          <Accordion items={faqItems} />
         )}
       </ModalWindowDefault>
       <Footer />

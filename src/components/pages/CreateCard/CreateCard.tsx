@@ -5,7 +5,6 @@ import styles from './CreateCard.module.scss'
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
-const vopros = '/vopros.svg'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import Image from 'next/image'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
@@ -23,7 +22,10 @@ import CreateCardProductCategory from './CreateCardProductCategory/CreateCardPro
 import {getAccessToken} from '@/services/auth/auth.helper'
 import {toast} from 'sonner'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
+const vopros = '/vopros.svg'
 // Конфигурация изображений для подсказок
 export const HELP_IMAGES = {
   title: '/create/help1.jpg',
@@ -176,7 +178,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   // useEffect(() => {
   //   console.log('initialData', initialData)
   // }, [initialData])
-
+  const t = useTranslations('createCard')
+  const currentLang = useCurrentLanguage()
   // Используем универсальный хук для модального окна
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
   const indowWidth = useWindowWidth()
@@ -221,9 +224,9 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   // }, [pricesArray])
 
   // Состояние для описаний (CreateDescriptionsElements)
-  const [description, setDescription] = useState(initialData?.mainDescription || '# Основное описание')
+  const [description, setDescription] = useState(initialData?.mainDescription || '#' + t('alternativeMainDescr'))
   const [additionalDescription, setAdditionalDescription] = useState(
-    initialData?.furtherDescription || '# Дополнительное описание'
+    initialData?.furtherDescription || '#' + t('alternativeAdditionalDescr')
   )
   const [descriptionImages, setDescriptionImages] = useState<ImageMapping[]>([])
   const [descriptionMatrix, setDescriptionMatrix] = useState<string[][]>(
@@ -485,7 +488,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       if (firstErrorField) {
         toast.error(
           <div style={{lineHeight: 1.5}}>
-            <strong style={{display: 'block', marginBottom: 4}}>Ошибка валидации</strong>
+            <strong style={{display: 'block', marginBottom: 4}}>{t('validateError')}</strong>
             <span>{firstErrorField[1]}</span>
           </div>,
           {
@@ -502,8 +505,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     if (!selectedCategory) {
       toast.error(
         <div style={{lineHeight: 1.5}}>
-          <strong style={{display: 'block', marginBottom: 4}}>Ошибка</strong>
-          <span>Пожалуйста, выберите категорию товара</span>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('error')}</strong>
+          <span>{t('categoryError')}</span>
         </div>,
         {
           style: {
@@ -518,8 +521,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       // Подготовка данных для отправки
       const data: CreateProductDto = {
         title: cardTitle,
-        mainDescription: description.replace('# Основное описание', '').trim(),
-        furtherDescription: additionalDescription.replace('# Дополнительное описание', '').trim(),
+        mainDescription: description.replace('#' + t('alternativeMainDescr'), '').trim(),
+        furtherDescription: additionalDescription.replace('#' + t('alternativeAdditionalDescr'), '').trim(),
         deliveryMethodIds: selectedDeliveryMethodIds,
         prices: pricesArray.map((price, index) => {
           // Парсим диапазон количества
@@ -548,7 +551,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             quantityFrom: quantityRange.from,
             quantityTo: quantityTo,
             currency: price.currency || 'RUB',
-            unit: price.unit || 'шт',
+            unit: price.unit || t('elCount'),
             price: originalPrice,
             discount: discountPercent
           }
@@ -637,13 +640,13 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
         : 'https://exporteru-prorumble.amvera.io/api/v1/products'
 
       // Показываем toast о процессе отправки
-      const loadingToast = toast.loading(isUpdate ? 'Обновление товара...' : 'Сохранение товара...')
+      const loadingToast = toast.loading(isUpdate ? t('updateCardProcess') : t('saveCardProcess'))
 
       const response = await fetch(url, {
         method: method,
         headers: {
-          Authorization: token ? `Bearer ${token}` : ''
-          // Не указываем Content-Type для FormData
+          Authorization: token ? `Bearer ${token}` : '',
+          'Accept-Language': currentLang
         },
         body: formData
       })
@@ -669,8 +672,10 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       // Успешное создание/обновление
       toast.success(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Поздравляем!</strong>
-          <span>Товар успешно {isUpdate ? 'обновлен' : 'создан'}!</span>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('gratulation')}</strong>
+          <span>
+            {t('cardSuccess')} {isUpdate ? t('successCreateCardEndText') : t('successCreateCardEndText')}
+          </span>
         </div>,
         {
           style: {
@@ -688,8 +693,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
       toast.error(
         <div style={{lineHeight: 1.5}}>
-          <strong style={{display: 'block', marginBottom: 4}}>Ошибка сохранения</strong>
-          <span>{error.message || 'Произошла ошибка при сохранении товара'}</span>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('saveError')}</strong>
+          <span>{error.message || t('saveErrorText')}</span>
         </div>,
         {
           style: {
@@ -719,13 +724,13 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       <Header />
       <div className={'container'}>
         <div className={`${styles.create__inner}`}>
-          <h1 className={`${styles.create__title}`}>Создание товара</h1>
+          <h1 className={`${styles.create__title}`}>{t('createCardTitle')}</h1>
           <form onSubmit={handleSubmitAlternative} className={`${styles.create__form}`}>
             {/* Поле "Название" */}
             <span className={`${styles.create__input__box__span}`}>
               <div className={`${styles.label__title__box}`}>
                 <label className={`${styles.create__label__title}`} htmlFor='title'>
-                  Название
+                  {t('name')}
                 </label>
                 <DropList
                   direction={indowWidth && indowWidth < 768 ? 'bottom' : 'right'}
@@ -739,7 +744,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                     <Image
                       className={`${styles.drop__extra__image}`}
                       src={HELP_IMAGES.title}
-                      alt='Помощь по названию'
+                      alt={t('altHelpWithName')}
                       width={300}
                       height={300}
                       key={1}
@@ -752,7 +757,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 errorValue={errors.cardTitle}
                 extraClass={`${styles.create__input__title}`}
                 idForLabel='title'
-                placeholder='Название'
+                placeholder={t('name')}
                 currentValue={cardTitle}
                 onSetValue={handleCardTitleChange}
                 theme='superWhite'
@@ -761,7 +766,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
             <div className={`${styles.create__input__box__span__category}`}>
               <div className={`${styles.label__title__box}`}>
-                <p className={`${styles.create__label__title}`}>Категория товара</p>
+                <p className={`${styles.create__label__title}`}>{t('categoryTitle')}</p>
               </div>
               <CreateCardProductCategory
                 initialProductCategory={initialData?.category}
@@ -771,7 +776,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             {/* Поле "Изображения товара" */}
             <div className={`${styles.create__input__box__span} ${styles.create__input__box__span__images}`}>
               <div className={`${styles.label__title__box}`}>
-                <p className={`${styles.create__label__title}`}>Изображения товара</p>
+                <p className={`${styles.create__label__title}`}>{t('imageCard')}</p>
                 <DropList
                   direction={indowWidth && indowWidth < 768 ? 'bottom' : 'right'}
                   safeAreaEnabled
@@ -784,7 +789,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                     <Image
                       className={`${styles.drop__extra__image}`}
                       src={HELP_IMAGES.productImages}
-                      alt='Помощь по изображениям товара'
+                      alt={t('altHelpWithImageCard')}
                       width={300}
                       height={300}
                       key={1}
@@ -805,7 +810,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               />
             </div>
             <div className={`${styles.label__title__box}`}>
-              <h3 className={`${styles.create__similar__products__box__title}`}>Похожие товары</h3>
+              <h3 className={`${styles.create__similar__products__box__title}`}>{t('similarProducts')}</h3>
               <DropList
                 direction={indowWidth && indowWidth < 768 ? 'bottom' : 'right'}
                 safeAreaEnabled
@@ -818,7 +823,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                   <Image
                     className={`${styles.drop__extra__image}`}
                     src={HELP_IMAGES.similarProducts}
-                    alt='Помощь по изображениям товара'
+                    alt={t('altHelpWithSimilarProducts')}
                     width={300}
                     height={300}
                     key={1}
@@ -886,13 +891,13 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 className={`${styles.create____submit__button}`}
                 type='submit'
               >
-                Сохранить
+                {t('save')}
               </button>
             </div>
           </form>
         </div>
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </>
   )
 }

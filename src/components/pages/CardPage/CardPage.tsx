@@ -10,13 +10,15 @@ import ICardFull from '@/services/card/card.types'
 import CommentsSection from './CommentSection/CommentSection'
 import CardBottomPage from './CardBottomPage/CardBottomPage'
 import Footer from '@/components/MainComponents/Footer/Footer'
+import {cookies} from 'next/headers'
 // import SEOHeader from '@/components/MainComponents/SEOHeader/SEOHeader'
 
 async function CardContent({id}: {id: string}) {
   let cardData: ICardFull
-
+  const cookieStore = await cookies()
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
   try {
-    const {data} = await cardService.getFullCardById(id)
+    const {data} = await cardService.getFullCardById(id, locale)
     cardData = data as ICardFull
 
     if (!cardData) {

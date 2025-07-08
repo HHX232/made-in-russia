@@ -4,6 +4,7 @@ import {useCallback, useEffect, useRef, useState} from 'react'
 import CardBottomPage from '../CardBottomPage/CardBottomPage'
 import cardService from '@/services/card/card.service'
 import ICardFull, {Review} from '@/services/card/card.types'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 // const comm1 = '/comments/comm1.jpg'
 // const comm2 = '/comments/comm2.jpg'
@@ -37,11 +38,11 @@ export default function CommentsSection({cardId}: CommentsSectionProps) {
   })
 
   const [cardDataNew, setCardDataNew] = useState<ICardFull | null>(null)
-
+  const locale = useCurrentLanguage()
   useEffect(() => {
     const loadCardData = async () => {
       try {
-        const {data} = await cardService.getFullCardById(cardId)
+        const {data} = await cardService.getFullCardById(cardId, locale)
         setCardDataNew(data as ICardFull)
 
         if (!cardDataNew) {
@@ -93,7 +94,7 @@ export default function CommentsSection({cardId}: CommentsSectionProps) {
         setHasMore(true)
         loadingRef.current = false
 
-        const commentsData = await cardService.getCommentsByCardId(cardId, 0, pageParams.size)
+        const commentsData = await cardService.getCommentsByCardId(cardId, 0, pageParams.size, locale)
         console.log('commentsData ', commentsData.data)
 
         if (commentsData.data?.content) {
@@ -130,7 +131,7 @@ export default function CommentsSection({cardId}: CommentsSectionProps) {
         setIsLoading(true)
         loadingRef.current = false
         console.log(`Loading page ${pageParams.page}...`)
-        const commentsData = await cardService.getCommentsByCardId(cardId, pageParams.page, pageParams.size)
+        const commentsData = await cardService.getCommentsByCardId(cardId, pageParams.page, pageParams.size, locale)
         if (commentsData.data?.content && commentsData.data.content.length > 0) {
           setComments((prev) => {
             const existingsIds = new Set(prev.map((prev) => prev.id || prev))

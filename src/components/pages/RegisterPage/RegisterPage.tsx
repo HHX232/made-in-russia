@@ -20,6 +20,7 @@ import {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/Multi
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 const decorImage = '/login__image.jpg'
 const belarusSvg = '/belarus.svg'
@@ -48,6 +49,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const [otpValue, setOtpValue] = useState<string>('')
   const [selectedOption, setSelectedOption] = useState('')
 
+  const currentLang = useCurrentLanguage()
   // User-specific state
   const [listIsOpen, setListIsOpen] = useState(false)
   const [errorInName, setErrorInName] = useState<null | string>(null)
@@ -203,7 +205,11 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             // type: 'company'
           }
 
-      const response = await axiosClassic.post(isUser ? '/auth/register' : '/auth/register-vendor', registrationData)
+      // const response = await axiosClassic.post(
+      //   isUser ? '/auth/register' : '/auth/register-vendor',
+      //   registrationData,
+      //   {headers: {'Accept-Language': currentLang}}
+      // )
 
       // console.log('Registration successful:', {email, name})
       setShowNextStep(false)
@@ -231,10 +237,14 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const onSubmitThirdStep = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     try {
-      const {data} = await axiosClassic.post<AuthResponse>('/auth/verify-email', {
-        email: email,
-        code: otpValue
-      })
+      const {data} = await axiosClassic.post<AuthResponse>(
+        '/auth/verify-email',
+        {
+          email: email,
+          code: otpValue
+        },
+        {headers: {'Accept-Language': currentLang}}
+      )
 
       const {accessToken, refreshToken} = data
       saveTokenStorage({accessToken, refreshToken})

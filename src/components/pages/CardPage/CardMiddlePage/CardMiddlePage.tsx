@@ -6,6 +6,7 @@ import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionG
 import Image from 'next/image'
 import Skeleton from 'react-loading-skeleton'
 import ICardFull from '@/services/card/card.types'
+import {useTranslations} from 'next-intl'
 // const markExample1 = `**Применение:**
 // Применение:  Паркетные полы, мебельное производство, отделка интерьеров, строительство террас, декоративные панели.
 // <span style="color: #2E4053; font-weight: 500;">Паркетные полы, мебельные фасады, лестницы, декоративные стеновые панели.</span>
@@ -81,6 +82,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
   useEffect(() => {
     // console.log('cardData in middle', cardData)
   }, [cardData])
+  const t = useTranslations('CardPage.CardMiddlePage')
   return (
     <div className={`${styles.card__middle__box}`}>
       <h3
@@ -88,7 +90,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
         style={{marginBottom: isLoading ? '15px' : '0'}}
         className={`${styles.card__middle__title}`}
       >
-        Описание
+        {t('description')}
       </h3>
       <div className={`${styles.descr__box}`}>
         <div className={`${styles.mark__span__box}`}>
@@ -126,7 +128,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
               titleFontSize='16'
               listGap='20'
               items={cardData.characteristics.map((el) => ({title: el.name, value: el.value}))}
-              titleMain='Технические характеристики:'
+              titleMain={t('technicalCharacteristics')}
             />
           ) : (
             <></>
@@ -135,7 +137,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
         </div>
         <div className={`${styles.spec__description__box}`}>
           {!isLoading ? (
-            <h3 className={`${styles.spec__description__title}`}>Информация о компании</h3>
+            <h3 className={`${styles.spec__description__title}`}>{t('companyDescription')}</h3>
           ) : (
             <Skeleton height={29} count={1} style={{marginBottom: '15px'}} />
           )}
@@ -148,13 +150,28 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
             {cardData.aboutVendor?.media?.map((el, index) => (
               <li className={`${styles.spec__description__list_item}`} key={index}>
                 {!isLoading ? (
-                  <Image
-                    className={`${styles.spec__description__list_item__image}`}
-                    src={el.url}
-                    alt=''
-                    width={170}
-                    height={170}
-                  />
+                  el.url.includes('mov') || el.url.includes('mp4') ? (
+                    <div className={styles.videoContainer}>
+                      <video
+                        src={el.url}
+                        autoPlay
+                        controls={false}
+                        loop
+                        muted
+                        playsInline
+                        preload='metadata'
+                        className={`${styles.spec__description__list_item__image} ${styles.video}`}
+                      />
+                    </div>
+                  ) : (
+                    <Image
+                      className={`${styles.spec__description__list_item__image}`}
+                      src={el.url}
+                      alt=''
+                      width={170}
+                      height={170}
+                    />
+                  )
                 ) : (
                   <Skeleton style={{width: 100000, maxWidth: '170px', marginBottom: '10px'}} height={110} />
                 )}

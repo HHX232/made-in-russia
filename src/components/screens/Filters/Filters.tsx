@@ -13,6 +13,7 @@ import {useTypedSelector} from '@/hooks/useTypedSelector'
 import CheckBoxInputUI from '@/components/UI-kit/inputs/CheckBoxInputUI/CheckBoxInputUI'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 // import {renderCategoryItems} from '@/components/MainComponents/Header/Header'
 // import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 
@@ -51,14 +52,7 @@ const Filters: FC = () => {
   const {delivery, selectedFilters, searchTitle} = useTypedSelector((state) => state.filters)
   const windowWidth = useWindowWidth()
   const t = useTranslations('Filters')
-  // useEffect(() => {
-  //   async function rrrr() {
-  //     const res = await CategoriesService.getAll()
-  //     setCategoriesList(res)
-  //   }
-  //   rrrr()
-  // }, [])
-
+  const currentLang = useCurrentLanguage()
   useEffect(() => {
     setIsMounted(true)
   }, [])
@@ -70,13 +64,13 @@ const Filters: FC = () => {
 
   const {data, isLoading} = useQuery({
     queryKey: ['filters'],
-    queryFn: () => FiltersService.getAll()
+    queryFn: () => FiltersService.getAll({currentLang})
   })
 
-  const {data: dataDel, isLoading: isDelLoading} = useQuery({
-    queryKey: ['deliveris'],
-    queryFn: () => FiltersService.getDeliveryMethodIds()
-  })
+  // const {data: dataDel, isLoading: isDelLoading} = useQuery({
+  //   queryKey: ['deliveris'],
+  //   queryFn: () => FiltersService.getDeliveryMethodIds({currentLang})
+  // })
 
   const {clearFilters, clearDelivery, toggleDelivery, setSearchTitle} = useActions()
 

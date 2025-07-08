@@ -7,13 +7,14 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
   let vendorData
   const cookieStore = await cookies()
   const accessToken = cookieStore.get('accessToken')?.value || ''
-
+  const currentLang = cookieStore.get('NEXT_LOCALE')?.value || 'en'
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vendorData = await axiosClassic.get<any>(`/vendor/${id}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+        'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
+        'Accept-Language': currentLang
       }
     })
     // console.log('vendorData:', vendorData.data)

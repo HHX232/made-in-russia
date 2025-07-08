@@ -2,12 +2,30 @@
 import {FC, useRef, ChangeEvent, useCallback, useState, useEffect, useId} from 'react'
 import styles from './SearchInputUI.module.scss'
 import Image from 'next/image'
+import Link from 'next/link'
 import {useActions} from '@/hooks/useActions'
 import {useDebounce} from '@/utils/debounce'
-import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useTranslations} from 'next-intl'
+import {axiosClassic} from '@/api/api.interceptor'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 const loop = '/loop.svg'
+
+interface IHintProduct {
+  id: number
+  title: string
+  image: string
+}
+
+interface IHints {
+  category: {
+    id: number
+    name: string
+    image: string
+  }
+  products: IHintProduct[]
+}
+
 interface ISearchProps {
   placeholder?: string
   disabled?: boolean
@@ -17,16 +35,42 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [inputValue, setInputValue] = useState('')
   const [listIsOpen, setListIsOpen] = useState(false)
+  const [hints, setHints] = useState<IHints[]>([])
+  const [loading, setLoading] = useState(false)
   const boxRef = useRef<HTMLDivElement | null>(null)
   const id = useId()
   const {setSearchTitle} = useActions()
-  const {searchTitle} = useTypedSelector((state) => state.filters)
   const t = useTranslations('HomePage')
-  useEffect(() => {
-    setInputValue(searchTitle)
+  const currentLang = useCurrentLanguage()
+  const debouncedSetSearchTitle = useDebounce(setSearchTitle, 1000)
+
+  // Запрос подсказок с debounce
+  const fetchHints = useCallback(async (text: string) => {
+    if (!text.trim()) {
+      setHints([])
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await axiosClassic.get<IHints[]>('/products/hints', {
+        params: {
+          text: text
+        },
+        headers: {
+          'Accept-Language': currentLang
+        }
+      })
+      setHints(Array.isArray(res.data) ? res.data : [])
+    } catch (error) {
+      console.error('Error fetching hints:', error)
+      setHints([])
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
-  const debouncedSetSearchTitle = useDebounce(setSearchTitle, 1000)
+  const debouncedFetchHints = useDebounce(fetchHints, 300)
 
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -37,19 +81,22 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
         inputRef.current.value = value
         setInputValue(value)
       }
+
       debouncedSetSearchTitle(value)
+      debouncedFetchHints(value)
     },
-    [debouncedSetSearchTitle]
+    [debouncedSetSearchTitle, debouncedFetchHints]
   )
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSelectItem = useCallback(
     (text: string) => {
       if (inputRef.current) {
         inputRef.current.value = text
       }
       setInputValue(text)
-
       setSearchTitle(text)
+      setListIsOpen(false)
     },
     [setSearchTitle]
   )
@@ -70,6 +117,9 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
     }
   }, [listIsOpen])
 
+  const hasHints = hints.length > 0
+  const showList = inputValue.length > 0 && listIsOpen
+
   return (
     <div ref={boxRef} className={`${styles.search__box} ${disabled ? styles.search__box_disabled : ''}`}>
       <label htmlFor={'inputID' + id} className={styles.search__label}>
@@ -87,28 +137,43 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
           value={inputValue}
         />
       </label>
-      {inputValue.length > 0 && listIsOpen && (
-        <ul className={`${styles.input__list}`}>
-          {Array.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).map((el, index) => {
-            const itemText = 'Грав'
-            const itemText1 = 'Сух'
-            const itemText2 = 'Медная'
-            return (
-              <li
-                onClick={() => {
-                  handleSelectItem(
-                    index === 0 ? itemText : index === 1 ? itemText1 : index === 2 ? itemText2 : 'Hello world'
-                  )
-                  setListIsOpen(false)
-                }}
-                key={index}
-                className={`${styles.list__item}`}
-              >
-                {index === 0 ? itemText : index === 1 ? itemText1 : index === 2 ? itemText2 : 'Hello world'}
-              </li>
-            )
-          })}
-        </ul>
+      {showList && (
+        <div className={styles.input__list}>
+          {loading && (
+            <div className={styles.loading}>
+              <div className={styles.loading__spinner}></div>
+              <span>{t('searchLoading')}</span>
+            </div>
+          )}
+
+          {!loading &&
+            hasHints &&
+            hints.map((categoryMap, categoryIndex) => (
+              <div key={categoryIndex} className={styles.category__group}>
+                <div className={styles.category__title}>{categoryMap.category.name}</div>
+                {categoryMap.products.map((product) => (
+                  <Link
+                    key={product.id}
+                    href={`/card/${product.id}`}
+                    className={styles.list__item}
+                    onClick={() => {
+                      setListIsOpen(false)
+                      setInputValue('')
+                      setSearchTitle('')
+                    }}
+                  >
+                    <div className={styles.list__item_title}>{product.title}</div>
+                  </Link>
+                ))}
+              </div>
+            ))}
+
+          {!loading && !hasHints && (
+            <div className={styles.no__results}>
+              <span>{t('noResults')}</span>
+            </div>
+          )}
+        </div>
       )}
     </div>
   )

@@ -1,5 +1,6 @@
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
+import {cookies} from 'next/headers'
 import {notFound} from 'next/navigation'
 
 export default async function CategoryPageSpecialSecond({
@@ -9,8 +10,10 @@ export default async function CategoryPageSpecialSecond({
 }) {
   const {secondCategoryName} = await params
   let categories
+  const cookieStore = await cookies()
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
   try {
-    categories = await CategoriesService.getById('l2_' + secondCategoryName)
+    categories = await CategoriesService.getById('l2_' + secondCategoryName, locale)
   } catch {
     notFound()
   }

@@ -5,6 +5,8 @@ import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI
 import MultiDropSelect, {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
+import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 interface RegisterCompanySecondProps {
   email: string
@@ -36,20 +38,47 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
     selectedOption === 'Personal' && isEmailValid && password.length >= 6 && selectedCategories.length > 0
   const [isClient, setIsClient] = useState(false)
   const windowWidth = useWindowWidth()
+  const [allCategories, setAllCategories] = useState<Category[]>([])
+  const currentLang = useCurrentLanguage()
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categories = await CategoriesService.getAll(currentLang)
+        setAllCategories(categories)
+        // setCategoriesMultiSelect(
+        //   categories.map((category) => ({
+        //     id: category.id,
+        //     label: category.name,
+        //     value: category.name,
+        //     icon: belarusSvg
+        //   }))
+        // )
+      } catch (err) {
+        console.error('Error fetching categories:', err)
+      }
+    }
+
+    fetchCategories()
+  }, [])
   useEffect(() => {
     setIsClient(true)
   }, [])
   // Категории товаров компании
-  const categoryOptions: MultiSelectOption[] = [
-    {id: 'metal', label: 'Металл и металлоизделия', value: 'metal'},
-    {id: 'wood', label: 'Дерево и пиломатериалы', value: 'wood'},
-    {id: 'stone', label: 'Камень и минералы', value: 'stone'},
-    {id: 'plastic', label: 'Пластик и полимеры', value: 'plastic'},
-    {id: 'glass', label: 'Стекло и стеклоизделия', value: 'glass'},
-    {id: 'textile', label: 'Текстиль и ткани', value: 'textile'},
-    {id: 'chemical', label: 'Химические материалы', value: 'chemical'},
-    {id: 'construction', label: 'Строительные материалы', value: 'construction'}
-  ]
+  const flattenCategories = (categories: Category[], level = 0): Array<Category & {level: number}> => {
+    const result: Array<Category & {level: number}> = []
+
+    categories.forEach((category) => {
+      result.push({...category, level})
+      if (category.children && category.children.length > 0) {
+        result.push(...flattenCategories(category.children, level + 1))
+      }
+    })
+
+    return result
+  }
+
+  const flattenedCategories = flattenCategories(allCategories)
   const t = useTranslations('RegisterUserPage')
   return (
     <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '22px'}}>
@@ -80,13 +109,30 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
 
       <div className={`${styles.some__drop__box}`} style={{marginTop: '16px', marginBottom: '16px'}}>
         <p className={`${styles.input__title}`}>{t('categories')}</p>
-        <MultiDropSelect
+        {/* <MultiDropSelect
           options={categoryOptions}
           selectedValues={selectedCategories}
           onChange={setSelectedCategories}
           placeholder={t('categoriesPlaceholder')}
           direction={isClient && windowWidth !== undefined && windowWidth > 1050 ? 'left' : 'bottom'}
+        /> */}
+        <MultiDropSelect
+          showSearchInput
+          extraClass={styles.profile__region__dropdown__extra}
+          options={flattenedCategories.map((category) => ({
+            id: category.id,
+            label: category.name,
+            value: category.name,
+            icon: ''
+          }))}
+          selectedValues={selectedCategories}
+          onChange={(values) => {
+            setSelectedCategories(values)
+          }}
+          placeholder={t('categoriesPlaceholder')}
+          direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'left'}
         />
+
         <p className={`${styles.input__subtitle}`} style={{marginTop: '8px'}}>
           {t('categoriesSubtext')}
         </p>
