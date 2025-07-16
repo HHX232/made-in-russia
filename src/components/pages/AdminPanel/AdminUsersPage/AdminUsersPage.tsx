@@ -118,6 +118,7 @@ const UserRow: FC<{user: User}> = ({user}) => {
 }
 const AdminUsersPage: FC = () => {
   const allTitles = ['ID', 'Имя', 'Почта', 'Страна', 'Роль', 'Изменить']
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [usersLoading, setUsersLoading] = useState(false)
   return (
     <div className={styles.admin__users__page}>
