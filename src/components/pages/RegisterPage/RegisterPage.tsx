@@ -205,11 +205,9 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             // type: 'company'
           }
 
-      // const response = await axiosClassic.post(
-      //   isUser ? '/auth/register' : '/auth/register-vendor',
-      //   registrationData,
-      //   {headers: {'Accept-Language': currentLang}}
-      // )
+      const response = await axiosClassic.post(isUser ? '/auth/register' : '/auth/register-vendor', registrationData, {
+        headers: {'Accept-Language': currentLang}
+      })
 
       // console.log('Registration successful:', {email, name})
       setShowNextStep(false)

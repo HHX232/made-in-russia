@@ -1,0 +1,162 @@
+.admin__users__page {
+   display: flex;
+   flex-direction: column;
+   padding: 10px 20px;
+   border-radius: 20px;
+   box-shadow: -2px 4px 4px #00000015;
+   background-color: #F4F5F6;
+   width: 100%;
+}
+
+.users__title {
+   width: 100%;
+   text-align: center;
+   font-weight: 500;
+   font-size: 36px;
+   line-height: 42px;
+   margin-bottom: 25px;
+}
+
+.users__actions {
+   display: flex;
+   align-items: center;
+   gap: 20px;
+   margin-bottom: 40px;
+}
+
+.search__user {
+   &>div:last-child {
+      padding: 9.5px 15px !important;
+      border-radius: 25px !important;
+      box-shadow: none !important;
+   }
+}
+
+.drop__list__extra {
+   background-color: red;
+   padding: 9px 20px;
+   background-color: #fff;
+   border-radius: 25px;
+   border: 1px solid #2A2E46;
+
+   &>div {
+      gap: 15px !important;
+   }
+
+   &>ul {
+      transform: translateX(0) !important;
+   }
+}
+
+.users__actions__create {
+   padding: 10px 25px;
+   background-color: #D61414;
+   border-radius: 25px;
+   font-size: 15px;
+   cursor: pointer;
+   color: #fff;
+}
+
+.users__table {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+}
+
+.table__titles {
+   width: 100%;
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+   padding: 0 23px 10px 23px;
+   border-bottom: 1px solid #D7D7D7;
+   margin-bottom: 15px;
+}
+
+.table__rows {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+   gap: 10px;
+}
+
+.user__row {
+   display: flex;
+   width: 100%;
+   align-items: center;
+   padding: 20px 15px 20px 25px;
+   border-radius: 15px;
+   background-color: #fff;
+   border: 1px solid #0f0f0f;
+   justify-content: space-between;
+}
+
+.user__edits {
+   display: flex;
+   gap: 15px;
+   align-items: center;
+}
+
+.drop__list__extra__country,
+.drop__list__extra__role {
+   z-index: auto !important;
+}
+
+.drop__list__extra__country {
+   padding: 5px 15px;
+   border-radius: 20px;
+   background-color: #fff;
+   border: 1px solid #2A2E46;
+}
+
+.drop__list__extra__role {
+   padding: 5px 15px;
+   color: #fff !important;
+   border-radius: 20px;
+}
+
+.drop__list__extra__role__item {
+   color: #0f0f0f !important;
+   width: 100%;
+}
+
+.user__row__skeleton {
+
+   width: 100% !important;
+}
+
+.deleat__button,
+.edit__button {
+   padding: 5px 13px;
+   border-radius: 15px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.deleat__button {
+   background-color: #E1251B;
+}
+
+.edit__button {
+   background-color: #FFCC4D;
+}
+
+.avatar {
+   width: 36px;
+   height: 36px;
+   border-radius: 100%;
+   background-size: cover;
+   background-position: center;
+   background-repeat: no-repeat;
+}
+
+.login__box {
+   display: flex;
+   align-items: center;
+   gap: 5px;
+}
+
+.login__text {
+   font-size: 15px;
+}

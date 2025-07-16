@@ -3,6 +3,7 @@ import {FC, useState, useEffect, useRef} from 'react'
 import styles from './CategoryesMenuDesktop.module.scss'
 import {Category} from '@/services/categoryes/categoryes.service'
 import Link from 'next/link'
+import {useTranslations} from 'next-intl'
 
 interface ICategoryesMenuDesktopProps {
   categories: Category[] | undefined
@@ -45,6 +46,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([])
   const [isMenuOpen, setIsMenuOpen] = useState(true)
   const menuRef = useRef<HTMLDivElement>(null)
+  const t = useTranslations('CategoryMenu')
 
   // Инициализация первой категории при загрузке
   useEffect(() => {
@@ -70,7 +72,19 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
     if (isMobile && isMenuOpen) {
       const handleClickOutside = (event: MouseEvent) => {
         const target = event.target as HTMLElement
-        if (menuRef.current && !menuRef.current.contains(target)) {
+
+        // Проверяем, что клик НЕ по стрелочке
+        const isArrowClick =
+          target.classList.contains('mobile_menu_item_arrow') ||
+          target.closest('.mobile_menu_item_arrow') !== null ||
+          target.className.includes('mobile_menu_item_arrow') ||
+          target.classList.contains('back_button') ||
+          target.closest('.back_button') !== null ||
+          target.className.includes('back_button')
+
+        console.log('isArrowClick:', isArrowClick, 'target classes:', target.className)
+
+        if (menuRef.current && !menuRef.current.contains(target) && !isArrowClick) {
           handleCloseMenu()
         }
       }
@@ -103,6 +117,8 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
     }
     setSelectedCategory(category)
     setMenuLevel('subcategory')
+    console.log('go to subcategory')
+    console.log('selectedCategory', selectedCategory, 'category', category)
     setBreadcrumbs([{name: category.name, level: 'main'}])
   }
 
@@ -132,21 +148,21 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
   const handleCloseMenu = () => {
     if (isMobile) {
       setIsMenuOpen(false)
-      // Сбрасываем состояние меню при закрытии на мобильном
-      setTimeout(() => {
-        setMenuLevel('main')
-        setSelectedCategory(null)
-        setSelectedSubcategory(null)
-        setBreadcrumbs([])
-      }, 300) // Задержка для плавной анимации закрытия
+
+      setMenuLevel('main')
+      setSelectedCategory(null)
+      setSelectedSubcategory(null)
+      setBreadcrumbs([])
+      setCategoryListIsOpen(false)
+      // Задержка для плавной анимации закрытия
     } else {
       setCategoryListIsOpen(false)
     }
   }
 
-  const handleOpenMenu = () => {
-    setIsMenuOpen(true)
-  }
+  // const handleOpenMenu = () => {
+  //   setIsMenuOpen(true)
+  // }
 
   // Hover handlers для десктопа
   const handleCategoryHover = (categoryName: string, categorySlug: string) => {
@@ -160,37 +176,23 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
   if (!categories || categories.length === 0) {
     return (
       <div className={styles.menu__box}>
-        <p className={styles.no_categories}>Категории не найдены</p>
+        <p className={styles.no_categories}>{t('isEmptyAll')}</p>
       </div>
     )
   }
 
   // Мобильная версия
   if (isMobile) {
-    if (!isMenuOpen) {
-      return (
-        <button
-          className={styles.open_menu_button}
-          onClick={(e) => {
-            e.stopPropagation()
-            handleOpenMenu()
-          }}
-        >
-          ☰ Категории
-        </button>
-      )
-    }
-
     return (
       <div className={styles.mobile_menu} ref={menuRef}>
         <div className={styles.mobile_menu_header}>
           {menuLevel !== 'main' && (
             <button className={styles.back_button} onClick={handleBack}>
-              ← Назад
+              {t('backButton')}
             </button>
           )}
           <div className={styles.breadcrumbs}>
-            {menuLevel === 'main' && 'Категории'}
+            {menuLevel === 'main' && t('categoryTitle')}
             {breadcrumbs.map((crumb, index) => (
               <span key={index}>
                 {index > 0 && ' / '}
@@ -198,90 +200,77 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
               </span>
             ))}
           </div>
-          <button className={styles.close_button} onClick={handleCloseMenu}>
+          <div
+            className={styles.close_button}
+            onClick={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+              handleCloseMenu()
+            }}
+          >
             ✕
-          </button>
+          </div>
         </div>
 
         <ul className={styles.mobile_menu_list}>
           {menuLevel === 'main' &&
-            categories?.map((category) => {
-              const hasChildren = category.children && category.children.length > 0
-
-              return (
-                <li key={category.id} className={styles.mobile_menu_item}>
-                  {hasChildren ? (
-                    <>
-                      <Link
-                        href={`/categories/${category.slug}`}
-                        className={styles.mobile_menu_item_content}
-                        onClick={() => handleCloseMenu()}
-                      >
-                        <span>{category.name}</span>
-                      </Link>
-                      <button
-                        className={styles.mobile_menu_item_arrow}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleCategoryClick(category)
-                        }}
-                      >
-                        →
-                      </button>
-                    </>
-                  ) : (
-                    <Link
-                      href={`/categories/${category.slug}`}
-                      className={styles.mobile_menu_item_full}
-                      onClick={() => handleCloseMenu()}
-                    >
-                      <span>{category.name}</span>
-                    </Link>
-                  )}
-                </li>
-              )
-            })}
+            categories?.map((category) => (
+              <li key={category.id} className={styles.mobile_menu_item}>
+                <Link
+                  href={`/categories/${category.slug}`}
+                  className={styles.mobile_menu_item_content}
+                  onClick={() => handleCloseMenu()}
+                >
+                  <span>{category.name}</span>
+                </Link>
+                <button
+                  className={styles.mobile_menu_item_arrow}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    console.log('Clicked category:', category.name, 'Children:', category.children)
+                    handleCategoryClick(category)
+                  }}
+                >
+                  →
+                </button>
+              </li>
+            ))}
 
           {menuLevel === 'subcategory' &&
-            selectedCategory?.children?.map((subcategory) => {
-              const hasChildren = subcategory.children && subcategory.children.length > 0
+            selectedCategory &&
+            selectedCategory.children &&
+            selectedCategory.children.map((subcategory) => (
+              <li key={subcategory.id} className={styles.mobile_menu_item}>
+                <Link
+                  href={`/categories/${selectedCategory.slug}/${subcategory.slug}`}
+                  className={styles.mobile_menu_item_content}
+                  onClick={() => handleCloseMenu()}
+                >
+                  <span>{subcategory.name}</span>
+                </Link>
+                <button
+                  className={styles.mobile_menu_item_arrow}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    console.log('Clicked subcategory:', subcategory.name, 'Children:', subcategory.children)
+                    handleSubcategoryClick(subcategory)
+                  }}
+                >
+                  →
+                </button>
+              </li>
+            ))}
 
-              return (
-                <li key={subcategory.id} className={styles.mobile_menu_item}>
-                  {hasChildren ? (
-                    <>
-                      <Link
-                        href={`/categories/${selectedCategory.slug}/${subcategory.slug}`}
-                        className={styles.mobile_menu_item_content}
-                        onClick={() => handleCloseMenu()}
-                      >
-                        <span>{subcategory.name}</span>
-                      </Link>
-                      <button
-                        className={styles.mobile_menu_item_arrow}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleSubcategoryClick(subcategory)
-                        }}
-                      >
-                        →
-                      </button>
-                    </>
-                  ) : (
-                    <Link
-                      href={`/categories/${selectedCategory.slug}/${subcategory.slug}`}
-                      className={styles.mobile_menu_item_full}
-                      onClick={() => handleCloseMenu()}
-                    >
-                      <span>{subcategory.name}</span>
-                    </Link>
-                  )}
-                </li>
-              )
-            })}
+          {menuLevel === 'subcategory' && (!selectedCategory?.children || selectedCategory.children.length === 0) && (
+            <li className={styles.mobile_menu_item}>
+              <span>Нет подкатегорий</span>
+            </li>
+          )}
 
           {menuLevel === 'subsubcategory' &&
-            selectedSubcategory?.children?.map((item) => (
+            selectedSubcategory &&
+            selectedSubcategory.children &&
+            selectedSubcategory.children.map((item) => (
               <li key={item.id} className={styles.mobile_menu_item}>
                 <Link
                   href={`/categories/${selectedCategory?.slug}/${selectedSubcategory.slug}/${item.slug}`}
@@ -292,6 +281,13 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                 </Link>
               </li>
             ))}
+
+          {menuLevel === 'subsubcategory' &&
+            (!selectedSubcategory?.children || selectedSubcategory.children.length === 0) && (
+              <li className={styles.mobile_menu_item}>
+                <span>Нет элементов</span>
+              </li>
+            )}
         </ul>
       </div>
     )
@@ -351,7 +347,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                     })
                 ) : (
                   <li key={`empty-${el.id}`} className={styles.empty_category}>
-                    <p>Подкатегории отсутствуют</p>
+                    <p>{t('subCategoryEmpty')}</p>
                   </li>
                 )
               })}
@@ -361,5 +357,4 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
     </div>
   )
 }
-
 export default CategoryesMenuDesktop

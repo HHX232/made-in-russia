@@ -166,6 +166,10 @@ const CategoryPage = ({
     return slides
   }
 
+  // Получаем слайды для проверки их количества
+  const slides = groupCategoriesIntoSlides(categoriesToDisplay)
+  const shouldUseSlider = slides.length > 1
+
   return (
     <div>
       <Header />
@@ -215,35 +219,70 @@ const CategoryPage = ({
             </ul>
           )}
 
+          {/* Рендер для мобильных устройств */}
           {level < 3 && categoriesToDisplay.length > 0 && windowWidth && windowWidth < 900 && (
-            <Slider {...mainSettings} className={`${styles.category__slider} category__slider__main ${level === 1 && "category__slider__first"}`}>
-              {groupCategoriesIntoSlides(categoriesToDisplay).map((slideCategories, slideIndex) => (
-                <div key={slideIndex} className={styles.category__slide}>
-                  <div className={styles.category__slide__content}>
-                    {slideCategories.map((category, index) => (
-                      <Link key={category.id || category.slug} href={buildHref(category)}>
-                        <div
-                          style={{
-                            backgroundImage: `
-                                                   ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-                                                   url(${category.imageUrl ? category.imageUrl : (!category.imageUrl && level === 1 && CATEGORYESCONST[slideIndex * 2 + index]?.imageSrc) || ''})
-                                                   `,
-                            color: level === 1 ? '#FFF' : '#000'
-                          }}
-                          className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${level === 1 ? styles.category__item__with__image : ''} ${styles.category__item__slider}`}
+            <>
+              {/* Если слайдов больше 1, используем Slider */}
+              {shouldUseSlider ? (
+                <Slider
+                  {...mainSettings}
+                  className={`${styles.category__slider} category__slider__main ${level === 1 && 'category__slider__first'}`}
+                >
+                  {slides.map((slideCategories, slideIndex) => (
+                    <div key={slideIndex} className={styles.category__slide}>
+                      <div className={styles.category__slide__content}>
+                        {slideCategories.map((category, index) => (
+                          <Link key={category.id || category.slug} href={buildHref(category)}>
+                            <div
+                              style={{
+                                backgroundImage: `
+                                                       ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
+                                                       url(${category.imageUrl ? category.imageUrl : (!category.imageUrl && level === 1 && CATEGORYESCONST[slideIndex * 2 + index]?.imageSrc) || ''})
+                                                       `,
+                                color: level === 1 ? '#FFF' : '#000'
+                              }}
+                              className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${level === 1 ? styles.category__item__with__image : ''} ${styles.category__item__slider}`}
+                            >
+                              <p
+                                className={`${styles.category__item__title} ${level === 2 ? styles.category__item__title__second : ''}`}
+                              >
+                                {category.name}
+                              </p>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
+              ) : (
+                /* Если слайдов меньше 2, показываем элементы без слайдера */
+                <div
+                  className={`${styles.category__simple__container} ${level === 1 && styles.category__simple__container__first} ${styles.category__simple__container__without__slider}`}
+                >
+                  {categoriesToDisplay.map((category, index) => (
+                    <Link key={category.id || category.slug} href={buildHref(category)}>
+                      <div
+                        style={{
+                          backgroundImage: `
+                                                 ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
+                                                 url(${category.imageUrl ? category.imageUrl : (!category.imageUrl && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''})
+                                                 `,
+                          color: level === 1 ? '#FFF' : '#000'
+                        }}
+                        className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${level === 1 ? styles.category__item__with__image : ''} ${styles.category__item__simple}`}
+                      >
+                        <p
+                          className={`${styles.category__item__title} ${level === 2 ? styles.category__item__title__second : ''}`}
                         >
-                          <p
-                            className={`${styles.category__item__title} ${level === 2 ? styles.category__item__title__second : ''}`}
-                          >
-                            {category.name}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+                          {category.name}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-              ))}
-            </Slider>
+              )}
+            </>
           )}
 
           {/* Рендер для level === 3 с фильтрами */}

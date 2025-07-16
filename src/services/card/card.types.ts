@@ -55,13 +55,13 @@ interface DiscountPriceRange {
   unit: string // Единица измерения (в данном случае кубометры)
 }
 interface ICardFull {
-  packagingOptions?: {name: string; price: number | string}[]
+  packagingOptions?: {name: string; price: number | string; priceUnit: string}[]
   deliveryMethodsDetails?: {name: string; value: string}[]
   minimumOrderQuantity?: number
   user: Author
   daysBeforeDiscountExpires: number | string
   prices: DiscountPriceRange[]
-  id: number // read-only
+  id: number
   similarProducts: {
     id: number
     imageUrl: string

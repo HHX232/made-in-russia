@@ -112,6 +112,15 @@
    flex-shrink: 0;
 }
 
+.category__simple__container__without__slider {
+   display: flex;
+   width: 100%;
+   align-items: center;
+   justify-content: space-evenly;
+   flex-wrap: wrap;
+   gap: 30px;
+}
+
 /* Стили для точек навигации */
 .category__slider .slick-dots {
    bottom: -50px;

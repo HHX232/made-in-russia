@@ -16,8 +16,8 @@ import {hasLocale, NextIntlClientProvider} from 'next-intl'
 import {routing} from '@/i18n/routing'
 import {notFound} from 'next/navigation'
 import {getMessages} from 'next-intl/server'
-import {SmartTranslationProvider} from '@/providers/SmartTranslationProvider'
 import {cookies} from 'next/headers'
+import {MessageProvider} from '@/providers/MessageProvider'
 
 export default async function RootLayoutLanguage({
   children,
@@ -35,12 +35,12 @@ export default async function RootLayoutLanguage({
   return (
     <DefaultProvider>
       <NextIntlClientProvider>
-        {/* <MessageProvider initialMessages={messages}> */}
-        <SmartTranslationProvider initialMessages={messages}>
+        <MessageProvider initialMessages={messages}>
+          {/* <SmartTranslationProvider initialMessages={messages}> */}
           {children}
           {/* <Toaster theme={'dark'} position={'top-right'} duration={3500} /> */}
-        </SmartTranslationProvider>
-        {/* </MessageProvider> */}
+          {/* </SmartTranslationProvider> */}
+        </MessageProvider>
       </NextIntlClientProvider>
     </DefaultProvider>
   )

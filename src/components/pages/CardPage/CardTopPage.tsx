@@ -582,7 +582,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
                 {!isReallyLoading ? (
                   <>
                     <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
-                    <p className={`${styles.state__mini__list__item__text}`}>{el.price}</p>
+                    <p className={`${styles.state__mini__list__item__text}`}>{el.price + ' ' + el.priceUnit}</p>
                   </>
                 ) : (
                   <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />

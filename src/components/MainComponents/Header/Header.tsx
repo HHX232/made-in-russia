@@ -397,7 +397,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
 
               <DropList
                 closeOnMouseLeave={true}
-                extraStyle={{zIndex: '99999'}}
+                extraStyle={{zIndex: '1001'}}
                 extraClass={`${styles.extra__header__language_box}`}
                 color='white'
                 title={activeLanguage}

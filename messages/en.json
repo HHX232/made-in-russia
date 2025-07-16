@@ -307,6 +307,13 @@
     "question":"Question",
     "answer":"Answer",
     "faqTitle":"Quick questions"
+},
+"CategoryMenu": {
+    "isEmptyAll": "No categories found",
+    "categoryBack": "☰ Categories",
+    "backButton": "← Back",
+    "subCategoryEmpty": "No subcategories",
+    "categoryTitle": "Categories"
 }
 
 }
