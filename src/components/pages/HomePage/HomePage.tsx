@@ -1,4 +1,4 @@
-// import Ads from '@/components/screens/Ads/Ads'
+import Ads from '@/components/screens/Ads/Ads'
 import Header from '@/components/MainComponents/Header/Header'
 import {FC} from 'react'
 import Catalog, {CatalogProps} from '@/components/screens/Catalog/Catalog'
@@ -13,7 +13,7 @@ const HomePage: FC<CatalogProps & {categories: Category[]}> = ({
   return (
     <>
       <Header categories={categories} />
-      {/* <Ads /> */}
+      <Ads />
       <Catalog initialProducts={initialProducts} initialHasMore={initialHasMore} />
       <Footer />
     </>

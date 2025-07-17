@@ -39,9 +39,21 @@ export default async function RootLayout({children}: {children: React.ReactNode}
 
 export async function generateMetadata() {
   const cookieStore = await cookies()
+  let locale = cookieStore.get('NEXT_LOCALE')?.value
 
-  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+  const headersList = await headers()
 
+  locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
+
+  if (!locale) {
+    const referer = headersList.get('referer')
+    if (referer) {
+      const match = referer.match(/\/([a-z]{2})\//)
+      if (match && ['en', 'ru', 'zh'].includes(match[1])) {
+        locale = match[1]
+      }
+    }
+  }
   try {
     const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale}, undefined, locale)
 

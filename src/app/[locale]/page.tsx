@@ -1,5 +1,6 @@
 import HomePage from '@/components/pages/HomePage/HomePage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
+import ProductService from '@/services/products/product.service'
 // import ProductService from '@/services/products/product.service'
 import {cookies, headers} from 'next/headers'
 
@@ -28,18 +29,18 @@ export default async function Home() {
   }
 
   // console.log('locale в home page', locale)
-  // const initialPage1 = await ProductService.getAll(
-  //   {page: 0, size: 20, currentLang: locale || 'en'},
-  //   undefined,
-  //   locale || 'en'
-  // )
+  const initialPage1 = await ProductService.getAll(
+    {page: 0, size: 20, currentLang: locale || 'en'},
+    undefined,
+    locale || 'en'
+  )
 
   const categories = await CategoriesService.getAll(locale || 'en')
 
   // console.log('initialPage1', initialPage2)
   return (
     <>
-      <HomePage initialProducts={[]} initialHasMore={true} categories={categories} />
+      <HomePage initialProducts={initialPage1.content} initialHasMore={!initialPage1.last} categories={categories} />
     </>
   )
 }
