@@ -37,7 +37,7 @@ export default async function Home() {
 
   const categories = await CategoriesService.getAll(locale || 'en')
 
-  // console.log('initialPage1', initialPage2)
+  console.log('initialPage1', initialPage1)
   return (
     <>
       <HomePage initialProducts={initialPage1.content} initialHasMore={!initialPage1.last} categories={categories} />

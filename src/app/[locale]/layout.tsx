@@ -10,13 +10,13 @@ import 'slick-carousel/slick/slick-theme.css'
 import '@/components/UI-kit/loaders/nprogress-provider.scss'
 import 'md-editor-rt/lib/style.css'
 // import {Toaster} from 'sonner'
-import ProductService from '@/services/products/product.service'
-import {NO_INDEX_PAGE} from '@/constants/seo.constants'
+// import ProductService from '@/services/products/product.service'
+// import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 import {hasLocale, NextIntlClientProvider} from 'next-intl'
 import {routing} from '@/i18n/routing'
 import {notFound} from 'next/navigation'
 import {getMessages} from 'next-intl/server'
-import {cookies} from 'next/headers'
+// import {cookies} from 'next/headers'
 import {MessageProvider} from '@/providers/MessageProvider'
 
 export default async function RootLayoutLanguage({
@@ -46,97 +46,97 @@ export default async function RootLayoutLanguage({
   )
 }
 
-export async function generateMetadata() {
-  const cookieStore = await cookies()
+// export async function generateMetadata() {
+//   const cookieStore = await cookies()
 
-  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+//   const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
 
-  try {
-    const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale}, undefined, locale)
+//   try {
+//     const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale}, undefined, locale)
 
-    return {
-      // TODO Убрать ноу индекс
-      ...NO_INDEX_PAGE,
-      title: {
-        absolute: 'Exporteru',
-        template: `%s | Exporteru`
-      },
-      description:
-        'Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками. ' +
-        `Предоставляем товары наподобие ${initialPage1.content.map((item) => item.title).join(', ')} и многое другое!`,
-      openGraph: {
-        title: 'Exporteru',
-        description:
-          'Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками'
-        // images: initialPage1.content[0].media ? [initialPage1.content[0].media[0]] : []
-      },
-      icons: {
-        icon: '/mstile-c-144x144.png',
+//     return {
+//       // TODO Убрать ноу индекс
+//       ...NO_INDEX_PAGE,
+//       title: {
+//         absolute: 'Exporteru',
+//         template: `%s | Exporteru`
+//       },
+//       description:
+//         'Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками. ' +
+//         `Предоставляем товары наподобие ${initialPage1.content.map((item) => item.title).join(', ')} и многое другое!`,
+//       openGraph: {
+//         title: 'Exporteru',
+//         description:
+//           'Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками'
+//         // images: initialPage1.content[0].media ? [initialPage1.content[0].media[0]] : []
+//       },
+//       icons: {
+//         icon: '/mstile-c-144x144.png',
 
-        // Альтернативные иконки
-        shortcut: '/favicon-c-32x32.png',
-        apple: [
-          {
-            url: '/apple-touch-icon-cpec-144x144.png',
-            sizes: '144x144',
-            type: 'image/png'
-          },
-          {
-            url: '/apple-touch-icon-c-152x152.png',
-            sizes: '152x152',
-            type: 'image/png'
-          }
-        ],
+//         // Альтернативные иконки
+//         shortcut: '/favicon-c-32x32.png',
+//         apple: [
+//           {
+//             url: '/apple-touch-icon-cpec-144x144.png',
+//             sizes: '144x144',
+//             type: 'image/png'
+//           },
+//           {
+//             url: '/apple-touch-icon-c-152x152.png',
+//             sizes: '152x152',
+//             type: 'image/png'
+//           }
+//         ],
 
-        // Другие важные форматы
-        other: [
-          // Для старых устройств
-          {
-            rel: 'apple-touch-icon-precomposed',
-            url: '/apple-touch-icon-c-144x144.png',
-            sizes: '144x144',
-            type: 'image/png'
-          },
+//         // Другие важные форматы
+//         other: [
+//           // Для старых устройств
+//           {
+//             rel: 'apple-touch-icon-precomposed',
+//             url: '/apple-touch-icon-c-144x144.png',
+//             sizes: '144x144',
+//             type: 'image/png'
+//           },
 
-          // Для Windows
-          {
-            rel: 'msapplication-TileImage',
-            url: '/mstile-c-144x144.png'
-          },
-          {
-            rel: 'msapplication-TileImage',
-            url: '/mstile-c-150x150.png',
-            sizes: '150x150'
-          },
+//           // Для Windows
+//           {
+//             rel: 'msapplication-TileImage',
+//             url: '/mstile-c-144x144.png'
+//           },
+//           {
+//             rel: 'msapplication-TileImage',
+//             url: '/mstile-c-150x150.png',
+//             sizes: '150x150'
+//           },
 
-          // Базовые favicon
-          {
-            rel: 'icon',
-            type: 'image/png',
-            sizes: '16x16',
-            url: '/favicon-16x16.png'
-          },
-          {
-            rel: 'icon',
-            type: 'image/png',
-            sizes: '32x32',
-            url: '/favicon-c-32x32.png'
-          }
-          // {
-          //   rel: 'icon',
-          //   type: 'image/x-icon',
-          //   url: '/favicon.ico'
-          // }
-        ]
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching card data:', error)
-    return {
-      title: {
-        absolute: 'Exporteru',
-        template: `%s | Exporteru`
-      }
-    }
-  }
-}
+//           // Базовые favicon
+//           {
+//             rel: 'icon',
+//             type: 'image/png',
+//             sizes: '16x16',
+//             url: '/favicon-16x16.png'
+//           },
+//           {
+//             rel: 'icon',
+//             type: 'image/png',
+//             sizes: '32x32',
+//             url: '/favicon-c-32x32.png'
+//           }
+//           // {
+//           //   rel: 'icon',
+//           //   type: 'image/x-icon',
+//           //   url: '/favicon.ico'
+//           // }
+//         ]
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Error fetching card data:', error)
+//     return {
+//       title: {
+//         absolute: 'Exporteru',
+//         template: `%s | Exporteru`
+//       }
+//     }
+//   }
+// }
