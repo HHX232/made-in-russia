@@ -119,9 +119,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   useEffect(() => {
     if (pageResponse) {
-      // При получении первой страницы (после сброса фильтров), заменяем список
       if (pageParams.page === 0) {
-        setAllProducts(pageResponse.content)
+        setAllProducts((prev) => [...prev, ...pageResponse.content])
         setIsFiltersChanged(false) // Сбрасываем флаг изменения фильтров
       } else {
         // При подгрузке следующих страниц добавляем уникальные товары
