@@ -293,8 +293,6 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
     )
   }
 
-  // Десктопная версия с hover
-  // Если isOpen явно false, не показываем меню
   if (isOpen === false) {
     return null
   }
@@ -311,15 +309,16 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
             >
               <Link
                 href={`/categories/${el.slug}`}
-                onClick={(e) => {
+                style={{width: '100%'}}
+                onClick={() => {
                   // Если у категории есть дети, предотвращаем переход по ссылке при клике
                   if (el.children && el.children.length > 0) {
-                    e.preventDefault()
+                    // e.preventDefault()
                     handleCategoryHover(el.name, el.slug)
                   }
                 }}
               >
-                {el.name}
+                <div style={{width: '100%'}}>{el.name}</div>
               </Link>
             </li>
           )
