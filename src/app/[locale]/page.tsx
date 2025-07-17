@@ -1,20 +1,16 @@
 import HomePage from '@/components/pages/HomePage/HomePage'
+import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 import CategoriesService from '@/services/categoryes/categoryes.service'
 import ProductService from '@/services/products/product.service'
-// import ProductService from '@/services/products/product.service'
 import {cookies, headers} from 'next/headers'
 
-// import ProductService from '@/services/products/product.service'
-
-export default async function Home() {
+// Вынести определение локали в отдельную функцию
+async function getLocale(): Promise<string> {
   const cookieStore = await cookies()
-
   let locale = cookieStore.get('NEXT_LOCALE')?.value
 
   if (!locale) {
     const headersList = await headers()
-
-    // Используем x-next-intl-locale (Next.js intl) или x-locale
     locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
 
     if (!locale) {
@@ -28,19 +24,77 @@ export default async function Home() {
     }
   }
 
-  // console.log('locale в home page', locale)
-  const initialPage1 = await ProductService.getAll(
-    {page: 0, size: 20, currentLang: locale || 'en'},
-    undefined,
-    locale || 'en'
-  )
+  return locale || 'en'
+}
 
-  const categories = await CategoriesService.getAll(locale || 'en')
+// Параллельное выполнение запросов
+async function getInitialData(locale: string) {
+  const [initialPage1, categories] = await Promise.all([
+    ProductService.getAll({page: 0, size: 20, currentLang: locale}, undefined, locale),
+    CategoriesService.getAll(locale)
+  ])
 
-  console.log('initialPage1', initialPage1)
-  return (
-    <>
-      <HomePage initialProducts={initialPage1.content} initialHasMore={!initialPage1.last} categories={categories} />
-    </>
-  )
+  return {initialPage1, categories}
+}
+
+export default async function Home() {
+  const locale = await getLocale()
+  const {initialPage1, categories} = await getInitialData(locale)
+
+  return <HomePage initialProducts={initialPage1.content} initialHasMore={!initialPage1.last} categories={categories} />
+}
+
+export async function generateMetadata() {
+  const locale = await getLocale()
+
+  try {
+    // Уменьшить количество товаров для метаданных
+    const initialPage1 = await ProductService.getAll({page: 0, size: 5, currentLang: locale}, undefined, locale)
+
+    const productTitles = initialPage1.content
+      .slice(0, 3) // Ограничить количество товаров в описании
+      .map((item) => item.title)
+      .join(', ')
+
+    return {
+      ...NO_INDEX_PAGE,
+      title: {
+        absolute: 'Exporteru',
+        template: `%s | Exporteru`
+      },
+      description: `Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками. Предоставляем товары наподобие ${productTitles} и многое другое!`,
+      openGraph: {
+        title: 'Exporteru',
+        description:
+          'Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками'
+      },
+      icons: {
+        icon: '/mstile-c-144x144.png',
+        shortcut: '/favicon-c-32x32.png',
+        apple: [
+          {
+            url: '/apple-touch-icon-cpec-144x144.png',
+            sizes: '144x144',
+            type: 'image/png'
+          }
+        ],
+        other: [
+          {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '32x32',
+            url: '/favicon-c-32x32.png'
+          }
+        ]
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching card data:', error)
+    return {
+      title: {
+        absolute: 'Exporteru',
+        template: `%s | Exporteru`
+      }
+    }
+  }
 }
