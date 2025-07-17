@@ -29,23 +29,19 @@ export default async function Home() {
 
   // console.log('locale в home page', locale)
   const initialPage1 = await ProductService.getAll(
-    {page: 0, size: 10, currentLang: locale || 'en'},
+    {page: 0, size: 20, currentLang: locale || 'en'},
     undefined,
     locale || 'en'
   )
-  const initialPage2 = await ProductService.getAll(
-    {page: 1, size: 10, currentLang: locale || 'en'},
-    undefined,
-    locale || 'en'
-  )
+
   const categories = await CategoriesService.getAll(locale || 'en')
 
   // console.log('initialPage1', initialPage2)
   return (
     <>
       <HomePage
-        initialProducts={[...initialPage1.content, ...initialPage2.content]}
-        initialHasMore={!initialPage2.last}
+        initialProducts={[...initialPage1.content]}
+        initialHasMore={!initialPage1.last}
         categories={categories}
       />
     </>
