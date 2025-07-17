@@ -21,6 +21,8 @@ export interface ProductQueryParams {
 
 export const useProducts = (params: ProductQueryParams = {}, specialRoute?: string | undefined) => {
   const currentLang = useCurrentLanguage()
+  // console.log('currentLang в useProducts', currentLang)
+
   return useQuery({
     queryKey: ['products', params],
     queryFn: async () => await ProductService.getAll(params, specialRoute, currentLang),

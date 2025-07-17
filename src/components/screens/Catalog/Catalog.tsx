@@ -4,7 +4,6 @@ import Filters from '../Filters/Filters'
 import styles from './Catalog.module.scss'
 import CardsCatalog from './CardsCatalog/CardsCatalog'
 import {Product} from '@/services/products/product.types'
-
 export interface CatalogProps {
   initialProducts: Product[]
   initialHasMore: boolean

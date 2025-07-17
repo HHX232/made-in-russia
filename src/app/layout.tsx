@@ -43,7 +43,7 @@ export async function generateMetadata() {
   const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
 
   try {
-    const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale})
+    const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale}, undefined, locale)
 
     return {
       // TODO Убрать ноу индекс

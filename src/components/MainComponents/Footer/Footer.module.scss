@@ -15,6 +15,12 @@
    display: none;
 }
 
+.breadcrumbs {
+   position: absolute;
+   left: -10000vw;
+   bottom: -100000vh;
+}
+
 .footer__inner {
    width: 100%;
    display: flex;

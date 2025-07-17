@@ -231,18 +231,20 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
         <>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((_, i) => {
             return (
-              <Card
-                isLoading={true}
-                key={`skeleton-${i}`}
-                id={Math.random()}
-                title='Загрузка...'
-                price={0}
-                discount={0}
-                previewImageUrl=''
-                discountedPrice={0}
-                deliveryMethod={'Самовывоз' as any}
-                fullProduct={{} as any}
-              />
+              <>
+                <Card
+                  isLoading={true}
+                  key={`skeleton-${i}`}
+                  id={Math.random()}
+                  title='Загрузка...'
+                  price={0}
+                  discount={0}
+                  previewImageUrl=''
+                  discountedPrice={0}
+                  deliveryMethod={'Самовывоз' as any}
+                  fullProduct={{} as any}
+                />
+              </>
             )
           })}
         </>

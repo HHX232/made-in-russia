@@ -32,7 +32,7 @@ const ProductService = {
         method: 'GET',
         params: defaultParams,
         headers: {
-          'Accept-Language': currentLang || 'en'
+          'Accept-Language': currentLang
         }
       })
       data = response.data
@@ -42,7 +42,7 @@ const ProductService = {
         method: 'GET',
         params: defaultParams,
         headers: {
-          'Accept-Language': currentLang || 'en'
+          'Accept-Language': currentLang
         }
       })
       data = response.data
@@ -56,7 +56,7 @@ const ProductService = {
       url: `${PRODUCTS}/${productId}`,
       method: 'GET',
       headers: {
-        'Accept-Language': currentLang || 'en'
+        'Accept-Language': currentLang
       }
     })
     return data
@@ -70,7 +70,7 @@ const ProductService = {
         ids: productIds.join(',')
       },
       headers: {
-        'Accept-Language': currentLang || 'en'
+        'Accept-Language': currentLang
       }
     })
     return data

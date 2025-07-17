@@ -659,6 +659,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     positionIsAbsolute={false}
                     items={[
                       <p
+                        style={{width: '100%'}}
                         onClick={() => {
                           setActiveLanguage(Languages.RUSSIAN)
                           router.push(createNewLangUrl(languageToLocale[Languages.RUSSIAN] as TLocale, pathname))
@@ -668,6 +669,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                         {Languages.RUSSIAN}
                       </p>,
                       <p
+                        style={{width: '100%'}}
                         onClick={() => {
                           setActiveLanguage(Languages.ENGLISH)
                           router.push(createNewLangUrl(languageToLocale[Languages.ENGLISH] as TLocale, pathname))
@@ -677,6 +679,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                         {Languages.ENGLISH}
                       </p>,
                       <p
+                        style={{width: '100%'}}
                         onClick={() => {
                           setActiveLanguage(Languages.CHINA)
                           router.push(createNewLangUrl(languageToLocale[Languages.CHINA] as TLocale, pathname))
