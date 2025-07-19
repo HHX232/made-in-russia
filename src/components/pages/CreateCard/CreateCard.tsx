@@ -920,10 +920,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
   const {descriptions} = useTypedSelector((state) => state.multilingualDescriptions)
 
-  useEffect(() => {
-    console.log('descriptions из RTK', descriptions)
-  }, [descriptions])
-
   return (
     <>
       {/* Единое модальное окно для всех изображений подсказок */}
