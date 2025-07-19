@@ -13,9 +13,6 @@ import '@/scss/main.scss'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 
-// Некритичные стили будут загружены клиентским компонентом
-// Создайте файл /components/ClientStyleLoader.tsx
-
 export default async function RootLayoutLanguage({
   children,
   params

@@ -34,6 +34,8 @@ interface RowsInputsProps {
   errorMessage?: string // Сообщение об ошибке
   minFilledRows?: number // Минимальное количество заполненных строк
   inputType?: TInputType[]
+  controlled?: boolean // флаг для включения контролируемого режима
+  externalValues?: string[][]
 }
 
 // Компонент для сортируемой строки
@@ -134,15 +136,14 @@ const RowsInputs = ({
   extraClasses = [],
   errorMessage = '',
   minFilledRows = 0,
-  inputType
+  inputType,
+  controlled = false,
+  externalValues
 }: RowsInputsProps) => {
-  // Инициализируем состояние для всех строк
   const [rows, setRows] = useState<string[][]>(() => {
-    // Если есть начальные значения, используем их
     if (rowsInitialValues && rowsInitialValues.length > 0) {
       return rowsInitialValues
     }
-    // Иначе создаем пустые строки
     const initialRows = []
     for (let i = 0; i < initialRowsCount; i++) {
       initialRows.push(new Array(inputsInRowCount).fill(''))
@@ -150,8 +151,41 @@ const RowsInputs = ({
     return initialRows
   })
 
-  // Создаем массив идентификаторов для строк
   const [rowIds, setRowIds] = useState<string[]>(() => rows.map((_, index) => `row-${index}-${Date.now()}`))
+
+  useEffect(() => {
+    if (controlled && externalValues) {
+      // В контролируемом режиме синхронизируем с внешними значениями
+      if (JSON.stringify(externalValues) !== JSON.stringify(rows)) {
+        setRows(externalValues)
+
+        if (externalValues.length !== rowIds.length) {
+          const newRowIds = externalValues.map((_, index) =>
+            index < rowIds.length ? rowIds[index] : `row-${index}-${Date.now()}`
+          )
+          setRowIds(newRowIds)
+        }
+      }
+    }
+    //  else if (!controlled && rowsInitialValues) {
+    //   const isCurrentStateEmpty = rows.every((row) => row.every((cell) => cell.trim() === ''))
+
+    //   if (isCurrentStateEmpty || JSON.stringify(rowsInitialValues) !== JSON.stringify(rows)) {
+    //     setRows(rowsInitialValues)
+
+    //     // Обновляем rowIds если количество строк изменилось
+    //     if (rowsInitialValues.length !== rowIds.length) {
+    //       const newRowIds = rowsInitialValues.map((_, index) =>
+    //         index < rowIds.length ? rowIds[index] : `row-${index}-${Date.now()}`
+    //       )
+    //       setRowIds(newRowIds)
+    //     }
+    //   }
+    // }
+  }, [controlled, externalValues, rowsInitialValues])
+
+  // Получаем актуальные значения строк
+  const currentRows = controlled && externalValues ? externalValues : rows
 
   // Проверка, полностью ли заполнена строка
   const isRowFullyFilled = (row: string[]) => {
@@ -166,7 +200,7 @@ const RowsInputs = ({
 
   // Подсчет полностью заполненных строк
   const getFilledRowsCount = () => {
-    return rows.filter(isRowFullyFilled).length
+    return currentRows.filter(isRowFullyFilled).length
   }
 
   // Проверка, какие строки нужно подсветить как ошибочные
@@ -179,7 +213,7 @@ const RowsInputs = ({
     const errorRows: number[] = []
 
     // Проверяем частично заполненные строки
-    rows.forEach((row, index) => {
+    currentRows.forEach((row, index) => {
       if (isRowPartiallyFilled(row)) {
         errorRows.push(index)
       }
@@ -187,7 +221,7 @@ const RowsInputs = ({
 
     // Если заполнено меньше минимума, подсвечиваем также пустые строки до minFilledRows
     if (filledCount < minFilledRows) {
-      rows.forEach((row, index) => {
+      currentRows.forEach((row, index) => {
         if (index < minFilledRows && !isRowFullyFilled(row) && !errorRows.includes(index)) {
           errorRows.push(index)
         }
@@ -201,18 +235,18 @@ const RowsInputs = ({
 
   // Обновляем rowIds при изменении количества строк
   useEffect(() => {
-    if (rows.length > rowIds.length) {
+    if (currentRows.length > rowIds.length) {
       // Добавляем новые ID для новых строк
       const newIds = [...rowIds]
-      for (let i = rowIds.length; i < rows.length; i++) {
+      for (let i = rowIds.length; i < currentRows.length; i++) {
         newIds.push(`row-${i}-${Date.now()}`)
       }
       setRowIds(newIds)
-    } else if (rows.length < rowIds.length) {
+    } else if (currentRows.length < rowIds.length) {
       // Удаляем лишние ID
-      setRowIds(rowIds.slice(0, rows.length))
+      setRowIds(rowIds.slice(0, currentRows.length))
     }
-  }, [rows.length])
+  }, [currentRows.length])
 
   // Настройка сенсоров для drag and drop
   const sensors = useSensors(
@@ -228,10 +262,14 @@ const RowsInputs = ({
 
   // Добавление новой строки
   const addRow = () => {
-    if (rows.length < maxRows) {
-      const newRows = [...rows, new Array(inputsInRowCount).fill('')]
-      setRows(newRows)
-      setRowIds([...rowIds, `row-${rows.length}-${Date.now()}`])
+    if (currentRows.length < maxRows) {
+      const newRows = [...currentRows, new Array(inputsInRowCount).fill('')]
+
+      if (!controlled) {
+        setRows(newRows)
+        setRowIds([...rowIds, `row-${currentRows.length}-${Date.now()}`])
+      }
+
       // Уведомляем родительский компонент об изменении
       if (onRowsChange) {
         onRowsChange(newRows)
@@ -241,11 +279,15 @@ const RowsInputs = ({
 
   // Удаление строки
   const removeRow = (rowIndex: number) => {
-    if (rows.length === 1) return
-    const newRows = rows.filter((_, index) => index !== rowIndex)
+    if (currentRows.length === 1) return
+    const newRows = currentRows.filter((_, index) => index !== rowIndex)
     const newRowIds = rowIds.filter((_, index) => index !== rowIndex)
-    setRows(newRows)
-    setRowIds(newRowIds)
+
+    if (!controlled) {
+      setRows(newRows)
+      setRowIds(newRowIds)
+    }
+
     // Уведомляем родительский компонент об изменении
     if (onRowsChange) {
       onRowsChange(newRows)
@@ -254,10 +296,15 @@ const RowsInputs = ({
 
   // Обновление значения в конкретном инпуте
   const updateValue = (rowIndex: number, inputIndex: number, value: string) => {
-    const newRows = [...rows]
+    const newRows = [...currentRows]
     newRows[rowIndex][inputIndex] = value
-    setRows(newRows)
+
+    if (!controlled) {
+      setRows(newRows)
+    }
+
     onSetValue(rowIndex, inputIndex, value)
+
     // Уведомляем родительский компонент об изменении
     if (onRowsChange) {
       onRowsChange(newRows)
@@ -272,9 +319,13 @@ const RowsInputs = ({
       const oldIndex = rowIds.indexOf(active.id as string)
       const newIndex = rowIds.indexOf(over.id as string)
 
-      const newRows = arrayMove(rows, oldIndex, newIndex)
-      setRows(newRows)
-      setRowIds(arrayMove(rowIds, oldIndex, newIndex))
+      const newRows = arrayMove(currentRows, oldIndex, newIndex)
+      const newRowIds = arrayMove(rowIds, oldIndex, newIndex)
+
+      if (!controlled) {
+        setRows(newRows)
+        setRowIds(newRowIds)
+      }
 
       // Уведомляем родительский компонент об изменении
       if (onRowsChange) {
@@ -306,7 +357,7 @@ const RowsInputs = ({
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
             <div className={styles.rows__inputs__container}>
-              {rows.map((row, rowIndex) => (
+              {currentRows.map((row, rowIndex) => (
                 <SortableRow
                   extraButtonMinusClass={extraButtonMinusClass}
                   key={rowIds[rowIndex]}
@@ -317,8 +368,8 @@ const RowsInputs = ({
                   titles={titles}
                   inputsInRowCount={inputsInRowCount}
                   extraClass={extraClasses[rowIndex]}
-                  isLastRow={rowIndex === rows.length - 1}
-                  canRemove={rows.length > 1}
+                  isLastRow={rowIndex === currentRows.length - 1}
+                  canRemove={currentRows.length > 1}
                   onUpdateValue={updateValue}
                   onRemoveRow={removeRow}
                   hasError={rowsWithErrors.includes(rowIndex)}
@@ -329,7 +380,7 @@ const RowsInputs = ({
         </DndContext>
 
         {/* Кнопка добавления новой строки */}
-        {rows.length < maxRows && (
+        {currentRows.length < maxRows && (
           <button
             className={`${styles.rows__inputs__add} ${extraButtonPlusClass}`}
             onClick={addRow}

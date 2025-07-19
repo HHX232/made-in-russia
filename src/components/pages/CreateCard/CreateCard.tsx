@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
-import {FC, useState, useEffect} from 'react'
+import {FC, useState, useEffect, useCallback, useMemo} from 'react'
 import styles from './CreateCard.module.scss'
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
@@ -15,7 +15,6 @@ import CreateFaqCard from './CreateFaqCard/CreateFaqCard'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import {useImageModal} from '@/hooks/useImageModal'
 import ICardFull, {ICategory} from '@/services/card/card.types'
-import CardsCatalog from '@/components/screens/Catalog/CardsCatalog/CardsCatalog'
 import {Product} from '@/services/products/product.types'
 import CreateSimilarProducts from './CreateSimilarProducts/CreateSimilarProducts'
 import CreateCardProductCategory from './CreateCardProductCategory/CreateCardProductCategory'
@@ -24,6 +23,15 @@ import {toast} from 'sonner'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {
+  ValidationErrors,
+  CompanyDescriptionData,
+  CreateCardProps,
+  CreateProductDto,
+  ICurrentLanguage
+} from './CreateCard.types'
+import {headers} from 'next/headers'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
 
 const vopros = '/vopros.svg'
 // Конфигурация изображений для подсказок
@@ -67,87 +75,105 @@ const parseQuantityRange = (quantityStr: string): {from: number; to: number | nu
   return {from: singleValue, to: null}
 }
 
-// Типы для API
-interface PriceData {
-  quantityFrom: number
-  quantityTo: number
-  currency: string
-  unit: string
-  price: number
-  discount: number
-}
+const validateField = (
+  fieldName: keyof ValidationErrors,
+  cardTitle: string,
+  uploadedFiles: File[],
+  remainingInitialImages: string[],
+  pricesArray: {
+    currency: string
+    priceWithDiscount: string
+    priceWithoutDiscount: string
+    quantity: string
+    value: number
+    unit: string
+  }[],
+  description: string,
+  descriptionMatrix: string[][],
+  companyData: CompanyDescriptionData,
+  faqMatrix: string[][]
+): string => {
+  switch (fieldName) {
+    case 'cardTitle':
+      if (!cardTitle.trim()) {
+        return 'Название товара обязательно для заполнения'
+      }
+      if (cardTitle.trim().length < 3) {
+        return 'Название должно содержать минимум 3 символа'
+      }
+      return ''
 
-interface DeliveryMethodDetail {
-  name: string
-  value: string
-}
+    case 'uploadedFiles':
+      // Считаем общее количество изображений (загруженные + оставшиеся начальные)
+      const totalImages = uploadedFiles.length + remainingInitialImages.length
+      if (totalImages < 3) {
+        return `Необходимо минимум 3 изображения (текущее количество: ${totalImages})`
+      }
+      return ''
 
-interface AboutVendorData {
-  mainDescription: string
-  furtherDescription: string
-  mediaAltTexts: string[]
-}
+    case 'pricesArray':
+      if (pricesArray.length === 0) {
+        return 'Необходимо добавить хотя бы одну цену'
+      }
+      // Дополнительная проверка на корректность данных в массиве цен
+      const invalidPrices = pricesArray.filter((price) => !price.value || price.value <= 0)
+      if (invalidPrices.length > 0) {
+        return 'Все цены должны быть больше нуля'
+      }
+      return ''
 
-interface FaqItem {
-  question: string
-  answer: string
-}
+    case 'description':
+      const cleanDescription = description.replace('## Основное описание', '').trim()
+      if (!cleanDescription) {
+        return 'Основное описание обязательно для заполнения'
+      }
+      if (cleanDescription.length < 10) {
+        return 'Основное описание должно содержать минимум 10 символов'
+      }
+      return ''
 
-interface Characteristic {
-  name: string
-  value: string
-}
+    case 'descriptionMatrix':
+      const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell.trim()))
+      if (filledRows.length === 0) {
+        return 'Необходимо заполнить хотя бы одну строку в таблице характеристик'
+      }
+      return ''
 
-interface PackageOption {
-  name: string
-  price: number
-  priceUnit: string
-}
+    case 'companyData':
+      if (!companyData.topDescription.trim()) {
+        return 'Верхнее описание компании обязательно для заполнения'
+      }
+      if (!companyData.bottomDescription.trim()) {
+        return 'Нижнее описание компании обязательно для заполнения'
+      }
+      const companyImagesWithContent = companyData.images.filter((img) => img.image !== null)
+      if (companyImagesWithContent.length === 0) {
+        return 'Необходимо загрузить хотя бы одно изображение компании'
+      }
+      // Проверка, что у загруженных изображений есть описания
+      const imagesWithoutDescription = companyImagesWithContent.filter((img) => !img.description.trim())
+      if (imagesWithoutDescription.length > 0) {
+        return 'У всех загруженных изображений должны быть описания'
+      }
+      return ''
 
-interface CreateProductDto {
-  mainDescription: string
-  deliveryMethodIds: number[]
-  prices: PriceData[]
-  minimumOrderQuantity: string
-  deliveryMethodDetails: DeliveryMethodDetail[]
-  aboutVendor: AboutVendorData
-  faq: FaqItem[]
-  characteristics: Characteristic[]
-  title: string
-  furtherDescription: string
-  packageOptions: PackageOption[]
-  categoryId: number
-  discountExpirationDate: string | number
-  similarProducts: number[]
-  oldProductMedia?: {id: number; position: number}[]
-  oldAboutVendorMedia?: {id: number; position: number}[]
-}
+    case 'faqMatrix':
+      const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
+      if (filledFaqRows.length === 0) {
+        return 'Необходимо добавить хотя бы один вопрос и ответ'
+      }
+      // Проверка, что если есть вопрос, то есть и ответ
+      const incompleteRows = filledFaqRows.filter(
+        (row) => (row[0].trim() && !row[1].trim()) || (!row[0].trim() && row[1].trim())
+      )
+      if (incompleteRows.length > 0) {
+        return 'Каждый вопрос должен иметь ответ и наоборот'
+      }
+      return ''
 
-// Типы для состояния компонентов
-// Обновленный тип для поддержки File | string | null
-interface CompanyDescriptionData {
-  topDescription: string
-  images: Array<{
-    image: File | string | null // Изменено: добавлена поддержка string
-    description: string
-  }>
-  bottomDescription: string
-}
-
-// Интерфейс для ошибок валидации
-interface ValidationErrors {
-  cardTitle: string
-  uploadedFiles: string
-  pricesArray: string
-  description: string
-  descriptionImages: string
-  descriptionMatrix: string
-  companyData: string
-  faqMatrix: string
-}
-
-interface CreateCardProps {
-  initialData?: ICardFull
+    default:
+      return ''
+  }
 }
 
 const CreateCard: FC<CreateCardProps> = ({initialData}) => {
@@ -159,33 +185,121 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const [saleDate, setSaleDate] = useState<string>(
     initialData?.daysBeforeDiscountExpires ? initialData.daysBeforeDiscountExpires.toString() : ''
   )
-  // useEffect(() => {
-  //   console.log('sale date', saleDate)
-  //   try {
-  //     const days = parseFloat(saleDate.replace(',', '.'))
-  //     const newDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000)
-  //     console.log('new sale date', newDate)
-  //   } catch (error) {
-  //     console.error('Error in useEffect:', error)
-  //   }
-  // }, [saleDate])
+  const t = useTranslations('createCard')
+  const allLanguages = ['ru', 'en', 'zh']
+  const currentLang = useCurrentLanguage()
+
+  const [currentLangState, setCurrentLangState] = useState<ICurrentLanguage>(currentLang as ICurrentLanguage)
+  const [cardTitle, setCardTitle] = useState(initialData?.title || '')
+
+  const [cardObjectForOthers, setCardObjectForOthers] = useState<Record<string, Partial<ICardFull>>>(() =>
+    allLanguages.reduce<Record<string, Partial<ICardFull>>>(
+      (acc, lang) => ({
+        ...acc,
+        [lang]: {
+          title: lang === currentLang ? initialData?.title || '' : `${initialData?.title || cardTitle} ${lang}`,
+          aboutVendor: initialData?.aboutVendor
+            ? {
+                mainDescription:
+                  lang === currentLang
+                    ? initialData.aboutVendor.mainDescription || ''
+                    : `${initialData.aboutVendor.mainDescription || ''} ${lang}`,
+                furtherDescription:
+                  lang === currentLang
+                    ? initialData.aboutVendor.furtherDescription || ''
+                    : `${initialData.aboutVendor.furtherDescription || ''} ${lang}`,
+                media: initialData.aboutVendor.media || []
+              }
+            : undefined,
+          article: lang === currentLang ? initialData?.article || '' : `${initialData?.article || ''} ${lang}`,
+          category: initialData?.category,
+          characteristics:
+            initialData?.characteristics?.map((characteristic) => ({
+              ...characteristic,
+              name: lang === currentLang ? characteristic.name : `${characteristic.name} ${lang}`,
+              value: lang === currentLang ? characteristic.value : `${characteristic.value} ${lang}`
+            })) || [],
+          creationDate: initialData?.creationDate,
+          deliveryMethods:
+            initialData?.deliveryMethods?.map((method) => ({
+              ...method,
+              name: lang === currentLang ? method.name : `${method.name} ${lang}`
+            })) || [],
+          daysBeforeDiscountExpires: initialData?.daysBeforeDiscountExpires,
+          deliveryMethod: initialData?.deliveryMethod
+            ? {
+                ...initialData.deliveryMethod,
+                name:
+                  lang === currentLang
+                    ? initialData.deliveryMethod.name || ''
+                    : `${initialData.deliveryMethod.name || ''} ${lang}`
+              }
+            : undefined,
+          deliveryMethodsDetails:
+            initialData?.deliveryMethodsDetails?.map((detail) => ({
+              ...detail,
+              name: lang === currentLang ? detail.name : `${detail.name} ${lang}`,
+              value: lang === currentLang ? detail.value : `${detail.value} ${lang}`
+            })) || [],
+          discount: initialData?.discount,
+          discountedPrice: initialData?.discountedPrice,
+          originalPrice: initialData?.originalPrice,
+          // ГЛАВНОЕ ИЗМЕНЕНИЕ: добавляем описания для всех языков
+          mainDescription: '',
+          furtherDescription: initialData?.furtherDescription || `## ${t('alternativeAdditionalDescr')}`,
+          summaryDescription:
+            lang === currentLang
+              ? initialData?.summaryDescription || ''
+              : `${initialData?.summaryDescription || ''} ${lang}`,
+          primaryDescription:
+            lang === currentLang
+              ? initialData?.primaryDescription || ''
+              : `${initialData?.primaryDescription || ''} ${lang}`,
+          priceUnit: lang === currentLang ? initialData?.priceUnit || '' : `${initialData?.priceUnit || ''} ${lang}`,
+          previewImageUrl: initialData?.previewImageUrl
+        }
+      }),
+      {}
+    )
+  )
+
+  useEffect(() => {
+    console.log('cardObjectForOthers', cardObjectForOthers)
+  }, [cardObjectForOthers])
+
+  const getValueForLang = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (state: any, objectValue: keyof ICardFull): any => {
+      if (currentLangState === currentLang) {
+        // Для основного языка возвращаем состояние из главных переменных
+        return state
+      }
+
+      // Для других языков возвращаем из cardObjectForOthers
+      const langData = cardObjectForOthers[currentLangState]
+      return langData?.[objectValue] !== undefined ? langData[objectValue] : state
+    },
+    [currentLangState, currentLang, cardObjectForOthers]
+  )
+
+  useEffect(() => {
+    console.log(cardObjectForOthers)
+  }, [cardObjectForOthers])
 
   const [packageArray, setPackaginArray] = useState<string[][]>([])
 
   const handlePackagingMatrixChange = (packagingMatrix: string[][]) => {
     setPackaginArray(packagingMatrix)
   }
-  // useEffect(() => {
-  //   console.log('initialData', initialData)
-  // }, [initialData])
-  const t = useTranslations('createCard')
-  const currentLang = useCurrentLanguage()
+
   // Используем универсальный хук для модального окна
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
   const indowWidth = useWindowWidth()
+
   // Состояние для базовых полей
-  const [cardTitle, setCardTitle] = useState(initialData?.title || '')
+
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+
   // Добавляем состояние для отслеживания оставшихся начальных изображений
   const [remainingInitialImages, setRemainingInitialImages] = useState<string[]>(
     initialData?.media.map((el) => el.url) || []
@@ -219,15 +333,11 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     })) || []
   )
 
-  // useEffect(() => {
-  //   console.log('pricesArray', pricesArray)
-  // }, [pricesArray])
-
   // Состояние для описаний (CreateDescriptionsElements)
-  const [description, setDescription] = useState(initialData?.mainDescription || '#' + t('alternativeMainDescr'))
-  const [additionalDescription, setAdditionalDescription] = useState(
-    initialData?.furtherDescription || '#' + t('alternativeAdditionalDescr')
-  )
+  // const [description, setDescription] = useState(initialData?.mainDescription || '## ' + t('alternativeMainDescr'))
+  // const [additionalDescription, setAdditionalDescription] = useState(
+  //   initialData?.furtherDescription || '## ' + t('alternativeAdditionalDescr')
+  // )
   const [descriptionImages, setDescriptionImages] = useState<ImageMapping[]>([])
   const [descriptionMatrix, setDescriptionMatrix] = useState<string[][]>(
     initialData?.characteristics.map((el) => [el.name, el.value]) || []
@@ -261,6 +371,40 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       []
   )
 
+  const [companyDataForOthers, setCompanyDataForOthers] = useState<Record<string, CompanyDescriptionData>>(() =>
+    allLanguages
+      .filter((lang) => lang !== currentLang)
+      .reduce<Record<string, CompanyDescriptionData>>(
+        (acc, lang) => ({
+          ...acc,
+          [lang]: {
+            topDescription: `${initialData?.aboutVendor?.mainDescription || ''} ${lang}`,
+            images: companyData.images, // Изображения одинаковы для всех языков
+            bottomDescription: `${initialData?.aboutVendor?.furtherDescription || ''} ${lang}`
+          }
+        }),
+        {}
+      )
+  )
+
+  const [faqMatrixForOthers, setFaqMatrixForOthers] = useState<Record<string, string[][]>>(() =>
+    allLanguages
+      .filter((lang) => lang !== currentLang)
+      .reduce<Record<string, string[][]>>(
+        (acc, lang) => ({
+          ...acc,
+          [lang]: initialData?.faq.map((el) => [`${el.question} ${lang}`, `${el.answer} ${lang}`]) || [
+            ['', ''],
+            ['', ''],
+            ['', ''],
+            ['', ''],
+            ['', '']
+          ]
+        }),
+        {}
+      )
+  )
+
   // Состояние для FAQ (CreateFaqCard)
   const [faqMatrix, setFaqMatrix] = useState<string[][]>(
     initialData?.faq.map((el) => [el.question, el.answer]) || [
@@ -271,6 +415,40 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       ['', '']
     ]
   )
+
+  const getFaqMatrixForLang = useCallback((): string[][] => {
+    if (currentLangState === currentLang) {
+      return faqMatrix
+    }
+    return faqMatrixForOthers[currentLangState]
+  }, [currentLangState, currentLang, faqMatrix, faqMatrixForOthers])
+
+  const getCompanyDataForLang = useCallback((): CompanyDescriptionData => {
+    if (currentLangState === currentLang) {
+      return companyData
+    }
+    return companyDataForOthers[currentLangState] || companyData
+  }, [currentLangState, currentLang, companyData, companyDataForOthers])
+
+  const [descriptionMatrixForOthers, setDescriptionMatrixForOthers] = useState<Record<string, string[][]>>(() =>
+    allLanguages
+      .filter((lang) => lang !== currentLang)
+      .reduce<Record<string, string[][]>>(
+        (acc, lang) => ({
+          ...acc,
+          [lang]: initialData?.characteristics.map((el) => [`${el.name} ${lang}`, `${el.value} ${lang}`]) || []
+        }),
+        {}
+      )
+  )
+
+  // Функция для получения характеристик для текущего языка
+  const getDescriptionMatrixForLang = useCallback((): string[][] => {
+    if (currentLangState === currentLang) {
+      return descriptionMatrix
+    }
+    return descriptionMatrixForOthers[currentLangState] || descriptionMatrix
+  }, [currentLangState, currentLang, descriptionMatrix, descriptionMatrixForOthers])
 
   // Состояние для ошибок валидации
   const [errors, setErrors] = useState<ValidationErrors>({
@@ -288,112 +466,136 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const [submitAttempted, setSubmitAttempted] = useState(false)
 
   // Функция валидации отдельного поля
-  const validateField = (fieldName: keyof ValidationErrors): string => {
-    switch (fieldName) {
-      case 'cardTitle':
-        if (!cardTitle.trim()) {
-          return 'Название товара обязательно для заполнения'
-        }
-        if (cardTitle.trim().length < 3) {
-          return 'Название должно содержать минимум 3 символа'
-        }
-        return ''
+  const getCurrentMainDescription = useCallback(() => {
+    return cardObjectForOthers[currentLangState]?.mainDescription
+  }, [cardObjectForOthers, currentLangState])
 
-      case 'uploadedFiles':
-        // Считаем общее количество изображений (загруженные + оставшиеся начальные)
-        const totalImages = uploadedFiles.length + remainingInitialImages.length
-        if (totalImages < 3) {
-          return `Необходимо минимум 3 изображения (текущее количество: ${totalImages})`
-        }
-        return ''
+  const getCurrentFurtherDescription = useCallback(() => {
+    return cardObjectForOthers[currentLangState]?.furtherDescription
+  }, [cardObjectForOthers, currentLangState])
 
-      case 'pricesArray':
-        if (pricesArray.length === 0) {
-          return 'Необходимо добавить хотя бы одну цену'
+  const setMainDescriptionForCurrentLang = useCallback(
+    (value: string) => {
+      setCardObjectForOthers((prev) => ({
+        ...prev,
+        [currentLangState]: {
+          ...prev[currentLangState],
+          mainDescription: value
         }
-        // Дополнительная проверка на корректность данных в массиве цен
-        const invalidPrices = pricesArray.filter((price) => !price.value || price.value <= 0)
-        if (invalidPrices.length > 0) {
-          return 'Все цены должны быть больше нуля'
-        }
-        return ''
+      }))
+    },
+    [currentLangState]
+  )
 
-      case 'description':
-        const cleanDescription = description.replace('# Основное описание', '').trim()
-        if (!cleanDescription) {
-          return 'Основное описание обязательно для заполнения'
+  const setFurtherDescriptionForCurrentLang = useCallback(
+    (value: string) => {
+      setCardObjectForOthers((prev) => ({
+        ...prev,
+        [currentLangState]: {
+          ...prev[currentLangState],
+          furtherDescription: value
         }
-        if (cleanDescription.length < 10) {
-          return 'Основное описание должно содержать минимум 10 символов'
-        }
-        return ''
+      }))
+    },
+    [currentLangState]
+  )
 
-      case 'descriptionImages':
-        // Изображения в описании необязательны
-        return ''
-
-      case 'descriptionMatrix':
-        const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell.trim()))
-        if (filledRows.length === 0) {
-          return 'Необходимо заполнить хотя бы одну строку в таблице характеристик'
-        }
-        return ''
-
-      case 'companyData':
-        if (!companyData.topDescription.trim()) {
-          return 'Верхнее описание компании обязательно для заполнения'
-        }
-        if (!companyData.bottomDescription.trim()) {
-          return 'Нижнее описание компании обязательно для заполнения'
-        }
-        const companyImagesWithContent = companyData.images.filter((img) => img.image !== null)
-        if (companyImagesWithContent.length === 0) {
-          return 'Необходимо загрузить хотя бы одно изображение компании'
-        }
-        // Проверка, что у загруженных изображений есть описания
-        const imagesWithoutDescription = companyImagesWithContent.filter((img) => !img.description.trim())
-        if (imagesWithoutDescription.length > 0) {
-          return 'У всех загруженных изображений должны быть описания'
-        }
-        return ''
-
-      case 'faqMatrix':
-        const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
-        if (filledFaqRows.length === 0) {
-          return 'Необходимо добавить хотя бы один вопрос и ответ'
-        }
-        // Проверка, что если есть вопрос, то есть и ответ
-        const incompleteRows = filledFaqRows.filter(
-          (row) => (row[0].trim() && !row[1].trim()) || (!row[0].trim() && row[1].trim())
-        )
-        if (incompleteRows.length > 0) {
-          return 'Каждый вопрос должен иметь ответ и наоборот'
-        }
-        return ''
-
-      default:
-        return ''
+  const handleDescriptionChange = (value: string) => {
+    setMainDescriptionForCurrentLang(value)
+    if (errors.description) {
+      setErrors((prev) => ({...prev, description: ''}))
     }
   }
-
+  const handleAdditionalDescriptionChange = (value: string) => {
+    setFurtherDescriptionForCurrentLang(value)
+    // Дополнительное описание не обязательно, поэтому ошибок для него нет
+  }
   // Функция для валидации всех полей
-  const validateAllFields = (): boolean => {
+  const validateAllFields = useCallback((): boolean => {
+    const currentMainDescription = getCurrentMainDescription()
     const newErrors: ValidationErrors = {
-      cardTitle: validateField('cardTitle'),
-      uploadedFiles: validateField('uploadedFiles'),
-      pricesArray: validateField('pricesArray'),
-      description: validateField('description'),
-      descriptionImages: validateField('descriptionImages'),
-      descriptionMatrix: validateField('descriptionMatrix'),
-      companyData: validateField('companyData'),
-      faqMatrix: validateField('faqMatrix')
+      cardTitle: validateField(
+        'cardTitle',
+        cardTitle,
+        uploadedFiles,
+        remainingInitialImages,
+        pricesArray,
+        currentMainDescription || '',
+        descriptionMatrix,
+        companyData,
+        faqMatrix
+      ),
+      uploadedFiles: validateField(
+        'uploadedFiles',
+        cardTitle,
+        uploadedFiles,
+        remainingInitialImages,
+        pricesArray,
+        currentMainDescription || '',
+        descriptionMatrix,
+        companyData,
+        faqMatrix
+      ),
+      pricesArray: validateField(
+        'pricesArray',
+        cardTitle,
+        uploadedFiles,
+        remainingInitialImages,
+        pricesArray,
+        currentMainDescription || '',
+        descriptionMatrix,
+        companyData,
+        faqMatrix
+      ),
+      description: validateField(
+        'description',
+        cardTitle,
+        uploadedFiles,
+        remainingInitialImages,
+        pricesArray,
+        currentMainDescription || '',
+        descriptionMatrix,
+        companyData,
+        faqMatrix
+      ),
+      descriptionMatrix: validateField(
+        'descriptionMatrix',
+        cardTitle,
+        uploadedFiles,
+        remainingInitialImages,
+        pricesArray,
+        currentMainDescription || '',
+        descriptionMatrix,
+        companyData,
+        faqMatrix
+      ),
+      companyData: validateField(
+        'companyData',
+        cardTitle,
+        uploadedFiles,
+        remainingInitialImages,
+        pricesArray,
+        currentMainDescription || '',
+        descriptionMatrix,
+        companyData,
+        faqMatrix
+      ),
+      faqMatrix: validateField(
+        'faqMatrix',
+        cardTitle,
+        uploadedFiles,
+        remainingInitialImages,
+        pricesArray,
+        currentMainDescription || '',
+        descriptionMatrix,
+        companyData,
+        faqMatrix
+      )
     }
 
     setErrors(newErrors)
-
-    // Проверяем, есть ли ошибки
     return !Object.values(newErrors).some((error) => error !== '')
-  }
+  }, [cardTitle, uploadedFiles, remainingInitialImages, pricesArray, descriptionMatrix, companyData, faqMatrix])
 
   // Обновляем валидацию при изменении полей
   useEffect(() => {
@@ -403,15 +605,16 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     }
   }, [
     cardTitle,
-    uploadedFiles,
-    remainingInitialImages,
-    pricesArray,
-    description,
-    descriptionImages,
-    descriptionMatrix,
-    companyData,
-    faqMatrix,
-    submitAttempted
+    uploadedFiles.length, // Используем длину массива вместо самого массива
+    remainingInitialImages.length, // Используем длину массива
+    pricesArray.length, // Используем длину массива
+    descriptionImages.length, // Используем длину массива
+    JSON.stringify(descriptionMatrix), // Преобразуем в строку для корректного сравнения
+    JSON.stringify(companyData), // Преобразуем в строку
+    JSON.stringify(faqMatrix), // Преобразуем в строку
+    submitAttempted,
+    currentLangState, // Добавляем текущий язык как зависимость
+    validateAllFields
   ])
 
   // Обработчики изменений с очисткой ошибок
@@ -443,12 +646,12 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     }
   }
 
-  const handleDescriptionChange = (value: string) => {
-    setDescription(value)
-    if (errors.description) {
-      setErrors((prev) => ({...prev, description: ''}))
-    }
-  }
+  // const handleDescriptionChange = (value: string) => {
+  //   setDescription(value)
+  //   if (errors.description) {
+  //     setErrors((prev) => ({...prev, description: ''}))
+  //   }
+  // }
 
   const handleDescriptionImagesChange = (images: ImageMapping[]) => {
     setDescriptionImages(images)
@@ -519,10 +722,13 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
     try {
       // Подготовка данных для отправки
+      const currentMainDescription = getCurrentMainDescription()
+      const currentFurtherDescription = getCurrentFurtherDescription()
       const data: CreateProductDto = {
         title: cardTitle,
-        mainDescription: description.replace('#' + t('alternativeMainDescr'), '').trim(),
-        furtherDescription: additionalDescription.replace('#' + t('alternativeAdditionalDescr'), '').trim(),
+        mainDescription: currentMainDescription?.replace('## ' + t('alternativeMainDescr'), '').trim() || '',
+        furtherDescription:
+          currentFurtherDescription?.replace('## ' + t('alternativeAdditionalDescr'), '').trim() || '',
         deliveryMethodIds: selectedDeliveryMethodIds,
         prices: pricesArray.map((price, index) => {
           // Парсим диапазон количества
@@ -706,6 +912,18 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     }
   }
 
+  const [testObject, setTestObject] = useState({
+    ru: {description: 'ru', additionalDescription: 'dopru'},
+    en: {description: 'en', additionalDescription: 'dopen'},
+    zh: {description: 'zh', additionalDescription: 'dopzh'}
+  })
+
+  const {descriptions} = useTypedSelector((state) => state.multilingualDescriptions)
+
+  useEffect(() => {
+    console.log('descriptions из RTK', descriptions)
+  }, [descriptions])
+
   return (
     <>
       {/* Единое модальное окно для всех изображений подсказок */}
@@ -725,6 +943,35 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       <div className={'container'}>
         <div className={`${styles.create__inner}`}>
           <h1 className={`${styles.create__title}`}>{t('createCardTitle')}</h1>
+
+          <div className={`${styles.language__switcher}`}>
+            <p className={`${styles.language__switcher__title}`}>{t('languageForInput')}</p>
+            <p className={`${styles.language__switcher__subtitle}`}>{t('languageForInputSubtitle')}</p>
+            <div className={`${styles.language__buttons}`}>
+              <button
+                type='button'
+                className={`${styles.language__button} ${currentLangState === 'ru' ? styles.language__button__active : ''}`}
+                onClick={() => setCurrentLangState('ru')}
+              >
+                RU
+              </button>
+              <button
+                type='button'
+                className={`${styles.language__button} ${currentLangState === 'en' ? styles.language__button__active : ''}`}
+                onClick={() => setCurrentLangState('en')}
+              >
+                EN
+              </button>
+              <button
+                type='button'
+                className={`${styles.language__button} ${currentLangState === 'zh' ? styles.language__button__active : ''}`}
+                onClick={() => setCurrentLangState('zh')}
+              >
+                ZH
+              </button>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmitAlternative} className={`${styles.create__form}`}>
             {/* Поле "Название" */}
             <span className={`${styles.create__input__box__span}`}>
@@ -758,8 +1005,19 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 extraClass={`${styles.create__input__title}`}
                 idForLabel='title'
                 placeholder={t('name')}
-                currentValue={cardTitle}
-                onSetValue={handleCardTitleChange}
+                currentValue={getValueForLang(cardTitle, 'title')}
+                onSetValue={(value) => {
+                  if (currentLangState === currentLang) {
+                    setCardTitle(value)
+                  } else {
+                    const updatedCardTitleForOthers = {...cardObjectForOthers}
+                    updatedCardTitleForOthers[currentLangState] = {
+                      ...updatedCardTitleForOthers[currentLangState],
+                      title: value
+                    }
+                    setCardObjectForOthers(updatedCardTitleForOthers)
+                  }
+                }}
                 theme='superWhite'
               />
             </span>
@@ -769,7 +1027,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 <p className={`${styles.create__label__title}`}>{t('categoryTitle')}</p>
               </div>
               <CreateCardProductCategory
-                initialProductCategory={initialData?.category}
+                initialProductCategory={selectedCategory || undefined}
+                // initialProductCategory={getValueForLang(selectedCategory, 'category')}
                 onSetCategory={(category) => setSelectedCategory(category)}
               />
             </div>
@@ -852,8 +1111,16 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 item.currency,
                 item.unit
               ])}
-              descriptionArray={descriptionMatrix}
-              onSetDescriptionArray={handleDescriptionMatrixChange}
+              descriptionArray={getDescriptionMatrixForLang()}
+              onSetDescriptionArray={(matrix) => {
+                if (currentLangState === currentLang) {
+                  handleDescriptionMatrixChange(matrix)
+                } else {
+                  const updatedDescriptionMatrixForOthers = {...descriptionMatrixForOthers}
+                  updatedDescriptionMatrixForOthers[currentLangState] = matrix
+                  setDescriptionMatrixForOthers(updatedDescriptionMatrixForOthers)
+                }
+              }}
               onSetPricesArray={handlePricesArrayChange}
               onSetPackagingMatrix={handlePackagingMatrixChange}
               onSetSaleDate={setSaleDate}
@@ -861,27 +1128,42 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               descriptionMatrixError={errors.descriptionMatrix}
             />
 
-            {/* Big descriptions - предполагаем, что внутри компонента есть свои подсказки */}
             <CreateDescriptionsElements
-              initialDescr={description}
-              initialAdditionalDescr={additionalDescription}
-              onSetDescr={handleDescriptionChange}
-              onSetAdditionalDescr={setAdditionalDescription}
               onImagesChange={handleDescriptionImagesChange}
               descriptionError={errors.description}
-              imagesError={errors.descriptionImages}
+              currentDynamicLang={currentLangState}
+              fullObjectForDescriptions={testObject}
+              setFullObjectForDescriptions={setTestObject}
             />
 
             {/* CreateCompanyDescription */}
             <CreateCompanyDescription
-              data={companyData}
-              onChange={handleCompanyDataChange}
-              // error={errors.companyData}
+              data={getCompanyDataForLang()}
+              onChange={(data) => {
+                if (currentLangState === currentLang) {
+                  handleCompanyDataChange(data)
+                } else {
+                  const updatedCompanyDataForOthers = {...companyDataForOthers}
+                  updatedCompanyDataForOthers[currentLangState] = data
+                  setCompanyDataForOthers(updatedCompanyDataForOthers)
+                }
+              }}
             />
-
             {/* CreateFaqCard */}
-            <CreateFaqCard values={faqMatrix} onChange={handleFaqMatrixChange} />
-
+            <CreateFaqCard
+              values={getFaqMatrixForLang()}
+              onChange={(matrix) => {
+                if (currentLangState === currentLang) {
+                  handleFaqMatrixChange(matrix)
+                  console.log('матрица faqMatrix', faqMatrix)
+                } else {
+                  const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
+                  updatedFaqMatrixForOthers[currentLangState] = matrix
+                  console.log('матрица faqMatrixForOthers', faqMatrixForOthers)
+                  setFaqMatrixForOthers(updatedFaqMatrixForOthers)
+                }
+              }}
+            />
             <div className={`${styles.button__box}`}>
               <button
                 style={{

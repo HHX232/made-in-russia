@@ -14,7 +14,6 @@
    font-size: 24px;
    line-height: 29px;
    font-weight: 500;
-
 }
 
 .arrow__none {
@@ -50,13 +49,11 @@
    line-height: 27px;
    color: #2A2E46;
    font-weight: 600;
-
 }
 
 .create__input__box__span {
    margin-bottom: 30px;
 }
-
 
 .create__input__box__span__images {
    margin-top: 30px !important;
@@ -72,6 +69,7 @@
    max-height: fit-content;
    width: fit-content;
    margin: 0 auto;
+   transition: opacity 0.3s ease;
 }
 
 .button__box {
@@ -83,7 +81,6 @@
 
 .drop__extra__image {
    margin: 10px;
-
 }
 
 .drop__extra__image__modal {
@@ -94,9 +91,7 @@
 
 .drop__extra>ul {
    max-width: none !important;
-
 }
-
 
 .drop__extra__first {
    z-index: 1000000 !important;
@@ -104,5 +99,242 @@
 
 .drop__extra__second {
    z-index: 999988 !important;
+}
 
+/* Стили для переключателя языков */
+.language__switcher {
+   display: flex;
+   flex-direction: column;
+   gap: 15px;
+   margin-bottom: 40px;
+   padding: 20px;
+   background-color: #f8f9fa;
+   border-radius: 10px;
+   max-width: 700px;
+}
+
+.language__switcher__title {
+   font-size: 18px;
+   font-weight: 600;
+   color: #2A2E46;
+   margin: 0;
+}
+
+.language__buttons {
+   display: flex;
+   gap: 10px;
+}
+
+.language__button {
+   padding: 8px 16px;
+   border: 2px solid #e0e0e0;
+   background-color: #fff;
+   border-radius: 8px;
+   font-size: 14px;
+   font-weight: 600;
+   color: #666;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   min-width: 50px;
+}
+
+.language__switcher {
+   display: flex;
+   flex-direction: column;
+   gap: 15px;
+   margin-bottom: 40px;
+   padding: 20px;
+   background-color: #f8f9fa;
+   border-radius: 10px;
+   max-width: 700px;
+}
+
+.language__switcher__title {
+   font-size: 18px;
+   font-weight: 600;
+   color: #2A2E46;
+   margin: 0;
+}
+
+.language__buttons {
+   display: flex;
+   gap: 10px;
+}
+
+.language__button {
+   padding: 8px 16px;
+   border: 2px solid #e0e0e0;
+   background-color: #fff;
+   border-radius: 8px;
+   font-size: 14px;
+   font-weight: 600;
+   color: #666;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   min-width: 50px;
+}
+
+.language__button:hover {
+   border-color: #AC2525;
+   color: #AC2525;
+}
+
+.language__button__active {
+   background-color: #AC2525;
+   border-color: #AC2525;
+   color: #fff;
+}
+
+.language__button__active:hover {
+   background-color: #8B1F1F;
+   border-color: #8B1F1F;
+}
+
+/* Стили для индикаторов переводов */
+.translation__indicators {
+   display: flex;
+   gap: 8px;
+   margin-top: 10px;
+   align-items: center;
+}
+
+.translation__indicator {
+   padding: 4px 8px;
+   border-radius: 4px;
+   font-size: 12px;
+   font-weight: 600;
+   background-color: #f0f0f0;
+   color: #999;
+   border: 1px solid #e0e0e0;
+   transition: all 0.3s ease;
+}
+
+.translation__indicator__filled {
+   background-color: #e8f5e8;
+   color: #2e7d32;
+   border-color: #4caf50;
+}
+
+
+
+.language__button:hover {
+   border-color: #AC2525;
+   color: #AC2525;
+}
+
+.language__button__active {
+   background-color: #AC2525;
+   border-color: #AC2525;
+   color: #fff;
+}
+
+.language__button__active:hover {
+   background-color: #8B1F1F;
+   border-color: #8B1F1F;
+}
+
+/* Стили для индикаторов переводов */
+.translation__indicators {
+   display: flex;
+   gap: 8px;
+   margin-top: 10px;
+   align-items: center;
+}
+
+.translation__indicator {
+   padding: 4px 8px;
+   border-radius: 4px;
+   font-size: 12px;
+   font-weight: 600;
+   background-color: #f0f0f0;
+   color: #999;
+   border: 1px solid #e0e0e0;
+   transition: all 0.3s ease;
+}
+
+.translation__indicator__filled {
+   background-color: #e8f5e8;
+   color: #2e7d32;
+   border-color: #4caf50;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+   .create__title {
+      font-size: 32px;
+      line-height: 38px;
+      margin-bottom: 30px;
+   }
+
+   .language__switcher {
+      margin-bottom: 30px;
+      padding: 15px;
+   }
+
+   .language__buttons {
+      flex-wrap: wrap;
+   }
+
+   .language__button {
+      padding: 6px 12px;
+      font-size: 12px;
+   }
+
+   .language__buttons {
+      flex-wrap: wrap;
+   }
+
+   .language__button {
+      padding: 6px 12px;
+      font-size: 12px;
+   }
+
+   .create__label__title {
+      font-size: 20px;
+      line-height: 24px;
+   }
+
+   .label__title__box {
+      gap: 15px;
+      flex-wrap: wrap;
+   }
+
+   .create__input__title>div {
+      max-width: 100% !important;
+   }
+
+   .translation__indicators {
+      margin-top: 8px;
+   }
+
+   .translation__indicator {
+      padding: 3px 6px;
+      font-size: 11px;
+   }
+}
+
+@media (max-width: 480px) {
+   .create__title {
+      font-size: 28px;
+      line-height: 34px;
+      margin-bottom: 25px;
+   }
+
+   .language__switcher {
+      padding: 12px;
+   }
+
+   .language__switcher__title {
+      font-size: 16px;
+   }
+
+   .create__label__title {
+      font-size: 18px;
+      line-height: 22px;
+   }
+
+   .create____submit__button {
+      font-size: 18px;
+      padding: 12px 35px;
+   }
 }

@@ -18,8 +18,9 @@ interface CreateFaqCardProps {
 
 const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
-  const indowWidth = useWindowWidth()
+  const windowWidth = useWindowWidth()
   const t = useTranslations('CreateFaqCard')
+
   return (
     <div className={`${styles.create}`}>
       <ModalWindowDefault isOpen={isModalOpen} onClose={closeModal}>
@@ -36,7 +37,7 @@ const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
       <div className={`${styles.descr__el__title} ${styles.descr__el__title__right}`}>
         <p className={`${styles.descr__title}`}>{t('faqTitle')}</p>
         <DropList
-          direction={indowWidth && indowWidth < 768 ? 'bottom' : 'right'}
+          direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
           safeAreaEnabled
           extraClass={`${styles.drop__extra}`}
           positionIsAbsolute={false}
@@ -62,12 +63,12 @@ const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
         maxRows={15}
         initialRowsCount={5}
         titles={[t('question'), t('answer')]}
-        rowsInitialValues={values}
+        controlled={true}
+        externalValues={values}
         onSetValue={() => {}}
         onRowsChange={onChange}
       />
     </div>
   )
 }
-
 export default CreateFaqCard

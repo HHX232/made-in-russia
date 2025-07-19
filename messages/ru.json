@@ -241,6 +241,8 @@
     "mainText":"Страница не найдена или удалена. Проверьте правильность URL или вернитесь на главную."
    },
    "createCard":{
+    "languageForInput":"Активный язык товара",
+    "languageForInputSubtitle":"Обязателен к заполнению минимум 1 язык",
     "alternativeMainDescr":"Основное описание",
     "alternativeAdditionalDescr":"Дополнительное не обязательное описание",
     "validateError":"Ошибка валидации",

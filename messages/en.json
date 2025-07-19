@@ -235,6 +235,8 @@
     "mainText": "Page not found or deleted. Please check the URL or return to the homepage."
 },
 "createCard": {
+  "languageForInput":"Language for input",
+   "languageForInputSubtitle":"At least 1 language must be filled in",
     "alternativeMainDescr": "Main description",
     "alternativeAdditionalDescr": "Additional optional description",
     "validateError": "Validation error",
