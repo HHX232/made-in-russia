@@ -34,7 +34,7 @@ interface CreateDescriptionsElementsProps {
     en: {description: string; additionalDescription: string}
     zh: {description: string; additionalDescription: string}
   }
-  setFullObjectForDescriptions: (obj: {
+  setFullObjectForDescriptions?: (obj: {
     ru: {description: string; additionalDescription: string}
     en: {description: string; additionalDescription: string}
     zh: {description: string; additionalDescription: string}
@@ -44,81 +44,12 @@ interface CreateDescriptionsElementsProps {
 const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
   onImagesChange,
   descriptionError = '',
-  currentDynamicLang,
-  fullObjectForDescriptions,
-  setFullObjectForDescriptions
+  currentDynamicLang
+  // fullObjectForDescriptions,
+  // setFullObjectForDescriptions
 }) => {
-  const [copyFullObject, setCopyFullObject] = useState(
-    fullObjectForDescriptions || {
-      ru: {description: '## Основное описание', additionalDescription: '# Дополнительное описание'},
-      en: {description: '## Main description', additionalDescription: '# Additional description'},
-      zh: {description: '## 主要描述', additionalDescription: '# 附加描述'}
-    }
-  )
-
-  const {setDescriptionOne} = useActions()
+  const {setDescriptionOne, setAdditionalDescription} = useActions()
   const {descriptions} = useTypedSelector((state) => state.multilingualDescriptions)
-
-  const currentDescriptionForRu = useRef(fullObjectForDescriptions?.ru.description || '# Основное описание')
-  const currentDescriptionForEn = useRef(fullObjectForDescriptions?.en.description || '# Main description')
-  const currentDescriptionForZh = useRef(fullObjectForDescriptions?.zh.description || '# 主要描述')
-
-  const currentAdditionalDescriptionForRu = useRef(
-    fullObjectForDescriptions?.ru.additionalDescription || '# Дополнительное описание'
-  )
-  const currentAdditionalDescriptionForEn = useRef(
-    fullObjectForDescriptions?.en.additionalDescription || '# Additional description'
-  )
-  const currentAdditionalDescriptionForZh = useRef(fullObjectForDescriptions?.zh.additionalDescription || '# 附加描述')
-
-  // Синхронизируем рефы с состоянием при смене языка или обновлении объекта
-  useEffect(() => {
-    currentDescriptionForRu.current = copyFullObject.ru.description
-    currentDescriptionForEn.current = copyFullObject.en.description
-    currentDescriptionForZh.current = copyFullObject.zh.description
-
-    currentAdditionalDescriptionForRu.current = copyFullObject.ru.additionalDescription
-    currentAdditionalDescriptionForEn.current = copyFullObject.en.additionalDescription
-    currentAdditionalDescriptionForZh.current = copyFullObject.zh.additionalDescription
-  }, [currentDynamicLang, copyFullObject])
-
-  // Синхронизируем локальную копию с пропсом при изменении извне
-  useEffect(() => {
-    if (fullObjectForDescriptions) {
-      setCopyFullObject(fullObjectForDescriptions)
-    }
-  }, [fullObjectForDescriptions])
-
-  const handlerFullObjectAdditionalDescr = (val: string) => {
-    if (currentDynamicLang === 'ru') {
-      currentAdditionalDescriptionForRu.current = val
-      // setDescription({language: 'ru', description: val})
-    } else if (currentDynamicLang === 'en') {
-      currentAdditionalDescriptionForEn.current = val
-      // setDescription({language: 'en', description: val})
-    } else if (currentDynamicLang === 'zh') {
-      currentAdditionalDescriptionForZh.current = val
-    }
-
-    // Создаем новый объект с актуальными значениями из рефов
-    const updatedObject = {
-      ru: {
-        description: copyFullObject.ru.description,
-        additionalDescription: currentAdditionalDescriptionForRu.current || ''
-      },
-      en: {
-        description: copyFullObject.en.description,
-        additionalDescription: currentAdditionalDescriptionForEn.current || ''
-      },
-      zh: {
-        description: copyFullObject.zh.description,
-        additionalDescription: currentAdditionalDescriptionForZh.current || ''
-      }
-    }
-
-    setCopyFullObject(updatedObject)
-    // setFullObjectForDescriptions(updatedObject)
-  }
 
   // Локальное состояние для отображения ошибки с учетом фокуса
   const [showDescriptionError, setShowDescriptionError] = useState(false)
@@ -141,7 +72,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
 
   // Обработчик потери фокуса на основном описании
   const handleDescriptionBlur = () => {
-    const currentDescription = copyFullObject[currentDynamicLang].description
+    const currentDescription = descriptions[currentDynamicLang].description
     if (descriptionError && isDescriptionEmpty(currentDescription)) {
       setShowDescriptionError(true)
     }
@@ -149,13 +80,13 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
 
   // Показываем ошибку, если есть внешняя ошибка и поле было затронуто
   useEffect(() => {
-    const currentDescription = copyFullObject[currentDynamicLang].description
+    const currentDescription = descriptions[currentDynamicLang].description
     if (descriptionError && descriptionTouched && isDescriptionEmpty(currentDescription)) {
       setShowDescriptionError(true)
     } else {
       setShowDescriptionError(false)
     }
-  }, [descriptionError, descriptionTouched, currentDynamicLang, copyFullObject])
+  }, [descriptionError, descriptionTouched, currentDynamicLang, descriptions])
 
   const onUploadImg = useCallback(
     async (files: File[], callback: (urls: string[]) => void) => {
@@ -225,8 +156,8 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
   useEffect(() => {
     // Проверяем, какие blob URL все еще используются в markdown
     const checkUnusedImages = () => {
-      const currentDescription = copyFullObject[currentDynamicLang].description
-      const currentAdditionalDescription = copyFullObject[currentDynamicLang].additionalDescription
+      const currentDescription = descriptions[currentDynamicLang].description
+      const currentAdditionalDescription = descriptions[currentDynamicLang].additionalDescription
       const allMarkdown = currentDescription + '\n' + currentAdditionalDescription
 
       // Находим все blob URL в markdown
@@ -252,7 +183,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
 
     // Проверяем при каждом изменении описаний
     checkUnusedImages()
-  }, [copyFullObject, currentDynamicLang, onImagesChange])
+  }, [descriptions, currentDynamicLang, onImagesChange])
 
   const toolbars: ToolbarNames[] = [
     'bold',
@@ -320,121 +251,15 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
     }
   }
 
-  // ! –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  // ! –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  // ! –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
   const windowWidth = useWindowWidth()
   const t = useTranslations('CreateDescription')
 
-  const onlyLocalRuRef = useRef<string>('')
-  const onlyLocalEnRef = useRef<string>('')
-  const onlyLocalZhRef = useRef<string>('')
   const lastActiveLangRef = useRef<string[]>([])
 
   useEffect(() => {
     lastActiveLangRef.current.push(currentDynamicLang)
   }, [currentDynamicLang])
-
-  const handleLocalObjectChange = (value: string) => {
-    console.log('lastActiveLangRef', lastActiveLangRef.current)
-    const valueFromRef =
-      lastActiveLangRef.current[lastActiveLangRef.current.length - 2] === 'ru'
-        ? onlyLocalRuRef.current
-        : lastActiveLangRef.current[lastActiveLangRef.current.length - 2] === 'en'
-          ? onlyLocalEnRef.current
-          : onlyLocalZhRef.current
-
-    // Новая проверка с учетом сравнения без последнего символа
-    if (
-      value === valueFromRef ||
-      (value.slice(0, 3) === valueFromRef.slice(0, 3) &&
-        value.slice(0, -1) === valueFromRef &&
-        value.length === valueFromRef.length) ||
-      (value.slice(0, 3) === valueFromRef.slice(0, 3) &&
-        value === valueFromRef.slice(0, -1) &&
-        value.length === valueFromRef.length)
-    ) {
-      console.log('Значения совпадают (с учетом последнего символа)')
-      return
-    }
-    const valueThreeBack =
-      lastActiveLangRef.current[lastActiveLangRef.current.length - 3] === 'ru'
-        ? onlyLocalRuRef.current
-        : lastActiveLangRef.current[lastActiveLangRef.current.length - 3] === 'en'
-          ? onlyLocalEnRef.current
-          : onlyLocalZhRef.current
-    if (valueThreeBack.length > 0 && value.length > 0 && valueThreeBack === value) {
-      console.log('Значения совпадают (с учетом третьего последнего символа)')
-      return
-    }
-
-    if (currentDynamicLang === 'ru') {
-      onlyLocalRuRef.current = value
-      // updateDescriptionForLanguage({language: 'ru', description: {description: value}})
-    } else if (currentDynamicLang === 'en') {
-      onlyLocalEnRef.current = value
-      // updateDescriptionForLanguage({language: 'en', description: {description: value}})
-    } else if (currentDynamicLang === 'zh') {
-      onlyLocalZhRef.current = value
-      // updateDescriptionForLanguage({language: 'zh', description: {description: value}})
-    }
-  }
-
-  useEffect(() => {
-    const newObject = {
-      ru: {
-        description: onlyLocalRuRef.current,
-        additionalDescription: ''
-      },
-      en: {
-        description: onlyLocalEnRef.current,
-        additionalDescription: ''
-      },
-      zh: {
-        description: onlyLocalZhRef.current,
-        additionalDescription: ''
-      }
-    }
-    setFullObjectForDescriptions(newObject)
-    console.log('newObject', newObject, 'fullObjectForDescriptions', fullObjectForDescriptions)
-  }, [JSON.stringify(onlyLocalRuRef), JSON.stringify(onlyLocalEnRef), JSON.stringify(onlyLocalZhRef)])
-
-  // useEffect(() => {
-  //   const newObject = {
-  //     ru: {
-  //       description: onlyLocalRuRef.current,
-  //       additionalDescription: ''
-  //     },
-  //     en: {
-  //       description: onlyLocalEnRef.current,
-  //       additionalDescription: ''
-  //     },
-  //     zh: {
-  //       description: onlyLocalZhRef.current,
-  //       additionalDescription: ''
-  //     }
-  //   }
-  //   setFullObjectForDescriptions(newObject)
-  // }, [incrementForMainDescrRef])
-  // let localValueForDescr =
-  //   currentDynamicLang === 'ru'
-  //     ? onlyLocalRuRef.current
-  //     : currentDynamicLang === 'en'
-  //       ? onlyLocalEnRef.current
-  //       : onlyLocalZhRef.current
-
-  // useEffect(() => {
-  //   if (currentDynamicLang === 'ru') {
-  //     localValueForDescr = onlyLocalRuRef.current
-  //   } else if (currentDynamicLang === 'en') {
-  //     localValueForDescr = onlyLocalEnRef.current
-  //   } else if (currentDynamicLang === 'zh') {
-  //     localValueForDescr = onlyLocalZhRef.current
-  //   }
-  // }, [currentDynamicLang])
-
   return (
     <div className={styles.create__descriptions__box}>
       {/* <div style={{display: 'flex', flexDirection: 'column'}} className=''>
@@ -485,11 +310,6 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
               {...errorEditorConfig}
               value={descriptions[currentDynamicLang].description}
               onChange={(val) => {
-                handleLocalObjectChange(val)
-                // console.log('ru ref', onlyLocalRuRef.current)
-                // console.log('en ref', onlyLocalEnRef.current)
-                // console.log('zh ref', onlyLocalZhRef.current)
-                // console.log('val', val)
                 setDescriptionOne({language: currentDynamicLang, description: val})
               }}
               placeholder={t('writeDescription')}
@@ -526,8 +346,10 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
           </div>
           <MdEditor
             {...editorConfig}
-            value={copyFullObject[currentDynamicLang].additionalDescription}
-            onChange={handlerFullObjectAdditionalDescr}
+            value={descriptions[currentDynamicLang].additionalDescription}
+            onChange={(val) => {
+              setAdditionalDescription({language: currentDynamicLang, additionalDescription: val})
+            }}
             placeholder={t('writeSecondDescr')}
             onUploadImg={onUploadImg}
           />

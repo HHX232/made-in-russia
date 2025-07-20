@@ -2,6 +2,7 @@ import {basketSlice} from './Basket/Basket.slice'
 import {favoritesSlice} from './Favorites/Favorites.types'
 import {filtersSlice} from './Filters/filters.slice'
 import latestViewsSlice from './LatestViews/LatestViews.slice'
+import multiLanguageCardPriceDataSlice from './multilingualDescriptionsInCard/multiLanguageCardPriceData.slice'
 import multilingualDescriptionsSlice from './multilingualDescriptionsInCard/multilingualDescriptions.slice'
 import {registrationSlice} from './registerUser/registerUser.slice'
 
@@ -11,5 +12,6 @@ export const rootActions = {
   ...favoritesSlice.actions,
   ...registrationSlice.actions,
   ...latestViewsSlice.actions,
-  ...multilingualDescriptionsSlice.actions
+  ...multilingualDescriptionsSlice.actions,
+  ...multiLanguageCardPriceDataSlice.actions
 }

@@ -12,6 +12,10 @@ import {useImageModal} from '@/hooks/useImageModal'
 import getDatesDifference from '@/utils/getDatesDifference'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
+import {useActions} from '@/hooks/useActions'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
+
 const vopros = '/vopros.svg'
 
 interface PriceData {
@@ -19,66 +23,73 @@ interface PriceData {
   priceWithoutDiscount: string
   priceWithDiscount: string
   currency: string
-  value?: number // Для валидации
+  value?: number
   unit?: string
 }
+
 type TInputType = 'text' | 'number' | 'password'
 
 interface CreateCardPriceElementsProps {
   pricesArray?: string[][]
-  descriptionArray?: string[][]
-  minimalValue?: string
-  saleDateInitial?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSetPricesArray: (pricesArray: any[]) => void
-  onSetDescriptionArray?: (descriptionArray: string[][]) => void
   pricesError?: string
-  descriptionMatrixError?: string
-  deliveryError?: string
-  packagingError?: string
-  initialDelieveryMatrix?: string[][]
-  initialPackagingMatrix?: string[][]
   inputType?: TInputType[]
-  onSetPackagingMatrix?: (packagingMatrix: string[][]) => void
-  onSetSaleDate?: (saleDate: string) => void
+  currentLanguage: Language
 }
 
 const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
-  ({
-    pricesArray,
-    descriptionArray,
-    onSetPricesArray,
-    onSetDescriptionArray,
-    pricesError = '',
-    descriptionMatrixError = '',
-    deliveryError = '',
-    packagingError = '',
-    minimalValue,
-    saleDateInitial,
-    initialDelieveryMatrix,
-    initialPackagingMatrix,
-    inputType,
-    onSetPackagingMatrix,
-    onSetSaleDate
-  }) => {
+  ({pricesArray, onSetPricesArray, pricesError = '', inputType, currentLanguage}) => {
+    // RTK actions
+    const {
+      updateCharacteristic,
+      setCharacteristics,
+      addCharacteristic,
+      removeCharacteristic,
+      updateDelivery,
+      setDelivery,
+      addDelivery,
+      removeDelivery,
+      updatePackaging,
+      setPackaging,
+      addPackaging,
+      removePackaging,
+      updatePriceInfo,
+      setError,
+      clearErrors,
+      setCurrentLanguage
+    } = useActions()
+
+    // RTK selectors
+    const currentData = useTypedSelector((state) => state.multiLanguageCardPriceData[currentLanguage])
+    const currentErrors = useTypedSelector((state) => state.multiLanguageCardPriceData.errors[currentLanguage])
+    const storeCurrentLanguage = useTypedSelector((state) => state.multiLanguageCardPriceData.currentLanguage)
+
+    // Локальное состояние только для списка цен (так как он не в слайсе)
     const [pricesMatrix, setPricesMatrix] = useState<string[][]>(pricesArray || [])
-    const [descriptionMatrix, setDescriptionMatrix] = useState<string[][]>(descriptionArray || [])
-    const [deliveryMatrix, setDeliveryMatrix] = useState<string[][]>(initialDelieveryMatrix || [])
-    const [packagingMatrix, setPackagingMatrix] = useState<string[][]>(initialPackagingMatrix || [])
 
-    const [saleDate, setSaleDate] = useState<string>(saleDateInitial || '')
-    const [minVolume, setMinVolume] = useState<string>(minimalValue || '')
+    // Добавляем ключи для принудительного ре-рендера RowsInputs при смене языка
+    const [characteristicsKey, setCharacteristicsKey] = useState(0)
+    const [deliveryKey, setDeliveryKey] = useState(0)
+    const [packagingKey, setPackagingKey] = useState(0)
 
-    useEffect(() => {
-      console.log('saleDate', saleDate)
-      console.log('initialPackagingMatrix', initialPackagingMatrix)
-      console.log('packagingMatrix', packagingMatrix)
-    }, [saleDate, initialPackagingMatrix, packagingMatrix])
-    // Локальные ошибки для полей справа
-    const [saleDateError, setSaleDateError] = useState<string>('')
-    const [minVolumeError, setMinVolumeError] = useState<string>('')
     const t = useTranslations('CreateCardPriceElementsText')
-    // Обработчик для матрицы цен
+
+    // Устанавливаем текущий язык в store при изменении пропса
+    useEffect(() => {
+      if (currentLanguage !== storeCurrentLanguage) {
+        setCurrentLanguage(currentLanguage)
+      }
+    }, [currentLanguage, storeCurrentLanguage, setCurrentLanguage])
+
+    // Принудительно обновляем ключи при смене языка для ре-рендера компонентов
+    useEffect(() => {
+      setCharacteristicsKey((prev) => prev + 1)
+      setDeliveryKey((prev) => prev + 1)
+      setPackagingKey((prev) => prev + 1)
+    }, [currentLanguage])
+
+    // Обработчик для матрицы цен (остается локальным, так как не в слайсе)
     const handlePriceSetValue = (rowIndex: number, inputIndex: number, value: string) => {
       const newMatrix = [...pricesMatrix]
 
@@ -91,7 +102,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
 
       // Преобразуем в формат для родительского компонента
       const formattedPrices = newMatrix
-        .filter((row) => row.some((cell) => cell.trim())) // Фильтруем пустые строки
+        .filter((row) => row.some((cell) => cell.trim()))
         .map((row) => ({
           quantity: row[0] || '',
           priceWithoutDiscount: row[1] || '',
@@ -107,7 +118,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     const handlePriceRowsChange = (newRows: string[][]) => {
       setPricesMatrix(newRows)
 
-      // Преобразуем в формат для родительского компонента
       const formattedPrices = newRows
         .filter((row) => row.some((cell) => cell.trim()))
         .map((row) => ({
@@ -122,76 +132,134 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       onSetPricesArray(formattedPrices)
     }
 
-    // Обработчик для матрицы описания
-    const handleDescriptionSetValue = (rowIndex: number, inputIndex: number, value: string) => {
-      const newMatrix = [...descriptionMatrix]
-
-      if (!newMatrix[rowIndex]) {
-        newMatrix[rowIndex] = new Array(2).fill('') // 2 колонки для описания
-      }
-
-      newMatrix[rowIndex][inputIndex] = value
-      setDescriptionMatrix(newMatrix)
-
-      if (onSetDescriptionArray) {
-        onSetDescriptionArray(newMatrix)
-      }
+    // Обработчики для характеристик
+    const handleCharacteristicSetValue = (rowIndex: number, inputIndex: number, value: string) => {
+      const field = inputIndex === 0 ? 'title' : 'characteristic'
+      updateCharacteristic({
+        language: currentLanguage,
+        index: rowIndex,
+        field: field as 'title' | 'characteristic',
+        value
+      })
     }
 
-    const handleDescriptionRowsChange = (newRows: string[][]) => {
-      setDescriptionMatrix(newRows)
-
-      if (onSetDescriptionArray) {
-        onSetDescriptionArray(newRows)
-      }
+    const handleCharacteristicRowsChange = (newRows: string[][]) => {
+      const characteristics = newRows.map((row) => ({
+        title: row[0] || '',
+        characteristic: row[1] || ''
+      }))
+      setCharacteristics({
+        language: currentLanguage,
+        characteristics
+      })
     }
 
-    // Обработчики для доставки и упаковки
+    // Обработчики для доставки
+    const handleDeliverySetValue = (rowIndex: number, inputIndex: number, value: string) => {
+      const field = inputIndex === 0 ? 'title' : 'daysDelivery'
+      updateDelivery({
+        language: currentLanguage,
+        index: rowIndex,
+        field: field as 'title' | 'daysDelivery',
+        value
+      })
+    }
+
     const handleDeliveryRowsChange = (newRows: string[][]) => {
-      setDeliveryMatrix(newRows)
+      const delivery = newRows.map((row) => ({
+        title: row[0] || '',
+        daysDelivery: row[1] || ''
+      }))
+      setDelivery({
+        language: currentLanguage,
+        delivery
+      })
+    }
+
+    // Обработчики для упаковки
+    const handlePackagingSetValue = (rowIndex: number, inputIndex: number, value: string) => {
+      const field = inputIndex === 0 ? 'title' : 'price'
+      updatePackaging({
+        language: currentLanguage,
+        index: rowIndex,
+        field: field as 'title' | 'price',
+        value
+      })
     }
 
     const handlePackagingRowsChange = (newRows: string[][]) => {
-      setPackagingMatrix(newRows)
-      onSetPackagingMatrix?.(newRows)
+      const packaging = newRows.map((row) => ({
+        title: row[0] || '',
+        price: row[1] || ''
+      }))
+      setPackaging({
+        language: currentLanguage,
+        packaging
+      })
     }
 
-    // Валидация полей справа
+    // Валидация и обработчики для информации о ценах
     const validateSaleDate = (value: string) => {
       if (!value.trim()) {
-        setSaleDateError(t('daysBeforeSale'))
+        setError({
+          language: currentLanguage,
+          errorType: 'saleDateError',
+          error: t('daysBeforeSale')
+        })
         return false
       }
       const days = parseInt(value)
       if (isNaN(days) || days <= 0) {
-        setSaleDateError(t('daysBeforeSaleNotMinus'))
+        setError({
+          language: currentLanguage,
+          errorType: 'saleDateError',
+          error: t('daysBeforeSaleNotMinus')
+        })
         return false
       }
-      setSaleDateError('')
+      setError({
+        language: currentLanguage,
+        errorType: 'saleDateError',
+        error: ''
+      })
       return true
     }
 
     const validateMinVolume = (value: string) => {
       if (!value.trim()) {
-        setMinVolumeError(t('minimalVolume'))
+        setError({
+          language: currentLanguage,
+          errorType: 'minVolumeError',
+          error: t('minimalVolume')
+        })
         return false
       }
-      setMinVolumeError('')
+      setError({
+        language: currentLanguage,
+        errorType: 'minVolumeError',
+        error: ''
+      })
       return true
     }
 
-    // Обработчики изменений с валидацией
     const handleSaleDateChange = (value: string) => {
-      setSaleDate(value)
-      onSetSaleDate?.(value)
-      if (saleDateError) {
+      updatePriceInfo({
+        language: currentLanguage,
+        field: 'daysBeforeSale',
+        value
+      })
+      if (currentErrors.saleDateError) {
         validateSaleDate(value)
       }
     }
 
     const handleMinVolumeChange = (value: string) => {
-      setMinVolume(value)
-      if (minVolumeError) {
+      updatePriceInfo({
+        language: currentLanguage,
+        field: 'minimalVolume',
+        value
+      })
+      if (currentErrors.minVolumeError) {
         validateMinVolume(value)
       }
     }
@@ -203,15 +271,18 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       }
     }, [pricesArray])
 
-    // Синхронизация с внешними изменениями для описания
-    useEffect(() => {
-      if (descriptionArray && JSON.stringify(descriptionArray) !== JSON.stringify(descriptionMatrix)) {
-        setDescriptionMatrix(descriptionArray)
-      }
-    }, [descriptionArray])
+    // Преобразование данных из store в формат для RowsInputs
+    const characteristicsMatrix = currentData.characteristics.map((item) => [item.title, item.characteristic])
+    const deliveryMatrix = currentData.delivery.map((item) => [item.title, item.daysDelivery])
+    const packagingMatrix = currentData.packaging.map((item) => [item.title, item.price])
 
     const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
     const windowWidth = useWindowWidth()
+
+    useEffect(() => {
+      console.log('currentData', currentData)
+    }, [currentData])
+
     return (
       <div className={styles.create__prices__box}>
         {/* Left */}
@@ -285,6 +356,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               />
             </div>
             <RowsInputs
+              key={`characteristics-${characteristicsKey}`}
               inputsInRowCount={2}
               maxRows={20}
               extraClasses={[
@@ -311,10 +383,10 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               ]}
               initialRowsCount={5}
               titles={[t('title'), t('characteristic')]}
-              rowsInitialValues={descriptionMatrix}
-              onSetValue={handleDescriptionSetValue}
-              onRowsChange={handleDescriptionRowsChange}
-              errorMessage={descriptionMatrixError}
+              rowsInitialValues={characteristicsMatrix}
+              onSetValue={handleCharacteristicSetValue}
+              onRowsChange={handleCharacteristicRowsChange}
+              errorMessage={currentErrors.characteristicsError}
               minFilledRows={1}
             />
           </div>
@@ -350,22 +422,22 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 <p className={styles.seller__date__box__inner__date__text}>{t('daysCountBeforeSale')}</p>
                 <TextInputUI
                   inputType='number'
-                  currentValue={saleDate}
+                  currentValue={currentData.priceInfo.daysBeforeSale}
                   onSetValue={handleSaleDateChange}
                   theme='lightBlue'
                   placeholder={t('daysCountBeforeSalePlaceholder')}
-                  errorValue={saleDateError}
+                  errorValue={currentErrors.saleDateError}
                 />
               </div>
               <div className={styles.seller__date__box__inner__date}>
                 <p className={styles.seller__date__box__inner__date__text}>{t('minimalVolumeTitle')}</p>
                 <TextInputUI
                   inputType='number'
-                  currentValue={minVolume.split(' ')[0] !== 'undefined' ? minVolume : ''}
+                  currentValue={currentData.priceInfo.minimalVolume}
                   onSetValue={handleMinVolumeChange}
                   theme='lightBlue'
                   placeholder={t('minimalVolumePlaceholder')}
-                  errorValue={minVolumeError}
+                  errorValue={currentErrors.minVolumeError}
                 />
               </div>
             </div>
@@ -394,6 +466,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               />
             </div>
             <RowsInputs
+              key={`delivery-${deliveryKey}`}
               extraButtonMinusClass={styles.minus__extra}
               extraClasses={[
                 styles.rows__extra__del,
@@ -408,10 +481,10 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               initialRowsCount={2}
               maxRows={5}
               rowsInitialValues={deliveryMatrix}
-              onSetValue={() => {}}
+              onSetValue={handleDeliverySetValue}
               onRowsChange={handleDeliveryRowsChange}
               titles={[t('title'), t('daysDelivery')]}
-              errorMessage={deliveryError}
+              errorMessage={currentErrors.deliveryError}
               minFilledRows={1}
             />
           </div>
@@ -439,6 +512,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               />
             </div>
             <RowsInputs
+              key={`packaging-${packagingKey}`}
               inputType={['text', 'number']}
               extraButtonMinusClass={styles.minus__extra}
               extraClasses={[
@@ -453,11 +527,11 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               ]}
               initialRowsCount={2}
               maxRows={5}
-              onSetValue={() => {}}
+              onSetValue={handlePackagingSetValue}
               rowsInitialValues={packagingMatrix}
               onRowsChange={handlePackagingRowsChange}
               titles={[t('title'), t('price')]}
-              errorMessage={packagingError}
+              errorMessage={currentErrors.packagingError}
               minFilledRows={1}
             />
           </div>

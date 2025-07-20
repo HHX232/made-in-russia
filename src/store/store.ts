@@ -9,6 +9,7 @@ import {persistStore} from 'redux-persist'
 import {storage} from '@/utils/storage/storage'
 import latestViewsSlice from './LatestViews/LatestViews.slice'
 import multilingualDescriptionsSlice from './multilingualDescriptionsInCard/multilingualDescriptions.slice'
+import multiLanguageCardPriceDataSlice from './multilingualDescriptionsInCard/multiLanguageCardPriceData.slice'
 
 const filtersPersistConfig = {
   key: 'filters',
@@ -22,7 +23,8 @@ const rootReducer = combineReducers({
   favorites: favoritesSlice.reducer,
   registration: registrationSlice.reducer,
   latestViews: latestViewsSlice.reducer,
-  multilingualDescriptions: multilingualDescriptionsSlice.reducer
+  multilingualDescriptions: multilingualDescriptionsSlice.reducer,
+  multiLanguageCardPriceData: multiLanguageCardPriceDataSlice.reducer
 })
 
 const persistConfig = {

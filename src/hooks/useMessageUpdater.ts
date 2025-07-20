@@ -55,7 +55,7 @@ export const useMessageCache = () => {
       // Если кеша нет или он устарел, запрашиваем с сервера
       try {
         setIsLoading(true)
-        const response = await axiosClassic.get('language/' + locale, {
+        const response = await axiosClassic.get('localization/' + locale, {
           headers: {
             'Accept-Language': currentLang
           }

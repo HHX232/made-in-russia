@@ -91,7 +91,7 @@ export const useOptimizedTranslations = (initialMessages: Record<string, any>) =
           setIsUpdating(true)
           console.log(`🔄 Fetching fresh data for ${locale}`)
 
-          const response = await axiosClassic.get('language/' + locale)
+          const response = await axiosClassic.get('localization/' + locale)
           const serverMessages = response.data as Record<string, string>
 
           const updatedMessages = {

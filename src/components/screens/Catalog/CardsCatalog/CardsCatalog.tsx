@@ -120,7 +120,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   useEffect(() => {
     if (pageResponse) {
       if (pageParams.page === 0) {
-        setAllProducts((prev) => [...prev, ...pageResponse.content])
+        setAllProducts(pageResponse.content)
+        // ! ИЗМЕНИЛИ ДЛЯ КАТЕГОРИЙ
+        // setAllProducts((prev) => [...prev, ...pageResponse.content])
         setIsFiltersChanged(false) // Сбрасываем флаг изменения фильтров
       } else {
         // При подгрузке следующих страниц добавляем уникальные товары

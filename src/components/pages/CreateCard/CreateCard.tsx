@@ -192,6 +192,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const [currentLangState, setCurrentLangState] = useState<ICurrentLanguage>(currentLang as ICurrentLanguage)
   const [cardTitle, setCardTitle] = useState(initialData?.title || '')
 
+  const {descriptions} = useTypedSelector((state) => state.multilingualDescriptions)
   const [cardObjectForOthers, setCardObjectForOthers] = useState<Record<string, Partial<ICardFull>>>(() =>
     allLanguages.reduce<Record<string, Partial<ICardFull>>>(
       (acc, lang) => ({
@@ -270,11 +271,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const getValueForLang = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (state: any, objectValue: keyof ICardFull): any => {
-      if (currentLangState === currentLang) {
-        // Для основного языка возвращаем состояние из главных переменных
-        return state
-      }
-
       // Для других языков возвращаем из cardObjectForOthers
       const langData = cardObjectForOthers[currentLangState]
       return langData?.[objectValue] !== undefined ? langData[objectValue] : state
@@ -417,11 +413,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   )
 
   const getFaqMatrixForLang = useCallback((): string[][] => {
-    if (currentLangState === currentLang) {
-      return faqMatrix
-    }
     return faqMatrixForOthers[currentLangState]
-  }, [currentLangState, currentLang, faqMatrix, faqMatrixForOthers])
+  }, [currentLangState, faqMatrixForOthers])
 
   const getCompanyDataForLang = useCallback((): CompanyDescriptionData => {
     if (currentLangState === currentLang) {
@@ -444,11 +437,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
   // Функция для получения характеристик для текущего языка
   const getDescriptionMatrixForLang = useCallback((): string[][] => {
-    if (currentLangState === currentLang) {
-      return descriptionMatrix
-    }
     return descriptionMatrixForOthers[currentLangState] || descriptionMatrix
-  }, [currentLangState, currentLang, descriptionMatrix, descriptionMatrixForOthers])
+  }, [currentLangState, descriptionMatrixForOthers])
 
   // Состояние для ошибок валидации
   const [errors, setErrors] = useState<ValidationErrors>({
@@ -912,14 +902,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     }
   }
 
-  const [testObject, setTestObject] = useState({
-    ru: {description: 'ru', additionalDescription: 'dopru'},
-    en: {description: 'en', additionalDescription: 'dopen'},
-    zh: {description: 'zh', additionalDescription: 'dopzh'}
-  })
-
-  const {descriptions} = useTypedSelector((state) => state.multilingualDescriptions)
-
   return (
     <>
       {/* Единое модальное окно для всех изображений подсказок */}
@@ -1003,16 +985,12 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 placeholder={t('name')}
                 currentValue={getValueForLang(cardTitle, 'title')}
                 onSetValue={(value) => {
-                  if (currentLangState === currentLang) {
-                    setCardTitle(value)
-                  } else {
-                    const updatedCardTitleForOthers = {...cardObjectForOthers}
-                    updatedCardTitleForOthers[currentLangState] = {
-                      ...updatedCardTitleForOthers[currentLangState],
-                      title: value
-                    }
-                    setCardObjectForOthers(updatedCardTitleForOthers)
+                  const updatedCardTitleForOthers = {...cardObjectForOthers}
+                  updatedCardTitleForOthers[currentLangState] = {
+                    ...updatedCardTitleForOthers[currentLangState],
+                    title: value
                   }
+                  setCardObjectForOthers(updatedCardTitleForOthers)
                 }}
                 theme='superWhite'
               />
@@ -1096,10 +1074,10 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             {/* CreateCardPriceElements */}
             <CreateCardPriceElements
               inputType={['text', 'number', 'number', 'text', 'text']}
-              minimalValue={initialData?.minimumOrderQuantity + ' ' + initialData?.prices[0]?.unit}
-              saleDateInitial={initialData?.daysBeforeDiscountExpires?.toString() || ''}
-              initialDelieveryMatrix={initialData?.deliveryMethodsDetails?.map((el) => [el.name, el.value])}
-              initialPackagingMatrix={initialData?.packagingOptions?.map((el) => [el.name, el.price.toString()])}
+              // minimalValue={initialData?.minimumOrderQuantity + ' ' + initialData?.prices[0]?.unit}
+              // saleDateInitial={initialData?.daysBeforeDiscountExpires?.toString() || ''}
+              // initialDelieveryMatrix={initialData?.deliveryMethodsDetails?.map((el) => [el.name, el.value])}
+              // initialPackagingMatrix={initialData?.packagingOptions?.map((el) => [el.name, el.price.toString()])}
               pricesArray={pricesArray.map((item) => [
                 item.quantity,
                 item.priceWithoutDiscount,
@@ -1107,29 +1085,24 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 item.currency,
                 item.unit
               ])}
-              descriptionArray={getDescriptionMatrixForLang()}
-              onSetDescriptionArray={(matrix) => {
-                if (currentLangState === currentLang) {
-                  handleDescriptionMatrixChange(matrix)
-                } else {
-                  const updatedDescriptionMatrixForOthers = {...descriptionMatrixForOthers}
-                  updatedDescriptionMatrixForOthers[currentLangState] = matrix
-                  setDescriptionMatrixForOthers(updatedDescriptionMatrixForOthers)
-                }
-              }}
+              currentLanguage={currentLangState}
+              // descriptionArray={getDescriptionMatrixForLang()}
+              // onSetDescriptionArray={(matrix) => {
+              //   const updatedDescriptionMatrixForOthers = {...descriptionMatrixForOthers}
+              //   updatedDescriptionMatrixForOthers[currentLangState] = matrix
+              //   setDescriptionMatrixForOthers(updatedDescriptionMatrixForOthers)
+              // }}
               onSetPricesArray={handlePricesArrayChange}
-              onSetPackagingMatrix={handlePackagingMatrixChange}
-              onSetSaleDate={setSaleDate}
+              // onSetPackagingMatrix={handlePackagingMatrixChange}
+              // onSetSaleDate={setSaleDate}
               pricesError={errors.pricesArray}
-              descriptionMatrixError={errors.descriptionMatrix}
+              // descriptionMatrixError={errors.descriptionMatrix}
             />
 
             <CreateDescriptionsElements
               onImagesChange={handleDescriptionImagesChange}
               descriptionError={errors.description}
               currentDynamicLang={currentLangState}
-              fullObjectForDescriptions={testObject}
-              setFullObjectForDescriptions={setTestObject}
             />
 
             {/* CreateCompanyDescription */}
@@ -1149,15 +1122,10 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             <CreateFaqCard
               values={getFaqMatrixForLang()}
               onChange={(matrix) => {
-                if (currentLangState === currentLang) {
-                  handleFaqMatrixChange(matrix)
-                  console.log('матрица faqMatrix', faqMatrix)
-                } else {
-                  const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
-                  updatedFaqMatrixForOthers[currentLangState] = matrix
-                  console.log('матрица faqMatrixForOthers', faqMatrixForOthers)
-                  setFaqMatrixForOthers(updatedFaqMatrixForOthers)
-                }
+                const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
+                updatedFaqMatrixForOthers[currentLangState] = matrix
+                console.log('матрица faqMatrixForOthers', faqMatrixForOthers)
+                setFaqMatrixForOthers(updatedFaqMatrixForOthers)
               }}
             />
             <div className={`${styles.button__box}`}>

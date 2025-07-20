@@ -26,7 +26,8 @@ const CategoryPage = ({
   parentCategory,
   categories = [],
   idOfFilter,
-  categoryTitleName
+  categoryTitleName,
+  companyes
 }: {
   categoryName: string
   categoryTitleName?: string
@@ -34,6 +35,7 @@ const CategoryPage = ({
   parentCategory?: string
   categories?: Category[]
   idOfFilter?: number
+  companyes?: {name: string; inn: string; ageInYears: string}[]
 }) => {
   const [sortedCategories, setSortedCategories] = useState<Category[]>(categories)
   const [activeFilterId, setActiveFilterId] = useState<number | null>(idOfFilter || null)
@@ -62,6 +64,68 @@ const CategoryPage = ({
   const categoriesKey = useMemo(() => {
     return JSON.stringify(categories.map((cat) => cat.id || cat.slug))
   }, [categories])
+
+  const companiesSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    pauseOnHover: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
+    fade: false,
+    responsive: [
+      {
+        breakpoint: 1200,
+        settings: {
+          autoplaySpeed: 3500
+        }
+      },
+      {
+        breakpoint: 900,
+        settings: {
+          autoplaySpeed: 4000
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          autoplaySpeed: 4500,
+          arrows: false
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          autoplaySpeed: 5000,
+          arrows: false
+        }
+      }
+    ]
+  }
+
+  const groupCompaniesIntoSlides = (
+    companies: {name: string; inn: string; ageInYears: string}[],
+    windowWidth: number
+  ) => {
+    let itemsPerSlide = 6 // 2 строки × 3 столбца по умолчанию
+
+    if (windowWidth <= 480) {
+      itemsPerSlide = 2 // 2 строки × 1 столбец
+    } else if (windowWidth <= 600) {
+      itemsPerSlide = 2 // 2 строки × 1 столбец
+    } else if (windowWidth <= 900) {
+      itemsPerSlide = 4 // 2 строки × 2 столбца
+    } else if (windowWidth <= 1200) {
+      itemsPerSlide = 6 // 2 строки × 3 столбца
+    }
+
+    const slides = []
+    for (let i = 0; i < companies.length; i += itemsPerSlide) {
+      slides.push(companies.slice(i, i + itemsPerSlide))
+    }
+    return slides
+  }
 
   useEffect(() => {
     if (level === 2 && listRef.current && categories.length > 0) {
@@ -306,7 +370,29 @@ const CategoryPage = ({
             </ul>
           )}
 
-          <Catalog isShowFilters={false} initialProducts={[]} initialHasMore={true} />
+          {companyes && companyes.length > 0 && windowWidth && (
+            <div className={styles.companies__section}>
+              <h2 className={styles.companies__title}>Компании</h2>
+              <Slider {...companiesSettings} className={`${styles.companies__slider} companies__slider__main`}>
+                {groupCompaniesIntoSlides(companyes, windowWidth).map((slideCompanies, slideIndex) => (
+                  <div key={slideIndex} className={styles.company__slide__item}>
+                    <div className={styles.company__grid}>
+                      {slideCompanies.map((company, index) => (
+                        <div key={company.name + index} className={styles.company__card}>
+                          <div className={styles.company__info}>
+                            <h3 className={styles.company__name}>{company.name}</h3>
+                            <p className={styles.company__inn}>ИНН: {company.inn}</p>
+                            <p className={styles.company__age}>Опыт: {company.ageInYears} лет</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </Slider>
+            </div>
+          )}
+          <Catalog isShowFilters={false} initialProducts={[]} initialHasMore={false} />
         </div>
       </div>
 

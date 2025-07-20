@@ -67,7 +67,7 @@ export default getRequestConfig(async ({requestLocale}) => {
   const localMessages = (await import(`../../messages/${locale}.json`)).default
 
   try {
-    const response = await axiosClassic.get('language/' + locale)
+    const response = await axiosClassic.get('localization/' + locale)
     const serverMessages = response.data as Record<string, string>
 
     return {

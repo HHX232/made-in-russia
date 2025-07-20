@@ -1,3 +1,4 @@
+import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
 import {cookies, headers} from 'next/headers'
@@ -27,7 +28,19 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
       }
     }
   }
+  let companyes: {name: string; inn: string; ageInYears: string}[]
+  try {
+    console.log('Category:', `/companies/l1_${categoryName}`)
+    const {data} = await axiosClassic.get<{data: {name: string; inn: string; ageInYears: string}[]}>(
+      `/companies/l1_${categoryName}`
+    )
 
+    console.log('data companyes:', data)
+    companyes = data.data
+  } catch {
+    companyes = []
+  }
+  console.log('companyes:', companyes)
   try {
     categories = await CategoriesService.getById('l1_' + categoryName, locale || 'en')
   } catch {
@@ -36,6 +49,7 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
 
   return (
     <CategoryPage
+      companyes={companyes || []}
       idOfFilter={categories.id}
       categories={categories.children}
       categoryName={categoryName}

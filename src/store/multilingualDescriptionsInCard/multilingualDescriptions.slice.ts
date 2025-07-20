@@ -48,7 +48,11 @@ export const multilingualDescriptionsSlice = createSlice({
     // Установить основное описание для языка
     setDescriptionOne: (state, action: PayloadAction<{language: SupportedLanguage; description: string}>) => {
       const {language, description} = action.payload
-      if (description.length === 0) return
+      if (description.length === 0 && state.descriptions[language].description.length !== 1) return
+      if (description.length === 0 && state.descriptions[language].description.length === 1) {
+        state.descriptions[language].description = ''
+        return
+      }
       if (
         description === state.descriptions['ru'].description ||
         description === state.descriptions['en'].description ||
@@ -67,6 +71,17 @@ export const multilingualDescriptionsSlice = createSlice({
       action: PayloadAction<{language: SupportedLanguage; additionalDescription: string}>
     ) => {
       const {language, additionalDescription} = action.payload
+      if (additionalDescription.length === 0 && state.descriptions[language].additionalDescription.length !== 1) return
+      if (additionalDescription.length === 0 && state.descriptions[language].additionalDescription.length === 1) {
+        state.descriptions[language].additionalDescription = ''
+        return
+      }
+      if (
+        additionalDescription === state.descriptions['ru'].additionalDescription ||
+        additionalDescription === state.descriptions['en'].additionalDescription ||
+        additionalDescription === state.descriptions['zh'].additionalDescription
+      )
+        return
       if (!state.descriptions[language]) {
         state.descriptions[language] = {description: '', additionalDescription: '', furtherDescription: ''}
       }
