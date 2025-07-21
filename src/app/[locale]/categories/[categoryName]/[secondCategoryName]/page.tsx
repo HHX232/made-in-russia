@@ -37,19 +37,19 @@ export default async function CategoryPageSpecialSecond({
       `/companies/l2_${secondCategoryName}`
     )
 
-    console.log('data companyes:', data)
+    // console.log('data companyes:', data)
     companyes = data
   } catch {
     companyes = []
   }
-  console.log('companyes:', companyes)
+  // console.log('companyes:', companyes)
 
   try {
     categories = await CategoriesService.getById('l2_' + secondCategoryName, locale || 'en')
   } catch {
     notFound()
   }
-  console.log('categories second by slug:', categories)
+  // console.log('categories second by slug:', categories)
 
   return (
     <CategoryPage

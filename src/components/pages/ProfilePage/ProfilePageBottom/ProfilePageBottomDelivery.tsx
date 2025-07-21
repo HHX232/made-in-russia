@@ -346,12 +346,13 @@ const ProfilePageBottomDelivery: FC = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await instance.get<Review[]>('/me/reviews', {
+        const response = await instance.get<{content: Review[]}>('/me/reviews', {
           headers: {
             'Accept-Language': currentLang
           }
         })
-        setReviews(response.data)
+        console.log('response reviews', response)
+        setReviews(response.data.content)
       } catch (error) {
         console.error('Error fetching reviews:', error)
       }
@@ -365,8 +366,8 @@ const ProfilePageBottomDelivery: FC = () => {
         {/* {deliveryListData.map((el, i) => {
           return <DeliveryListItem key={i} {...el} />
         })} */}
-        {reviews.length === 0 && <p>{t('noReviews')}</p>}
-        {reviews.map((el, i) => {
+        {reviews?.length === 0 && <p>{t('noReviews')}</p>}
+        {reviews?.map((el, i) => {
           return <Comment key={i} {...el} />
         })}
       </ul>

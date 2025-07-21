@@ -15,7 +15,7 @@ export default async function CategoryPageSpecialSecond({
   }>
 }) {
   const {thirdCategoryName, thirdCAtegoryName} = await params
-  console.log('thirdCategoryName:', thirdCategoryName, 'thirdCAtegoryName', thirdCAtegoryName)
+  // console.log('thirdCategoryName:', thirdCategoryName, 'thirdCAtegoryName', thirdCAtegoryName)
   let categories
   const cookieStore = await cookies()
   let locale = cookieStore.get('NEXT_LOCALE')?.value
@@ -38,12 +38,12 @@ export default async function CategoryPageSpecialSecond({
 
   let companyes: {name: string; inn: string; ageInYears: string}[]
   try {
-    console.log('Category:', `/companies/l3_${thirdCategoryName}`)
+    // console.log('Category:', `/companies/l3_${thirdCategoryName}`)
     const {data} = await axiosClassic.get<{data: {name: string; inn: string; ageInYears: string}[]}>(
       `/companies/l3_${thirdCategoryName}`
     )
 
-    console.log('data companyes:', data)
+    // console.log('data companyes:', data)
     companyes = data.data
   } catch {
     companyes = []
@@ -54,7 +54,7 @@ export default async function CategoryPageSpecialSecond({
   } catch {
     notFound()
   }
-  console.log('categories third by slug:', categories)
+  // console.log('categories third by slug:', categories)
 
   return (
     <CategoryPage
