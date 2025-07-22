@@ -582,6 +582,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
                 {!isReallyLoading ? (
                   <>
                     <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
+                    {/* TODO заменить currency */}
                     <p className={`${styles.state__mini__list__item__text}`}>{el.price + ' ' + el.priceUnit}</p>
                   </>
                 ) : (

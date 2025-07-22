@@ -18,20 +18,18 @@ import ICardFull, {ICategory} from '@/services/card/card.types'
 import {Product} from '@/services/products/product.types'
 import CreateSimilarProducts from './CreateSimilarProducts/CreateSimilarProducts'
 import CreateCardProductCategory from './CreateCardProductCategory/CreateCardProductCategory'
-import {getAccessToken} from '@/services/auth/auth.helper'
 import {toast} from 'sonner'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
-import {
-  ValidationErrors,
-  CompanyDescriptionData,
-  CreateCardProps,
-  CreateProductDto,
-  ICurrentLanguage
-} from './CreateCard.types'
-import {headers} from 'next/headers'
+import {ValidationErrors, CompanyDescriptionData, CreateCardProps, ICurrentLanguage} from './CreateCard.types'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useFormValidation} from '@/hooks/useFormValidation'
+import {useCreateCardForm} from '@/hooks/useCreateCardForm'
+import {useCreateCardAPI} from '@/hooks/useCreateCardAPI'
+import {SupportedLanguage} from '@/store/multilingualDescriptionsInCard/multilingualDescriptions.types'
+import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
+import {usePathname} from 'next/navigation'
 
 const vopros = '/vopros.svg'
 // Конфигурация изображений для подсказок
@@ -48,136 +46,21 @@ export const HELP_IMAGES = {
   similarProducts: '/create/help10.jpg'
 } as const
 
-const parseQuantityRange = (quantityStr: string): {from: number; to: number | null} => {
-  // Удаляем пробелы
-  const trimmed = quantityStr.trim()
-
-  // Проверяем различные варианты дефисов
-  const separators = ['-', '–', '—', '––']
-  let parts: string[] = []
-
-  for (const separator of separators) {
-    if (trimmed.includes(separator)) {
-      parts = trimmed.split(separator).map((p) => p.trim())
-      break
-    }
-  }
-
-  // Если нашли разделитель и есть две части
-  if (parts.length === 2) {
-    const from = parseInt(parts[0]) || 0
-    const to = parseInt(parts[1]) || 0
-    return {from, to}
-  }
-
-  // Если разделителя нет, считаем это одним числом
-  const singleValue = parseInt(trimmed) || 0
-  return {from: singleValue, to: null}
-}
-
-const validateField = (
-  fieldName: keyof ValidationErrors,
-  cardTitle: string,
-  uploadedFiles: File[],
-  remainingInitialImages: string[],
-  pricesArray: {
-    currency: string
-    priceWithDiscount: string
-    priceWithoutDiscount: string
-    quantity: string
-    value: number
-    unit: string
-  }[],
-  description: string,
-  descriptionMatrix: string[][],
-  companyData: CompanyDescriptionData,
-  faqMatrix: string[][]
-): string => {
-  switch (fieldName) {
-    case 'cardTitle':
-      if (!cardTitle.trim()) {
-        return 'Название товара обязательно для заполнения'
-      }
-      if (cardTitle.trim().length < 3) {
-        return 'Название должно содержать минимум 3 символа'
-      }
-      return ''
-
-    case 'uploadedFiles':
-      // Считаем общее количество изображений (загруженные + оставшиеся начальные)
-      const totalImages = uploadedFiles.length + remainingInitialImages.length
-      if (totalImages < 3) {
-        return `Необходимо минимум 3 изображения (текущее количество: ${totalImages})`
-      }
-      return ''
-
-    case 'pricesArray':
-      if (pricesArray.length === 0) {
-        return 'Необходимо добавить хотя бы одну цену'
-      }
-      // Дополнительная проверка на корректность данных в массиве цен
-      const invalidPrices = pricesArray.filter((price) => !price.value || price.value <= 0)
-      if (invalidPrices.length > 0) {
-        return 'Все цены должны быть больше нуля'
-      }
-      return ''
-
-    case 'description':
-      const cleanDescription = description.replace('## Основное описание', '').trim()
-      if (!cleanDescription) {
-        return 'Основное описание обязательно для заполнения'
-      }
-      if (cleanDescription.length < 10) {
-        return 'Основное описание должно содержать минимум 10 символов'
-      }
-      return ''
-
-    case 'descriptionMatrix':
-      const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell.trim()))
-      if (filledRows.length === 0) {
-        return 'Необходимо заполнить хотя бы одну строку в таблице характеристик'
-      }
-      return ''
-
-    case 'companyData':
-      if (!companyData.topDescription.trim()) {
-        return 'Верхнее описание компании обязательно для заполнения'
-      }
-      if (!companyData.bottomDescription.trim()) {
-        return 'Нижнее описание компании обязательно для заполнения'
-      }
-      const companyImagesWithContent = companyData.images.filter((img) => img.image !== null)
-      if (companyImagesWithContent.length === 0) {
-        return 'Необходимо загрузить хотя бы одно изображение компании'
-      }
-      // Проверка, что у загруженных изображений есть описания
-      const imagesWithoutDescription = companyImagesWithContent.filter((img) => !img.description.trim())
-      if (imagesWithoutDescription.length > 0) {
-        return 'У всех загруженных изображений должны быть описания'
-      }
-      return ''
-
-    case 'faqMatrix':
-      const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
-      if (filledFaqRows.length === 0) {
-        return 'Необходимо добавить хотя бы один вопрос и ответ'
-      }
-      // Проверка, что если есть вопрос, то есть и ответ
-      const incompleteRows = filledFaqRows.filter(
-        (row) => (row[0].trim() && !row[1].trim()) || (!row[0].trim() && row[1].trim())
-      )
-      if (incompleteRows.length > 0) {
-        return 'Каждый вопрос должен иметь ответ и наоборот'
-      }
-      return ''
-
-    default:
-      return ''
-  }
-}
-
 const CreateCard: FC<CreateCardProps> = ({initialData}) => {
-  const [isValidForm, setIsValidForm] = useState(false)
+  const [isValidForm, setIsValidForm] = useState(true)
+
+  const {
+    cardObjectForOthers,
+    companyDataForOthers,
+    descriptionMatrixForOthers,
+    faqMatrixForOthers,
+    formState,
+    setCardObjectForOthers,
+    setCompanyDataForOthers,
+    setDescriptionMatrixForOthers,
+    setFaqMatrixForOthers,
+    setFormState
+  } = useCreateCardForm(initialData)
   // const [productCategoryes, setProductCategoryes] = useState<string[]>([])
   const [similarProducts, setSimilarProducts] = useState(new Set<Product>())
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(initialData?.category || null)
@@ -186,113 +69,40 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     initialData?.daysBeforeDiscountExpires ? initialData.daysBeforeDiscountExpires.toString() : ''
   )
   const t = useTranslations('createCard')
-  const allLanguages = ['ru', 'en', 'zh']
-  const currentLang = useCurrentLanguage()
 
-  const [currentLangState, setCurrentLangState] = useState<ICurrentLanguage>(currentLang as ICurrentLanguage)
+  // Language start ===========
+  const pathname = usePathname()
+  const langFromPathname = pathname.split('/')[1]
+  const currentLangFromHook = useCurrentLanguage()
+  const currentLang = langFromPathname || currentLangFromHook
+
+  const [currentLangState, setCurrentLangState] = useState<ICurrentLanguage>(
+    (langFromPathname as ICurrentLanguage) || (currentLang as ICurrentLanguage)
+  )
+  // Language end ===========
+
   const [cardTitle, setCardTitle] = useState(initialData?.title || '')
 
   const {descriptions} = useTypedSelector((state) => state.multilingualDescriptions)
-  const [cardObjectForOthers, setCardObjectForOthers] = useState<Record<string, Partial<ICardFull>>>(() =>
-    allLanguages.reduce<Record<string, Partial<ICardFull>>>(
-      (acc, lang) => ({
-        ...acc,
-        [lang]: {
-          title: lang === currentLang ? initialData?.title || '' : `${initialData?.title || cardTitle} ${lang}`,
-          aboutVendor: initialData?.aboutVendor
-            ? {
-                mainDescription:
-                  lang === currentLang
-                    ? initialData.aboutVendor.mainDescription || ''
-                    : `${initialData.aboutVendor.mainDescription || ''} ${lang}`,
-                furtherDescription:
-                  lang === currentLang
-                    ? initialData.aboutVendor.furtherDescription || ''
-                    : `${initialData.aboutVendor.furtherDescription || ''} ${lang}`,
-                media: initialData.aboutVendor.media || []
-              }
-            : undefined,
-          article: lang === currentLang ? initialData?.article || '' : `${initialData?.article || ''} ${lang}`,
-          category: initialData?.category,
-          characteristics:
-            initialData?.characteristics?.map((characteristic) => ({
-              ...characteristic,
-              name: lang === currentLang ? characteristic.name : `${characteristic.name} ${lang}`,
-              value: lang === currentLang ? characteristic.value : `${characteristic.value} ${lang}`
-            })) || [],
-          creationDate: initialData?.creationDate,
-          deliveryMethods:
-            initialData?.deliveryMethods?.map((method) => ({
-              ...method,
-              name: lang === currentLang ? method.name : `${method.name} ${lang}`
-            })) || [],
-          daysBeforeDiscountExpires: initialData?.daysBeforeDiscountExpires,
-          deliveryMethod: initialData?.deliveryMethod
-            ? {
-                ...initialData.deliveryMethod,
-                name:
-                  lang === currentLang
-                    ? initialData.deliveryMethod.name || ''
-                    : `${initialData.deliveryMethod.name || ''} ${lang}`
-              }
-            : undefined,
-          deliveryMethodsDetails:
-            initialData?.deliveryMethodsDetails?.map((detail) => ({
-              ...detail,
-              name: lang === currentLang ? detail.name : `${detail.name} ${lang}`,
-              value: lang === currentLang ? detail.value : `${detail.value} ${lang}`
-            })) || [],
-          discount: initialData?.discount,
-          discountedPrice: initialData?.discountedPrice,
-          originalPrice: initialData?.originalPrice,
-          // ГЛАВНОЕ ИЗМЕНЕНИЕ: добавляем описания для всех языков
-          mainDescription: '',
-          furtherDescription: initialData?.furtherDescription || `## ${t('alternativeAdditionalDescr')}`,
-          summaryDescription:
-            lang === currentLang
-              ? initialData?.summaryDescription || ''
-              : `${initialData?.summaryDescription || ''} ${lang}`,
-          primaryDescription:
-            lang === currentLang
-              ? initialData?.primaryDescription || ''
-              : `${initialData?.primaryDescription || ''} ${lang}`,
-          priceUnit: lang === currentLang ? initialData?.priceUnit || '' : `${initialData?.priceUnit || ''} ${lang}`,
-          previewImageUrl: initialData?.previewImageUrl
-        }
-      }),
-      {}
-    )
-  )
 
-  useEffect(() => {
-    console.log('cardObjectForOthers', cardObjectForOthers)
-  }, [cardObjectForOthers])
+  // useEffect(() => {
+  //   console.log('cardObjectForOthers', cardObjectForOthers)
+  // }, [cardObjectForOthers])
 
   const getValueForLang = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (state: any, objectValue: keyof ICardFull): any => {
-      // Для других языков возвращаем из cardObjectForOthers
       const langData = cardObjectForOthers[currentLangState]
       return langData?.[objectValue] !== undefined ? langData[objectValue] : state
     },
     [currentLangState, currentLang, cardObjectForOthers]
   )
 
-  useEffect(() => {
-    console.log(cardObjectForOthers)
-  }, [cardObjectForOthers])
-
   const [packageArray, setPackaginArray] = useState<string[][]>([])
-
-  const handlePackagingMatrixChange = (packagingMatrix: string[][]) => {
-    setPackaginArray(packagingMatrix)
-  }
 
   // Используем универсальный хук для модального окна
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
   const indowWidth = useWindowWidth()
-
-  // Состояние для базовых полей
 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
 
@@ -329,14 +139,10 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     })) || []
   )
 
-  // Состояние для описаний (CreateDescriptionsElements)
-  // const [description, setDescription] = useState(initialData?.mainDescription || '## ' + t('alternativeMainDescr'))
-  // const [additionalDescription, setAdditionalDescription] = useState(
-  //   initialData?.furtherDescription || '## ' + t('alternativeAdditionalDescr')
-  // )
   const [descriptionImages, setDescriptionImages] = useState<ImageMapping[]>([])
-  const [descriptionMatrix, setDescriptionMatrix] = useState<string[][]>(
-    initialData?.characteristics.map((el) => [el.name, el.value]) || []
+
+  const {characteristics} = useTypedSelector(
+    (state) => state.multiLanguageCardPriceData[(langFromPathname as Language) || (currentLang as Language)]
   )
 
   // Состояние для описания компании (CreateCompanyDescription)
@@ -367,40 +173,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       []
   )
 
-  const [companyDataForOthers, setCompanyDataForOthers] = useState<Record<string, CompanyDescriptionData>>(() =>
-    allLanguages
-      .filter((lang) => lang !== currentLang)
-      .reduce<Record<string, CompanyDescriptionData>>(
-        (acc, lang) => ({
-          ...acc,
-          [lang]: {
-            topDescription: `${initialData?.aboutVendor?.mainDescription || ''} ${lang}`,
-            images: companyData.images, // Изображения одинаковы для всех языков
-            bottomDescription: `${initialData?.aboutVendor?.furtherDescription || ''} ${lang}`
-          }
-        }),
-        {}
-      )
-  )
-
-  const [faqMatrixForOthers, setFaqMatrixForOthers] = useState<Record<string, string[][]>>(() =>
-    allLanguages
-      .filter((lang) => lang !== currentLang)
-      .reduce<Record<string, string[][]>>(
-        (acc, lang) => ({
-          ...acc,
-          [lang]: initialData?.faq.map((el) => [`${el.question} ${lang}`, `${el.answer} ${lang}`]) || [
-            ['', ''],
-            ['', ''],
-            ['', ''],
-            ['', ''],
-            ['', '']
-          ]
-        }),
-        {}
-      )
-  )
-
   // Состояние для FAQ (CreateFaqCard)
   const [faqMatrix, setFaqMatrix] = useState<string[][]>(
     initialData?.faq.map((el) => [el.question, el.answer]) || [
@@ -417,28 +189,11 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   }, [currentLangState, faqMatrixForOthers])
 
   const getCompanyDataForLang = useCallback((): CompanyDescriptionData => {
-    if (currentLangState === currentLang) {
+    if (currentLangState === langFromPathname) {
       return companyData
     }
     return companyDataForOthers[currentLangState] || companyData
-  }, [currentLangState, currentLang, companyData, companyDataForOthers])
-
-  const [descriptionMatrixForOthers, setDescriptionMatrixForOthers] = useState<Record<string, string[][]>>(() =>
-    allLanguages
-      .filter((lang) => lang !== currentLang)
-      .reduce<Record<string, string[][]>>(
-        (acc, lang) => ({
-          ...acc,
-          [lang]: initialData?.characteristics.map((el) => [`${el.name} ${lang}`, `${el.value} ${lang}`]) || []
-        }),
-        {}
-      )
-  )
-
-  // Функция для получения характеристик для текущего языка
-  const getDescriptionMatrixForLang = useCallback((): string[][] => {
-    return descriptionMatrixForOthers[currentLangState] || descriptionMatrix
-  }, [currentLangState, descriptionMatrixForOthers])
+  }, [currentLangState, langFromPathname, companyData, companyDataForOthers])
 
   // Состояние для ошибок валидации
   const [errors, setErrors] = useState<ValidationErrors>({
@@ -452,176 +207,58 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     faqMatrix: ''
   })
 
-  // Флаг, показывающий, была ли попытка отправки формы
-  const [submitAttempted, setSubmitAttempted] = useState(false)
-
-  // Функция валидации отдельного поля
-  const getCurrentMainDescription = useCallback(() => {
-    return cardObjectForOthers[currentLangState]?.mainDescription
-  }, [cardObjectForOthers, currentLangState])
-
-  const getCurrentFurtherDescription = useCallback(() => {
-    return cardObjectForOthers[currentLangState]?.furtherDescription
-  }, [cardObjectForOthers, currentLangState])
-
-  const setMainDescriptionForCurrentLang = useCallback(
-    (value: string) => {
-      setCardObjectForOthers((prev) => ({
-        ...prev,
-        [currentLangState]: {
-          ...prev[currentLangState],
-          mainDescription: value
-        }
-      }))
-    },
-    [currentLangState]
-  )
-
-  const setFurtherDescriptionForCurrentLang = useCallback(
-    (value: string) => {
-      setCardObjectForOthers((prev) => ({
-        ...prev,
-        [currentLangState]: {
-          ...prev[currentLangState],
-          furtherDescription: value
-        }
-      }))
-    },
-    [currentLangState]
-  )
-
-  const handleDescriptionChange = (value: string) => {
-    setMainDescriptionForCurrentLang(value)
-    if (errors.description) {
-      setErrors((prev) => ({...prev, description: ''}))
-    }
-  }
-  const handleAdditionalDescriptionChange = (value: string) => {
-    setFurtherDescriptionForCurrentLang(value)
-    // Дополнительное описание не обязательно, поэтому ошибок для него нет
-  }
-  // Функция для валидации всех полей
-  const validateAllFields = useCallback((): boolean => {
-    const currentMainDescription = getCurrentMainDescription()
-    const newErrors: ValidationErrors = {
-      cardTitle: validateField(
-        'cardTitle',
-        cardTitle,
-        uploadedFiles,
-        remainingInitialImages,
-        pricesArray,
-        currentMainDescription || '',
-        descriptionMatrix,
-        companyData,
-        faqMatrix
-      ),
-      uploadedFiles: validateField(
-        'uploadedFiles',
-        cardTitle,
-        uploadedFiles,
-        remainingInitialImages,
-        pricesArray,
-        currentMainDescription || '',
-        descriptionMatrix,
-        companyData,
-        faqMatrix
-      ),
-      pricesArray: validateField(
-        'pricesArray',
-        cardTitle,
-        uploadedFiles,
-        remainingInitialImages,
-        pricesArray,
-        currentMainDescription || '',
-        descriptionMatrix,
-        companyData,
-        faqMatrix
-      ),
-      description: validateField(
-        'description',
-        cardTitle,
-        uploadedFiles,
-        remainingInitialImages,
-        pricesArray,
-        currentMainDescription || '',
-        descriptionMatrix,
-        companyData,
-        faqMatrix
-      ),
-      descriptionMatrix: validateField(
-        'descriptionMatrix',
-        cardTitle,
-        uploadedFiles,
-        remainingInitialImages,
-        pricesArray,
-        currentMainDescription || '',
-        descriptionMatrix,
-        companyData,
-        faqMatrix
-      ),
-      companyData: validateField(
-        'companyData',
-        cardTitle,
-        uploadedFiles,
-        remainingInitialImages,
-        pricesArray,
-        currentMainDescription || '',
-        descriptionMatrix,
-        companyData,
-        faqMatrix
-      ),
-      faqMatrix: validateField(
-        'faqMatrix',
-        cardTitle,
-        uploadedFiles,
-        remainingInitialImages,
-        pricesArray,
-        currentMainDescription || '',
-        descriptionMatrix,
-        companyData,
-        faqMatrix
-      )
-    }
-
-    setErrors(newErrors)
-    return !Object.values(newErrors).some((error) => error !== '')
-  }, [cardTitle, uploadedFiles, remainingInitialImages, pricesArray, descriptionMatrix, companyData, faqMatrix])
-
   // Обновляем валидацию при изменении полей
+  const {validationErrors, isFormValid} = useFormValidation(
+    {
+      isValidForm: isValidForm,
+      submitAttempted: true,
+      similarProducts: similarProducts,
+      selectedCategory: selectedCategory,
+      saleDate: saleDate,
+      currentLangState: currentLangState,
+      cardTitle: cardTitle,
+      uploadedFiles: uploadedFiles,
+      cardObjectForOthers: cardObjectForOthers,
+      remainingInitialImages: remainingInitialImages,
+      objectRemainingInitialImages: objectRemainingInitialImages,
+      pricesArray: pricesArray,
+      descriptionImages: descriptionImages,
+      descriptionMatrix: characteristics.map((el) => [el.title, el.characteristic]),
+      packageArray: packageArray,
+      companyData: companyData,
+      companyDataImages: companyDataImages,
+      faqMatrix: faqMatrixForOthers[currentLangState || 'ru'] || faqMatrix,
+
+      errors: errors,
+      selectedDeliveryMethodIds: selectedDeliveryMethodIds
+    },
+    () => {
+      return descriptions[currentLangState]?.description
+    }
+  )
+
   useEffect(() => {
-    if (submitAttempted) {
-      const isValid = validateAllFields()
-      setIsValidForm(isValid)
-    }
-  }, [
-    cardTitle,
-    uploadedFiles.length, // Используем длину массива вместо самого массива
-    remainingInitialImages.length, // Используем длину массива
-    pricesArray.length, // Используем длину массива
-    descriptionImages.length, // Используем длину массива
-    JSON.stringify(descriptionMatrix), // Преобразуем в строку для корректного сравнения
-    JSON.stringify(companyData), // Преобразуем в строку
-    JSON.stringify(faqMatrix), // Преобразуем в строку
-    submitAttempted,
-    currentLangState, // Добавляем текущий язык как зависимость
-    validateAllFields
-  ])
+    setIsValidForm(isFormValid)
+    // Обновляем ошибки только если они изменились
+    setErrors((prev) => {
+      const hasChanges = Object.keys(validationErrors).some(
+        (key) => prev[key as keyof ValidationErrors] !== validationErrors[key as keyof ValidationErrors]
+      )
+      return hasChanges ? validationErrors : prev
+    })
+  }, [isFormValid, validationErrors])
 
-  // Обработчики изменений с очисткой ошибок
-  const handleCardTitleChange = (value: string) => {
-    setCardTitle(value)
-    if (errors.cardTitle) {
-      setErrors((prev) => ({...prev, cardTitle: ''}))
-    }
-  }
-
-  const handleUploadedFilesChange = (files: File[]) => {
-    setUploadedFiles(files)
-    if (errors.uploadedFiles && files.length + remainingInitialImages.length >= 3) {
-      setErrors((prev) => ({...prev, uploadedFiles: ''}))
-    }
-  }
-
+  const handleUploadedFilesChange = useCallback(
+    (files: File[]) => {
+      setTimeout(() => {
+        setUploadedFiles(files)
+        if (errors.uploadedFiles && files.length + remainingInitialImages.length >= 3) {
+          setErrors((prev) => ({...prev, uploadedFiles: ''}))
+        }
+      }, 0)
+    },
+    [errors.uploadedFiles, remainingInitialImages.length]
+  )
   // Обработчик для обновления оставшихся начальных изображений
   const handleActiveImagesChange = (remainingUrls: string[]) => {
     setRemainingInitialImages(remainingUrls)
@@ -630,7 +267,9 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handlePricesArrayChange = (prices: any[]) => {
     // console.log('prices', prices)
+    // setTimeout(() => {
     setPricesArray(prices)
+    // }, 0)
     if (errors.pricesArray) {
       setErrors((prev) => ({...prev, pricesArray: ''}))
     }
@@ -644,45 +283,60 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   // }
 
   const handleDescriptionImagesChange = (images: ImageMapping[]) => {
-    setDescriptionImages(images)
+    setTimeout(() => {
+      setDescriptionImages(images)
+    }, 0)
     // Изображения в описании необязательны, поэтому не сбрасываем ошибку
   }
 
-  const handleDescriptionMatrixChange = (matrix: string[][]) => {
-    setDescriptionMatrix(matrix)
-    if (errors.descriptionMatrix) {
-      setErrors((prev) => ({...prev, descriptionMatrix: ''}))
-    }
-  }
-
   const handleCompanyDataChange = (data: CompanyDescriptionData) => {
+    // setTimeout(() => {
     setCompanyData(data)
+    // }, 0)
     if (errors.companyData) {
       setErrors((prev) => ({...prev, companyData: ''}))
     }
   }
 
-  const handleFaqMatrixChange = (matrix: string[][]) => {
-    setFaqMatrix(matrix)
-    if (errors.faqMatrix) {
-      setErrors((prev) => ({...prev, faqMatrix: ''}))
+  const {submitForm} = useCreateCardAPI()
+
+  useEffect(() => {
+    // Синхронизируем cardTitle с текущим языком
+    const currentTitleValue = cardObjectForOthers[currentLangState]?.title
+    if (currentTitleValue !== undefined && currentTitleValue !== cardTitle) {
+      setCardTitle(currentTitleValue)
     }
-  }
+  }, [cardObjectForOthers, currentLangState])
 
-  // Альтернативный метод отправки через fetch
-  const handleSubmitAlternative = async (e: React.FormEvent) => {
+  const handleTitleChange = useCallback(
+    (value: string) => {
+      // Обновляем и основное состояние и объект для языков
+      setCardTitle(value)
+
+      const updatedCardTitleForOthers = {...cardObjectForOthers}
+      updatedCardTitleForOthers[currentLangState] = {
+        ...updatedCardTitleForOthers[currentLangState],
+        title: value
+      }
+      setCardObjectForOthers(updatedCardTitleForOthers)
+    },
+    [cardObjectForOthers, currentLangState]
+  )
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitAttempted(true)
 
-    const isValid = validateAllFields()
+    console.log('Submit attempted. Form valid:', isFormValid)
 
-    if (!isValid) {
-      const firstErrorField = Object.entries(errors).find(([_, error]) => error !== '')
-      if (firstErrorField) {
+    if (!isFormValid) {
+      const firstError = Object.entries(validationErrors).find(([_, error]) => error !== '')
+      console.log('Validation failed. First error:', firstError)
+
+      if (firstError) {
         toast.error(
           <div style={{lineHeight: 1.5}}>
             <strong style={{display: 'block', marginBottom: 4}}>{t('validateError')}</strong>
-            <span>{firstErrorField[1]}</span>
+            <span>{firstError[1]}</span>
           </div>,
           {
             style: {
@@ -696,6 +350,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
     // Проверка наличия категории
     if (!selectedCategory) {
+      console.log('Category validation failed')
       toast.error(
         <div style={{lineHeight: 1.5}}>
           <strong style={{display: 'block', marginBottom: 4}}>{t('error')}</strong>
@@ -710,195 +365,31 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       return
     }
 
+    console.log('Submitting form...')
+
     try {
-      // Подготовка данных для отправки
-      const currentMainDescription = getCurrentMainDescription()
-      const currentFurtherDescription = getCurrentFurtherDescription()
-      const data: CreateProductDto = {
-        title: cardTitle,
-        mainDescription: currentMainDescription?.replace('## ' + t('alternativeMainDescr'), '').trim() || '',
-        furtherDescription:
-          currentFurtherDescription?.replace('## ' + t('alternativeAdditionalDescr'), '').trim() || '',
-        deliveryMethodIds: selectedDeliveryMethodIds,
-        prices: pricesArray.map((price, index) => {
-          // Парсим диапазон количества
-          const quantityRange = parseQuantityRange(price.quantity)
-
-          // Определяем quantityTo
-          let quantityTo: number
-          if (quantityRange.to !== null) {
-            // Если указан диапазон через дефис
-            quantityTo = quantityRange.to
-          } else if (index < pricesArray.length - 1) {
-            // Если это не последний элемент, берем from следующего минус 1
-            const nextQuantityRange = parseQuantityRange(pricesArray[index + 1].quantity)
-            quantityTo = nextQuantityRange.from - 1
-          } else {
-            // Для последнего элемента
-            quantityTo = 999999
-          }
-
-          const originalPrice = parseFloat(price.priceWithoutDiscount) || 0
-          const discountedPrice = parseFloat(price.priceWithDiscount) || 0
-          const discountPercent =
-            originalPrice > 0 ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0
-
-          return {
-            quantityFrom: quantityRange.from,
-            quantityTo: quantityTo,
-            currency: price.currency || 'RUB',
-            unit: price.unit || t('elCount'),
-            price: originalPrice,
-            discount: discountPercent
-          }
-        }),
-        minimumOrderQuantity:
-          pricesArray.length > 0 ? parseQuantityRange(pricesArray[0].quantity).from.toString() : '1',
-        deliveryMethodDetails: descriptionMatrix
-          .filter((row) => row[0] && row[1])
-          .map((row) => ({
-            name: row[0],
-            value: row[1]
-          })),
-        aboutVendor: {
-          mainDescription: companyData.topDescription,
-          furtherDescription: companyData.bottomDescription,
-          mediaAltTexts: companyData.images.filter((img) => img.image !== null).map((img) => img.description)
-        },
-        faq: faqMatrix
-          .filter((row) => row[0] && row[1])
-          .map((row) => ({
-            question: row[0],
-            answer: row[1]
-          })),
-        characteristics: descriptionMatrix
-          .filter((row) => row[0] && row[1])
-          .map((row) => ({
-            name: row[0],
-            value: row[1]
-          })),
-        packageOptions: packageArray
-          .filter((item) => item[0] && item[1])
-          .map((item) => ({
-            name: item[0],
-            price: parseFloat(item[1]) || 0,
-            priceUnit: pricesArray[0]?.unit || 'RUB'
-          })),
-        categoryId: selectedCategory.id,
-        // Обработка saleDate - если это число дней
-        discountExpirationDate: saleDate ? (!isNaN(parseInt(saleDate)) ? parseInt(saleDate) : 30) : 0,
-        similarProducts: Array.from(similarProducts).map((product) => product.id)
-      }
-      const isUpdate = !!initialData?.id
-      // Добавляем oldProductMedia только если есть оставшиеся изображения
-      if (objectRemainingInitialImages.length > 0 && isUpdate) {
-        data.oldProductMedia = objectRemainingInitialImages
-        if (companyDataImages.length === 0 && isUpdate) {
-          data.oldAboutVendorMedia = []
-        }
-      }
-
-      // Добавляем oldAboutVendorMedia только если есть оставшиеся изображения компании
-      if (companyDataImages.length > 0 && isUpdate) {
-        data.oldAboutVendorMedia = companyDataImages
-        if (objectRemainingInitialImages.length === 0 && isUpdate) {
-          data.oldAboutVendorMedia = []
-        }
-      }
-
-      const formData = new FormData()
-
-      // Создаем Blob для JSON
-      const jsonBlob = new Blob([JSON.stringify(data)], {type: 'application/json'})
-      formData.append('data', jsonBlob)
-
-      // Добавляем только файлы для productMedia
-      uploadedFiles.forEach((file) => {
-        if (file instanceof File) {
-          formData.append('productMedia', file)
-        }
-      })
-
-      // Добавляем только файлы для aboutVendorMedia
-      companyData.images.forEach((item) => {
-        if (item.image && item.image instanceof File) {
-          formData.append('aboutVendorMedia', item.image)
-        }
-      })
-
-      const token = await getAccessToken()
-
-      // Определяем метод и URL в зависимости от наличия initialData
-
-      const method = isUpdate ? 'PUT' : 'POST'
-      const url = isUpdate
-        ? `https://exporteru-prorumble.amvera.io/api/v1/products/${initialData.id}`
-        : 'https://exporteru-prorumble.amvera.io/api/v1/products'
-
-      // Показываем toast о процессе отправки
-      const loadingToast = toast.loading(isUpdate ? t('updateCardProcess') : t('saveCardProcess'))
-
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',
-          'Accept-Language': currentLang
-        },
-        body: formData
-      })
-
-      const responseText = await response.text()
-      // console.log('Response status:', response.status)
-      // console.log('Response text:', responseText)
-
-      // Убираем loading toast
-      toast.dismiss(loadingToast)
-
-      if (!response.ok) {
-        let errorData
-        try {
-          errorData = JSON.parse(responseText)
-        } catch {
-          errorData = {message: responseText}
-        }
-
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
-      }
-
-      // Успешное создание/обновление
-      toast.success(
-        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('gratulation')}</strong>
-          <span>
-            {t('cardSuccess')} {isUpdate ? t('successCreateCardEndText') : t('successCreateCardEndText')}
-          </span>
-        </div>,
+      await submitForm(
         {
-          style: {
-            background: '#2E7D32'
-          },
-          duration: 5000
-        }
+          cardTitle: getValueForLang(cardTitle, 'title') || cardTitle,
+          getCurrentMainDescription: () => cardObjectForOthers[currentLangState]?.mainDescription,
+          getCurrentFurtherDescription: () => cardObjectForOthers[currentLangState]?.furtherDescription,
+          selectedDeliveryMethodIds: selectedDeliveryMethodIds,
+          pricesArray: pricesArray,
+          descriptionMatrix: characteristics.map((el) => [el.title, el.characteristic]),
+          companyData: getCompanyDataForLang(),
+          faqMatrix: faqMatrixForOthers[currentLangState],
+          packageArray: packageArray,
+          selectedCategory: selectedCategory,
+          saleDate: saleDate,
+          similarProducts: similarProducts,
+          uploadedFiles: uploadedFiles,
+          objectRemainingInitialImages: objectRemainingInitialImages,
+          companyDataImages: companyDataImages
+        },
+        initialData
       )
-
-      // Редирект или очистка формы
-      // router.push('/products')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error('Ошибка при сохранении:', error)
-
-      toast.error(
-        <div style={{lineHeight: 1.5}}>
-          <strong style={{display: 'block', marginBottom: 4}}>{t('saveError')}</strong>
-          <span>{error.message || t('saveErrorText')}</span>
-        </div>,
-        {
-          style: {
-            background: '#AC2525'
-          },
-          duration: 5000
-        }
-      )
+    } catch (error) {
+      console.error('Ошибка при сохранении:', error as Error)
     }
   }
 
@@ -920,7 +411,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       <Header />
       <div className={'container'}>
         <div className={`${styles.create__inner}`}>
-          <h1 className={`${styles.create__title}`}>{t('createCardTitle')}</h1>
+          <h1 className={`${styles.create__title}`}>{t('createCardTitle')} + TEST</h1>
 
           <div className={`${styles.language__switcher}`}>
             <p className={`${styles.language__switcher__title}`}>{t('languageForInput')}</p>
@@ -950,7 +441,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmitAlternative} className={`${styles.create__form}`}>
+          <form onSubmit={handleSubmit} className={`${styles.create__form}`}>
             {/* Поле "Название" */}
             <span className={`${styles.create__input__box__span}`}>
               <div className={`${styles.label__title__box}`}>
@@ -984,14 +475,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 idForLabel='title'
                 placeholder={t('name')}
                 currentValue={getValueForLang(cardTitle, 'title')}
-                onSetValue={(value) => {
-                  const updatedCardTitleForOthers = {...cardObjectForOthers}
-                  updatedCardTitleForOthers[currentLangState] = {
-                    ...updatedCardTitleForOthers[currentLangState],
-                    title: value
-                  }
-                  setCardObjectForOthers(updatedCardTitleForOthers)
-                }}
+                onSetValue={handleTitleChange}
                 theme='superWhite'
               />
             </span>
@@ -1065,8 +549,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 ]}
               />
             </div>
-
-            {/* <CreateProductForm /> */}
             <CreateSimilarProducts
               // initialProducts={initialData?.similarProducts}
               onUpdateProductsSet={setSimilarProducts}
@@ -1074,10 +556,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             {/* CreateCardPriceElements */}
             <CreateCardPriceElements
               inputType={['text', 'number', 'number', 'text', 'text']}
-              // minimalValue={initialData?.minimumOrderQuantity + ' ' + initialData?.prices[0]?.unit}
-              // saleDateInitial={initialData?.daysBeforeDiscountExpires?.toString() || ''}
-              // initialDelieveryMatrix={initialData?.deliveryMethodsDetails?.map((el) => [el.name, el.value])}
-              // initialPackagingMatrix={initialData?.packagingOptions?.map((el) => [el.name, el.price.toString()])}
               pricesArray={pricesArray.map((item) => [
                 item.quantity,
                 item.priceWithoutDiscount,
@@ -1086,17 +564,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 item.unit
               ])}
               currentLanguage={currentLangState}
-              // descriptionArray={getDescriptionMatrixForLang()}
-              // onSetDescriptionArray={(matrix) => {
-              //   const updatedDescriptionMatrixForOthers = {...descriptionMatrixForOthers}
-              //   updatedDescriptionMatrixForOthers[currentLangState] = matrix
-              //   setDescriptionMatrixForOthers(updatedDescriptionMatrixForOthers)
-              // }}
               onSetPricesArray={handlePricesArrayChange}
-              // onSetPackagingMatrix={handlePackagingMatrixChange}
-              // onSetSaleDate={setSaleDate}
               pricesError={errors.pricesArray}
-              // descriptionMatrixError={errors.descriptionMatrix}
             />
 
             <CreateDescriptionsElements
@@ -1104,8 +573,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               descriptionError={errors.description}
               currentDynamicLang={currentLangState}
             />
-
-            {/* CreateCompanyDescription */}
             <CreateCompanyDescription
               data={getCompanyDataForLang()}
               onChange={(data) => {
@@ -1124,18 +591,18 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               onChange={(matrix) => {
                 const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
                 updatedFaqMatrixForOthers[currentLangState] = matrix
-                console.log('матрица faqMatrixForOthers', faqMatrixForOthers)
                 setFaqMatrixForOthers(updatedFaqMatrixForOthers)
               }}
             />
             <div className={`${styles.button__box}`}>
               <button
                 style={{
-                  opacity: submitAttempted && !isValidForm ? 0.7 : 1,
-                  cursor: submitAttempted && !isValidForm ? 'not-allowed' : 'pointer'
+                  opacity: !isFormValid ? 0.7 : 1,
+                  cursor: !isFormValid ? 'not-allowed' : 'pointer'
                 }}
                 className={`${styles.create____submit__button}`}
                 type='submit'
+                disabled={!isFormValid}
               >
                 {t('save')}
               </button>

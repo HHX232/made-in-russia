@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // hooks/useCreateCardForm.ts
 import {useState} from 'react'
-import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {Product} from '@/services/products/product.types'
-import {ICurrentLanguage} from '@/components/pages/CreateCard/CreateCard.types'
+import {CompanyDescriptionData, ICurrentLanguage} from '@/components/pages/CreateCard/CreateCard.types'
 import {
   initializeMultilingualData,
   initializeCompanyDataForOthers,
@@ -12,13 +11,20 @@ import {
   initializeDescriptionMatrixForOthers
 } from '@/utils/createCardHelpers'
 import {FormState} from '@/types/CreateCard.extended.types'
+import ICardFull from '@/services/card/card.types'
+import {usePathname} from 'next/navigation'
+import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const useCreateCardForm = (initialData?: any) => {
-  const t = useTranslations('createCard')
-  const currentLang = useCurrentLanguage()
+export const useCreateCardForm = (initialData?: ICardFull) => {
+  const pathname = usePathname()
+  const langFromPathname = pathname.split('/')[1]
+  const currentLangFromHook = useCurrentLanguage()
+  const currentLang = langFromPathname || currentLangFromHook
   const allLanguages = ['ru', 'en', 'zh']
 
+  const [cardObjectForOthers, setCardObjectForOthers] = useState<Record<string, Partial<ICardFull>>>(() =>
+    initializeMultilingualData(allLanguages as Language[], currentLang, initialData as ICardFull)
+  )
   const [formState, setFormState] = useState<FormState>(() => ({
     isValidForm: false,
     submitAttempted: false,
@@ -50,7 +56,7 @@ export const useCreateCardForm = (initialData?: any) => {
     companyData: {
       topDescription: initialData?.aboutVendor?.mainDescription || '',
       images:
-        initialData?.aboutVendor?.media?.length > 0
+        initialData && initialData?.aboutVendor && initialData?.aboutVendor?.media?.length > 0
           ? initialData.aboutVendor.media.map((el: any) => ({
               image: el.url as string,
               description: el.altText
@@ -84,19 +90,17 @@ export const useCreateCardForm = (initialData?: any) => {
       descriptionMatrix: '',
       companyData: '',
       faqMatrix: ''
-    }
+    },
+    cardObjectForOthers: cardObjectForOthers
   }))
 
   // Многоязычные данные
-  const [cardObjectForOthers, setCardObjectForOthers] = useState(() =>
-    initializeMultilingualData(allLanguages, currentLang, initialData, t)
-  )
 
-  const [companyDataForOthers, setCompanyDataForOthers] = useState(() =>
+  const [companyDataForOthers, setCompanyDataForOthers] = useState<Record<string, CompanyDescriptionData>>(() =>
     initializeCompanyDataForOthers(allLanguages, currentLang, initialData, formState.companyData)
   )
 
-  const [faqMatrixForOthers, setFaqMatrixForOthers] = useState(() =>
+  const [faqMatrixForOthers, setFaqMatrixForOthers] = useState<{[key: string]: string[][]}>(() =>
     initializeFaqMatrixForOthers(allLanguages, currentLang, initialData)
   )
 

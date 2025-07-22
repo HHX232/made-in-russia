@@ -2,7 +2,7 @@ import CreateCard from '@/components/pages/CreateCard/CreateCard'
 import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 import cardService from '@/services/card/card.service'
 import {Metadata} from 'next'
-import {cookies} from 'next/headers'
+import {cookies, headers} from 'next/headers'
 import {notFound} from 'next/navigation'
 
 export const metadata: Metadata = {
@@ -13,11 +13,29 @@ export const metadata: Metadata = {
 export default async function CreateCardPageWithId({params}: {params: Promise<{id: string}>}) {
   const {id} = await params
   const cookieStore = await cookies()
-  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+  let locale = cookieStore.get('NEXT_LOCALE')?.value
+
+  if (!locale) {
+    const headersList = await headers()
+
+    locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
+
+    if (!locale) {
+      const referer = headersList.get('referer')
+      if (referer) {
+        const match = referer.match(/\/([a-z]{2})\//)
+        if (match && ['en', 'ru', 'zh'].includes(match[1])) {
+          locale = match[1]
+        }
+      }
+    }
+  }
+
   let res
   let isSuccess = true
   try {
-    res = await cardService.getFullCardById(id, locale)
+    res = await cardService.getFullCardById(id, locale, true)
+    console.log('res full card with translates', res.data)
   } catch {
     isSuccess = false
     notFound()

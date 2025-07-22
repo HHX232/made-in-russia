@@ -17,6 +17,8 @@ export interface FormState {
   currentLangState: ICurrentLanguage
   cardTitle: string
   uploadedFiles: File[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  cardObjectForOthers: any // Добавляем это поле
   remainingInitialImages: string[]
   objectRemainingInitialImages: {id: number; position: number}[]
   pricesArray: PriceItem[]

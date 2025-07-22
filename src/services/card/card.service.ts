@@ -2,13 +2,16 @@ import {axiosClassic} from '@/api/api.interceptor'
 import ICardFull, {PaginatedResponse, Review} from './card.types'
 import {Product} from '../products/product.types'
 const cardService = {
-  async getCardById(id: number | string, currentLang?: string) {
+  async getCardById(id: number | string, currentLang?: string, hasTranslations?: boolean) {
     try {
-      const res = await axiosClassic.get<Product>(`/products-summary/${id}`, {
-        headers: {
-          'Accept-Language': currentLang || 'en'
+      const res = await axiosClassic.get<Product>(
+        `/products-summary/${id}${hasTranslations ? '?hasTranslations=true' : ''}`,
+        {
+          headers: {
+            'Accept-Language': currentLang || 'en'
+          }
         }
-      })
+      )
       return {
         data: res.data,
         isLoading: false,
@@ -24,13 +27,16 @@ const cardService = {
       }
     }
   },
-  async getFullCardById(id: string | number, currentLang?: string) {
+  async getFullCardById(id: string | number, currentLang?: string, hasTranslations?: boolean) {
     try {
-      const res = await axiosClassic.get<ICardFull>(`/products/${id}`, {
-        headers: {
-          'Accept-Language': currentLang || 'en'
+      const res = await axiosClassic.get<ICardFull>(
+        `/products/${id}${hasTranslations ? '?hasTranslations=true' : ''}`,
+        {
+          headers: {
+            'Accept-Language': currentLang || 'en'
+          }
         }
-      })
+      )
       return {
         data: res.data,
         isLoading: false,

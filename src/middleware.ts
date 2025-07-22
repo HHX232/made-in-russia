@@ -68,7 +68,6 @@ export const removeTokensFromResponse = (response: NextResponse) => {
   console.log('🗑️ Токены удалены из response')
   return response
 }
-// , '/profile', '/vendor'
 
 const protectedRoutes = ['/basket', '/profile', '/vendor', '/create-card']
 const publicRoutes = ['/login', '/register']
@@ -90,6 +89,7 @@ export async function middleware(request: NextRequest) {
   if (intlResponse && intlResponse.status !== 200) {
     return intlResponse
   }
+
   try {
     const {pathname} = request.nextUrl
     const locale = getLocaleFromPathname(pathname)
@@ -158,7 +158,9 @@ export async function middleware(request: NextRequest) {
             const {data: productData} = await axiosClassic.get<ICardFull>(`/products/${productId}`, {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
-                'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+                'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
+                'Accept-Language': locale || 'en',
+                'X-Locale': locale || 'en'
               }
             })
 
@@ -242,51 +244,51 @@ export async function middleware(request: NextRequest) {
           }
 
           // Если это маршрут с ID товара
-          if (pathnameWithoutLocale.startsWith('/create-card/') && pathnameWithoutLocale !== '/create-card') {
-            const pathSegments = pathnameWithoutLocale.split('/')
-            const productId = pathSegments[2]
+          // if (pathnameWithoutLocale.startsWith('/create-card/') && pathnameWithoutLocale !== '/create-card') {
+          //   const pathSegments = pathnameWithoutLocale.split('/')
+          //   const productId = pathSegments[2]
 
-            if (!productId || isNaN(Number(productId))) {
-              const createCardUrl = createLocalizedURL('/create-card', locale)
-              const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
-              redirectResponse.cookies.set('accessToken', tokenData.accessToken)
-              redirectResponse.headers.set('x-locale', locale || 'en')
-              return redirectResponse
-            }
+          //   if (!productId || isNaN(Number(productId))) {
+          //     const createCardUrl = createLocalizedURL('/create-card', locale)
+          //     const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
+          //     redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+          //     redirectResponse.headers.set('x-locale', locale || 'en')
+          //     return redirectResponse
+          //   }
 
-            try {
-              const {data: productData} = await axiosClassic.get<ICardFull>(`/products/${productId}`, {
-                headers: {
-                  Authorization: `Bearer ${tokenData.accessToken}`,
-                  'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
-                }
-              })
+          //   try {
+          //     const {data: productData} = await axiosClassic.get<ICardFull>(`/products/${productId}`, {
+          //       headers: {
+          //         Authorization: `Bearer ${tokenData.accessToken}`,
+          //         'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+          //       }
+          //     })
 
-              const productOwnerId = productData?.user?.id
+          //     const productOwnerId = productData?.user?.id
 
-              if (userData.role === 'Admin') {
-                response.headers.set('x-locale', locale || 'en')
-                return response
-              }
+          //     if (userData.role === 'Admin') {
+          //       response.headers.set('x-locale', locale || 'en')
+          //       return response
+          //     }
 
-              if (productOwnerId !== userData.id) {
-                const createCardUrl = createLocalizedURL('/create-card', locale)
-                const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
-                redirectResponse.cookies.set('accessToken', tokenData.accessToken)
-                redirectResponse.headers.set('x-locale', locale || 'en')
-                return redirectResponse
-              }
+          //     if (productOwnerId !== userData.id) {
+          //       const createCardUrl = createLocalizedURL('/create-card', locale)
+          //       const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
+          //       redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+          //       redirectResponse.headers.set('x-locale', locale || 'en')
+          //       return redirectResponse
+          //     }
 
-              return response.headers.set('x-locale', locale || 'en')
-            } catch (error) {
-              console.error('❌ Ошибка при получении данных товара:', error)
-              const createCardUrl = createLocalizedURL('/create-card', locale)
-              const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
-              redirectResponse.cookies.set('accessToken', tokenData.accessToken)
-              redirectResponse.headers.set('x-locale', locale || 'en')
-              return redirectResponse
-            }
-          }
+          //     return response.headers.set('x-locale', locale || 'en')
+          //   } catch (error) {
+          //     console.error('❌ Ошибка при получении данных товара:', error)
+          //     const createCardUrl = createLocalizedURL('/create-card', locale)
+          //     const redirectResponse = NextResponse.redirect(new URL(createCardUrl, request.url))
+          //     redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+          //     redirectResponse.headers.set('x-locale', locale || 'en')
+          //     return redirectResponse
+          //   }
+          // }
 
           return response.headers.set('x-locale', locale || 'en')
         } catch (e) {
@@ -572,15 +574,15 @@ export async function middleware(request: NextRequest) {
         console.log('✅ Найден продавец:', data.role)
 
         // TODO РАСКОММЕНТИРОВАТЬ
-        //! const {data: userData} = await instance.get<User>('/me', {
-        //!   headers: {
-        //!     Authorization: `Bearer ${accessToken}`,
-        //!     'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
-        //!   }
-        //! })
-        //! if (data.id === userData.id) {
-        //!   return NextResponse.redirect(new URL('/vendor', request.url))
-        //! }
+        const {data: userData} = await instance.get<User>('/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+          }
+        })
+        if (data.id === userData.id) {
+          return NextResponse.redirect(new URL('/vendor', request.url))
+        }
         const intlResponseNew = intlResponse || NextResponse.next()
         intlResponseNew.headers.set('x-locale', locale || 'en')
         return intlResponseNew

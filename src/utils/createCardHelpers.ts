@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {ValidationErrors, CompanyDescriptionData} from '@/components/pages/CreateCard/CreateCard.types'
+import ICardFull from '@/services/card/card.types'
+import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
 import {PriceItem} from '@/types/CreateCard.extended.types'
 
 // utils/createCardHelpers.ts
@@ -38,31 +40,36 @@ export const validateField = (
 ): string => {
   switch (fieldName) {
     case 'cardTitle':
-      if (!cardTitle.trim()) return 'Название товара обязательно для заполнения'
-      if (cardTitle.trim().length < 3) return 'Название должно содержать минимум 3 символа'
-      return ''
+      const titleError = !cardTitle || cardTitle.trim().length === 0 ? 'Название товара обязательно для заполнения' : ''
+      // console.log(
+      //   `Title validation - input: "${cardTitle}", trimmed length: ${cardTitle?.trim()?.length || 0}, error: "${titleError}"`
+      // )
+      return titleError
 
     case 'uploadedFiles':
-      const totalImages = uploadedFiles.length + remainingInitialImages.length
-      if (totalImages < 3) return `Необходимо минимум 3 изображения (текущее количество: ${totalImages})`
-      return ''
+      const totalImages = (uploadedFiles?.length || 0) + (remainingInitialImages?.length || 0)
+      const filesError = totalImages < 3 ? 'Минимум 3 изображения' + `, сейчас ${totalImages}/3` : ''
+      // console.log(`Files validation result: "${filesError}", total: ${totalImages}`)
+      return filesError
 
     case 'pricesArray':
-      if (pricesArray.length === 0) return 'Необходимо добавить хотя бы одну цену'
-      const invalidPrices = pricesArray.filter((price) => !price.value || price.value <= 0)
-      if (invalidPrices.length > 0) return 'Все цены должны быть больше нуля'
-      return ''
+      const pricesError = !pricesArray || pricesArray.length === 0 ? 'Добавьте хотя бы одну цену' : ''
+      // console.log(`Prices validation result: "${pricesError}"`)
+      return pricesError
 
     case 'description':
-      const cleanDescription = description.replace('## Основное описание', '').trim()
-      if (!cleanDescription) return 'Основное описание обязательно для заполнения'
-      if (cleanDescription.length < 10) return 'Основное описание должно содержать минимум 10 символов'
-      return ''
+      const descError = !description || description.trim().length === 0 ? 'Описание обязательно' : ''
+      // console.log(`Description validation result: "${descError}" with description "${description}"`)
+      return descError
 
     case 'descriptionMatrix':
       const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell.trim()))
-      if (filledRows.length === 0) return 'Необходимо заполнить хотя бы одну строку в таблице характеристик'
-      return ''
+      const matrixError =
+        filledRows.length === 0 ? 'Необходимо заполнить хотя бы одну строку в таблице характеристик' : ''
+      // console.log(
+      //   `Description matrix validation result: "${matrixError}" with description matrix "${descriptionMatrix}"`
+      // )
+      return matrixError
 
     case 'companyData':
       if (!companyData.topDescription.trim()) return 'Верхнее описание компании обязательно для заполнения'
@@ -74,6 +81,7 @@ export const validateField = (
       return ''
 
     case 'faqMatrix':
+      // console.log('faqMatrix in valid', faqMatrix)
       const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
       if (filledFaqRows.length === 0) return 'Необходимо добавить хотя бы один вопрос и ответ'
       const incompleteRows = filledFaqRows.filter(
@@ -88,21 +96,87 @@ export const validateField = (
 }
 
 // Вспомогательные функции инициализации
-export const initializeMultilingualData = (allLanguages: string[], currentLang: string, initialData: any, t: any) => {
-  return allLanguages.reduce(
+export const initializeMultilingualData = (
+  allLanguages: Language[],
+  currentLang: string,
+  initialData: ICardFull,
+ 
+) => {
+  return allLanguages.reduce<Record<string, Partial<ICardFull>>>(
     (acc, lang) => ({
       ...acc,
       [lang]: {
-        title: lang === currentLang ? initialData?.title || '' : `${initialData?.title || ''} ${lang}`,
-        mainDescription: '',
-        furtherDescription: initialData?.furtherDescription || `## ${t('alternativeAdditionalDescr')}`
-        // ... остальные поля
+        title: lang === currentLang ? initialData?.title || '' : initialData.titleTranslations[lang],
+        aboutVendor: initialData?.aboutVendor
+          ? {
+              mainDescription:
+                lang === currentLang
+                  ? initialData.aboutVendor.mainDescription || ''
+                  : initialData.aboutVendor.mainDescriptionTranslations[lang],
+              furtherDescription:
+                lang === currentLang
+                  ? initialData.aboutVendor.furtherDescription || ''
+                  : initialData.aboutVendor.furtherDescriptionTranslations[lang],
+              mainDescriptionTranslations: initialData.aboutVendor.mainDescriptionTranslations,
+              furtherDescriptionTranslations: initialData.aboutVendor.furtherDescriptionTranslations,
+              media: initialData.aboutVendor.media || []
+            }
+          : undefined,
+        category: initialData?.category,
+        characteristics:
+          initialData?.characteristics?.map((characteristic) => ({
+            ...characteristic,
+            name: lang === currentLang ? characteristic.name : characteristic.nameTranslations[lang],
+            value: lang === currentLang ? characteristic.value : characteristic.valueTranslations[lang],
+            nameTranslations: characteristic.nameTranslations,
+            valueTranslations: characteristic.valueTranslations
+          })) || [],
+        creationDate: initialData?.creationDate,
+        deliveryMethods:
+          initialData?.deliveryMethods?.map((method) => ({
+            ...method,
+            name: lang === currentLang ? method.name : `${method.name} ${lang}`
+          })) || [],
+        daysBeforeDiscountExpires: initialData?.daysBeforeDiscountExpires,
+        deliveryMethod: initialData?.deliveryMethod
+          ? {
+              ...initialData.deliveryMethod,
+              name:
+                lang === currentLang
+                  ? initialData.deliveryMethod.name || ''
+                  : `${initialData.deliveryMethod.name || ''} ${lang}`
+            }
+          : undefined,
+        deliveryMethodsDetails:
+          initialData?.deliveryMethodsDetails?.map((detail) => ({
+            ...detail,
+            name: lang === currentLang ? detail.name : detail.nameTranslations[lang],
+            value: lang === currentLang ? detail.value : detail.valueTranslations[lang],
+            nameTranslations: detail.nameTranslations,
+            valueTranslations: detail.valueTranslations
+          })) || [],
+        discount: initialData?.discount,
+        discountedPrice: initialData?.discountedPrice,
+        originalPrice: initialData?.originalPrice,
+        mainDescription:
+          lang === currentLang ? initialData.mainDescription : initialData.mainDescriptionTranslations[lang],
+        furtherDescription:
+          lang === currentLang ? initialData.furtherDescription : initialData.furtherDescriptionTranslations[lang],
+        summaryDescription:
+          lang === currentLang
+            ? initialData?.summaryDescription || ''
+            : `${initialData?.summaryDescription || ''} ${lang}`,
+        primaryDescription:
+          lang === currentLang
+            ? initialData?.primaryDescription || ''
+            : `${initialData?.primaryDescription || ''} ${lang}`,
+        priceUnit: lang === currentLang ? initialData?.priceUnit || '' : `${initialData?.priceUnit || ''} ${lang}`,
+        previewImageUrl: initialData?.previewImageUrl
       }
     }),
     {}
   )
 }
-
 export const initializeCompanyDataForOthers = (
   allLanguages: string[],
   currentLang: string,

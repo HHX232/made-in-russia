@@ -28,7 +28,9 @@ interface Media {
 interface Characteristic {
   id: number
   name: string
+  nameTranslations: {en: string; ru: string; zh: string}
   value: string
+  valueTranslations: {en: string; ru: string; zh: string}
   creationDate: string
   lastModificationDate: string
 }
@@ -36,7 +38,9 @@ interface Characteristic {
 interface Faq {
   id: number
   question: string
+  questionTranslations: {en: string; ru: string; zh: string}
   answer: string
+  answerTranslations: {en: string; ru: string; zh: string}
   creationDate: string
   lastModificationDate: string
 }
@@ -55,8 +59,18 @@ interface DiscountPriceRange {
   unit: string // Единица измерения (в данном случае кубометры)
 }
 interface ICardFull {
-  packagingOptions?: {name: string; price: number | string; priceUnit: string}[]
-  deliveryMethodsDetails?: {name: string; value: string}[]
+  packagingOptions?: {
+    name: string
+    price: number | string
+    priceUnit: string
+    nameTranslations: {en: string; ru: string; zh: string}
+  }[]
+  deliveryMethodsDetails?: {
+    name: string
+    value: string
+    nameTranslations: {en: string; ru: string; zh: string}
+    valueTranslations: {en: string; ru: string; zh: string}
+  }[]
   minimumOrderQuantity?: number
   user: Author
   daysBeforeDiscountExpires: number | string
@@ -79,18 +93,25 @@ interface ICardFull {
   ordersCount: number
   aboutVendor?: {
     mainDescription: string
+    mainDescriptionTranslations: {en: string; ru: string; zh: string}
     furtherDescription: string
+    furtherDescriptionTranslations: {en: string; ru: string; zh: string}
     media: {altText: string; url: string; id: number}[]
   }
   title: string
-  mainDescription: string // required, max 20000 characters (может содержать HTML)
-  furtherDescription: string // required, max 5000 characters
+  titleTranslations: {en: string; ru: string; zh: string}
+  mainDescription: string
+  mainDescriptionTranslations: {en: string; ru: string; zh: string}
+  furtherDescription: string
+  furtherDescriptionTranslations: {en: string; ru: string; zh: string}
+  // NOT FOUND =========
   summaryDescription: string // required, max 5000 characters
   primaryDescription: string // required, max 5000 characters
   originalPrice: number // required, decimal
   discount: number // required, range [0, 100], decimal
   discountedPrice: number // read-only, decimal
   priceUnit: string // required (например "USD / kg")
+  // NOT FOUND =========
   previewImageUrl: string // required, URI
   creationDate: string // read-only, ISO date-time
   lastModificationDate: string // read-only, ISO date-time
