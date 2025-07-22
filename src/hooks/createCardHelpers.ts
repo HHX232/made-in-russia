@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {ValidationErrors, CompanyDescriptionData} from '@/components/pages/CreateCard/CreateCard.types'
 import ICardFull from '@/services/card/card.types'
+import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
 import {PriceItem} from '@/types/CreateCard.extended.types'
 
 export const parseQuantityRange = (quantityStr: string): {from: number; to: number | null} => {
@@ -88,36 +89,39 @@ export const validateField = (
 }
 
 // Вспомогательные функции инициализации
-export const initializeMultilingualData = (allLanguages: string[], currentLang: string, initialData: any, t: any) => {
+export const initializeMultilingualData = (allLanguages: Language[], currentLang: string, initialData: ICardFull) => {
   return allLanguages.reduce<Record<string, Partial<ICardFull>>>(
     (acc, lang) => ({
       ...acc,
       [lang]: {
-        title: lang === currentLang ? initialData?.title || '' : `${initialData?.title} ${lang}`,
+        title: lang === currentLang ? initialData?.title || '' : initialData.titleTranslations[lang],
         aboutVendor: initialData?.aboutVendor
           ? {
               mainDescription:
                 lang === currentLang
                   ? initialData.aboutVendor.mainDescription || ''
-                  : `${initialData.aboutVendor.mainDescription || ''} ${lang}`,
+                  : initialData.aboutVendor.mainDescriptionTranslations[lang],
               furtherDescription:
                 lang === currentLang
                   ? initialData.aboutVendor.furtherDescription || ''
-                  : `${initialData.aboutVendor.furtherDescription || ''} ${lang}`,
+                  : initialData.aboutVendor.furtherDescriptionTranslations[lang],
+              mainDescriptionTranslations: initialData.aboutVendor.mainDescriptionTranslations,
+              furtherDescriptionTranslations: initialData.aboutVendor.furtherDescriptionTranslations,
               media: initialData.aboutVendor.media || []
             }
           : undefined,
-        article: lang === currentLang ? initialData?.article || '' : `${initialData?.article || ''} ${lang}`,
         category: initialData?.category,
         characteristics:
-          initialData?.characteristics?.map((characteristic: {name: any; value: any}) => ({
+          initialData?.characteristics?.map((characteristic) => ({
             ...characteristic,
-            name: lang === currentLang ? characteristic.name : `${characteristic.name} ${lang}`,
-            value: lang === currentLang ? characteristic.value : `${characteristic.value} ${lang}`
+            name: lang === currentLang ? characteristic.name : characteristic.nameTranslations[lang],
+            value: lang === currentLang ? characteristic.value : characteristic.valueTranslations[lang],
+            nameTranslations: characteristic.nameTranslations,
+            valueTranslations: characteristic.valueTranslations
           })) || [],
         creationDate: initialData?.creationDate,
         deliveryMethods:
-          initialData?.deliveryMethods?.map((method: {name: any}) => ({
+          initialData?.deliveryMethods?.map((method) => ({
             ...method,
             name: lang === currentLang ? method.name : `${method.name} ${lang}`
           })) || [],
@@ -132,16 +136,20 @@ export const initializeMultilingualData = (allLanguages: string[], currentLang: 
             }
           : undefined,
         deliveryMethodsDetails:
-          initialData?.deliveryMethodsDetails?.map((detail: {name: any; value: any}) => ({
+          initialData?.deliveryMethodsDetails?.map((detail) => ({
             ...detail,
-            name: lang === currentLang ? detail.name : `${detail.name} ${lang}`,
-            value: lang === currentLang ? detail.value : `${detail.value} ${lang}`
+            name: lang === currentLang ? detail.name : detail.nameTranslations[lang],
+            value: lang === currentLang ? detail.value : detail.valueTranslations[lang],
+            nameTranslations: detail.nameTranslations,
+            valueTranslations: detail.valueTranslations
           })) || [],
         discount: initialData?.discount,
         discountedPrice: initialData?.discountedPrice,
         originalPrice: initialData?.originalPrice,
-        mainDescription: '',
-        furtherDescription: initialData?.furtherDescription || `## ${t('alternativeAdditionalDescr')}`,
+        mainDescription:
+          lang === currentLang ? initialData.mainDescription : initialData.mainDescriptionTranslations[lang],
+        furtherDescription:
+          lang === currentLang ? initialData.furtherDescription : initialData.furtherDescriptionTranslations[lang],
         summaryDescription:
           lang === currentLang
             ? initialData?.summaryDescription || ''
