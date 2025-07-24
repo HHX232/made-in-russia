@@ -33,7 +33,8 @@ const cardService = {
         `/products/${id}${hasTranslations ? '?hasTranslations=true' : ''}`,
         {
           headers: {
-            'Accept-Language': currentLang || 'en'
+            'Accept-Language': currentLang || 'en',
+            'x-locale': currentLang || 'en'
           }
         }
       )

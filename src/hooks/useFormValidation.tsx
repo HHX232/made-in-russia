@@ -3,7 +3,11 @@ import {FormState} from '@/types/CreateCard.extended.types'
 import {validateField} from '@/utils/createCardHelpers'
 import {useCallback, useMemo} from 'react'
 
-export const useFormValidation = (formState: FormState, getCurrentMainDescription: () => string | undefined) => {
+export const useFormValidation = (
+  formState: FormState,
+  getCurrentMainDescription: () => string | undefined,
+  translations: (val: string) => string
+) => {
   // Мемоизируем текущее описание
   const currentMainDescription = useMemo(() => {
     return getCurrentMainDescription() || ''
@@ -27,7 +31,8 @@ export const useFormValidation = (formState: FormState, getCurrentMainDescriptio
         currentMainDescription,
         formState.descriptionMatrix,
         formState.companyData,
-        formState.faqMatrix
+        formState.faqMatrix,
+        translations
       ),
       uploadedFiles: validateField(
         'uploadedFiles',
@@ -38,7 +43,8 @@ export const useFormValidation = (formState: FormState, getCurrentMainDescriptio
         currentMainDescription,
         formState.descriptionMatrix,
         formState.companyData,
-        formState.faqMatrix
+        formState.faqMatrix,
+        translations
       ),
       pricesArray: validateField(
         'pricesArray',
@@ -49,7 +55,8 @@ export const useFormValidation = (formState: FormState, getCurrentMainDescriptio
         currentMainDescription,
         formState.descriptionMatrix,
         formState.companyData,
-        formState.faqMatrix
+        formState.faqMatrix,
+        translations
       ),
       description: validateField(
         'description',
@@ -60,7 +67,8 @@ export const useFormValidation = (formState: FormState, getCurrentMainDescriptio
         currentMainDescription,
         formState.descriptionMatrix,
         formState.companyData,
-        formState.faqMatrix
+        formState.faqMatrix,
+        translations
       ),
       descriptionMatrix: validateField(
         'descriptionMatrix',
@@ -71,7 +79,8 @@ export const useFormValidation = (formState: FormState, getCurrentMainDescriptio
         currentMainDescription,
         formState.descriptionMatrix,
         formState.companyData,
-        formState.faqMatrix
+        formState.faqMatrix,
+        translations
       ),
       companyData: validateField(
         'companyData',
@@ -82,7 +91,8 @@ export const useFormValidation = (formState: FormState, getCurrentMainDescriptio
         currentMainDescription,
         formState.descriptionMatrix,
         formState.companyData,
-        formState.faqMatrix
+        formState.faqMatrix,
+        translations
       ),
       faqMatrix: validateField(
         'faqMatrix',
@@ -93,7 +103,8 @@ export const useFormValidation = (formState: FormState, getCurrentMainDescriptio
         currentMainDescription,
         formState.descriptionMatrix,
         formState.companyData,
-        formState.faqMatrix
+        formState.faqMatrix,
+        translations
       )
     }
   }, [

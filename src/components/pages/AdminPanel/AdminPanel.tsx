@@ -9,6 +9,7 @@ import AdminTabBar from './AdminTabBar/AdminTabBar'
 import AdminTranslatesPage from './AdminTranslatesPage/AdminTranslatesPage'
 import AdminCards from './AdminCards/AdminCards'
 import AdminCategoriesPage from './AdminCategoriesPage/AdminCategoriesPage'
+// import AdminAds from './AdminAds/AdminAds'
 
 export type TAdminTab = 'users' | 'categories' | 'cards' | 'ads' | 'FAQ' | 'translates'
 
@@ -34,7 +35,8 @@ const AdminPanel: FC = () => {
       case 'cards':
         return <AdminCards />
       case 'ads':
-        return <div>ads</div>
+        return <p>ADS</p>
+      // <AdminAds />
       case 'FAQ':
         return <div>FAQ</div>
       case 'translates':

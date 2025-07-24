@@ -47,7 +47,10 @@ export interface CreateProductDto {
   faq: FaqItem[]
   characteristics: Characteristic[]
   title: string
+  titleTranslations: Record<string, string>
+  mainDescriptionTranslations: Record<string, string>
   furtherDescription: string
+  furtherDescriptionTranslations: Record<string, string>
   packageOptions: PackageOption[]
   categoryId: number
   discountExpirationDate: string | number

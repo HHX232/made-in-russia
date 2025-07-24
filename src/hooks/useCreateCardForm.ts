@@ -97,16 +97,18 @@ export const useCreateCardForm = (initialData?: ICardFull) => {
   // Многоязычные данные
 
   const [companyDataForOthers, setCompanyDataForOthers] = useState<Record<string, CompanyDescriptionData>>(() =>
-    initializeCompanyDataForOthers(allLanguages, currentLang, initialData, formState.companyData)
+    initializeCompanyDataForOthers(allLanguages, currentLang, initialData as ICardFull, formState.companyData)
   )
 
   const [faqMatrixForOthers, setFaqMatrixForOthers] = useState<{[key: string]: string[][]}>(() =>
-    initializeFaqMatrixForOthers(allLanguages, currentLang, initialData)
+    initializeFaqMatrixForOthers(allLanguages, currentLang, initialData as ICardFull)
   )
 
   const [descriptionMatrixForOthers, setDescriptionMatrixForOthers] = useState(() =>
-    initializeDescriptionMatrixForOthers(allLanguages, currentLang, initialData)
+    initializeDescriptionMatrixForOthers(allLanguages, currentLang, initialData as ICardFull)
   )
+
+  const typeCardObject = typeof cardObjectForOthers
 
   return {
     formState,
@@ -118,6 +120,7 @@ export const useCreateCardForm = (initialData?: ICardFull) => {
     faqMatrixForOthers,
     setFaqMatrixForOthers,
     descriptionMatrixForOthers,
-    setDescriptionMatrixForOthers
+    setDescriptionMatrixForOthers,
+    typeCardObject
   }
 }

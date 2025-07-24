@@ -19,6 +19,10 @@ import createNewLangUrl from '@/utils/createNewLangUrl'
 import {TLocale} from '../MinimalHeader/MinimalHeader'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
+const setCookieLocale = (locale: string) => {
+  document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+}
+
 enum Languages {
   RUSSIAN = 'Русский',
   ENGLISH = 'English',
@@ -134,6 +138,12 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     rrrr()
   }, [])
 
+  const handleLanguageChange = (language: Languages) => {
+    setActiveLanguage(language)
+    const newLocale = languageToLocale[language] as TLocale
+    setCookieLocale(newLocale)
+    router.push(createNewLangUrl(newLocale, pathname))
+  }
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -406,34 +416,13 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                 safeAreaEnabled={true}
                 positionIsAbsolute={false}
                 items={[
-                  <p
-                    style={{width: '100%'}}
-                    onClick={() => {
-                      setActiveLanguage(Languages.RUSSIAN)
-                      router.push(createNewLangUrl(languageToLocale[Languages.RUSSIAN] as TLocale, pathname))
-                    }}
-                    key={1}
-                  >
+                  <p style={{width: '100%'}} onClick={() => handleLanguageChange(Languages.RUSSIAN)} key={1}>
                     {Languages.RUSSIAN}
                   </p>,
-                  <p
-                    style={{width: '100%'}}
-                    onClick={() => {
-                      setActiveLanguage(Languages.ENGLISH)
-                      router.push(createNewLangUrl(languageToLocale[Languages.ENGLISH] as TLocale, pathname))
-                    }}
-                    key={2}
-                  >
+                  <p style={{width: '100%'}} onClick={() => handleLanguageChange(Languages.ENGLISH)} key={2}>
                     {Languages.ENGLISH}
                   </p>,
-                  <p
-                    style={{width: '100%'}}
-                    onClick={() => {
-                      setActiveLanguage(Languages.CHINA)
-                      router.push(createNewLangUrl(languageToLocale[Languages.CHINA] as TLocale, pathname))
-                    }}
-                    key={3}
-                  >
+                  <p style={{width: '100%'}} onClick={() => handleLanguageChange(Languages.CHINA)} key={3}>
                     {Languages.CHINA}
                   </p>
                 ]}
@@ -708,7 +697,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
               background: '#FFF',
 
               left: '0',
-              zIndex: '1000000'
+              zIndex: '1000000000000000'
             }}
             ref={categoryListRefDesktop}
             className={`${styles.category__list__bottom__desktop}`}

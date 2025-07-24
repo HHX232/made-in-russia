@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
-import {getAccessToken} from '@/services/auth/auth.helper'
+// import {getAccessToken} from '@/services/auth/auth.helper'
 import {toast} from 'sonner'
-import {parseQuantityRange} from '../utils/createCardHelpers'
+
 import {CreateProductDto} from '@/components/pages/CreateCard/CreateCard.types'
+import {getAccessToken} from '@/services/auth/auth.helper'
+import {parseQuantityRange} from './createCardHelpers'
 
 export const useCreateCardAPI = () => {
   const t = useTranslations('createCard')
@@ -27,18 +29,201 @@ export const useCreateCardAPI = () => {
       uploadedFiles: File[]
       objectRemainingInitialImages: any[]
       companyDataImages: any[]
+      cardObjectForOthers: Record<string, any>
+      companyDataForOthers: Record<string, any>
+      faqMatrixForOthers: Record<string, string[][]>
+      currentLangState: string
     },
     initialData?: any
   ) => {
     try {
       const currentMainDescription = formData.getCurrentMainDescription()
       const currentFurtherDescription = formData.getCurrentFurtherDescription()
+      console.log('form data in start', formData)
+      // Функция для создания объекта переводов
+      const createTranslations = (
+        currentValue: string,
+        langKey: 'title' | 'mainDescription' | 'furtherDescription'
+      ) => {
+        const translations: Record<string, string> = {}
+
+        // Проходим по всем языкам кроме текущего
+        const languages = ['ru', 'en', 'zh']
+        languages.forEach((lang) => {
+          if (lang !== formData.currentLangState) {
+            const value = formData.cardObjectForOthers[lang]?.[langKey]
+            if (value && value.trim()) {
+              translations[lang] = value
+            }
+          }
+        })
+
+        return Object.keys(translations).length > 0 ? translations : undefined
+      }
+
+      // Функция для создания переводов характеристик
+      const createCharacteristicsWithTranslations = () => {
+        return formData.descriptionMatrix
+          .filter((row) => row[0] && row[1])
+          .map((row) => {
+            const characteristic: any = {
+              name: row[0],
+              value: row[1]
+            }
+
+            // Добавляем переводы если они есть
+            const nameTranslations: Record<string, string> = {}
+            const valueTranslations: Record<string, string> = {}
+
+            const languages = ['ru', 'en', 'zh']
+            languages.forEach((lang) => {
+              if (lang !== formData.currentLangState) {
+                const langData = formData.cardObjectForOthers[lang]
+                if (langData?.characteristics) {
+                  const matchingChar = langData.characteristics.find(
+                    (char: any) => char.name === row[0] || char.nameTranslations?.[formData.currentLangState] === row[0]
+                  )
+                  if (matchingChar) {
+                    if (matchingChar.name && matchingChar.name.trim()) {
+                      nameTranslations[lang] = matchingChar.name
+                    }
+                    if (matchingChar.value && matchingChar.value.trim()) {
+                      valueTranslations[lang] = matchingChar.value
+                    }
+                  }
+                }
+              }
+            })
+
+            if (Object.keys(nameTranslations).length > 0) {
+              characteristic.nameTranslations = nameTranslations
+            }
+            if (Object.keys(valueTranslations).length > 0) {
+              characteristic.valueTranslations = valueTranslations
+            }
+
+            return characteristic
+          })
+      }
+
+      // Функция для создания FAQ с переводами
+      const createFaqWithTranslations = () => {
+        return formData.faqMatrix
+          .filter((row) => row[0] && row[1])
+          .map((row, index) => {
+            const faqItem: any = {
+              question: row[0],
+              answer: row[1]
+            }
+
+            // Добавляем переводы
+            const questionTranslations: Record<string, string> = {}
+            const answerTranslations: Record<string, string> = {}
+
+            const languages = ['ru', 'en', 'zh']
+            languages.forEach((lang) => {
+              if (lang !== formData.currentLangState && formData.faqMatrixForOthers[lang]) {
+                const langFaq = formData.faqMatrixForOthers[lang][index]
+                if (langFaq && langFaq[0] && langFaq[0].trim()) {
+                  questionTranslations[lang] = langFaq[0]
+                }
+                if (langFaq && langFaq[1] && langFaq[1].trim()) {
+                  answerTranslations[lang] = langFaq[1]
+                }
+              }
+            })
+
+            if (Object.keys(questionTranslations).length > 0) {
+              faqItem.questionTranslations = questionTranslations
+            }
+            if (Object.keys(answerTranslations).length > 0) {
+              faqItem.answerTranslations = answerTranslations
+            }
+
+            return faqItem
+          })
+      }
+
+      // Функция для создания информации о компании с переводами
+      const createAboutVendorWithTranslations = () => {
+        const aboutVendor: any = {
+          mainDescription: formData.companyData.topDescription,
+          furtherDescription: formData.companyData.bottomDescription,
+          mediaAltTexts: formData.companyData.images
+            .filter((img: any) => img.image !== null)
+            .map((img: any) => img.description)
+        }
+
+        // Добавляем переводы для описаний компании
+        const mainDescTranslations: Record<string, string> = {}
+        const furtherDescTranslations: Record<string, string> = {}
+
+        const languages = ['ru', 'en', 'zh']
+        languages.forEach((lang) => {
+          if (lang !== formData.currentLangState && formData.companyDataForOthers[lang]) {
+            const langCompanyData = formData.companyDataForOthers[lang]
+            if (langCompanyData.topDescription && langCompanyData.topDescription.trim()) {
+              mainDescTranslations[lang] = langCompanyData.topDescription
+            }
+            if (langCompanyData.bottomDescription && langCompanyData.bottomDescription.trim()) {
+              furtherDescTranslations[lang] = langCompanyData.bottomDescription
+            }
+          }
+        })
+
+        if (Object.keys(mainDescTranslations).length > 0) {
+          aboutVendor.mainDescriptionTranslations = mainDescTranslations
+        }
+        if (Object.keys(furtherDescTranslations).length > 0) {
+          aboutVendor.furtherDescriptionTranslations = furtherDescTranslations
+        }
+
+        return aboutVendor
+      }
+
+      // Функция для создания опций упаковки с переводами
+      const createPackageOptionsWithTranslations = () => {
+        return formData.packageArray
+          .filter((item) => item[0] && item[1])
+          .map((item) => {
+            const packageOption: any = {
+              name: item[0],
+              price: parseFloat(item[1]) || 0,
+              priceUnit: formData.pricesArray[0]?.unit || 'RUB'
+            }
+
+            // Здесь можно добавить логику для переводов упаковки, если она есть
+            // Пока оставляем базовую структуру
+
+            return packageOption
+          })
+      }
+
+      // Функция для создания деталей доставки с переводами
+      const createDeliveryMethodDetailsWithTranslations = () => {
+        return formData.descriptionMatrix
+          .filter((row) => row[0] && row[1])
+          .map((row) => {
+            const detail: any = {
+              name: row[0],
+              value: row[1]
+            }
+
+            // Здесь можно добавить логику для переводов деталей доставки, если она есть
+            // Пока оставляем базовую структуру
+
+            return detail
+          })
+      }
 
       const data: CreateProductDto = {
         title: formData.cardTitle,
+        titleTranslations: createTranslations(formData.cardTitle, 'title') || {},
         mainDescription: currentMainDescription?.replace('## ' + t('alternativeMainDescr'), '').trim() || '',
+        mainDescriptionTranslations: createTranslations(currentMainDescription || '', 'mainDescription') || {},
         furtherDescription:
           currentFurtherDescription?.replace('## ' + t('alternativeAdditionalDescr'), '').trim() || '',
+        furtherDescriptionTranslations: createTranslations(currentFurtherDescription || '', 'furtherDescription') || {},
         deliveryMethodIds: formData.selectedDeliveryMethodIds,
         prices: formData.pricesArray.map((price, index) => {
           const quantityRange = parseQuantityRange(price.quantity)
@@ -69,27 +254,11 @@ export const useCreateCardAPI = () => {
         }),
         minimumOrderQuantity:
           formData.pricesArray.length > 0 ? parseQuantityRange(formData.pricesArray[0].quantity).from.toString() : '1',
-        deliveryMethodDetails: formData.descriptionMatrix
-          .filter((row) => row[0] && row[1])
-          .map((row) => ({name: row[0], value: row[1]})),
-        aboutVendor: {
-          mainDescription: formData.companyData.topDescription,
-          furtherDescription: formData.companyData.bottomDescription,
-          mediaAltTexts: formData.companyData.images
-            .filter((img: any) => img.image !== null)
-            .map((img: any) => img.description)
-        },
-        faq: formData.faqMatrix.filter((row) => row[0] && row[1]).map((row) => ({question: row[0], answer: row[1]})),
-        characteristics: formData.descriptionMatrix
-          .filter((row) => row[0] && row[1])
-          .map((row) => ({name: row[0], value: row[1]})),
-        packageOptions: formData.packageArray
-          .filter((item) => item[0] && item[1])
-          .map((item) => ({
-            name: item[0],
-            price: parseFloat(item[1]) || 0,
-            priceUnit: formData.pricesArray[0]?.unit || 'RUB'
-          })),
+        deliveryMethodDetails: createDeliveryMethodDetailsWithTranslations(),
+        aboutVendor: createAboutVendorWithTranslations(),
+        faq: createFaqWithTranslations(),
+        characteristics: createCharacteristicsWithTranslations(),
+        packageOptions: createPackageOptionsWithTranslations(),
         categoryId: formData.selectedCategory.id,
         discountExpirationDate: formData.saleDate
           ? !isNaN(parseInt(formData.saleDate))
@@ -131,7 +300,7 @@ export const useCreateCardAPI = () => {
         : 'https://exporteru-prorumble.amvera.io/api/v1/products'
 
       const loadingToast = toast.loading(isUpdate ? t('updateCardProcess') : t('saveCardProcess'))
-
+      console.log('formDataToSend', formDataToSend, Object.entries(formDataToSend))
       const response = await fetch(url, {
         method: method,
         headers: {

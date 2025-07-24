@@ -259,7 +259,20 @@
     "altHelpWithImageCard": "Help with product images",
     "similarProducts": "Similar products",
     "altHelpWithSimilarProducts": "Help with similar products",
-    "save": "Save"
+    "save": "Save",
+      "titleError": "Product title is required",
+      "minimumImages": "Minimum 3 images",
+      "now": "Now",
+      "onePriceError": "Add at least one price",
+      "descriptionError": "Description is required",
+      "characteristicError": "At least one row in the characteristics table must be filled",
+      "topDescrError": "Company top description is required",
+      "bottomError": "Company bottom description is required",
+      "companyImagesError": "At least one company image must be uploaded",
+      "altTextImagesError": "All uploaded images must have descriptions",
+      "oneFaqError": "At least one question and answer must be added",
+      "fullFaqError": "Every question must have an answer and vice versa"
+  
 },
 "CreateCardPriceElementsText": {
     "daysBeforeSale": "Specify the number of days until the end of the promotion",

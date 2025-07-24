@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
-import {FC, useState, useEffect, useCallback, useMemo} from 'react'
+import {FC, useState, useEffect, useCallback} from 'react'
 import styles from './CreateCard.module.scss'
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
@@ -27,9 +27,12 @@ import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useFormValidation} from '@/hooks/useFormValidation'
 import {useCreateCardForm} from '@/hooks/useCreateCardForm'
 import {useCreateCardAPI} from '@/hooks/useCreateCardAPI'
-import {SupportedLanguage} from '@/store/multilingualDescriptionsInCard/multilingualDescriptions.types'
 import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
 import {usePathname} from 'next/navigation'
+import {useActions} from '@/hooks/useActions'
+import {setInitialStorageValue} from '@/hooks/createCardHelpers'
+import {submitFormCardData} from '@/utils/createCardHelpers'
+import 'md-editor-rt/lib/style.css'
 
 const vopros = '/vopros.svg'
 // Конфигурация изображений для подсказок
@@ -64,12 +67,9 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   // const [productCategoryes, setProductCategoryes] = useState<string[]>([])
   const [similarProducts, setSimilarProducts] = useState(new Set<Product>())
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(initialData?.category || null)
-  const [selectedDeliveryMethodIds, setSelectedDeliveryMethodIds] = useState<number[]>([1]) // Временные значения
-  const [saleDate, setSaleDate] = useState<string>(
-    initialData?.daysBeforeDiscountExpires ? initialData.daysBeforeDiscountExpires.toString() : ''
-  )
-  const t = useTranslations('createCard')
+  // const [selectedDeliveryMethodIds, setSelectedDeliveryMethodIds] = useState<number[]>([1]) // Временные значения
 
+  const t = useTranslations('createCard')
   // Language start ===========
   const pathname = usePathname()
   const langFromPathname = pathname.split('/')[1]
@@ -83,11 +83,39 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
   const [cardTitle, setCardTitle] = useState(initialData?.title || '')
 
-  const {descriptions} = useTypedSelector((state) => state.multilingualDescriptions)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const {descriptions}: {descriptions: any} = useTypedSelector((state) => state.multilingualDescriptions)
+  const {ru, en, zh} = useTypedSelector((state) => state.multiLanguageCardPriceData)
+  const multyLangObjectForPrices = {ru, en, zh}
+  const {setDescriptions, setCharacteristics, setDelivery, setPackaging, updatePriceInfo} = useActions()
 
-  // useEffect(() => {
-  //   console.log('cardObjectForOthers', cardObjectForOthers)
-  // }, [cardObjectForOthers])
+  useEffect(() => {
+    setInitialStorageValue({
+      setDescriptions,
+      setCharacteristics,
+      setDelivery,
+      setPackaging,
+      updatePriceInfo,
+      initialData
+    })
+    setFaqMatrixForOthers({
+      ru: initialData?.faq.map((el) => [el.questionTranslations.ru, el.answerTranslations.ru]) || [['', '']]
+    })
+    setFaqMatrixForOthers({
+      en: initialData?.faq.map((el) => [el.questionTranslations.en, el.answerTranslations.en]) || [['', '']]
+    })
+    setFaqMatrixForOthers({
+      zh: initialData?.faq.map((el) => [el.questionTranslations.zh, el.answerTranslations.zh]) || [['', '']]
+    })
+    setFaqMatrixForOthers({
+      [currentLang]: initialData?.faq.map((el) => [
+        el.questionTranslations[currentLang as Language],
+        el.answerTranslations[currentLang as Language]
+      ]) || [['', '']]
+    })
+
+    console.log('current faq matrix', faqMatrixForOthers, initialData?.faq)
+  }, [initialData])
 
   const getValueForLang = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -98,11 +126,9 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     [currentLangState, currentLang, cardObjectForOthers]
   )
 
-  const [packageArray, setPackaginArray] = useState<string[][]>([])
-
   // Используем универсальный хук для модального окна
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
-  const indowWidth = useWindowWidth()
+  const windowWidth = useWindowWidth()
 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
 
@@ -133,7 +159,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       currency: el.currency,
       priceWithDiscount: el.discountedPrice.toString(),
       priceWithoutDiscount: el.originalPrice.toString(),
-      quantity: `${el.from}`,
+      quantity: `${el.from}${el.to ? `-${el.to}` : ''}`,
       value: Math.min(el.discountedPrice, el.originalPrice),
       unit: el.unit
     })) || []
@@ -174,26 +200,14 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   )
 
   // Состояние для FAQ (CreateFaqCard)
-  const [faqMatrix, setFaqMatrix] = useState<string[][]>(
-    initialData?.faq.map((el) => [el.question, el.answer]) || [
-      ['', ''], // Начальные пустые строки
-      ['', ''],
-      ['', ''],
-      ['', ''],
-      ['', '']
-    ]
-  )
 
   const getFaqMatrixForLang = useCallback((): string[][] => {
     return faqMatrixForOthers[currentLangState]
   }, [currentLangState, faqMatrixForOthers])
 
   const getCompanyDataForLang = useCallback((): CompanyDescriptionData => {
-    if (currentLangState === langFromPathname) {
-      return companyData
-    }
     return companyDataForOthers[currentLangState] || companyData
-  }, [currentLangState, langFromPathname, companyData, companyDataForOthers])
+  }, [currentLangState, companyData, companyDataForOthers])
 
   // Состояние для ошибок валидации
   const [errors, setErrors] = useState<ValidationErrors>({
@@ -214,7 +228,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       submitAttempted: true,
       similarProducts: similarProducts,
       selectedCategory: selectedCategory,
-      saleDate: saleDate,
+      saleDate: multyLangObjectForPrices[currentLangState].priceInfo.daysBeforeSale,
       currentLangState: currentLangState,
       cardTitle: cardTitle,
       uploadedFiles: uploadedFiles,
@@ -224,17 +238,18 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       pricesArray: pricesArray,
       descriptionImages: descriptionImages,
       descriptionMatrix: characteristics.map((el) => [el.title, el.characteristic]),
-      packageArray: packageArray,
+      packageArray: multyLangObjectForPrices[currentLangState].packaging.map((el) => [el.title, el.price]),
       companyData: companyData,
       companyDataImages: companyDataImages,
-      faqMatrix: faqMatrixForOthers[currentLangState || 'ru'] || faqMatrix,
+      faqMatrix: faqMatrixForOthers[currentLangState || 'en'] || [],
 
       errors: errors,
-      selectedDeliveryMethodIds: selectedDeliveryMethodIds
+      selectedDeliveryMethodIds: [1]
     },
     () => {
       return descriptions[currentLangState]?.description
-    }
+    },
+    t
   )
 
   useEffect(() => {
@@ -266,39 +281,24 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handlePricesArrayChange = (prices: any[]) => {
-    // console.log('prices', prices)
-    // setTimeout(() => {
     setPricesArray(prices)
-    // }, 0)
     if (errors.pricesArray) {
       setErrors((prev) => ({...prev, pricesArray: ''}))
     }
   }
 
-  // const handleDescriptionChange = (value: string) => {
-  //   setDescription(value)
-  //   if (errors.description) {
-  //     setErrors((prev) => ({...prev, description: ''}))
-  //   }
-  // }
-
   const handleDescriptionImagesChange = (images: ImageMapping[]) => {
     setTimeout(() => {
       setDescriptionImages(images)
     }, 0)
-    // Изображения в описании необязательны, поэтому не сбрасываем ошибку
   }
 
   const handleCompanyDataChange = (data: CompanyDescriptionData) => {
-    // setTimeout(() => {
     setCompanyData(data)
-    // }, 0)
     if (errors.companyData) {
       setErrors((prev) => ({...prev, companyData: ''}))
     }
   }
-
-  const {submitForm} = useCreateCardAPI()
 
   useEffect(() => {
     // Синхронизируем cardTitle с текущим языком
@@ -323,76 +323,52 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     [cardObjectForOthers, currentLangState]
   )
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleNewSave = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    console.log('Submit attempted. Form valid:', isFormValid)
+    if (!isFormValid) return
+    const loadingToast = toast.loading('Сохранение карточки...')
 
-    if (!isFormValid) {
-      const firstError = Object.entries(validationErrors).find(([_, error]) => error !== '')
-      console.log('Validation failed. First error:', firstError)
-
-      if (firstError) {
-        toast.error(
-          <div style={{lineHeight: 1.5}}>
-            <strong style={{display: 'block', marginBottom: 4}}>{t('validateError')}</strong>
-            <span>{firstError[1]}</span>
-          </div>,
-          {
-            style: {
-              background: '#AC2525'
-            }
-          }
-        )
-      }
-      return
-    }
-
-    // Проверка наличия категории
-    if (!selectedCategory) {
-      console.log('Category validation failed')
-      toast.error(
-        <div style={{lineHeight: 1.5}}>
-          <strong style={{display: 'block', marginBottom: 4}}>{t('error')}</strong>
-          <span>{t('categoryError')}</span>
+    try {
+      await submitFormCardData({
+        cardObjectForOthers,
+        companyDataForOthers,
+        faqMatrixForOthers,
+        similarProducts,
+        selectedCategory,
+        langFromPathname,
+        currentLangState,
+        cardTitle,
+        descriptions,
+        multyLangObjectForPrices,
+        uploadedFiles,
+        companyData,
+        remainingInitialImages,
+        objectRemainingInitialImages,
+        pricesArray,
+        pathname,
+        initialData
+      })
+      toast.dismiss(loadingToast)
+      toast.success(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('gratulation')}</strong>
+          <span>
+            {t('cardSuccess').split(' ')[0] +
+              (initialData?.id ? t('successUpdateCardEndText') : t('successCreateCardEndText'))}
+          </span>
         </div>,
         {
           style: {
-            background: '#AC2525'
+            background: '#2E7D32'
           }
         }
       )
-      return
-    }
-
-    console.log('Submitting form...')
-
-    try {
-      await submitForm(
-        {
-          cardTitle: getValueForLang(cardTitle, 'title') || cardTitle,
-          getCurrentMainDescription: () => cardObjectForOthers[currentLangState]?.mainDescription,
-          getCurrentFurtherDescription: () => cardObjectForOthers[currentLangState]?.furtherDescription,
-          selectedDeliveryMethodIds: selectedDeliveryMethodIds,
-          pricesArray: pricesArray,
-          descriptionMatrix: characteristics.map((el) => [el.title, el.characteristic]),
-          companyData: getCompanyDataForLang(),
-          faqMatrix: faqMatrixForOthers[currentLangState],
-          packageArray: packageArray,
-          selectedCategory: selectedCategory,
-          saleDate: saleDate,
-          similarProducts: similarProducts,
-          uploadedFiles: uploadedFiles,
-          objectRemainingInitialImages: objectRemainingInitialImages,
-          companyDataImages: companyDataImages
-        },
-        initialData
-      )
-    } catch (error) {
-      console.error('Ошибка при сохранении:', error as Error)
+    } catch (e) {
+      toast.dismiss(loadingToast)
+      toast.error(t('saveError'))
     }
   }
-
   return (
     <>
       {/* Единое модальное окно для всех изображений подсказок */}
@@ -411,7 +387,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       <Header />
       <div className={'container'}>
         <div className={`${styles.create__inner}`}>
-          <h1 className={`${styles.create__title}`}>{t('createCardTitle')} + TEST</h1>
+          <h1 className={`${styles.create__title}`}>{t('createCardTitle')}</h1>
 
           <div className={`${styles.language__switcher}`}>
             <p className={`${styles.language__switcher__title}`}>{t('languageForInput')}</p>
@@ -441,7 +417,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className={`${styles.create__form}`}>
+          <form onSubmit={handleNewSave} className={`${styles.create__form}`}>
             {/* Поле "Название" */}
             <span className={`${styles.create__input__box__span}`}>
               <div className={`${styles.label__title__box}`}>
@@ -449,7 +425,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                   {t('name')}
                 </label>
                 <DropList
-                  direction={indowWidth && indowWidth < 768 ? 'bottom' : 'right'}
+                  direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
                   safeAreaEnabled
                   positionIsAbsolute={false}
                   trigger='hover'
@@ -495,7 +471,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               <div className={`${styles.label__title__box}`}>
                 <p className={`${styles.create__label__title}`}>{t('imageCard')}</p>
                 <DropList
-                  direction={indowWidth && indowWidth < 768 ? 'bottom' : 'right'}
+                  direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
                   safeAreaEnabled
                   positionIsAbsolute={false}
                   trigger='hover'
@@ -521,6 +497,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 activeImages={remainingInitialImages}
                 maxFiles={9}
                 minFiles={3}
+                allowMultipleFiles
                 errorValue={errors.uploadedFiles}
                 setErrorValue={(value: string) => setErrors((prev) => ({...prev, uploadedFiles: value}))}
                 inputIdPrefix='product-images'
@@ -529,7 +506,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             <div className={`${styles.label__title__box}`}>
               <h3 className={`${styles.create__similar__products__box__title}`}>{t('similarProducts')}</h3>
               <DropList
-                direction={indowWidth && indowWidth < 768 ? 'bottom' : 'right'}
+                direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
                 safeAreaEnabled
                 positionIsAbsolute={false}
                 trigger='hover'
@@ -576,24 +553,44 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             <CreateCompanyDescription
               data={getCompanyDataForLang()}
               onChange={(data) => {
-                if (currentLangState === currentLang) {
-                  handleCompanyDataChange(data)
-                } else {
-                  const updatedCompanyDataForOthers = {...companyDataForOthers}
-                  updatedCompanyDataForOthers[currentLangState] = data
-                  setCompanyDataForOthers(updatedCompanyDataForOthers)
-                }
+                handleCompanyDataChange(data)
+
+                const updatedCompanyDataForOthers = {...companyDataForOthers}
+                updatedCompanyDataForOthers[currentLangState] = data
+                setCompanyDataForOthers(updatedCompanyDataForOthers)
               }}
             />
             {/* CreateFaqCard */}
-            <CreateFaqCard
-              values={getFaqMatrixForLang()}
-              onChange={(matrix) => {
-                const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
-                updatedFaqMatrixForOthers[currentLangState] = matrix
-                setFaqMatrixForOthers(updatedFaqMatrixForOthers)
-              }}
-            />
+            {currentLangState === 'ru' && (
+              <CreateFaqCard
+                values={faqMatrixForOthers.ru}
+                onChange={(matrix) => {
+                  const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
+                  updatedFaqMatrixForOthers['ru'] = matrix
+                  setFaqMatrixForOthers(updatedFaqMatrixForOthers)
+                }}
+              />
+            )}
+            {currentLangState === 'en' && (
+              <CreateFaqCard
+                values={faqMatrixForOthers.en}
+                onChange={(matrix) => {
+                  const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
+                  updatedFaqMatrixForOthers['en'] = matrix
+                  setFaqMatrixForOthers(updatedFaqMatrixForOthers)
+                }}
+              />
+            )}
+            {currentLangState === 'zh' && (
+              <CreateFaqCard
+                values={faqMatrixForOthers.zh}
+                onChange={(matrix) => {
+                  const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
+                  updatedFaqMatrixForOthers['zh'] = matrix
+                  setFaqMatrixForOthers(updatedFaqMatrixForOthers)
+                }}
+              />
+            )}
             <div className={`${styles.button__box}`}>
               <button
                 style={{
@@ -602,7 +599,24 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 }}
                 className={`${styles.create____submit__button}`}
                 type='submit'
-                disabled={!isFormValid}
+                // disabled={!isFormValid}
+                onClick={() => {
+                  Object.entries(errors).forEach(([key, value]) => {
+                    if (value) {
+                      toast.error(
+                        <div style={{lineHeight: 1.5}}>
+                          <strong style={{display: 'block', marginBottom: 4}}>{t('error')}</strong>
+                          <span>{value}</span>
+                        </div>,
+                        {
+                          style: {
+                            background: '#AC2525'
+                          }
+                        }
+                      )
+                    }
+                  })
+                }}
               >
                 {t('save')}
               </button>

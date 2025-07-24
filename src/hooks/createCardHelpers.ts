@@ -94,7 +94,10 @@ export const initializeMultilingualData = (allLanguages: Language[], currentLang
     (acc, lang) => ({
       ...acc,
       [lang]: {
-        title: lang === currentLang ? initialData?.title || '' : initialData.titleTranslations[lang],
+        title:
+          lang === currentLang
+            ? initialData?.title || ''
+            : (initialData?.titleTranslations && initialData?.titleTranslations[lang]) || '',
         aboutVendor: initialData?.aboutVendor
           ? {
               mainDescription:
@@ -147,9 +150,13 @@ export const initializeMultilingualData = (allLanguages: Language[], currentLang
         discountedPrice: initialData?.discountedPrice,
         originalPrice: initialData?.originalPrice,
         mainDescription:
-          lang === currentLang ? initialData.mainDescription : initialData.mainDescriptionTranslations[lang],
+          lang === currentLang
+            ? initialData.mainDescription
+            : (initialData?.mainDescriptionTranslations && initialData?.mainDescriptionTranslations[lang]) || '',
         furtherDescription:
-          lang === currentLang ? initialData.furtherDescription : initialData.furtherDescriptionTranslations[lang],
+          lang === currentLang
+            ? initialData.furtherDescription
+            : (initialData?.furtherDescriptionTranslations && initialData?.furtherDescriptionTranslations[lang]) || '',
         summaryDescription:
           lang === currentLang
             ? initialData?.summaryDescription || ''
@@ -165,7 +172,146 @@ export const initializeMultilingualData = (allLanguages: Language[], currentLang
     {}
   )
 }
+export const setInitialStorageValue = ({
+  setDescriptions,
+  setCharacteristics,
+  setDelivery,
+  setPackaging,
+  updatePriceInfo,
+  initialData
+}: {
+  initialData?: ICardFull
+  setDescriptions: (
+    descriptions: Record<string, {description: string; additionalDescription: string; furtherDescription: string}>
+  ) => void
+  setCharacteristics: (characteristics: any) => void
+  setDelivery: (delivery: any) => void
+  setPackaging: (packaging: any) => void
+  updatePriceInfo: (priceInfo: any) => void
+}) => {
+  setDescriptions({
+    ru: {
+      description: initialData?.mainDescriptionTranslations.ru || '',
+      additionalDescription: initialData?.furtherDescriptionTranslations.ru || '',
+      furtherDescription: initialData?.furtherDescriptionTranslations.ru || ''
+    },
+    en: {
+      description: initialData?.mainDescriptionTranslations.en || '',
+      additionalDescription: initialData?.furtherDescriptionTranslations.en || '',
+      furtherDescription: initialData?.furtherDescriptionTranslations.en || ''
+    },
+    zh: {
+      description: initialData?.mainDescriptionTranslations.zh || '',
+      additionalDescription: initialData?.furtherDescriptionTranslations.zh || '',
+      furtherDescription: initialData?.furtherDescriptionTranslations.zh || ''
+    }
+  })
 
+  setCharacteristics({
+    language: 'ru',
+    characteristics:
+      initialData?.characteristics.map((el) => ({
+        title: el.nameTranslations.ru,
+        characteristic: el.valueTranslations.ru
+      })) || []
+  })
+  setCharacteristics({
+    language: 'en',
+    characteristics:
+      initialData?.characteristics.map((el) => ({
+        title: el.nameTranslations.en,
+        characteristic: el.valueTranslations.en
+      })) || []
+  })
+  setCharacteristics({
+    language: 'zh',
+    characteristics:
+      initialData?.characteristics.map((el) => ({
+        title: el.nameTranslations.zh,
+        characteristic: el.valueTranslations.zh
+      })) || []
+  })
+
+  setDelivery({
+    language: 'ru',
+    delivery:
+      initialData?.deliveryMethodsDetails?.map((el) => ({
+        title: el.nameTranslations.ru,
+        daysDelivery: el.valueTranslations.ru
+      })) || []
+  })
+  setDelivery({
+    language: 'en',
+    delivery:
+      initialData?.deliveryMethodsDetails?.map((el) => ({
+        title: el.nameTranslations.en,
+        daysDelivery: el.valueTranslations.en
+      })) || []
+  })
+  setDelivery({
+    language: 'zh',
+    delivery:
+      initialData?.deliveryMethodsDetails?.map((el) => ({
+        title: el.nameTranslations.zh,
+        daysDelivery: el.valueTranslations.zh
+      })) || []
+  })
+
+  setPackaging({
+    language: 'ru',
+    packaging:
+      initialData?.packagingOptions?.map((el) => ({
+        title: el.nameTranslations.ru || el.name,
+        price: el.price.toString()
+      })) || []
+  })
+  setPackaging({
+    language: 'en',
+    packaging:
+      initialData?.packagingOptions?.map((el) => ({
+        title: el.nameTranslations.en || el.name,
+        price: el.price.toString()
+      })) || []
+  })
+  setPackaging({
+    language: 'zh',
+    packaging:
+      initialData?.packagingOptions?.map((el) => ({
+        title: el.nameTranslations.zh || el.name,
+        price: el.price.toString()
+      })) || []
+  })
+  updatePriceInfo({
+    language: 'ru',
+    field: 'daysBeforeSale',
+    value: initialData?.daysBeforeDiscountExpires.toString() || ''
+  })
+  updatePriceInfo({
+    language: 'ru',
+    field: 'minimalVolume',
+    value: initialData?.minimumOrderQuantity?.toString() || ''
+  })
+  updatePriceInfo({
+    language: 'en',
+    field: 'daysBeforeSale',
+    value: initialData?.daysBeforeDiscountExpires.toString() || ''
+  })
+  updatePriceInfo({
+    language: 'en',
+    field: 'minimalVolume',
+    value: initialData?.minimumOrderQuantity?.toString() || ''
+  })
+  updatePriceInfo({
+    language: 'zh',
+    field: 'daysBeforeSale',
+    value: initialData?.daysBeforeDiscountExpires.toString() || ''
+  })
+  updatePriceInfo({
+    language: 'zh',
+    field: 'minimalVolume',
+    value: initialData?.minimumOrderQuantity?.toString() || ''
+  })
+}
 export const initializeCompanyDataForOthers = (
   allLanguages: string[],
   currentLang: string,

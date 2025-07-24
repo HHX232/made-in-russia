@@ -3,7 +3,6 @@ import {hasLocale, NextIntlClientProvider} from 'next-intl'
 import {routing} from '@/i18n/routing'
 import {notFound} from 'next/navigation'
 import {getMessages} from 'next-intl/server'
-import {MessageProvider} from '@/providers/MessageProvider'
 import ClientStyleLoader from '@/components/ClientStyleLoader'
 
 // Критичные стили загружаем сразу
@@ -33,10 +32,10 @@ export default async function RootLayoutLanguage({
   return (
     <DefaultProvider>
       <NextIntlClientProvider messages={messages}>
-        <MessageProvider initialMessages={messages}>
-          {children}
-          <ClientStyleLoader />
-        </MessageProvider>
+        {/* <MessageProvider initialMessages={messages}> */}
+        {children}
+        <ClientStyleLoader />
+        {/* </MessageProvider> */}
       </NextIntlClientProvider>
     </DefaultProvider>
   )

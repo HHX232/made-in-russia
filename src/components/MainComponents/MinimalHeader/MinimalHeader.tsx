@@ -330,7 +330,7 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
           ref={categoryListRefDesktop}
           className={`${styles.category__list__bottom__desktop}`}
         >
-          <div className='container'>
+          <div style={{zIndex: '1000000000000000'}} className='container'>
             {/* Строка с крестиком справа */}
             <div
               style={{

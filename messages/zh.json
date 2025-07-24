@@ -259,7 +259,21 @@
     "altHelpWithImageCard": "商品图片帮助",
     "similarProducts": "类似商品",
     "altHelpWithSimilarProducts": "类似商品帮助",
-    "save": "保存"
+    "save": "保存",
+    
+      "titleError": "商品标题必填",
+      "minimumImages": "至少需要3张图片",
+      "now": "现在",
+      "onePriceError": "至少添加一个价格",
+      "descriptionError": "描述必填",
+      "characteristicError": "至少填写一行特性表格",
+      "topDescrError": "公司顶部描述必填",
+      "bottomError": "公司底部描述必填",
+      "companyImagesError": "至少上传一张公司图片",
+      "altTextImagesError": "所有上传的图片必须包含描述",
+      "oneFaqError": "至少添加一个问答",
+      "fullFaqError": "每个问题必须有答案，反之亦然"
+  
 },
 "CreateCardPriceElementsText": {
     "daysBeforeSale": "请输入促销结束前的天数",

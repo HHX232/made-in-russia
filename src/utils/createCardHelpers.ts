@@ -1,7 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {ValidationErrors, CompanyDescriptionData} from '@/components/pages/CreateCard/CreateCard.types'
-import ICardFull from '@/services/card/card.types'
-import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
+import {getAccessToken} from '@/services/auth/auth.helper'
+import ICardFull, {ICategory} from '@/services/card/card.types'
+import {Product} from '@/services/products/product.types'
+import {
+  CardPriceElementsData,
+  Language
+} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
 import {PriceItem} from '@/types/CreateCard.extended.types'
 
 // utils/createCardHelpers.ts
@@ -36,11 +40,12 @@ export const validateField = (
   description: string,
   descriptionMatrix: string[][],
   companyData: CompanyDescriptionData,
-  faqMatrix: string[][]
+  faqMatrix: string[][],
+  translations: (val: string) => string
 ): string => {
   switch (fieldName) {
     case 'cardTitle':
-      const titleError = !cardTitle || cardTitle.trim().length === 0 ? 'Название товара обязательно для заполнения' : ''
+      const titleError = !cardTitle || cardTitle.trim().length === 0 ? translations('titleError') : ''
       // console.log(
       //   `Title validation - input: "${cardTitle}", trimmed length: ${cardTitle?.trim()?.length || 0}, error: "${titleError}"`
       // )
@@ -48,46 +53,46 @@ export const validateField = (
 
     case 'uploadedFiles':
       const totalImages = (uploadedFiles?.length || 0) + (remainingInitialImages?.length || 0)
-      const filesError = totalImages < 3 ? 'Минимум 3 изображения' + `, сейчас ${totalImages}/3` : ''
+      const filesError =
+        totalImages < 3 ? translations('minimumImages') + `, ${translations('now')} ${totalImages}/3` : ''
       // console.log(`Files validation result: "${filesError}", total: ${totalImages}`)
       return filesError
 
     case 'pricesArray':
-      const pricesError = !pricesArray || pricesArray.length === 0 ? 'Добавьте хотя бы одну цену' : ''
+      const pricesError = !pricesArray || pricesArray.length === 0 ? translations('onePriceError') : ''
       // console.log(`Prices validation result: "${pricesError}"`)
       return pricesError
 
     case 'description':
-      const descError = !description || description.trim().length === 0 ? 'Описание обязательно' : ''
+      const descError = !description || description.trim().length === 0 ? translations('descriptionError') : ''
       // console.log(`Description validation result: "${descError}" with description "${description}"`)
       return descError
 
     case 'descriptionMatrix':
       const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell.trim()))
-      const matrixError =
-        filledRows.length === 0 ? 'Необходимо заполнить хотя бы одну строку в таблице характеристик' : ''
+      const matrixError = filledRows.length === 0 ? translations('characteristicError') : ''
       // console.log(
       //   `Description matrix validation result: "${matrixError}" with description matrix "${descriptionMatrix}"`
       // )
       return matrixError
 
     case 'companyData':
-      if (!companyData.topDescription.trim()) return 'Верхнее описание компании обязательно для заполнения'
-      if (!companyData.bottomDescription.trim()) return 'Нижнее описание компании обязательно для заполнения'
+      if (!companyData.topDescription.trim()) return translations('topDescrError')
+      if (!companyData.bottomDescription.trim()) return translations('bottomError')
       const companyImagesWithContent = companyData.images.filter((img) => img.image !== null)
-      if (companyImagesWithContent.length === 0) return 'Необходимо загрузить хотя бы одно изображение компании'
+      if (companyImagesWithContent.length === 0) return translations('companyImagesError')
       const imagesWithoutDescription = companyImagesWithContent.filter((img) => !img.description.trim())
-      if (imagesWithoutDescription.length > 0) return 'У всех загруженных изображений должны быть описания'
+      if (imagesWithoutDescription.length > 0) return translations('altTextImagesError')
       return ''
 
     case 'faqMatrix':
       // console.log('faqMatrix in valid', faqMatrix)
       const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
-      if (filledFaqRows.length === 0) return 'Необходимо добавить хотя бы один вопрос и ответ'
+      if (filledFaqRows.length === 0) return translations('oneFaqError')
       const incompleteRows = filledFaqRows.filter(
         (row) => (row[0].trim() && !row[1].trim()) || (!row[0].trim() && row[1].trim())
       )
-      if (incompleteRows.length > 0) return 'Каждый вопрос должен иметь ответ и наоборот'
+      if (incompleteRows.length > 0) return translations('fullFaqError')
       return ''
 
     default:
@@ -96,17 +101,15 @@ export const validateField = (
 }
 
 // Вспомогательные функции инициализации
-export const initializeMultilingualData = (
-  allLanguages: Language[],
-  currentLang: string,
-  initialData: ICardFull,
- 
-) => {
+export const initializeMultilingualData = (allLanguages: Language[], currentLang: string, initialData: ICardFull) => {
   return allLanguages.reduce<Record<string, Partial<ICardFull>>>(
     (acc, lang) => ({
       ...acc,
       [lang]: {
-        title: lang === currentLang ? initialData?.title || '' : initialData.titleTranslations[lang],
+        title:
+          lang === currentLang
+            ? initialData?.title || ''
+            : (initialData?.titleTranslations && initialData?.titleTranslations[lang]) || '',
         aboutVendor: initialData?.aboutVendor
           ? {
               mainDescription:
@@ -159,9 +162,13 @@ export const initializeMultilingualData = (
         discountedPrice: initialData?.discountedPrice,
         originalPrice: initialData?.originalPrice,
         mainDescription:
-          lang === currentLang ? initialData.mainDescription : initialData.mainDescriptionTranslations[lang],
+          lang === currentLang
+            ? initialData?.mainDescription || ''
+            : (initialData?.mainDescriptionTranslations && initialData.mainDescriptionTranslations[lang]) || '',
         furtherDescription:
-          lang === currentLang ? initialData.furtherDescription : initialData.furtherDescriptionTranslations[lang],
+          lang === currentLang
+            ? initialData?.furtherDescription || ''
+            : (initialData?.furtherDescriptionTranslations && initialData.furtherDescriptionTranslations[lang]) || '',
         summaryDescription:
           lang === currentLang
             ? initialData?.summaryDescription || ''
@@ -180,50 +187,561 @@ export const initializeMultilingualData = (
 export const initializeCompanyDataForOthers = (
   allLanguages: string[],
   currentLang: string,
-  initialData: any,
+  initialData: ICardFull,
   companyData: CompanyDescriptionData
 ) => {
-  return allLanguages
-    .filter((lang) => lang !== currentLang)
-    .reduce(
-      (acc, lang) => ({
-        ...acc,
-        [lang]: {
-          topDescription: `${initialData?.aboutVendor?.mainDescription || ''} ${lang}`,
-          images: companyData.images,
-          bottomDescription: `${initialData?.aboutVendor?.furtherDescription || ''} ${lang}`
-        }
-      }),
-      {}
-    )
+  return allLanguages?.reduce(
+    (acc, lang) => ({
+      ...acc,
+      [lang]: {
+        topDescription: `${initialData?.aboutVendor?.mainDescriptionTranslations[lang as Language] || ''}`,
+        images: companyData.images,
+        bottomDescription: `${initialData?.aboutVendor?.furtherDescriptionTranslations[lang as Language] || ''}`
+      }
+    }),
+    {}
+  )
 }
 
-export const initializeFaqMatrixForOthers = (allLanguages: string[], currentLang: string, initialData: any) => {
-  return allLanguages
-    .filter((lang) => lang !== currentLang)
-    .reduce(
-      (acc, lang) => ({
-        ...acc,
-        [lang]: initialData?.faq.map((el: any) => [`${el.question} ${lang}`, `${el.answer} ${lang}`]) || [
-          ['', ''],
-          ['', ''],
-          ['', ''],
-          ['', ''],
-          ['', '']
-        ]
-      }),
-      {}
-    )
+export const initializeFaqMatrixForOthers = (allLanguages: string[], currentLang: string, initialData: ICardFull) => {
+  return allLanguages.reduce(
+    (acc, lang) => ({
+      ...acc,
+      [lang]: initialData?.faq?.map((el) => [
+        `${el.questionTranslations[lang as Language]}`,
+        `${el.answerTranslations[lang as Language]} `
+      ]) || [
+        ['', ''],
+        ['', ''],
+        ['', ''],
+        ['', ''],
+        ['', '']
+      ]
+    }),
+    {}
+  )
 }
 
-export const initializeDescriptionMatrixForOthers = (allLanguages: string[], currentLang: string, initialData: any) => {
-  return allLanguages
-    .filter((lang) => lang !== currentLang)
-    .reduce(
-      (acc, lang) => ({
-        ...acc,
-        [lang]: initialData?.characteristics.map((el: any) => [`${el.name} ${lang}`, `${el.value} ${lang}`]) || []
-      }),
-      {}
-    )
+export const initializeDescriptionMatrixForOthers = (
+  allLanguages: string[],
+  currentLang: string,
+  initialData: ICardFull
+) => {
+  return allLanguages?.reduce(
+    (acc, lang) => ({
+      ...acc,
+      [lang]:
+        initialData?.characteristics.map((el) => [
+          `${el.nameTranslations[lang as Language]}`,
+          `${el.valueTranslations[lang as Language]}`
+        ]) || []
+    }),
+    {}
+  )
 }
+
+export const submitFormCardData = async ({
+  cardObjectForOthers,
+  companyDataForOthers,
+  faqMatrixForOthers,
+  similarProducts,
+  selectedCategory,
+  langFromPathname,
+  currentLangState,
+  cardTitle,
+  descriptions,
+  multyLangObjectForPrices,
+  uploadedFiles,
+  companyData,
+  remainingInitialImages,
+  objectRemainingInitialImages,
+  pricesArray,
+  pathname,
+  initialData
+}: {
+  cardObjectForOthers: Record<string, Partial<ICardFull>>
+  companyDataForOthers: Record<string, CompanyDescriptionData>
+  faqMatrixForOthers: Record<string, string[][]>
+  similarProducts: Set<Product>
+  selectedCategory: ICategory | null
+  langFromPathname: string
+  currentLangState: string
+  cardTitle: string
+  descriptions: {
+    ru: {description: string; additionalDescription: string; furtherDescription: string}
+    en: {description: string; additionalDescription: string; furtherDescription: string}
+    zh: {description: string; additionalDescription: string; furtherDescription: string}
+  }
+  multyLangObjectForPrices: Record<string, CardPriceElementsData>
+  uploadedFiles: File[]
+  companyData: CompanyDescriptionData
+  remainingInitialImages: string[]
+  objectRemainingInitialImages: {id: number; position: number}[]
+  pricesArray: {
+    currency: string
+    priceWithDiscount: string
+    priceWithoutDiscount: string
+    quantity: string
+    value: number
+    unit: string
+  }[]
+  pathname: string
+  initialData: ICardFull | undefined
+}) => {
+  console.log('--- submitFormCardData props ---')
+  console.log('cardObjectForOthers:', cardObjectForOthers)
+  console.log('companyDataForOthers:', companyDataForOthers)
+  console.log('faqMatrixForOthers:', faqMatrixForOthers)
+  console.log('similarProducts:', similarProducts)
+  console.log('selectedCategory:', selectedCategory)
+  console.log('langFromPathname:', langFromPathname)
+  console.log('currentLangState:', currentLangState)
+  console.log('cardTitle:', cardTitle)
+  console.log('descriptions:', descriptions)
+  console.log('multyLangObjectForPrices:', multyLangObjectForPrices)
+  console.log('uploadedFiles:', uploadedFiles)
+  console.log('companyData:', companyData)
+  console.log('remainingInitialImages:', remainingInitialImages)
+  console.log('objectRemainingInitialImages:', objectRemainingInitialImages)
+  console.log('pricesArray:', pricesArray)
+
+  const pricesArrayForSubmit = pricesArray.map((item) => ({
+    ...item,
+    quantity: parseQuantityRange(item.quantity)
+  }))
+
+  console.log('--- Processed data ---')
+  console.log('pricesArrayForSubmit:', pricesArrayForSubmit)
+
+  const isUpdate = pathname.match(/\d+$/) && (initialData?.id !== null || initialData?.id !== undefined)
+
+  // Get access token
+  const token = await getAccessToken()
+
+  // Prepare titles for all languages
+  const allTitles = {
+    ru: cardObjectForOthers.ru?.title || (langFromPathname === 'ru' ? cardTitle : ''),
+    en: cardObjectForOthers.en?.title || (langFromPathname === 'en' ? cardTitle : ''),
+    zh: cardObjectForOthers.zh?.title || (langFromPathname === 'zh' ? cardTitle : '')
+  }
+
+  // Prepare main descriptions for all languages
+  const mainDescriptionTranslations = {
+    ru: descriptions.ru?.description || (langFromPathname === 'ru' ? descriptions.ru?.description : ''),
+    en: descriptions.en?.description || (langFromPathname === 'en' ? descriptions.en?.description : ''),
+    zh: descriptions.zh?.description || (langFromPathname === 'zh' ? descriptions.zh?.description : '')
+  }
+
+  // Prepare further descriptions for all languages
+  const furtherDescriptionTranslations = {
+    ru: descriptions.ru?.furtherDescription || descriptions.ru?.additionalDescription || '',
+    en: descriptions.en?.furtherDescription || descriptions.en?.additionalDescription || '',
+    zh: descriptions.zh?.furtherDescription || descriptions.zh?.additionalDescription || ''
+  }
+
+  // Prepare prices data
+  const prices = pricesArrayForSubmit.map((price) => ({
+    quantityFrom: typeof price.quantity === 'object' ? price.quantity.from.toString() : price.quantity,
+    currency: price.currency,
+    unit: price.unit,
+    price: parseFloat(price.priceWithoutDiscount),
+    discount:
+      price.priceWithDiscount && price.priceWithoutDiscount
+        ? Math.round(
+            ((parseFloat(price.priceWithoutDiscount) - parseFloat(price.priceWithDiscount)) /
+              parseFloat(price.priceWithoutDiscount)) *
+              100
+          )
+        : 0
+  }))
+
+  // Prepare similar products array
+  const similarProductsArray = Array.from(similarProducts).map((product) => product.id)
+
+  const characteristics =
+    multyLangObjectForPrices[langFromPathname]?.characteristics?.map((char, i) => ({
+      name: char?.title,
+      nameTranslations: {
+        ru: multyLangObjectForPrices?.ru?.characteristics?.[i]?.title,
+        en: multyLangObjectForPrices?.en?.characteristics?.[i]?.title,
+        zh: multyLangObjectForPrices?.zh?.characteristics?.[i]?.title
+      },
+      value: char.characteristic,
+      valueTranslations: {
+        ru: multyLangObjectForPrices?.ru?.characteristics?.[i]?.characteristic,
+        en: multyLangObjectForPrices?.en?.characteristics?.[i]?.characteristic,
+        zh: multyLangObjectForPrices?.zh?.characteristics?.[i]?.characteristic
+      }
+    })) || []
+
+  // Prepare FAQ data
+  const faq =
+    faqMatrixForOthers[langFromPathname]?.map((faqItem, i) => ({
+      question: faqItem?.[0] || '',
+      questionTranslations: {
+        ru: faqMatrixForOthers?.ru?.[i]?.[0] || '',
+        en: faqMatrixForOthers?.en?.[i]?.[0] || '',
+        zh: faqMatrixForOthers?.zh?.[i]?.[0] || ''
+      },
+      answer: faqItem?.[1] || '',
+      answerTranslations: {
+        ru: faqMatrixForOthers?.ru?.[i]?.[1] || '',
+        en: faqMatrixForOthers?.en?.[i]?.[1] || '',
+        zh: faqMatrixForOthers?.zh?.[i]?.[1] || ''
+      }
+    })) || []
+
+  // Prepare delivery method details
+  const deliveryMethodDetails =
+    multyLangObjectForPrices[langFromPathname]?.delivery?.map((delivery, i) => ({
+      name: delivery?.title || 'Default Name',
+      nameTranslations: {
+        ru: multyLangObjectForPrices?.ru?.delivery?.[i]?.title || '',
+        en: multyLangObjectForPrices?.en?.delivery?.[i]?.title || '',
+        zh: multyLangObjectForPrices?.zh?.delivery?.[i]?.title || ''
+      },
+      value: delivery.daysDelivery,
+      valueTranslations: {
+        ru: multyLangObjectForPrices?.ru?.delivery?.[i]?.daysDelivery || '',
+        en: multyLangObjectForPrices?.en?.delivery?.[i]?.daysDelivery || '',
+        zh: multyLangObjectForPrices?.zh?.delivery?.[i]?.daysDelivery || ''
+      }
+    })) || []
+
+  // Prepare package options
+  const packageOptions =
+    multyLangObjectForPrices[langFromPathname]?.packaging?.map((packaging, i) => ({
+      name: packaging?.title || '',
+      nameTranslations: {
+        ru: multyLangObjectForPrices?.ru?.packaging?.[i]?.title || '',
+        en: multyLangObjectForPrices?.en?.packaging?.[i]?.title || '',
+        zh: multyLangObjectForPrices?.zh?.packaging?.[i]?.title || ''
+      },
+      price: parseFloat(packaging.price?.toString() || '0'),
+      priceUnit: pricesArrayForSubmit[0].currency || 'RUB'
+    })) || []
+
+  // Process about vendor media - separate old and new images
+  const oldAboutVendorMedia: {id: number; position: number}[] = []
+  const newAboutVendorFiles: File[] = []
+
+  companyDataForOthers?.[langFromPathname]?.images?.forEach((img, index) => {
+    if (img.image instanceof File) {
+      // New file - add to new files array
+      newAboutVendorFiles.push(img.image)
+    } else if (typeof img.image === 'string' && isUpdate) {
+      // Old image URL - find corresponding media object from initialData
+      const oldMedia = initialData?.aboutVendor?.media?.find((media) => media.url === img.image)
+      if (oldMedia) {
+        oldAboutVendorMedia.push({
+          id: oldMedia?.id,
+          position: index
+        })
+      }
+    }
+  })
+
+  // Process product media - separate old and new images
+  const oldProductMedia: {id: number; position: number}[] = []
+
+  // Handle remaining initial images (old images that are kept)
+  remainingInitialImages.forEach((imageUrl, index) => {
+    if (isUpdate) {
+      const oldMedia = initialData?.media?.find((media) => media.url === imageUrl)
+      if (oldMedia) {
+        oldProductMedia.push({
+          id: oldMedia?.id,
+          position: index
+        })
+      }
+    }
+  })
+
+  // Prepare about vendor data
+  const aboutVendor = {
+    mainDescription: companyData.topDescription || companyDataForOthers?.[langFromPathname]?.topDescription,
+    mainDescriptionTranslations: {
+      ru: companyDataForOthers?.ru?.topDescription || (langFromPathname === 'ru' ? companyData?.topDescription : ''),
+      en: companyDataForOthers?.en?.topDescription || (langFromPathname === 'en' ? companyData?.topDescription : ''),
+      zh: companyDataForOthers?.zh?.topDescription || (langFromPathname === 'zh' ? companyData?.topDescription : '')
+    },
+    furtherDescription: companyData?.bottomDescription || companyDataForOthers?.[langFromPathname]?.bottomDescription,
+    furtherDescriptionTranslations: {
+      ru:
+        companyDataForOthers?.ru?.bottomDescription ||
+        (langFromPathname === 'ru' ? companyData?.bottomDescription : ''),
+      en:
+        companyDataForOthers?.en?.bottomDescription ||
+        (langFromPathname === 'en' ? companyData?.bottomDescription : ''),
+      zh:
+        companyDataForOthers?.zh?.bottomDescription || (langFromPathname === 'zh' ? companyData?.bottomDescription : '')
+    },
+    mediaAltTexts:
+      companyDataForOthers?.[langFromPathname]?.images
+        ?.filter((img) => img.image !== null)
+        .map((img) => img?.description || 'Media description') || []
+  }
+
+  // Prepare the main data object
+  const data = {
+    title: allTitles[(langFromPathname || 'en') as keyof typeof allTitles] || cardTitle,
+    titleTranslations: allTitles,
+    mainDescription:
+      mainDescriptionTranslations[(langFromPathname || 'en') as keyof typeof mainDescriptionTranslations],
+    mainDescriptionTranslations,
+    furtherDescription:
+      furtherDescriptionTranslations[(langFromPathname || 'en') as keyof typeof furtherDescriptionTranslations],
+    furtherDescriptionTranslations,
+    categoryId: selectedCategory?.id || 0,
+    deliveryMethodIds: [1],
+    prices,
+    similarProducts: similarProductsArray,
+    characteristics,
+    faq,
+    deliveryMethodDetails,
+    packageOptions,
+    aboutVendor,
+    minimumOrderQuantity: parseInt(multyLangObjectForPrices[langFromPathname || 'en']?.priceInfo?.minimalVolume || '1'),
+    discountExpirationDate: parseInt(
+      multyLangObjectForPrices[langFromPathname || 'en']?.priceInfo?.daysBeforeSale || '30'
+    ),
+
+    // Add old media fields only for updates
+    ...(isUpdate && {
+      oldProductMedia: oldProductMedia.length > 0 ? oldProductMedia : [],
+      oldAboutVendorMedia: oldAboutVendorMedia.length > 0 ? oldAboutVendorMedia : []
+    })
+  }
+
+  // Prepare FormData
+  const formData = new FormData()
+
+  // ИСПРАВЛЕНИЕ: Создаем Blob для JSON данных с правильным типом содержимого
+  const jsonBlob = new Blob([JSON.stringify(data)], {type: 'application/json'})
+  formData.append('data', jsonBlob)
+
+  // Add product media files (только новые файлы)
+  uploadedFiles.forEach((file) => {
+    if (file instanceof File) {
+      formData.append('productMedia', file)
+    }
+  })
+
+  // Add about vendor media files (только новые файлы)
+  newAboutVendorFiles.forEach((file) => {
+    formData.append('aboutVendorMedia', file)
+  })
+
+  // Log final data object
+  console.log('--- Final data object ---')
+  console.log('Data to be sent:', JSON.stringify(data, null, 2))
+  console.log('Product media files count:', uploadedFiles.length)
+  console.log('About vendor media files count:', newAboutVendorFiles.length)
+  console.log('Old product media:', oldProductMedia)
+  console.log('Old about vendor media:', oldAboutVendorMedia)
+
+  // API call
+  const method = isUpdate ? 'PUT' : 'POST'
+  const url = isUpdate
+    ? `https://exporteru-prorumble.amvera.io/api/v1/products/${initialData?.id}`
+    : 'https://exporteru-prorumble.amvera.io/api/v1/products'
+
+  try {
+    const response = await fetch(url, {
+      method,
+      headers: {
+        Authorization: `Bearer ${token}`
+        // Don't set Content-Type for FormData, let the browser set it
+      },
+      body: formData
+    })
+
+    if (!response.ok) {
+      const errorData = await response.text()
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorData}`)
+    }
+
+    const result = await response.json()
+    console.log('--- Submission successful ---')
+    console.log('Result:', result)
+    console.log('--- End of submitFormCardData logs ---')
+
+    return result
+  } catch (error) {
+    console.error('--- Submission failed ---')
+    console.error('Error:', error)
+    console.log('--- End of submitFormCardData logs ---')
+    throw error
+  }
+}
+
+// Data to be sent: {
+//    "title": "утутуутут",
+//    "titleTranslations": {
+//      "ru": "deliveryMethodIds",
+//      "en": "утутуутут",
+//      "zh": "утутуутут"
+//    },
+//    "mainDescription": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
+//    "mainDescriptionTranslations": {
+//      "ru": "deliveryMethodIdsdeliveryMethodIdsdeliveryMethodIdsdeliveryMethodIds",
+//      "en": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
+//      "zh": ""
+//    },
+//    "furtherDescription": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
+//    "furtherDescriptionTranslations": {
+//      "ru": "deliveryMethodIdsdeliveryMethodIdsdeliveryMethodIdsdeliveryMethodIdsdeliveryMethodIds",
+//      "en": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
+//      "zh": ""
+//    },
+//    "categoryId": 8,
+//    "deliveryMethodIds": [
+//      1
+//    ],
+//    "prices": [
+//      {
+//        "quantityFrom": "123",
+//        "currency": "123",
+//        "unit": "123",
+//        "price": 123,
+//        "discount": 0
+//      }
+//    ],
+//    "similarProducts": [
+//      25,
+//      24,
+//      23,
+//      22,
+//      21,
+//      20
+//    ],
+//    "characteristics": [
+//      {
+//        "name": "утутуутут",
+//        "nameTranslations": {
+//          "ru": "утутуутут",
+//          "en": "утутуутут",
+//          "zh": "утутуутут"
+//        },
+//        "value": "утутуутут",
+//        "valueTranslations": {
+//          "ru": "утутуутут",
+//          "en": "утутуутут",
+//          "zh": "утутуутут"
+//        }
+//      },
+//      {
+//        "name": "утутуутут",
+//        "nameTranslations": {
+//          "ru": "утутуутут",
+//          "en": "утутуутут",
+//          "zh": "утутуутут"
+//        },
+//        "value": "утутуутут",
+//        "valueTranslations": {
+//          "ru": "утутуутут",
+//          "en": "утутуутут",
+//          "zh": "утутуутут"
+//        }
+//      },
+//      {
+//        "name": "утутуутут",
+//        "nameTranslations": {
+//          "ru": "утутуутут",
+//          "en": "утутуутут",
+//          "zh": "утутуутут"
+//        },
+//        "value": "утутуутут",
+//        "valueTranslations": {
+//          "ru": "утутуутут",
+//          "en": "утутуутут",
+//          "zh": "утутуутут"
+//        }
+//      }
+//    ],
+//    "faq": [
+//      {
+//        "question": "утутуутутутутуутутутутуутутутутуутутутутуутут",
+//        "questionTranslations": {
+//          "ru": "утутуутутутутуутутутутуутутутутуутутутутуутут",
+//          "en": "утутуутутутутуутутутутуутутутутуутутутутуутут",
+//          "zh": "утутуутутутутуутутутутуутутутутуутутутутуутут"
+//        },
+//        "answer": "утутуутутутутуутутутутуутутутутуутутутутуутут",
+//        "answerTranslations": {
+//          "ru": "утутуутутутутуутутутутуутутутутуутутутутуутут",
+//          "en": "утутуутутутутуутутутутуутутутутуутутутутуутут",
+//          "zh": "утутуутутутутуутутутутуутутутутуутутутутуутут"
+//        }
+//      }
+//    ],
+//    "deliveryMethodDetails": [
+//      {
+//        "name": "123",
+//        "nameTranslations": {
+//          "ru": "123",
+//          "en": "123",
+//          "zh": "123"
+//        },
+//        "value": "123",
+//        "valueTranslations": {
+//          "ru": "123",
+//          "en": "123",
+//          "zh": "123"
+//        }
+//      },
+//      {
+//        "name": "123",
+//        "nameTranslations": {
+//          "ru": "123",
+//          "en": "123",
+//          "zh": "123"
+//        },
+//        "value": "123",
+//        "valueTranslations": {
+//          "ru": "123",
+//          "en": "123",
+//          "zh": "123"
+//        }
+//      }
+//    ],
+//    "packageOptions": [
+//      {
+//        "name": "утутуутут",
+//        "nameTranslations": {
+//          "ru": "утутуутут",
+//          "en": "утутуутут",
+//          "zh": "утутуутут"
+//        },
+//        "price": 123,
+//        "priceUnit": "123"
+//      },
+//      {
+//        "name": "утутуутут",
+//        "nameTranslations": {
+//          "ru": "утутуутут",
+//          "en": "утутуутут",
+//          "zh": "утутуутут"
+//        },
+//        "price": 123,
+//        "priceUnit": "123"
+//      }
+//    ],
+//    "aboutVendor": {
+//      "mainDescription": "утутуутутутутуутутутутуутутутутуутутутутуутут",
+//      "mainDescriptionTranslations": {
+//        "ru": "deliveryMethodIdsdeliveryMethodIdsdeliveryMethodIdsdeliveryMethodIds",
+//        "en": "утутуутутутутуутутутутуутутутутуутутутутуутут",
+//        "zh": "утутуутутутутуутутутутуутутутутуутутутутуутут"
+//      },
+//      "furtherDescription": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
+//      "furtherDescriptionTranslations": {
+//        "ru": "deliveryMethodIdsdeliveryMethodIdsdeliveryMethodIdsdeliveryMethodIds",
+//        "en": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
+//        "zh": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут"
+//      },
+//      "mediaAltTexts": []
+//    },
+//    "minimumOrderQuantity": 123,
+//    "discountExpirationDate": 123
+//  }

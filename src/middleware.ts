@@ -110,6 +110,7 @@ export async function middleware(request: NextRequest) {
     if (pathnameWithoutLocale === '/create-card' || pathnameWithoutLocale.startsWith('/create-card/')) {
       console.log('🎨 Обнаружен маршрут create-card:', pathnameWithoutLocale)
 
+      console.log('locale in start middleware', locale)
       // Проверка наличия refresh токена
       if (!refreshToken) {
         console.log('❌ Нет refresh токена, редирект на /login')
