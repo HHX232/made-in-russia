@@ -52,7 +52,7 @@ const AdminTabBar = () => {
             <p>Реклама</p>
           </div>
         </Link>
-        <Link href={'/admin/faq'}>
+        {/* <Link href={'/admin/faq'}>
           <div className={styles.admin__tab__bar__inner__item}>
             <Image
               className={`${styles.admin__tab__image}`}
@@ -63,7 +63,7 @@ const AdminTabBar = () => {
             />
             <p>FAQ</p>
           </div>
-        </Link>
+        </Link> */}
         <Link href={'/admin/categories'}>
           <div className={styles.admin__tab__bar__inner__item}>
             <Image

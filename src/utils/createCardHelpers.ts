@@ -316,7 +316,7 @@ export const submitFormCardData = async ({
   const isUpdate = pathname.match(/\d+$/) && (initialData?.id !== null || initialData?.id !== undefined)
 
   // Get access token
-  const token = await getAccessToken()
+  const token = getAccessToken()
 
   // Prepare titles for all languages
   const allTitles = {

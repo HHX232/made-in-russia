@@ -1,3 +1,4 @@
+import {axiosClassic} from '@/api/api.interceptor'
 import HomePage from '@/components/pages/HomePage/HomePage'
 import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 import CategoriesService from '@/services/categoryes/categoryes.service'
@@ -36,12 +37,29 @@ async function getInitialData(locale: string) {
 
   return {initialPage1, categories}
 }
-
+export interface IPromoFromServer {
+  id: number
+  title: string
+  subtitle: string
+  thirdText: string
+  imageUrl: string
+  isBig: boolean
+  expirationDate: string
+  creationDate: string
+  lastModificationDate: string
+}
 export default async function Home() {
   const locale = await getLocale()
   const {initialPage1, categories} = await getInitialData(locale)
-
-  return <HomePage initialProducts={initialPage1.content} initialHasMore={!initialPage1.last} categories={categories} />
+  const adsFromSerfer = await axiosClassic.get<IPromoFromServer[]>('/advertisements')
+  return (
+    <HomePage
+      ads={adsFromSerfer.data}
+      initialProducts={initialPage1.content}
+      initialHasMore={!initialPage1.last}
+      categories={categories}
+    />
+  )
 }
 
 export async function generateMetadata() {

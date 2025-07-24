@@ -26,7 +26,6 @@ import {ValidationErrors, CompanyDescriptionData, CreateCardProps, ICurrentLangu
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useFormValidation} from '@/hooks/useFormValidation'
 import {useCreateCardForm} from '@/hooks/useCreateCardForm'
-import {useCreateCardAPI} from '@/hooks/useCreateCardAPI'
 import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
 import {usePathname} from 'next/navigation'
 import {useActions} from '@/hooks/useActions'

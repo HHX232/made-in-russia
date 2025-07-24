@@ -5,6 +5,7 @@ import {StaticImageData} from 'next/image'
 import Link from 'next/link'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
+import {IPromoFromServer} from '@/app/[locale]/page'
 
 // Lazy loading слайдера
 const Slider = dynamic(() => import('react-slick').then((mod) => mod.default), {
@@ -56,7 +57,7 @@ const PromoItem: FC<IPromoItem> = ({
           priority={priority}
           quality={85}
           placeholder='blur'
-          blurDataURL='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+on//Z'
+          blurDataURL='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QzwAEpQH4fXWp1AAAAABJRU5ErkJggg=='
           style={{
             objectFit: 'cover',
             objectPosition: 'center'
@@ -77,7 +78,8 @@ const PromoItem: FC<IPromoItem> = ({
   )
 }
 
-const Promo: FC = () => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const Promo: FC<{ads: IPromoFromServer[]}> = ({ads}) => {
   // Мемоизация настроек слайдера
   const sliderSettings = useMemo(
     () => ({
@@ -104,6 +106,8 @@ const Promo: FC = () => {
     }),
     []
   )
+
+  // const [adsFromServer, setAdsFromServer] = useState<IPromoFromServer[]>([])
 
   // Мемоизация элементов промо
   const promoItems = useMemo(

@@ -336,5 +336,10 @@
     "backButton":"← Назад",
     "subCategoryEmpty":"Подкатегории отсутствуют",
     "categoryTitle":"Категории"
+   },
+   "Admin":{
+    "Ads":{
+      "loadingError":"Ошибка при загрузке объявлений"
+    }
    }
  }
