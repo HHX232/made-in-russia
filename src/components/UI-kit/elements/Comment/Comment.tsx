@@ -19,6 +19,13 @@ const Comment: FC<Review> = ({id: commentID, media, author, text, rating, creati
     setModalIsOpen(false)
   }
 
+  const openModal = () => {
+    setModalIsOpen(true)
+  }
+
+  const displayedMedia = media?.slice(0, 4) || []
+  const remainingCount = (media?.length || 0) - 4
+
   return (
     <div key={commentID + '___' + id} className={`${styles.comment__box}`}>
       <ModalWindowDefault isOpen={modalIsOpen} onClose={closeModal}>
@@ -85,17 +92,9 @@ const Comment: FC<Review> = ({id: commentID, media, author, text, rating, creati
         </div>
       </div>
       <ul className={`${styles.images__content__list}`}>
-        {media?.map((el, i) => {
+        {displayedMedia.map((el, i) => {
           return (
-            <li
-              onClick={() => {
-                // console.log('modal is open')
-                setModalIsOpen(true)
-              }}
-              style={{cursor: 'pointer'}}
-              className={`${styles.images__item__box}`}
-              key={i}
-            >
+            <li onClick={openModal} style={{cursor: 'pointer'}} className={`${styles.images__item__box}`} key={i}>
               {el.url.includes('mp4') ? (
                 <div
                   style={{
@@ -131,6 +130,54 @@ const Comment: FC<Review> = ({id: commentID, media, author, text, rating, creati
             </li>
           )
         })}
+        {remainingCount > 0 && media && media[4] && (
+          <li
+            onClick={openModal}
+            style={{cursor: 'pointer'}}
+            className={`${styles.images__item__box} ${styles.more__images__overlay}`}
+            key='more-images'
+          >
+            {media[4].url.includes('mp4') ? (
+              <div
+                style={{
+                  position: 'relative',
+                  borderRadius: '10px',
+                  width: '70px',
+                  height: '75px',
+                  overflow: 'hidden'
+                }}
+              >
+                <video
+                  src={media[4].url}
+                  autoPlay
+                  loop
+                  muted
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                ></video>
+                <div className={`${styles.more__images__blur}`}>
+                  <div className={`${styles.more__images__text}`}>+{remainingCount}</div>
+                </div>
+              </div>
+            ) : (
+              <div
+                style={{backgroundImage: `url(${media[4].url})`}}
+                className={`${styles.images__item__image__comment__content}`}
+              >
+                <div className={`${styles.more__images__blur}`}>
+                  <div className={`${styles.more__images__text}`}>+{remainingCount}</div>
+                </div>
+              </div>
+            )}
+          </li>
+        )}
       </ul>
       <p className={`${styles.comment__text}`}>{text}</p>
     </div>

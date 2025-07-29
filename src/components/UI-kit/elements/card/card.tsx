@@ -11,9 +11,13 @@ import ToggleFavoritesButtonUI from '../../buttons/toggleFavoritesButtonUI/toggl
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import Link from 'next/link'
+import {useTranslations} from 'next-intl'
+import instance from '@/api/api.interceptor'
+import {toast} from 'sonner'
 
 const t1 = '/tree.jpg'
 const t2 = '/tree2.jpg'
+
 export interface ICardProps {
   id: number
   deliveryMethod: Omit<DeliveryMethod, 'creationDate' | 'lastModificationDate'>
@@ -35,7 +39,7 @@ const Card = memo<ICardProps>(
   ({
     id,
     // deliveryMethod = 'Доставка',
-    title = 'Выгодный товар',
+    title = 'default Title',
     price = '10000',
     discount = '0',
     previewImageUrl = t1,
@@ -51,10 +55,8 @@ const Card = memo<ICardProps>(
     const idFromHook = useId()
     const {toggleToFavorites} = useActions()
     const {productInFavorites} = useTypedSelector((state) => state.favorites)
-
-    // useEffect(() => {
-    //   console.log('previewImageUrl', previewImageUrl)
-    // }, [previewImageUrl])
+    const t = useTranslations('CardComponent')
+    console.log(fullProduct)
     const generateStructuredData = () => {
       // TODO Заменить на правильный домен
       const baseUrl = typeof window !== 'undefined' ? process.env.NEXT_PUBLIC_SITE_URL : 'https://yourdomain.com'
@@ -79,7 +81,7 @@ const Card = memo<ICardProps>(
         offers: {
           '@type': 'Offer',
           url: `${baseUrl}/card/${id}`,
-          priceCurrency: 'RUB',
+          priceCurrency: fullProduct?.priceCurrency || 'RUB',
           price: hasDiscount ? discountedPrice : price,
           availability: 'https://schema.org/InStock',
           itemCondition: 'https://schema.org/NewCondition',
@@ -87,11 +89,11 @@ const Card = memo<ICardProps>(
             priceSpecification: {
               '@type': 'UnitPriceSpecification',
               price: discountedPrice,
-              priceCurrency: 'RUB',
+              priceCurrency: fullProduct?.priceCurrency || 'RUB',
               referencePrice: {
                 '@type': 'UnitPriceSpecification',
                 price: price,
-                priceCurrency: 'RUB'
+                priceCurrency: fullProduct?.priceCurrency || 'RUB'
               }
             }
           })
@@ -106,6 +108,39 @@ const Card = memo<ICardProps>(
       }
     }
 
+    const deleteProduct = async (id: string) => {
+      const loadingToast = toast.loading('processing...')
+      try {
+        const res = await instance.delete(`/products/${id}`)
+        console.log(res)
+        toast.dismiss(loadingToast)
+        toast.success(
+          <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Успешно!</strong>
+            <span>Товар успешно удален</span>
+          </div>,
+          {
+            style: {
+              background: '#2E7D32'
+            }
+          }
+        )
+      } catch (e) {
+        console.log(e)
+        toast.dismiss(loadingToast)
+        toast.error(
+          <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Ошибка!</strong>
+            <span>Ошибка удаления товара</span>
+          </div>,
+          {
+            style: {
+              background: '#AC2525'
+            }
+          }
+        )
+      }
+    }
     if (isLoading) {
       return (
         <div className={`${styles.card__box}`}>
@@ -172,7 +207,7 @@ const Card = memo<ICardProps>(
                     className={`${styles.card__image}`}
                     width={250}
                     height={250}
-                    alt={`Изображение товара ${title}`}
+                    alt={`${t('cardImageAlt')} ${title}`}
                     src={previewImageUrl || t2}
                     itemProp='image'
                   />
@@ -196,14 +231,14 @@ const Card = memo<ICardProps>(
               </p>
 
               <div className={`${styles.price__box}`} itemScope itemType='https://schema.org/Offer'>
-                <meta itemProp='priceCurrency' content='RUB' />
+                <meta itemProp='priceCurrency' content={fullProduct?.priceCurrency || 'RUB'} />
                 <meta itemProp='availability' content='https://schema.org/InStock' />
                 <meta itemProp='url' content={`/card/${id}`} />
 
                 <span style={{display: 'flex'}}>
                   {discount !== 0 && price !== discountedPrice && discountedPrice !== null && (
                     <div className={`${styles.discount__price} fontInstrument`} itemProp='price'>
-                      {createPriceWithDot(discountedPrice.toString()) + ' RUB'}
+                      {createPriceWithDot(discountedPrice.toString()) + ' ' + fullProduct?.priceCurrency}
                     </div>
                   )}
                   <div
@@ -212,7 +247,7 @@ const Card = memo<ICardProps>(
                       itemProp: 'price'
                     })}
                   >
-                    {price !== null && createPriceWithDot(price.toString()) + ' RUB'}
+                    {price !== null && createPriceWithDot(price.toString()) + ' ' + fullProduct?.priceCurrency}
                   </div>
                 </span>
               </div>
@@ -221,14 +256,44 @@ const Card = memo<ICardProps>(
             {!isLoading && isShowButton && !canUpdateProduct && (
               <span onClick={(e) => onClickFunction?.(e)} className={`${styles.button__span}`}>
                 {/* <BasketButtonUI product={fullProduct as Product} /> */}
-                {specialButtonText || 'Просмотреть'}
+                {specialButtonText || t('saw')}
               </span>
             )}
+
             {!isLoading && isShowButton && canUpdateProduct && (
-              <Link href={`/create-card/${id}`} className={`${styles.button__span}`}>
-                {/* <BasketButtonUI product={fullProduct as Product} /> */}
-                {specialButtonText || 'Редактировать'}
-              </Link>
+              <div className={styles.update__buttons__box}>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    deleteProduct(id.toString())
+                  }}
+                  className={styles.deleate__button}
+                >
+                  <svg width='17' height='19' viewBox='0 0 17 19' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M5.96204 2.75C6.32239 1.73046 7.29475 1 8.43767 1C9.5806 1 10.553 1.73046 10.9133 2.75'
+                      stroke='#F4F7FF'
+                      stroke-width='1.3'
+                      stroke-linecap='round'
+                    />
+                    <path d='M15.8751 4.5H1' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
+                    <path
+                      d='M14.4166 6.6875L14.0141 12.7242C13.8592 15.0472 13.7818 16.2088 13.0249 16.9169C12.2681 17.625 11.104 17.625 8.77575 17.625H8.09911C5.77087 17.625 4.60677 17.625 3.84989 16.9169C3.09301 16.2088 3.01557 15.0472 2.8607 12.7242L2.45825 6.6875'
+                      stroke='#F4F7FF'
+                      stroke-width='1.3'
+                      stroke-linecap='round'
+                    />
+                    <path d='M6.25 8.875L6.6875 13.25' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
+                    <path d='M10.625 8.875L10.1875 13.25' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
+                  </svg>
+                </button>
+
+                <Link href={`/create-card/${id}`} className={`${styles.button__span}`}>
+                  {/* <BasketButtonUI product={fullProduct as Product} /> */}
+                  {specialButtonText || t('edit')}
+                </Link>
+              </div>
             )}
           </div>
         )}
@@ -247,7 +312,7 @@ const Card = memo<ICardProps>(
                   className={`${styles.card__image}`}
                   width={250}
                   height={250}
-                  alt={`Изображение товара ${title}`}
+                  alt={`${t('cardImageAlt')} ${title}`}
                   src={previewImageUrl || t2}
                   itemProp='image'
                 />
@@ -270,14 +335,14 @@ const Card = memo<ICardProps>(
               </p>
 
               <div className={`${styles.price__box}`} itemScope itemType='https://schema.org/Offer'>
-                <meta itemProp='priceCurrency' content='RUB' />
+                <meta itemProp='priceCurrency' content={fullProduct?.priceCurrency || 'RUB'} />
                 <meta itemProp='availability' content='https://schema.org/InStock' />
                 <meta itemProp='url' content={`/card/${id}`} />
 
                 <span style={{display: 'flex'}}>
                   {discount !== 0 && price !== discountedPrice && discountedPrice !== null && (
                     <div className={`${styles.discount__price} fontInstrument`} itemProp='price'>
-                      {createPriceWithDot(discountedPrice.toString()) + ' RUB'}
+                      {createPriceWithDot(discountedPrice.toString()) + ' ' + fullProduct?.priceCurrency}
                     </div>
                   )}
                   <div
@@ -286,7 +351,7 @@ const Card = memo<ICardProps>(
                       itemProp: 'price'
                     })}
                   >
-                    {price !== null && createPriceWithDot(price.toString()) + ' RUB'}
+                    {price !== null && createPriceWithDot(price.toString()) + ' ' + fullProduct?.priceCurrency}
                   </div>
                 </span>
               </div>
@@ -295,14 +360,43 @@ const Card = memo<ICardProps>(
             {!isLoading && isShowButton && !canUpdateProduct && (
               <span onClick={(e) => onClickFunction?.(e)} className={`${styles.button__span}`}>
                 {/* <BasketButtonUI product={fullProduct as Product} /> */}
-                {specialButtonText || 'Просмотреть'}
+                {specialButtonText || t('saw')}
               </span>
             )}
             {!isLoading && isShowButton && canUpdateProduct && (
-              <Link href={`/create-card/${id}`} className={`${styles.button__span}`}>
-                {/* <BasketButtonUI product={fullProduct as Product} /> */}
-                {specialButtonText || 'Редактировать'}
-              </Link>
+              <div className={styles.update__buttons__box}>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    deleteProduct(id.toString())
+                  }}
+                  className={styles.deleate__button}
+                >
+                  <svg width='17' height='19' viewBox='0 0 17 19' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M5.96204 2.75C6.32239 1.73046 7.29475 1 8.43767 1C9.5806 1 10.553 1.73046 10.9133 2.75'
+                      stroke='#F4F7FF'
+                      stroke-width='1.3'
+                      stroke-linecap='round'
+                    />
+                    <path d='M15.8751 4.5H1' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
+                    <path
+                      d='M14.4166 6.6875L14.0141 12.7242C13.8592 15.0472 13.7818 16.2088 13.0249 16.9169C12.2681 17.625 11.104 17.625 8.77575 17.625H8.09911C5.77087 17.625 4.60677 17.625 3.84989 16.9169C3.09301 16.2088 3.01557 15.0472 2.8607 12.7242L2.45825 6.6875'
+                      stroke='#F4F7FF'
+                      stroke-width='1.3'
+                      stroke-linecap='round'
+                    />
+                    <path d='M6.25 8.875L6.6875 13.25' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
+                    <path d='M10.625 8.875L10.1875 13.25' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
+                  </svg>
+                </button>
+
+                <Link href={`/create-card/${id}`} className={`${styles.button__span}`}>
+                  {/* <BasketButtonUI product={fullProduct as Product} /> */}
+                  {specialButtonText || t('edit')}
+                </Link>
+              </div>
             )}
           </Link>
         )}

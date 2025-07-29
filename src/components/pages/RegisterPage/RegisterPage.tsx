@@ -23,8 +23,10 @@ import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 const decorImage = '/login__image.jpg'
-const belarusSvg = '/belarus.svg'
-
+const belarusSvg = '/countries/belarus.svg'
+const kazakhstanSvg = '/countries/kazakhstan.svg'
+const chinaSvg = '/countries/china.svg'
+const russiaSvg = '/countries/russia.svg'
 interface AuthResponse {
   accessToken: string
   refreshToken: string

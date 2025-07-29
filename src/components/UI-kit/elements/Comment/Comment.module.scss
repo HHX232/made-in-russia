@@ -1,106 +1,128 @@
 .comment__box {
-   display: flex;
-   width: 100%;
-   box-shadow: -2px 4px 4px #00000015;
-   padding: 18px 18px 19px 8px;
-   flex-direction: column;
-   background-color: #F4F5F6;
-   border-radius: 10px;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding: 18px 18px 19px 8px;
+  border-radius: 10px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
 }
 
 .comment__user__data {
-   display: flex;
-   margin-bottom: 10px;
-   width: 100%;
-   align-items: center;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .user__image {
-   width: 28px;
-   height: 28px;
-   aspect-ratio: 1/1;
+  width: 28px;
+  height: 28px;
+  aspect-ratio: 1/1;
 }
 
 .start__box {
-   margin-left: auto;
-   display: flex;
-   align-items: center;
-   gap: 5px;
-
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 5px;
 }
 
 .comment__user__data__name {
-   font-weight: 600;
-   font-size: 16px;
-   margin-left: 12px;
+  margin-left: 12px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .comment__user__data__date {
-   margin-left: 25px;
-   color: #818181;
-   font-size: 14px;
+  margin-left: 25px;
+  color: #818181;
+  font-size: 14px;
 }
 
 .stars__image {
-   width: 18px;
-   height: 17px;
+  width: 18px;
+  height: 17px;
 }
 
 .start__count {
-   font-size: 16px;
+  font-size: 16px;
 }
 
 .start__list__images {
-   display: flex;
-   gap: 5px;
-
+  display: flex;
+  gap: 5px;
 }
 
 .images__content__list {
-   display: flex;
-   max-width: fit-content;
-   gap: 15px;
-   margin-bottom: 10px;
+  display: flex;
+  max-width: fit-content;
+  margin-bottom: 10px;
+  gap: 15px;
 }
 
 .modal__text {
-   font-size: 15px;
-   margin-top: 15px;
-   max-width: 500px;
+  max-width: 500px;
+  margin-top: 15px;
+  font-size: 15px;
 }
 
 .images__item__image__comment__content {
-   width: 70px;
-   height: 75px;
-   border-radius: 10px;
-   background-position: center;
-   background-size: cover;
-   background-repeat: no-repeat;
+  width: 70px;
+  height: 75px;
+  border-radius: 10px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+// Add these styles to your existing Comment.module.scss file
+
+.more__images__overlay {
+  position: relative;
+}
+
+.more__images__blur {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  backdrop-filter: blur(2px);
+  background-color: rgb(129 129 129 / 80%);
+}
+
+.more__images__text {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgb(0 0 0 / 80%);
 }
 
 @media (max-width: 550px) {
-   .start__list__images>li {
-      display: none;
-   }
+  .start__list__images > li {
+    display: none;
+  }
 
-   .extra__class__slick__slider {
-      max-width: 420px !important;
-      margin: 0 auto;
-   }
+  .extra__class__slick__slider {
+    max-width: 420px !important;
+    margin: 0 auto;
+  }
 
-   .start__list__images>li:first-child {
-      display: block !important;
-   }
+  .start__list__images > li:first-child {
+    display: block !important;
+  }
 }
 
 @media (max-width: 460px) {
-   .extra__class__slick__slider {
-      max-width: 350px !important;
-   }
+  .extra__class__slick__slider {
+    max-width: 350px !important;
+  }
 }
 
 @media (max-width: 390px) {
-   .extra__class__slick__slider {
-      max-width: 310px !important;
-   }
+  .extra__class__slick__slider {
+    max-width: 310px !important;
+  }
 }

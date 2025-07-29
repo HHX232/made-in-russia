@@ -76,14 +76,14 @@ export const validateField = (
       // )
       return matrixError
 
-    case 'companyData':
-      if (!companyData.topDescription.trim()) return translations('topDescrError')
-      if (!companyData.bottomDescription.trim()) return translations('bottomError')
-      const companyImagesWithContent = companyData.images.filter((img) => img.image !== null)
-      if (companyImagesWithContent.length === 0) return translations('companyImagesError')
-      const imagesWithoutDescription = companyImagesWithContent.filter((img) => !img.description.trim())
-      if (imagesWithoutDescription.length > 0) return translations('altTextImagesError')
-      return ''
+    // case 'companyData':
+    //   if (!companyData.topDescription.trim()) return translations('topDescrError')
+    //   if (!companyData.bottomDescription.trim()) return translations('bottomError')
+    //   const companyImagesWithContent = companyData.images.filter((img) => img.image !== null)
+    //   if (companyImagesWithContent.length === 0) return translations('companyImagesError')
+    //   const imagesWithoutDescription = companyImagesWithContent.filter((img) => !img.description.trim())
+    //   if (imagesWithoutDescription.length > 0) return translations('altTextImagesError')
+    //   return ''
 
     case 'faqMatrix':
       // console.log('faqMatrix in valid', faqMatrix)
@@ -478,8 +478,27 @@ export const submitFormCardData = async ({
     },
     mediaAltTexts:
       companyDataForOthers?.[langFromPathname]?.images
-        ?.filter((img) => img.image !== null)
-        .map((img) => img?.description || 'Media description') || []
+        ?.filter((img) => img?.image !== null)
+        .reduce<
+          Array<{
+            altText: string
+            translations: {ru: string; en: string; zh: string}
+          }>
+        >((acc, img) => {
+          const originalIndex = companyDataForOthers?.[langFromPathname]?.images?.indexOf(img)
+
+          if (originalIndex !== undefined && originalIndex !== -1) {
+            acc.push({
+              altText: img?.description || '',
+              translations: {
+                ru: companyDataForOthers?.ru?.images?.[originalIndex]?.description || '',
+                en: companyDataForOthers?.en?.images?.[originalIndex]?.description || '',
+                zh: companyDataForOthers?.zh?.images?.[originalIndex]?.description || ''
+              }
+            })
+          }
+          return acc
+        }, []) || []
   }
 
   // Prepare the main data object
@@ -543,8 +562,8 @@ export const submitFormCardData = async ({
   // API call
   const method = isUpdate ? 'PUT' : 'POST'
   const url = isUpdate
-    ? `https://exporteru-prorumble.amvera.io/api/v1/products/${initialData?.id}`
-    : 'https://exporteru-prorumble.amvera.io/api/v1/products'
+    ? `http://181.215.18.219/api/v1/products/${initialData?.id}`
+    : 'http://181.215.18.219/api/v1/products'
 
   try {
     const response = await fetch(url, {

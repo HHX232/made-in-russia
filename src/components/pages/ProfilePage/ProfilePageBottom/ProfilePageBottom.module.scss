@@ -1,201 +1,203 @@
 .help__box {
-   display: flex;
-   flex-direction: column;
-
+  display: flex;
+  flex-direction: column;
 }
 
 .help__box__title {
-   font-size: 24px;
-   font-weight: 500;
-   line-height: 28px;
-   margin-bottom: 30px;
-
-
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 28px;
 }
 
 .help__content {
-   display: flex;
-   flex-direction: column;
-   gap: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.faq__modal {
+  & > div {
+    min-width: 50vw !important;
+  }
 }
 
 .help__content__item {
-   display: flex;
-   width: 100%;
-   border-radius: 20px;
-   background-color: #F4F5F6;
-   box-shadow: -2px 4px 4px #00000015;
-   padding: 25px 20px;
-   align-items: center;
-   gap: 40px;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: 25px 20px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+  gap: 40px;
 
-   &>p {
-      font-size: 20px;
-   }
+  & > p {
+    font-size: 20px;
+  }
 }
 
 .delivery__box {
-   display: flex;
-   flex-direction: column;
-   padding: 20px 25px;
-   background-color: #F4F5F6;
-   border-radius: 20px;
-   box-shadow: -2px 4px 4px #00000015;
-   margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 25px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
 }
 
 .delivery__box__title {
-   font-size: 24px;
-   font-weight: 500;
-   margin-bottom: 22px;
+  margin-bottom: 22px;
+  font-size: 24px;
+  font-weight: 500;
 }
 
 .delivery__list {
-   display: flex;
-   flex-direction: column;
-   gap: 27px;
-   max-height: 500px;
-   overflow-y: auto;
-   /* Позволяет прокрутку */
+  display: flex;
+  max-height: 500px;
+  flex-direction: column;
+  gap: 27px;
+  overflow-y: auto;
 
-   /* Скрываем скроллбар в Firefox */
-   scrollbar-width: none !important;
+  /* Позволяет прокрутку */
 
-   /* Скрываем скроллбар в Chrome, Safari, Edge */
-   &::-webkit-scrollbar {
-      display: none !important;
-   }
+  /* Скрываем скроллбар в Firefox */
+  scrollbar-width: none !important;
 
-   &>div {
-      border: 1px solid #2A2E46;
-      max-width: 99%;
-      background-color: #F4F5F6 !important;
-      margin-left: 3px;
-   }
+  /* Скрываем скроллбар в Chrome, Safari, Edge */
+  &::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  & > div {
+    max-width: 99%;
+    border: 1px solid #2a2e46;
+    margin-left: 3px;
+    background-color: #f4f5f6 !important;
+  }
 }
 
 .delivery__list__item {
-   width: 100%;
-   display: flex;
-   align-items: center;
-   gap: 15px;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 15px;
 }
 
 .delivery__list__item__image {
-   max-width: 105px;
-   max-height: 105px;
-   height: 100%;
-   aspect-ratio: 1/1;
-   width: 100%;
-   border-radius: 15px;
+  width: 100%;
+  max-width: 105px;
+  height: 100%;
+  max-height: 105px;
+  border-radius: 15px;
+  aspect-ratio: 1/1;
 }
 
 .descr__box {
-   display: flex;
-   flex-direction: column;
-   height: 100%;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
 }
 
 .descr__box__miniDescription {
-   margin-top: auto;
+  margin-top: auto;
 }
 
 .descr__box__title {
-   font-size: 16px;
-   font-weight: 500;
-   max-width: 190px;
-   margin-bottom: 20px;
+  display: -webkit-box;
+  overflow: hidden;
+  max-width: 190px;
+  margin-bottom: 20px;
 
-   display: -webkit-box;
-   -webkit-line-clamp: 2;
-   /* Ограничивает количество строк */
-   -webkit-box-orient: vertical;
-   overflow: hidden;
-   text-overflow: ellipsis;
+  /* Ограничивает количество строк */
+  -webkit-box-orient: vertical;
+  font-size: 16px;
+  font-weight: 500;
+  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
 }
 
 .price__box {
-   margin-left: auto;
-   display: flex;
-   max-width: 220px;
-   width: 100%;
-   justify-content: space-between;
+  display: flex;
+  width: 100%;
+  max-width: 220px;
+  justify-content: space-between;
+  margin-left: auto;
 }
 
 .descr__box__miniDescription,
 .descr__box__status,
 .descr__box__byDate {
-   font-size: 14px;
-   color: #818181;
-   white-space: nowrap;
-   overflow: hidden;
-   text-overflow: ellipsis;
-   display: block;
-   max-width: 190px;
+  display: block;
+  overflow: hidden;
+  max-width: 190px;
+  color: #818181;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .descr__box__miniDescription,
 .descr__box__status {
-   margin-bottom: 4px;
+  margin-bottom: 4px;
 }
 
 .delivered {
-   color: #25ac25;
+  color: #25ac25;
 }
 
 .prices {
-   display: flex;
-   flex-direction: column;
-   gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .one__box {
-   display: flex;
-   align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .price__text {
-   font-size: 16px;
-   color: #818181;
+  color: #818181;
+  font-size: 16px;
 }
 
 .full__price {
-   color: #2A2E46;
-   font-weight: 600;
-   font-size: 20px;
+  color: #2a2e46;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .price__by__one {
-   font-size: 15px;
-   font-weight: 600;
-   color: #818181;
+  color: #818181;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .price__by__one__start {
-   margin-right: 5px;
+  margin-right: 5px;
 }
 
 @media (max-width: 600px) {
-   .delivery__list__item {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 15px;
-      align-items: center;
-   }
+  .delivery__list__item {
+    display: grid;
+    align-items: center;
+    gap: 15px;
+    grid-template-columns: auto 1fr;
 
-   .delivery__list__item__image {
-      max-width: 130px;
-      max-height: 130px;
-      aspect-ratio: 1/1;
-   }
+    // grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+  }
 
-   .delivery__list__item {
-      grid-template-columns: auto 1fr;
-      grid-template-rows: auto auto;
-   }
+  .delivery__list__item__image {
+    max-width: 130px;
+    max-height: 130px;
+    aspect-ratio: 1/1;
+  }
 
-   .delivery__list__item .price__box {
-      grid-column-start: 2;
-      max-width: 100%;
-   }
+  .delivery__list__item .price__box {
+    max-width: 100%;
+    grid-column-start: 2;
+  }
 }

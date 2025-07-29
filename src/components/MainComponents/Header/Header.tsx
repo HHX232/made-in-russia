@@ -115,7 +115,7 @@ export const renderCategoryItems = (
 const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}`
   const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}`
-  const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `7${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
+  const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
   const [categoriesList, setCategoriesList] = useState<Category[]>(categories || [])
   const [categoryListIsOpen, setCategoryListIsOpen] = useState<boolean>(false)
@@ -152,7 +152,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     sameAs: [instagramUrl, telegramUrl],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: process.env.NEXT_PUBLIC_TELEPHONE ? `+7${process.env.NEXT_PUBLIC_TELEPHONE}` : '+78005553535',
+      telephone: process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '+78005553535',
       contactType: 'customer service',
       availableLanguage: ['Russian', 'English']
     }
@@ -175,13 +175,12 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   // Микроразметка для навигации
   const navigationSchema = {
     '@context': 'https://schema.org',
-    '@type': 'SiteNavigationElement',
+    '@type': 'Site-Navigation-Element',
     name: 'Main Navigation',
     // TODO заменить ссылки
     url: [
       `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/categories`,
-      `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/basket`,
-      `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/delivery`,
+      `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/contacts`,
       `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/about`,
       `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/help`
     ]

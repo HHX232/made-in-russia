@@ -6,8 +6,10 @@ import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import {useTranslations} from 'next-intl'
 
-const belarusSvg = '/belarus.svg'
-
+const belarusSvg = '/countries/belarus.svg'
+const kazakhstanSvg = '/countries/kazakhstan.svg'
+const chinaSvg = '/countries/china.svg'
+const russiaSvg = '/countries/russia.svg'
 interface RegionType {
   imageSrc: string
   title: string
@@ -118,9 +120,9 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
 }) => {
   const regions = [
     {imageSrc: belarusSvg, title: 'Беларусь', altName: 'Belarus'},
-    {imageSrc: belarusSvg, title: 'Казахстан', altName: 'Kazakhstan'},
-    {imageSrc: belarusSvg, title: 'Китай', altName: 'China'},
-    {imageSrc: belarusSvg, title: 'Россия', altName: 'Russia'}
+    {imageSrc: kazakhstanSvg, title: 'Казахстан', altName: 'Kazakhstan'},
+    {imageSrc: chinaSvg, title: 'Китай', altName: 'China'},
+    {imageSrc: russiaSvg, title: 'Россия', altName: 'Russia'}
   ]
 
   const t = useTranslations('RegisterUserPage')

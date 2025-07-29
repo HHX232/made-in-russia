@@ -17,17 +17,17 @@ import {IVendorData} from '../../VendorPage/VendorPage'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
-const belarusSvg = '/belarus.svg'
+
+const belarusSvg = '/countries/belarus.svg'
+const kazakhstanSvg = '/countries/kazakhstan.svg'
+const chinaSvg = '/countries/china.svg'
+const russiaSvg = '/countries/russia.svg'
 
 const countryOptions: MultiSelectOption[] = [
   {id: 'belarus', label: 'Беларусь', value: 'Belarus', icon: belarusSvg},
-  {id: 'kazakhstan', label: 'Казахстан', value: 'Kazakhstan', icon: belarusSvg},
-  {id: 'china', label: 'Китай', value: 'China', icon: belarusSvg},
-  {id: 'russia', label: 'Россия', value: 'Russia', icon: belarusSvg},
-  {id: 'usa', label: 'США', value: 'USA', icon: belarusSvg},
-  {id: 'germany', label: 'Германия', value: 'Germany', icon: belarusSvg},
-  {id: 'poland', label: 'Польша', value: 'Poland', icon: belarusSvg},
-  {id: 'ukraine', label: 'Украина', value: 'Ukraine', icon: belarusSvg}
+  {id: 'kazakhstan', label: 'Казахстан', value: 'Kazakhstan', icon: kazakhstanSvg},
+  {id: 'china', label: 'Китай', value: 'China', icon: chinaSvg},
+  {id: 'russia', label: 'Россия', value: 'Russia', icon: russiaSvg}
 ]
 const categoryOptions: MultiSelectOption[] = [
   {id: 'lumber', label: 'Пиломатериалы', value: 'Lumber', icon: belarusSvg},

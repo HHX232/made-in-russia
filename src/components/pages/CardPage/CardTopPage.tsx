@@ -57,9 +57,9 @@ const ProductSchema = ({
     priceValidUntil: priceList.discountExpiration,
     availability: 'https://schema.org/InStock',
     eligibleQuantity: {
-      '@type': 'QuantitativeValue',
+      '@type': 'Quantitative-Value',
       name: item.title,
-      unitCode: 'TNE' // Код для тонн
+      unitCode: item.priceUnit // Код для тонн
     }
   }))
 
@@ -87,7 +87,7 @@ const ProductSchema = ({
       offerCount: priceList.items.length,
       lowPrice: minPrice,
       highPrice: maxPrice,
-      priceCurrency: 'USD',
+      priceCurrency: cardData.prices[0].currency,
       availability: 'https://schema.org/InStock',
       priceValidUntil: priceList.discountExpiration,
       offers: offers
@@ -101,52 +101,58 @@ const ProductSchema = ({
     shippingDetails: [
       {
         '@type': 'OfferShippingDetails',
-        shippingDestination: {
-          '@type': 'DefinedRegion',
-          addressCountry: 'RU'
-        },
+        // shippingDestination: {
+        //   '@type': 'DefinedRegion',
+        //   addressCountry: 'RU'
+        // },
         shippingRate: {
           '@type': 'MonetaryAmount',
-          currency: 'USD'
+          currency: cardData.prices[0].currency
         },
         deliveryTime: {
           '@type': 'ShippingDeliveryTime',
-          businessDays: {
-            '@type': 'OpeningHoursSpecification',
-            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-            opens: '00:00',
-            closes: '23:59'
-          },
+          // businessDays: {
+          //   '@type': 'OpeningHoursSpecification',
+          //   dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+          //   opens: '00:00',
+          //   closes: '23:59'
+          // },
           transitTime: {
             '@type': 'QuantitativeValue',
-            minValue: 7,
-            maxValue: 21,
+            minValue:
+              Number(cardData?.deliveryMethodsDetails?.[0].value) - 2 <= 0
+                ? 0
+                : Number(cardData?.deliveryMethodsDetails?.[0].value) - 2 || 5,
+            maxValue: Number(cardData?.deliveryMethodsDetails?.[0].value) + 1 || 10,
             unitCode: 'DAY'
           }
         }
       },
       {
         '@type': 'OfferShippingDetails',
-        shippingDestination: {
-          '@type': 'DefinedRegion',
-          addressCountry: 'CN'
-        },
+        // shippingDestination: {
+        //   '@type': 'DefinedRegion',
+        //   addressCountry: 'CN'
+        // },
         shippingRate: {
           '@type': 'MonetaryAmount',
-          currency: 'USD'
+          currency: cardData.prices[0].currency
         },
         deliveryTime: {
           '@type': 'ShippingDeliveryTime',
-          businessDays: {
-            '@type': 'OpeningHoursSpecification',
-            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-            opens: '00:00',
-            closes: '23:59'
-          },
+          // businessDays: {
+          //   '@type': 'OpeningHoursSpecification',
+          //   dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+          //   opens: '08:00',
+          //   closes: '20:00'
+          // },
           transitTime: {
             '@type': 'QuantitativeValue',
-            minValue: 14,
-            maxValue: 42,
+            minValue:
+              Number(cardData?.deliveryMethodsDetails?.[0].value) - 2 <= 0
+                ? 0
+                : Number(cardData?.deliveryMethodsDetails?.[0].value) - 2 || 5,
+            maxValue: Number(cardData?.deliveryMethodsDetails?.[0].value) + 1 || 10,
             unitCode: 'DAY'
           }
         }

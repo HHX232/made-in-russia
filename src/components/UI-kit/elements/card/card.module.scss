@@ -1,134 +1,152 @@
 .card__box {
-   display: flex;
-   flex-direction: column;
-   justify-content: space-between;
-   padding: 15px 15px 24px 15px;
-   border-radius: 20px;
-   background-color: #F4F5F6;
-   box-shadow: -2px 4px 4px rgba(0, 0, 0, 0.10);
-   border: 2px solid transparent;
-   transition: all .2s;
-   cursor: pointer;
-   max-width: calc(250px + 37px);
-   width: 100%;
-   height: 100%;
+  display: flex;
+  width: 100%;
+  max-width: calc(250px + 37px);
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 15px 15px 24px;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px rgb(0 0 0 / 10%);
+  cursor: pointer;
+  transition: all 0.2s;
 
-   &:hover {
-      border: 2px solid #2a2e4678;
-   }
+  &:hover {
+    border: 2px solid #2a2e4678;
+  }
+}
+
+.deleate__button {
+  height: 100%;
+  border-radius: 10px;
+  aspect-ratio: 1/1;
+  background-color: #ac2525;
+}
+
+.update__buttons__box {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 8px;
+
+  & > .button__span {
+    margin-top: 0 !important;
+  }
 }
 
 .image__box {
-   position: relative;
-   max-width: 250px;
-   max-height: 250px;
-   width: 100%;
-   aspect-ratio: 1/1;
-   margin-bottom: 9px;
+  position: relative;
+  width: 100%;
+  max-width: 250px;
+  max-height: 250px;
+  margin-bottom: 9px;
+  aspect-ratio: 1/1;
 }
 
 .by__now__button {
-   padding: 7px 20px;
-   border: 2px solid #AC2525;
-   border-radius: 10px;
-   color: #fff;
-   font-size: 15px;
-   background-color: #AC2525;
+  padding: 7px 20px;
+  border: 2px solid #ac2525;
+  border-radius: 10px;
+  background-color: #ac2525;
+  color: #fff;
+  font-size: 15px;
 }
 
 .card__image {
-   border-radius: 15px;
-   max-width: 250px;
-   max-height: 250px;
-   width: 100%;
-   aspect-ratio: 1/1;
-   z-index: 2;
-
+  z-index: 2;
+  width: 100%;
+  max-width: 250px;
+  max-height: 250px;
+  border-radius: 15px;
+  aspect-ratio: 1/1;
 }
 
 .discount__box {
-   position: absolute;
-   content: '';
-   right: 10px;
-   bottom: 10px;
-   background-color: #fff;
-   padding: 2px 3px 2px 6px;
-   border-radius: 10px;
-   font-size: 16px;
-   color: #AC2525;
-   font-weight: 800;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 2px 3px 2px 6px;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #ac2525;
+  content: '';
+  font-size: 16px;
+  font-weight: 800;
 }
 
 .card__title {
-   font-weight: 700;
-   color: #2A2E46;
-   font-size: 16px;
-   margin-bottom: 7px;
-   max-width: 250px;
-
-   display: -webkit-box;
-   -webkit-line-clamp: 2;
-   -webkit-box-orient: vertical;
-   overflow: hidden;
-   text-overflow: ellipsis;
+  display: -webkit-box;
+  overflow: hidden;
+  max-width: 250px;
+  margin-bottom: 7px;
+  -webkit-box-orient: vertical;
+  color: #2a2e46;
+  font-size: 16px;
+  font-weight: 700;
+  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
 }
 
 .price__box {
-   display: flex;
-   justify-content: space-between;
-   align-items: end;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
 }
 
 .discount__price {
-   color: #AC2525;
-   font-weight: 600;
-   margin-right: 15px;
-   font-size: 15px;
-   line-height: 18px;
+  margin-right: 15px;
+  color: #ac2525;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 18px;
 }
 
 .price {
-   color: #2A2E46;
-   font-size: 15px;
-   line-height: 18px;
+  color: #2a2e46;
+  font-size: 15px;
+  line-height: 18px;
 }
 
 .discount__gray__price {
-   color: #5D6072;
-   font-size: 15px;
-   line-height: 18px;
-   text-decoration: line-through;
+  color: #5d6072;
+  font-size: 15px;
+  line-height: 18px;
+  text-decoration: line-through;
 }
 
 .star__image {
-   margin-left: auto;
-   cursor: pointer;
-   position: absolute;
-   content: '';
-   top: 10px;
-   right: 10px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin-left: auto;
+  content: '';
+  cursor: pointer;
 }
 
 .skeleton__image {
-   width: 100%;
-   height: 100px;
+  width: 100%;
+  height: 100px;
 }
 
 .card__image__skeleton {
-   aspect-ratio: 1/1;
-   border-radius: 20px !important;
-   margin-bottom: 9px;
+  border-radius: 20px !important;
+  margin-bottom: 9px;
+  aspect-ratio: 1/1;
 }
 
 .button__span {
-   width: 100%;
-   display: flex;
-   justify-content: center;
-   padding: 7px 20px;
-   margin-top: 15px;
-   border: 2px solid #AC2525;
-   border-radius: 10px;
-   color: #fff;
-   font-size: 15px;
-   background-color: #AC2525;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding: 7px 20px;
+  border: 2px solid #ac2525;
+  border-radius: 10px;
+  margin-top: 15px;
+  background-color: #ac2525;
+  color: #fff;
+  font-size: 15px;
 }

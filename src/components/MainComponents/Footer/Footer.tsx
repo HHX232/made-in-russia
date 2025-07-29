@@ -65,14 +65,13 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
 
   return (
     <footer style={{...extraStyle}} className={`${styles.footer} ${extraClass}`}>
-      {/* Добавляем хлебные крошки перед основным содержимым футера */}
       <Breadcrumbs />
 
       <div className={`${styles.footer__inner} container`}>
         <Link href={'/'} className={`${styles.header__logo_box}`} itemScope itemType='https://schema.org/Organization'>
           <Image
             className={`${styles.bear__img}`}
-            alt='Logo with Bear'
+            alt='Logo of Exporteru'
             src={logoFavBig}
             width={286}
             height={65}

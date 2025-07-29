@@ -47,6 +47,7 @@ export interface IPromoFromServer {
   expirationDate: string
   creationDate: string
   lastModificationDate: string
+  link: string
 }
 export default async function Home() {
   const locale = await getLocale()

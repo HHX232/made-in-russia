@@ -3,6 +3,7 @@
 
 import React, {useState} from 'react'
 import styles from './Accordions.module.scss'
+import Image from 'next/image'
 
 interface AccordionItem {
   title: string
@@ -10,15 +11,22 @@ interface AccordionItem {
   isDefaultActive?: boolean
   id: string
 }
-
+const editSvg = '/admin/edit.svg'
 interface AccordionProps {
   items: AccordionItem[]
   multiActive?: boolean
   needDeleteButton?: boolean
   onDelete?: (item: AccordionItem) => void
+  onUpdate?: (item: AccordionItem) => void
 }
 
-const Accordion: React.FC<AccordionProps> = ({items, multiActive = false, needDeleteButton = false, onDelete}) => {
+const Accordion: React.FC<AccordionProps> = ({
+  items,
+  multiActive = false,
+  needDeleteButton = false,
+  onDelete,
+  onUpdate
+}) => {
   const [activeItems, setActiveItems] = useState<number[]>(() => {
     return items.map((item, index) => (item.isDefaultActive ? index : -1)).filter((index) => index !== -1)
   })
@@ -54,6 +62,20 @@ const Accordion: React.FC<AccordionProps> = ({items, multiActive = false, needDe
                 className={styles.delete__faq__button}
               >
                 -
+              </button>
+            )}
+            {needDeleteButton && (
+              <button
+                style={{padding: '8px 13px'}}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onUpdate?.(item)
+                  // setActiveItems(activeItems.filter((i) => i !== index))
+                }}
+                className={styles.delete__faq__button}
+              >
+                <Image src={editSvg} alt='edit' width={15} height={15} />
               </button>
             )}
           </div>

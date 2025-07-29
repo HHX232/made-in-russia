@@ -44,6 +44,15 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
   const currentLang = useCurrentLanguage()
   const debouncedSetSearchTitle = useDebounce(setSearchTitle, 1000)
 
+  const {clearSearchTitle} = useActions()
+
+  useEffect(() => {
+    clearSearchTitle()
+    return () => {
+      clearSearchTitle()
+    }
+  }, [])
+
   // Запрос подсказок с debounce
   const fetchHints = useCallback(async (text: string) => {
     if (!text.trim()) {

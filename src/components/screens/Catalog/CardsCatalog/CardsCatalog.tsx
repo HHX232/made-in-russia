@@ -190,6 +190,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
               <div style={{height: '100%', width: '100%'}} key={uniqueKey} ref={lastElementRef}>
                 <Card
                   onPreventCardClick={onPreventCardClick}
+                  canUpdateProduct={canCreateNewProduct}
                   isLoading={false}
                   id={product.id}
                   title={product.title}

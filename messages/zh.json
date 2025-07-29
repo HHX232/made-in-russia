@@ -330,7 +330,17 @@
     "backButton": "← 返回",
     "subCategoryEmpty": "无子类别",
     "categoryTitle": "类别"
+},
+"CardComponent": {
+    "defaultTitle": "优惠商品",
+    "cardImageAlt": "商品图片",
+    "saw": "查看", 
+    "edit": "编辑"
+},
+"Admin": {
+    "Ads": {
+        "loadingError": "加载广告时出错"  
+    }
 }
-
 
 }

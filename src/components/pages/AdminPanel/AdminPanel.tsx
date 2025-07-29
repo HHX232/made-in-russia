@@ -10,6 +10,7 @@ import AdminTranslatesPage from './AdminTranslatesPage/AdminTranslatesPage'
 import AdminCards from './AdminCards/AdminCards'
 import AdminCategoriesPage from './AdminCategoriesPage/AdminCategoriesPage'
 import AdminAds from './AdminAds/AdminAds'
+import AdminFAQPage from './AdminFAQPage/AdminFAQPage'
 
 export type TAdminTab = 'users' | 'categories' | 'cards' | 'ads' | 'FAQ' | 'translates'
 
@@ -27,7 +28,7 @@ const AdminPanel: FC = () => {
   }
 
   const renderContent = () => {
-    switch (activeAdminTab) {
+    switch (activeAdminTab?.toLowerCase()) {
       case 'users':
         return <AdminUsersPage />
       case 'categories':
@@ -38,8 +39,10 @@ const AdminPanel: FC = () => {
         return <AdminAds />
       case 'translates':
         return <AdminTranslatesPage />
+      case 'faq':
+        return <AdminFAQPage />
       default:
-        return null
+        return <p>Страница не найдена</p>
     }
   }
 

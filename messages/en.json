@@ -329,6 +329,17 @@
     "backButton": "← Back",
     "subCategoryEmpty": "No subcategories",
     "categoryTitle": "Categories"
+},
+"CardComponent": {
+    "defaultTitle": "Best Deal",
+    "cardImageAlt": "Product Image", 
+    "saw": "View",
+    "edit": "Edit"
+},
+"Admin": {
+    "Ads": {
+        "loadingError": "Error loading ads"  
+    }
 }
 
 }

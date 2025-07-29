@@ -135,7 +135,7 @@ const ProfilePageBottomHelp: FC = () => {
   ]
   return (
     <div className={`${styles.help__box}`}>
-      <ModalWindowDefault isOpen={isQuestOpen} onClose={() => setIsQuestOpen(false)}>
+      <ModalWindowDefault extraClass={styles.faq__modal} isOpen={isQuestOpen} onClose={() => setIsQuestOpen(false)}>
         <h3 style={{fontSize: '30px', fontWeight: '500', textAlign: 'center', margin: '10px 60px 40px 60px'}}>
           {t('title')}
         </h3>

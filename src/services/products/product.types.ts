@@ -47,6 +47,7 @@ export interface Product {
   creationDate: Date | string
   lastModificationDate: Date | string
   discountedPrice: number
+  priceCurrency: string
 }
 
 export interface DeliveryMethod {

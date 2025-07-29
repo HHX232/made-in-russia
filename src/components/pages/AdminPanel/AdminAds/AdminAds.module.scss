@@ -173,7 +173,8 @@
 // Create/Edit Form
 .create__form {
   position: relative;
-  overflow: hidden;
+
+  // overflow: hidden;
   padding: 30px; // More padding
   border: 1px solid #e0e0e0; // Lighter border
   border-radius: 12px;
@@ -901,8 +902,8 @@
   }
 
   .date__input,
-   /* TextInputUI input will adapt by its own styles */
-   .ad__title {
+  /* TextInputUI input will adapt by its own styles */
+  .ad__title {
     font-size: 17px;
   }
 
@@ -1078,11 +1079,11 @@
   // Анимация мерцания для важных объявлений
   &::after {
     position: absolute;
-    inset: 0;
     border-radius: 12px;
     animation: shimmer 3s ease-in-out infinite;
     background: linear-gradient(45deg, transparent 30%, rgb(255 255 255 / 30%) 50%, transparent 70%);
     content: '';
+    inset: 0;
     pointer-events: none;
   }
 }
@@ -1105,10 +1106,10 @@
   &::before {
     position: absolute;
     z-index: -1;
-    inset: -2px;
     border-radius: 17px;
     background: linear-gradient(135deg, #f39c12, #e67e22);
     content: '';
+    inset: -2px;
     opacity: 0.3;
   }
 }

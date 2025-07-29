@@ -1,631 +1,713 @@
 .category__inner {
-   margin-top: 60px;
-   display: flex;
-   flex-direction: column;
-   width: 100%;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin-top: 60px;
 }
 
 .category__list {
-   display: flex;
-   flex-wrap: wrap;
-   width: 100%;
-   gap: 40px 20px;
-   justify-content: space-evenly;
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  gap: 40px 20px;
 }
 
 .category__title__main {
-   font-weight: 600;
-   font-size: 36px;
-   line-height: 44px;
-   margin-bottom: 25px;
+  margin-bottom: 25px;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 44px;
 }
 
 .category__item__with__image {
-   aspect-ratio: 1/1 !important;
-   max-height: 213px !important;
-   text-align: center;
-   align-items: center;
-   justify-content: center;
+  max-height: 213px !important;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1/1 !important;
+  text-align: center;
 
-   &>p {
-      white-space: unset;
-   }
+  & > p {
+    white-space: unset;
+  }
 }
 
 .category__item {
-   display: flex;
-   flex-direction: column;
-   padding: 15px 20px;
-   text-align: center;
-   gap: 10px;
-   background-position: center;
-   background-size: cover;
-   background-repeat: no-repeat;
-   border-radius: 20px;
-   align-items: center;
+  display: flex;
+  width: max-content;
+  min-width: 280px;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 20px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow: -2px 4px 4px #00000015;
+  gap: 10px;
+  text-align: center;
 
-   background-color: #F4F5F6;
-   box-shadow: -2px 4px 4px #00000015;
-   min-width: 280px;
-   width: max-content;
-
-   &__second {
-      max-width: 45%;
-      justify-content: center;
-   }
+  &__second {
+    max-width: 45%;
+    justify-content: center;
+  }
 }
 
 .category__list__second {
-   justify-content: start !important;
-   gap: 20px !important;
-   max-height: 70vh;
-   overflow-y: auto;
-   // min-height: 400px;
-   padding: 15px 0;
+  max-height: 70vh;
+  justify-content: start !important;
+  padding: 15px 0;
+  gap: 20px !important;
+  overflow-y: auto;
 }
 
 .category__item__title {
-   font-weight: 500;
-   font-size: 20px;
-   line-height: 24px;
-   white-space: nowrap;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 24px;
+  white-space: nowrap;
 }
 
 .category__item__title__second {
-   white-space: unset;
+  white-space: unset;
 }
 
 .category__item__image {
-   border-radius: 10px;
-   max-height: 150px;
-   height: 100%;
-   width: 100%;
+  width: 100%;
+  height: 100%;
+  max-height: 150px;
+  border-radius: 10px;
 }
 
 /* Стили для слайдера */
 .category__slider {
-   width: 100%;
-   margin: 0 auto;
-   overflow: hidden;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .category__slide {
-   padding: 0 10px;
-   outline: none;
-   height: 100%;
+  height: 100%;
+  padding: 0 10px;
+  outline: none;
 }
 
 .category__slide__content {
-   display: flex;
-   flex-direction: column;
-   gap: 20px;
-   height: 100%;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .category__item__slider {
-   width: 100% !important;
-   min-width: unset !important;
-   max-width: unset !important;
-   height: calc(50% - 10px) !important;
-   /* 50% высоты минус половина gap */
-   min-height: 80px;
-   flex-shrink: 0;
+  width: 100% !important;
+  min-width: unset !important;
+  max-width: unset !important;
+  height: calc(50% - 10px) !important;
+  min-height: 80px;
+  flex-shrink: 0;
 }
 
 .category__simple__container__without__slider {
-   display: flex;
-   width: 100%;
-   align-items: center;
-   justify-content: space-evenly;
-   flex-wrap: wrap;
-   gap: 30px;
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 30px;
 }
 
 /* Стили для точек навигации */
 .category__slider .slick-dots {
-   bottom: -50px;
-   z-index: 1000;
-   position: static !important;
+  position: static !important;
+  z-index: 1000;
+  bottom: -50px;
 }
-
-// .category__slider .slick-dots li button:before {
-//    color: #999;
-//    font-size: 12px;
-// }
-
-// .category__slider .slick-dots li.slick-active button:before {
-//    color: #333;
-// }
 
 /* Стили для стрелок */
 .category__slider .slick-arrow {
-   z-index: 1;
-   width: 40px;
-   height: 40px;
-   background: rgba(255, 255, 255, 0.8);
-   border-radius: 50%;
-   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 80%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
-.category__slider .slick-arrow:before {
-   font-size: 20px;
-   color: #333;
+.category__slider .slick-arrow::before {
+  color: #333;
+  font-size: 20px;
 }
 
 .category__slider .slick-prev {
-   left: 10px;
+  left: 10px;
 }
 
 .category__slider .slick-next {
-   right: 10px;
+  right: 10px;
 }
 
 /* Контейнер для слайдера */
 .category__slider .slick-list {
-   overflow: hidden;
-   margin: 0 -10px;
+  overflow: hidden;
+  margin: 0 -10px;
 }
 
 .category__slider .slick-track {
-   display: flex;
-   align-items: stretch;
+  display: flex;
+  align-items: stretch;
 }
-
-// Добавьте эти стили в ваш SCSS файл, заменив существующие стили компаний:
 
 /* Стили для слайдера компаний */
 .companies__section {
-   margin-top: 40px;
-   width: 100%;
+  width: 100%;
+  margin-top: 40px;
 }
 
 .companies__title {
-   font-weight: 600;
-   font-size: 28px;
-   line-height: 34px;
-   margin-bottom: 20px;
-   color: #333;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 34px;
 }
 
 .companies__slider {
-   width: 100%;
-   margin: 0 auto;
-   position: relative;
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
 
-   .slick-list {
-      overflow: hidden;
-      margin: 0;
-      padding: 0 10px;
-   }
+  .slick-list {
+    overflow: hidden;
+    padding: 0 10px;
+    margin: 0;
+  }
 
-   .slick-track {
-      display: flex !important;
-   }
+  .slick-track {
+    display: flex !important;
+  }
 
-   .slick-slide {
-      padding: 0 10px;
-      box-sizing: border-box;
+  .slick-slide {
+    box-sizing: border-box;
+    padding: 0 10px;
 
-      >div {
-         height: 100%;
+    > div {
+      height: 100%;
+    }
+  }
+
+  /* Основные стрелки слайдера */
+  .slick-arrow {
+    z-index: 10;
+    top: 50%;
+    width: 45px;
+    height: 45px;
+    border: 2px solid #e0e0e0;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 95%);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 15%);
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: white;
+      box-shadow: 0 4px 16px rgb(0 0 0 / 20%);
+      transform: translateY(-50%) scale(1.05);
+    }
+
+    &::before {
+      color: #333;
+      font-size: 18px;
+      opacity: 1;
+    }
+  }
+
+  .slick-prev {
+    left: -25px;
+  }
+
+  .slick-next {
+    right: -25px;
+  }
+
+  /* Стили для точек навигации */
+  .slick-dots {
+    position: static !important;
+    bottom: -80px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    gap: 15px;
+    text-align: center;
+
+    li {
+      position: relative;
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      padding: 0;
+      margin: 0 3px;
+      cursor: pointer;
+
+      button {
+        display: block;
+        width: 12px;
+        height: 12px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: transparent;
+        cursor: pointer;
+        font-size: 0;
+        line-height: 0;
+        outline: none;
+
+        &::before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background-color: #ccc;
+          content: '';
+          transition: all 0.3s ease;
+        }
       }
-   }
 
-   /* Основные стрелки слайдера */
-   .slick-arrow {
-      z-index: 10;
-      width: 45px;
-      height: 45px;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 50%;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-      border: 2px solid #e0e0e0;
-      transition: all 0.3s ease;
-      top: 50%;
-      transform: translateY(-50%);
-
-      &:hover {
-         background: white;
-         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-         transform: translateY(-50%) scale(1.05);
+      &.slick-active button::before {
+        background-color: #007bff;
+        transform: scale(1.2);
       }
 
-      &:before {
-         font-size: 18px;
-         color: #333;
-         opacity: 1;
+      &:hover button::before {
+        background-color: #555;
       }
-   }
-
-   .slick-prev {
-      left: -25px;
-   }
-
-   .slick-next {
-      right: -25px;
-   }
-
-   /* Стили для точек навигации */
-   .slick-dots {
-      bottom: -80px !important;
-      position: static !important;
-      text-align: center;
-      padding: 20px 0;
-      display: flex !important;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-
-      li {
-         position: relative;
-         display: inline-block;
-         width: 12px;
-         height: 12px;
-         margin: 0 3px;
-         padding: 0;
-         cursor: pointer;
-
-         button {
-            font-size: 0;
-            line-height: 0;
-            display: block;
-            width: 12px;
-            height: 12px;
-            padding: 0;
-            cursor: pointer;
-            color: transparent;
-            border: 0;
-            outline: none;
-            background: transparent;
-
-            &:before {
-               content: '';
-               position: absolute;
-               top: 0;
-               left: 0;
-               width: 12px;
-               height: 12px;
-               background-color: #ccc;
-               border-radius: 50%;
-               transition: all 0.3s ease;
-            }
-         }
-
-         &.slick-active button:before {
-            background-color: #007bff;
-            transform: scale(1.2);
-         }
-
-         &:hover button:before {
-            background-color: #555;
-         }
-      }
-   }
+    }
+  }
 }
 
-// Новый контейнер для grid
+/* Контейнер для слайда */
 .company__slide__item {
-   padding: 10px;
-   height: 100%;
-   outline: none;
+  height: 100%;
+  padding: 10px;
+  outline: none;
 }
 
+/* Грид для компаний - 10 строк, 3 колонки */
 .company__grid {
-   display: grid;
-   grid-template-columns: repeat(3, 1fr);
-   grid-template-rows: repeat(2, 1fr);
-   gap: 15px;
-   height: 300px; // Фиксированная высота для грида
-   width: 100%;
+  display: grid;
+
+  /* Увеличиваем высоту для размещения 10 строк */
+  width: 100%;
+  height: 1500px;
+  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(10, 1fr);
 }
 
+/* Карточка компании */
 .company__card {
-   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-   border: 1px solid #e9ecef;
-   border-radius: 15px;
-   padding: 20px;
-   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-   transition: all 0.3s ease;
-   display: flex;
-   align-items: center;
-   width: 100%;
-   // Убираем min-height так как высота будет определяться grid
+  display: flex;
 
-   &:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-      border-color: #007bff;
-   }
+  /* Изменяем на stretch для одинаковой высоты */
+  width: 100%;
+  height: 100%;
+  align-items: stretch;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
+  transition: all 0.3s ease;
+
+  /* Карточка занимает всю высоту ячейки грида */
+
+  &:hover {
+    border-color: #007bff;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
+    transform: translateY(-3px);
+  }
 }
 
+/* Информация о компании */
 .company__info {
-   width: 100%;
+  display: flex;
+  width: 100%;
+
+  /* Распределяем содержимое равномерно */
+  min-height: 0;
+  flex-direction: column;
+  justify-content: space-between;
+
+  /* Позволяем сжиматься */
 }
 
+/* Название компании - убираем ограничение и многоточие */
 .company__name {
-   font-weight: 600;
-   font-size: 18px;
-   line-height: 22px;
-   color: #2c3e50;
-   margin-bottom: 10px;
-   word-wrap: break-word;
-   display: -webkit-box;
-   -webkit-line-clamp: 2;
-   -webkit-box-orient: vertical;
-   overflow: hidden;
+  /* Позволяем названию занимать доступное пространство */
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+  hyphens: auto;
+  line-height: 20px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  /* Выравниваем текст по верху */
 }
 
+/* ИНН компании */
 .company__inn {
-   font-weight: 500;
-   font-size: 14px;
-   line-height: 18px;
-   color: #6c757d;
-   margin-bottom: 6px;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+  color: #6c757d;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+
+  /* Не позволяем сжиматься */
 }
 
+/* Возраст компании */
 .company__age {
-   font-weight: 500;
-   font-size: 14px;
-   line-height: 18px;
-   color: #28a745;
-   margin: 0;
+  flex-shrink: 0;
+  margin: 0;
+  color: #28a745;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+
+  /* Не позволяем сжиматься */
 }
 
 /* Адаптивные стили */
+@media (max-width: 1400px) {
+  .company__grid {
+    height: 1500px;
+    gap: 10px;
+  }
+
+  .company__card {
+    padding: 14px;
+  }
+
+  .company__name {
+    font-size: 15px;
+    line-height: 19px;
+  }
+
+  .company__inn,
+  .company__age {
+    font-size: 12px;
+    line-height: 15px;
+  }
+}
+
 @media (max-width: 1200px) {
-   .company__grid {
-      grid-template-columns: repeat(3, 1fr);
-      height: 280px;
-   }
+  .company__grid {
+    height: 1500px;
+    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+  }
 
-   .company__card {
-      padding: 18px;
-   }
+  .company__card {
+    padding: 12px;
+  }
 
-   .company__name {
-      font-size: 17px;
-      line-height: 21px;
-   }
+  .company__name {
+    margin-bottom: 6px;
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .company__inn,
+  .company__age {
+    font-size: 11px;
+    line-height: 14px;
+  }
 }
 
 @media (max-width: 900px) {
-   .company__grid {
-      grid-template-columns: repeat(2, 1fr);
-      height: 280px;
-   }
+  .company__grid {
+    /* Увеличиваем количество строк для 2 колонок */
+    height: 1500px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+  }
 
-   .companies__slider {
-      .slick-prev {
-         left: -20px;
+  .companies__slider {
+    .slick-prev {
+      left: -20px;
+    }
+
+    .slick-next {
+      right: -20px;
+    }
+
+    .slick-arrow {
+      width: 40px;
+      height: 40px;
+
+      &::before {
+        font-size: 16px;
       }
+    }
+  }
 
-      .slick-next {
-         right: -20px;
+  .companies__title {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .company__card {
+    padding: 12px;
+  }
+
+  .company__name {
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .company__inn,
+  .company__age {
+    font-size: 11px;
+    line-height: 14px;
+  }
+}
+
+@media (max-width: 700px) {
+  .company__grid {
+    height: 1500px;
+    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+  }
+
+  .companies__slider {
+    .slick-arrow {
+      width: 35px;
+      height: 35px;
+
+      &::before {
+        font-size: 14px;
       }
+    }
+  }
 
-      .slick-arrow {
-         width: 40px;
-         height: 40px;
+  .company__card {
+    padding: 10px;
+  }
 
-         &:before {
-            font-size: 16px;
-         }
-      }
-   }
+  .company__name {
+    margin-bottom: 5px;
+    font-size: 13px;
+    line-height: 17px;
+  }
 
-   .companies__title {
-      font-size: 24px;
-      line-height: 30px;
-   }
-
-   .company__card {
-      padding: 16px;
-   }
-
-   .company__name {
-      font-size: 16px;
-      line-height: 20px;
-   }
-
-   .company__inn,
-   .company__age {
-      font-size: 13px;
-      line-height: 17px;
-   }
+  .company__inn,
+  .company__age {
+    margin-bottom: 3px;
+    font-size: 10px;
+    line-height: 13px;
+  }
 }
 
 @media (max-width: 600px) {
-   .company__grid {
-      grid-template-columns: 1fr;
-      grid-template-rows: repeat(2, 1fr);
-      height: 240px;
-      gap: 10px;
-   }
+  .company__grid {
+    /* 30 строк для 1 колонки */
+    height: 1000px;
+    gap: 6px;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(10, 1fr);
+  }
 
-   .companies__section {
-      margin-top: 30px;
-   }
+  .companies__section {
+    margin-top: 30px;
+  }
 
-   .companies__slider {
-      .slick-arrow {
-         display: none !important;
-      }
+  .companies__slider {
+    .slick-arrow {
+      display: none !important;
+    }
 
-      .slick-list {
-         padding: 0 5px;
-      }
+    .slick-list {
+      padding: 0 5px;
+    }
 
-      .slick-dots {
-         bottom: -60px !important;
-         padding: 15px 0;
+    .slick-dots {
+      bottom: -60px !important;
+      padding: 15px 0;
 
-         li {
+      li {
+        width: 10px;
+        height: 10px;
+        margin: 0 2px;
+
+        button {
+          width: 10px;
+          height: 10px;
+
+          &::before {
             width: 10px;
             height: 10px;
-            margin: 0 2px;
-
-            button {
-               width: 10px;
-               height: 10px;
-
-               &:before {
-                  width: 10px;
-                  height: 10px;
-               }
-            }
-         }
+          }
+        }
       }
-   }
+    }
+  }
 
-   .company__slide__item {
-      padding: 5px;
-   }
+  .company__slide__item {
+    padding: 5px;
+  }
 
-   .company__card {
-      padding: 15px;
-      border-radius: 12px;
-   }
+  .company__card {
+    padding: 10px;
+    border-radius: 12px;
+  }
 
-   .companies__title {
-      font-size: 22px;
-      line-height: 28px;
-      margin-bottom: 15px;
-   }
+  .companies__title {
+    margin-bottom: 15px;
+    font-size: 22px;
+    line-height: 28px;
+  }
 
-   .company__name {
-      font-size: 15px;
-      line-height: 19px;
-      margin-bottom: 8px;
-   }
+  .company__name {
+    margin-bottom: 5px;
+    font-size: 13px;
+    line-height: 17px;
+  }
 
-   .company__inn,
-   .company__age {
-      font-size: 12px;
-      line-height: 16px;
-   }
+  .company__inn,
+  .company__age {
+    font-size: 10px;
+    line-height: 13px;
+  }
 }
 
 @media (max-width: 480px) {
-   .company__grid {
-      height: 230px;
-   }
+  .company__grid {
+    height: 1000px;
+    gap: 5px;
+  }
 
-   .company__card {
-      padding: 12px;
-   }
+  .company__card {
+    padding: 8px;
+  }
 
-   .company__name {
-      font-size: 14px;
-      line-height: 18px;
-   }
+  .company__name {
+    font-size: 12px;
+    line-height: 16px;
+  }
 
-   .company__inn,
-   .company__age {
-      font-size: 11px;
-      line-height: 15px;
-   }
+  .company__inn,
+  .company__age {
+    font-size: 9px;
+    line-height: 12px;
+  }
 
-   .companies__slider .slick-dots {
-      bottom: -50px !important;
-      padding: 10px 0;
-   }
+  .companies__slider .slick-dots {
+    bottom: -50px !important;
+    padding: 10px 0;
+  }
 }
 
+/* Остальные стили категорий */
 @media (max-width: 800px) {
-   .category__list__first {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  .category__list__first {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
 
-      &>a>li {
-         width: 100%;
-         min-width: 140px;
-      }
-   }
+    & > a > li {
+      width: 100%;
+      min-width: 140px;
+    }
+  }
 }
 
 @media (max-width: 750px) {
-   .category__list__first {
-      grid-auto-columns: max-content !important;
-   }
+  .category__list__first {
+    grid-auto-columns: max-content !important;
+  }
 
-   .category__title__main {
-      font-size: 28px;
-      line-height: 36px;
-   }
+  .category__title__main {
+    font-size: 28px;
+    line-height: 36px;
+  }
 
-   .category__item__title {
-      font-size: 18px;
-      line-height: 22px;
-   }
+  .category__item__title {
+    font-size: 18px;
+    line-height: 22px;
+  }
 
-   .category__list {
-      display: grid;
-      grid-auto-flow: column;
-      grid-template-rows: 1fr 1fr;
-      // Убираем фиксированный размер колонок, пусть грид сам определяет количество
-      grid-auto-columns: minmax(320px, max-content);
-      overflow-x: auto;
-      height: fit-content;
-      // Добавляем ограничение ширины контейнера
+  .category__list {
+    display: grid;
+    width: 100%;
+    height: fit-content;
+    grid-auto-columns: minmax(320px, max-content);
+    grid-auto-flow: column;
+    grid-template-rows: 1fr 1fr;
+    overflow-x: auto;
+  }
+
+  .category__list__more_than_first {
+    max-width: 100%;
+    padding: 5px 0;
+    grid-auto-columns: minmax(min-content, max-content);
+    grid-template-rows: repeat(2, minmax(min-content, max-content));
+
+    & > a > li,
+    & > li {
       width: 100%;
-   }
+      min-width: 280px;
+      max-width: 400px;
+      justify-content: center;
 
-
-   .category__list__more_than_first {
-      // Для списков больше первого уровня используем более гибкую сетку
-      grid-template-rows: repeat(2, minmax(min-content, max-content));
-      grid-auto-columns: minmax(min-content, max-content);
-      padding: 5px 0;
-      // Добавляем подсчет максимальной ширины на основе количества элементов
-      max-width: 100%;
-
-      &>a>li,
-      &>li {
-         justify-content: center;
-         width: 100%;
-         max-width: 400px;
-         min-width: 280px;
-
-         &>p {
-            white-space: unset;
-         }
+      & > p {
+        white-space: unset;
       }
-   }
+    }
+  }
 
-   /* Адаптивные стили для слайдера */
-   .category__slider .slick-prev {
-      left: 5px;
-   }
+  /* Адаптивные стили для слайдера */
+  .category__slider .slick-prev {
+    left: 5px;
+  }
 
-   .category__slider .slick-next {
-      right: 5px;
-   }
+  .category__slider .slick-next {
+    right: 5px;
+  }
 
-   .category__slider .slick-arrow {
-      width: 30px;
-      height: 30px;
-   }
+  .category__slider .slick-arrow {
+    width: 30px;
+    height: 30px;
+  }
 
-   .category__slider .slick-arrow:before {
-      font-size: 16px;
-   }
+  .category__slider .slick-arrow::before {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 600px) {
-   .category__slider .slick-prev {
-      left: 2px;
-   }
+  .category__slider .slick-prev {
+    left: 2px;
+  }
 
-   .category__slider .slick-next {
-      right: 2px;
-   }
+  .category__slider .slick-next {
+    right: 2px;
+  }
 
-   .category__slide__content {
-      gap: 15px;
-   }
+  .category__slide__content {
+    gap: 15px;
+  }
 
-   .category__item__slider {
-      height: calc(50% - 7.5px) !important;
-      /* Учитываем уменьшенный gap */
-   }
+  .category__item__slider {
+    height: calc(50% - 7.5px) !important;
+  }
 }

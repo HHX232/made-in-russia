@@ -296,8 +296,8 @@ export const useCreateCardAPI = () => {
       const token = await getAccessToken()
       const method = isUpdate ? 'PUT' : 'POST'
       const url = isUpdate
-        ? `https://exporteru-prorumble.amvera.io/api/v1/products/${initialData.id}`
-        : 'https://exporteru-prorumble.amvera.io/api/v1/products'
+        ? `http://181.215.18.219/api/v1/products/${initialData.id}`
+        : 'http://181.215.18.219/api/v1/products'
 
       const loadingToast = toast.loading(isUpdate ? t('updateCardProcess') : t('saveCardProcess'))
       console.log('formDataToSend', formDataToSend, Object.entries(formDataToSend))

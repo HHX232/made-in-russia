@@ -27,6 +27,7 @@ interface AdData {
   creationDate: string
   lastModificationDate: string
   thirdText?: string // New field
+  link?: string // New field for link
   expiresAt?: string // New field for time to live (date string)
   isBig?: boolean // New field for important ads
   titleTranslations?: AdTranslations
@@ -41,6 +42,7 @@ interface AdFormData {
   subtitleTranslations: AdTranslations
   thirdText: string // Main third text for display/default
   thirdTextTranslations: AdTranslations // New field for translations
+  link: string // New field for link
   expiresAt?: string // New field for time to live (date string)
   isBig: boolean // New field for important ads
   uploadedFiles?: File[]
@@ -63,6 +65,7 @@ const AdminAds = () => {
     subtitleTranslations: {ru: '', en: '', zh: ''}, // Initialize all translation fields
     thirdText: '', // This will be dynamically set by translations
     thirdTextTranslations: {ru: '', en: '', zh: ''}, // New field for translations
+    link: '', // New field for link
     expiresAt: '', // New field
     isBig: false, // New field for important ads
     uploadedFiles: [],
@@ -109,6 +112,7 @@ const AdminAds = () => {
       subtitleTranslations: {ru: '', en: '', zh: ''},
       thirdText: '',
       thirdTextTranslations: {ru: '', en: '', zh: ''},
+      link: '', // Reset link field
       expiresAt: '',
       isBig: false,
       uploadedFiles: [],
@@ -129,6 +133,11 @@ const AdminAds = () => {
 
     if (!formData.subtitleTranslations[currentLanguage]?.trim()) {
       newErrors.subtitle = `Подзаголовок на ${getLanguageName(currentLanguage)} обязателен`
+    }
+
+    // Link validation
+    if (!formData.link?.trim()) {
+      newErrors.link = 'Ссылка обязательна'
     }
 
     // Validate expiration date format and future date
@@ -180,7 +189,8 @@ const AdminAds = () => {
         isBig: formData.isBig, // Include isBig field
         titleTranslations: formData.titleTranslations,
         subtitleTranslations: formData.subtitleTranslations,
-        thirdTextTranslations: formData.thirdTextTranslations
+        thirdTextTranslations: formData.thirdTextTranslations,
+        link: formData.link || 'linknew'
       }
 
       // ИСПРАВЛЕНИЕ: Создаем Blob для JSON данных с правильным типом содержимого
@@ -202,7 +212,7 @@ const AdminAds = () => {
       }
 
       // Отправка через обычный fetch с токеном авторизации
-      const response = await fetch('https://exporteru-prorumble.amvera.io/api/v1/advertisements', {
+      const response = await fetch('http://181.215.18.219/api/v1/advertisements', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`
@@ -248,7 +258,8 @@ const AdminAds = () => {
         thirdText: formData.thirdTextTranslations[currentLanguage] || '', // Use current language as main
         thirdTextTranslations: formData.thirdTextTranslations,
         expirationDate: formData.expiresAt ? formatDateForAPI(formData.expiresAt) : null, // Format date for API
-        isBig: formData.isBig // Include isBig field
+        isBig: formData.isBig, // Include isBig field
+        link: formData.link || '' // Include link field
       }
 
       // ИСПРАВЛЕНИЕ: Создаем Blob для JSON данных с правильным типом содержимого
@@ -262,7 +273,7 @@ const AdminAds = () => {
       }
 
       // Отправка через обычный fetch с токеном авторизации
-      const response = await fetch(`https://exporteru-prorumble.amvera.io/api/v1/advertisements/${editingAd}`, {
+      const response = await fetch(`http://181.215.18.219/api/v1/advertisements/${editingAd}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`
@@ -317,13 +328,27 @@ const AdminAds = () => {
       }
     }
 
+    // Fill form with current ad data, including all translations
     setFormData({
       title: ad.title, // These are placeholder, actual values from translations
-      titleTranslations: ad.titleTranslations || {ru: '', en: '', zh: ''},
+      titleTranslations: {
+        ru: ad.titleTranslations?.ru || (currentLanguage === 'ru' ? ad.title : ''),
+        en: ad.titleTranslations?.en || (currentLanguage === 'en' ? ad.title : ''),
+        zh: ad.titleTranslations?.zh || (currentLanguage === 'zh' ? ad.title : '')
+      },
       subtitle: ad.subtitle,
-      subtitleTranslations: ad.subtitleTranslations || {ru: '', en: '', zh: ''},
+      subtitleTranslations: {
+        ru: ad.subtitleTranslations?.ru || (currentLanguage === 'ru' ? ad.subtitle : ''),
+        en: ad.subtitleTranslations?.en || (currentLanguage === 'en' ? ad.subtitle : ''),
+        zh: ad.subtitleTranslations?.zh || (currentLanguage === 'zh' ? ad.subtitle : '')
+      },
       thirdText: ad.thirdText || '', // Populate new field
-      thirdTextTranslations: ad.thirdTextTranslations || {ru: '', en: '', zh: ''}, // Populate new translations
+      thirdTextTranslations: {
+        ru: ad.thirdTextTranslations?.ru || (currentLanguage === 'ru' ? ad.thirdText || '' : ''),
+        en: ad.thirdTextTranslations?.en || (currentLanguage === 'en' ? ad.thirdText || '' : ''),
+        zh: ad.thirdTextTranslations?.zh || (currentLanguage === 'zh' ? ad.thirdText || '' : '')
+      }, // Populate new translations
+      link: ad.link || '', // Populate link field
       expiresAt: expiresAtFormatted, // Populate formatted date
       isBig: ad.isBig || false, // Populate isBig field
       activeImages: ad.imageUrl ? [ad.imageUrl] : [],
@@ -386,7 +411,11 @@ const AdminAds = () => {
   }
 
   if (loading) {
-    return <div className={styles.loading}>Загрузка объявлений...</div>
+    return (
+      <div style={{width: '100%'}} className={styles.loading}>
+        Загрузка объявлений...
+      </div>
+    )
   }
 
   const getLanguageName = (lang: Language) => {
@@ -530,6 +559,30 @@ const AdminAds = () => {
               )
             )}
 
+            {/* Link field (single input for all languages) */}
+            <div className={styles.form__section}>
+              <h3 className={styles.section__title}>Ссылка</h3>
+              <div className={styles.input__group}>
+                <label className={styles.input__label}>
+                  Ссылка на объявление
+                  <span className={styles.required__asterisk}>*</span>
+                </label>
+                <TextInputUI
+                  currentValue={formData.link}
+                  placeholder='Введите ссылку (https://example.com)'
+                  onSetValue={(value) => {
+                    setFormData((prev) => ({...prev, link: value}))
+                    // Clear error when link is entered
+                    if (errors.link) {
+                      setErrors((prev) => ({...prev, link: ''}))
+                    }
+                  }}
+                  theme='superWhite'
+                />
+                {errors.link && <span className={styles.error__text}>{errors.link}</span>}
+              </div>
+            </div>
+
             {/* Other fields */}
             <div className={styles.form__section}>
               <h3 className={styles.section__title}>Дополнительная информация</h3>
@@ -567,23 +620,44 @@ const AdminAds = () => {
               </div>
             </div>
 
-            {!editingAd && (
-              <div className={styles.form__section}>
-                <h3 className={styles.section__title}>Изображение</h3>
-                <CreateImagesInput
-                  onFilesChange={handleUploadedFilesChange}
-                  onActiveImagesChange={handleActiveImagesChange}
-                  activeImages={formData.activeImages || []}
-                  maxFiles={1}
-                  minFiles={1}
-                  allowMultipleFiles={false}
-                  errorValue={errors.uploadedFiles}
-                  setErrorValue={(value: string) => setErrors((prev) => ({...prev, uploadedFiles: value}))}
-                  inputIdPrefix='ad-image'
-                />
-                {errors.uploadedFiles && <span className={styles.error__text}>{errors.uploadedFiles}</span>}
-              </div>
-            )}
+            {/* Image section - показываем всегда, но с разными текстами */}
+            <div className={styles.form__section}>
+              <h3 className={styles.section__title}>
+                {editingAd ? 'Изображение (добавьте изображение, если хотите заменить старое)' : 'Изображение'}
+              </h3>
+
+              {/* Показываем текущее изображение при редактировании */}
+              {editingAd && formData.activeImages && formData.activeImages.length > 0 && (
+                <div className={styles.current__image}>
+                  <p className={styles.current__image__label}>Текущее изображение:</p>
+                  <img
+                    src={formData.activeImages[0]}
+                    alt='Текущее изображение'
+                    className={styles.current__image__preview}
+                    style={{
+                      maxWidth: '200px',
+                      maxHeight: '150px',
+                      objectFit: 'cover',
+                      borderRadius: '4px',
+                      marginBottom: '10px'
+                    }}
+                  />
+                </div>
+              )}
+
+              <CreateImagesInput
+                onFilesChange={handleUploadedFilesChange}
+                onActiveImagesChange={handleActiveImagesChange}
+                activeImages={editingAd ? [] : formData.activeImages || []} // При редактировании не показываем активные изображения в компоненте
+                maxFiles={1}
+                minFiles={editingAd ? 0 : 1} // При редактировании изображение не обязательно
+                allowMultipleFiles={false}
+                errorValue={errors.uploadedFiles}
+                setErrorValue={(value: string) => setErrors((prev) => ({...prev, uploadedFiles: value}))}
+                inputIdPrefix='ad-image'
+              />
+              {errors.uploadedFiles && <span className={styles.error__text}>{errors.uploadedFiles}</span>}
+            </div>
 
             <div className={styles.form__actions}>
               <button className={styles.submit__button} onClick={editingAd ? handleUpdateAd : handleCreateAd}>

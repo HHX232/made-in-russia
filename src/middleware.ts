@@ -70,6 +70,7 @@ export const removeTokensFromResponse = (response: NextResponse) => {
 }
 
 const protectedRoutes = ['/basket', '/profile', '/vendor', '/create-card']
+const protectedAdminRoutes = ['/admin']
 const publicRoutes = ['/login', '/register']
 
 export async function middleware(request: NextRequest) {
@@ -297,6 +298,117 @@ export async function middleware(request: NextRequest) {
           const loginUrl = createLocalizedURL('/login', locale)
           const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
           redirectResponse.headers.set('x-locale', locale || 'en')
+          return removeTokensFromResponse(redirectResponse)
+        }
+      }
+    }
+
+    if (protectedAdminRoutes.some((route) => pathnameWithoutLocale.startsWith(route))) {
+      console.log('🛡️ Обнаружен admin маршрут:', pathnameWithoutLocale)
+
+      // Проверка наличия refresh токена
+      if (!refreshToken) {
+        console.log('❌ Нет refresh токена, редирект на /login')
+        const loginUrl = createLocalizedURL('/login', locale)
+        const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
+        redirectResponse.headers.set('x-locale', locale || 'en')
+        return redirectResponse
+      }
+      console.log('🔄 Проверка авторизации пользователя с accessToken')
+
+      try {
+        // Пытаемся получить данные пользователя с текущим accessToken
+        const {data: userData} = await instance.get<User>('/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+          }
+        })
+        console.log('✅ Пользователь авторизован, доступ разрешен')
+
+        if (userData.role === 'Admin') {
+          console.log('👑 Admin имеет доступ ко всем маршрутам')
+          const response = intlResponse || NextResponse.next()
+          response.headers.set('x-locale', locale || 'en')
+          return response
+        } else {
+          const homeUrl = createLocalizedURL('/', locale)
+          const redirectResponse = NextResponse.redirect(new URL(homeUrl, request.url))
+          redirectResponse.headers.set('x-locale', locale || 'en')
+          return redirectResponse
+        }
+      } catch (error) {
+        console.error('❗ Не удалось получить данные пользователя с текущим accessToken:', error)
+
+        console.log('🔄 Попытка обновления токена с refreshToken')
+        try {
+          // Пытаемся обновить токен
+          const {data: tokenData} = await axiosClassic.patch<{
+            accessToken: string
+          }>(
+            '/me/current-session/refresh',
+            {refreshToken},
+            {
+              headers: {
+                'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+              }
+            }
+          )
+
+          console.log('✅ Токен успешно обновлен')
+
+          // Создаем новый ответ и устанавливаем обновленные токены
+          const response = intlResponse || NextResponse.next()
+          response.cookies.set('accessToken', tokenData.accessToken)
+          // refreshToken остается прежним, если сервер не вернул новый
+          console.log('🔐 Новый accessToken установлен в cookies')
+
+          try {
+            // Проверяем авторизацию с новым токеном
+            console.log(process.env.INTERNAL_REQUEST_SECRET)
+            const {data: userData} = await instance.get<User>('/me', {
+              headers: {
+                Authorization: `Bearer ${tokenData.accessToken}`,
+                'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+              }
+            })
+            console.log('✅ Авторизация с новым токеном успешна')
+
+            if (userData.role === 'Admin') {
+              console.log('👑 Admin имеет доступ ко всем маршрутам')
+              response.headers.set('x-locale', locale || 'en')
+              return response
+            }
+
+            if (userData.role === 'Vendor' && pathnameWithoutLocale === '/profile') {
+              console.log('🔀 Перенаправление User с ролью Vendor на /vendor')
+              const redirectResponse = NextResponse.redirect(
+                new URL(createLocalizedURL('/vendor', locale), request.url)
+              )
+              redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              redirectResponse.headers.set('x-locale', locale || 'en')
+              return redirectResponse
+            } else if (userData.role === 'User' && pathnameWithoutLocale === '/vendor') {
+              console.log('🔀 Перенаправление User с ролью User на /profile')
+              const redirectResponse = NextResponse.redirect(
+                new URL(createLocalizedURL('/profile', locale), request.url)
+              )
+              redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              redirectResponse.headers.set('x-locale', locale || 'en')
+              return redirectResponse
+            }
+
+            return response
+          } catch (e) {
+            console.error('❌ Не удалось авторизоваться даже с новым токеном:', e)
+            const loginUrl = createLocalizedURL('/login', locale)
+            const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
+            return removeTokensFromResponse(redirectResponse)
+          }
+        } catch (e) {
+          console.error('❌ Не удалось обновить токен:', e)
+          const loginUrl = createLocalizedURL('/login', locale)
+          const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
           return removeTokensFromResponse(redirectResponse)
         }
       }

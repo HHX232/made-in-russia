@@ -390,7 +390,9 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
           <div className={`${styles.language__switcher}`}>
             <p className={`${styles.language__switcher__title}`}>{t('languageForInput')}</p>
-            <p className={`${styles.language__switcher__subtitle}`}>{t('languageForInputSubtitle')}</p>
+            <p className={`${styles.language__switcher__subtitle}`}>
+              {t('languageForInputSubtitle')} - {langFromPathname}
+            </p>
             <div className={`${styles.language__buttons}`}>
               <button
                 type='button'

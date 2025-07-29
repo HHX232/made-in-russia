@@ -38,6 +38,7 @@
 
 @media (max-width: 920px) {
   .admin__tab__bar {
+    position: static;
     width: 100%;
     max-width: 97%;
   }

@@ -1,9 +1,16 @@
 .container__cards {
-   display: flex;
-   flex-direction: column;
-   padding: 10px 20px;
-   border-radius: 20px;
-   box-shadow: -2px 4px 4px #00000015;
-   background-color: #F4F5F6;
-   width: 100%;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+}
+
+.admin__cards__title {
+  margin: 20px 10px;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 48px;
 }

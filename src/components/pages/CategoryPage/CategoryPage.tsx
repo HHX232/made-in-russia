@@ -108,16 +108,16 @@ const CategoryPage = ({
     companies: {name: string; inn: string; ageInYears: string}[],
     windowWidth: number
   ) => {
-    let itemsPerSlide = 6 // 2 строки × 3 столбца по умолчанию
+    let itemsPerSlide = 30 // 2 строки × 3 столбца по умолчанию
 
     if (windowWidth <= 480) {
-      itemsPerSlide = 2 // 2 строки × 1 столбец
+      itemsPerSlide = 10 // 10 строки × 1 столбец
     } else if (windowWidth <= 600) {
-      itemsPerSlide = 2 // 2 строки × 1 столбец
+      itemsPerSlide = 10 // 10 строки × 1 столбец
     } else if (windowWidth <= 900) {
-      itemsPerSlide = 4 // 2 строки × 2 столбца
+      itemsPerSlide = 20 // 10 строки × 2 столбца
     } else if (windowWidth <= 1200) {
-      itemsPerSlide = 6 // 2 строки × 3 столбца
+      itemsPerSlide = 30 // 10 строки × 3 столбца
     }
 
     const slides = []
@@ -235,7 +235,7 @@ const CategoryPage = ({
   const shouldUseSlider = slides.length > 1
 
   return (
-    <div>
+    <div style={{overflowX: 'hidden'}}>
       <Header />
       <div className='container'>
         <div className={styles.category__inner}>

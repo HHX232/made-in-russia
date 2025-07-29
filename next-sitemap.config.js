@@ -4,7 +4,7 @@ module.exports = {
   generateRobotsTxt: true,
   changefreq: 'daily',
   priority: 0.7,
-  exclude: ['/404', '/500', '/api/*'],
+  exclude: ['/404', '/500', '/api/*', '/admin/*'],
   sitemapBaseFileName: 'sitemap',
   generateIndexSitemap: false,
 
@@ -16,11 +16,18 @@ module.exports = {
       lastmod: new Date().toISOString(),
     },
     // Добавьте здесь другие страницы, когда они появятся
-    // {
-    //   loc: '/about',
-    //   changefreq: 'weekly',
-    //   priority: 0.8,
-    // },
+    {
+      loc: '/about',
+      changefreq: 'weekly',
+      priority: 0.9,
+      lastmod: new Date().toISOString(),
+    },
+    {
+      loc: '/card/*',
+      changefreq: 'weekly',
+      priority: 0.8,
+      lastmod: new Date().toISOString(),
+    }
   ],
 
   transform: (config, path) => ({
@@ -35,7 +42,7 @@ module.exports = {
       {
         userAgent: '*',
         allow: '/',
-        // disallow: ['/api'], // Раскомментировать позже
+        disallow: ['/api'], // Раскомментировать позже
       },
     ],
   },
