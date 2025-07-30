@@ -226,7 +226,12 @@ const PromoItem: FC<IPromoItem> = ({
   const imageUrl = typeof image === 'string' ? image : image.src
 
   return (
-    <Link style={{...extraStyle}} href={href} className={`${styles.promo__item_box} ${extraClass || ''}`}>
+    <Link
+      draggable='false'
+      style={{...extraStyle}}
+      href={href}
+      className={`${styles.promo__item_box} ${extraClass || ''}`}
+    >
       {/* Оптимизированное изображение как фон */}
       <div className={styles.promo__item_bg}>
         <Image
@@ -374,6 +379,10 @@ const Promo: FC<PromoProps> = ({
       autoplay: true,
       autoplaySpeed: 4500,
       lazyLoad: 'ondemand' as const,
+      beforeChange: () => {
+        // Сбрасываем выделение, чтобы предотвратить копирование
+        window?.getSelection()?.removeAllRanges()
+      },
       responsive: [
         {
           breakpoint: 670,
@@ -400,6 +409,10 @@ const Promo: FC<PromoProps> = ({
       autoplay: true,
       autoplaySpeed: 4500,
       lazyLoad: 'ondemand' as const,
+      beforeChange: () => {
+        // Сбрасываем выделение, чтобы предотвратить копирование
+        window?.getSelection()?.removeAllRanges()
+      },
       responsive: [
         {
           breakpoint: 670,

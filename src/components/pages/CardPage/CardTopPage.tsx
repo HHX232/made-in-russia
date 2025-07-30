@@ -120,10 +120,10 @@ const ProductSchema = ({
           transitTime: {
             '@type': 'QuantitativeValue',
             minValue:
-              Number(cardData?.deliveryMethodsDetails?.[0].value) - 2 <= 0
+              Number(cardData?.deliveryMethodsDetails?.[0]?.value) - 2 <= 0
                 ? 0
-                : Number(cardData?.deliveryMethodsDetails?.[0].value) - 2 || 5,
-            maxValue: Number(cardData?.deliveryMethodsDetails?.[0].value) + 1 || 10,
+                : Number(cardData?.deliveryMethodsDetails?.[0]?.value) - 2 || 5,
+            maxValue: Number(cardData?.deliveryMethodsDetails?.[0]?.value) + 1 || 10,
             unitCode: 'DAY'
           }
         }
@@ -149,10 +149,10 @@ const ProductSchema = ({
           transitTime: {
             '@type': 'QuantitativeValue',
             minValue:
-              Number(cardData?.deliveryMethodsDetails?.[0].value) - 2 <= 0
+              Number(cardData?.deliveryMethodsDetails?.[0]?.value) - 2 <= 0
                 ? 0
-                : Number(cardData?.deliveryMethodsDetails?.[0].value) - 2 || 5,
-            maxValue: Number(cardData?.deliveryMethodsDetails?.[0].value) + 1 || 10,
+                : Number(cardData?.deliveryMethodsDetails?.[0]?.value) - 2 || 5,
+            maxValue: Number(cardData?.deliveryMethodsDetails?.[0]?.value) + 1 || 10,
             unitCode: 'DAY'
           }
         }

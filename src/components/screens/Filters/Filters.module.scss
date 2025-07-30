@@ -74,6 +74,7 @@
 .filters__part_droplists {
   // position: relative;
   display: flex;
+  min-width: 200px;
   flex-direction: column;
   gap: 10px;
 

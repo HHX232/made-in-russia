@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
-import {FC, useState, useEffect, useCallback} from 'react'
+import {FC, useState, useEffect, useCallback, useMemo} from 'react'
 import styles from './CreateCard.module.scss'
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
@@ -54,14 +54,10 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const {
     cardObjectForOthers,
     companyDataForOthers,
-    descriptionMatrixForOthers,
     faqMatrixForOthers,
-    formState,
     setCardObjectForOthers,
     setCompanyDataForOthers,
-    setDescriptionMatrixForOthers,
-    setFaqMatrixForOthers,
-    setFormState
+    setFaqMatrixForOthers
   } = useCreateCardForm(initialData)
   // const [productCategoryes, setProductCategoryes] = useState<string[]>([])
   const [similarProducts, setSimilarProducts] = useState(new Set<Product>())
@@ -135,13 +131,19 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const [remainingInitialImages, setRemainingInitialImages] = useState<string[]>(
     initialData?.media.map((el) => el.url) || []
   )
-  const [objectRemainingInitialImages, setObjectRemainingInitialImages] = useState<{id: number; position: number}[]>(
-    initialData?.media.map((el, i) => {
-      return {
+
+  // ! new line
+  const initialImages = useMemo(
+    () =>
+      initialData?.media.map((el, i) => ({
         id: el.id,
         position: i
-      }
-    }) || []
+      })) || [],
+    [initialData?.media]
+  )
+
+  const [objectRemainingInitialImages, setObjectRemainingInitialImages] = useState<{id: number; position: number}[]>(
+    initialImages || []
   )
 
   const [pricesArray, setPricesArray] = useState<
@@ -241,7 +243,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       companyData: companyData,
       companyDataImages: companyDataImages,
       faqMatrix: faqMatrixForOthers[currentLangState || 'en'] || [],
-
       errors: errors,
       selectedDeliveryMethodIds: [1]
     },
@@ -305,7 +306,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     if (currentTitleValue !== undefined && currentTitleValue !== cardTitle) {
       setCardTitle(currentTitleValue)
     }
-  }, [cardObjectForOthers, currentLangState])
+  }, [cardObjectForOthers, cardTitle, currentLangState])
 
   const handleTitleChange = useCallback(
     (value: string) => {
@@ -322,52 +323,75 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     [cardObjectForOthers, currentLangState]
   )
 
-  const handleNewSave = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleNewSave = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (!isFormValid) return
+      const loadingToast = toast.loading('Сохранение карточки...')
 
-    if (!isFormValid) return
-    const loadingToast = toast.loading('Сохранение карточки...')
-
-    try {
-      await submitFormCardData({
-        cardObjectForOthers,
-        companyDataForOthers,
-        faqMatrixForOthers,
-        similarProducts,
-        selectedCategory,
-        langFromPathname,
-        currentLangState,
-        cardTitle,
-        descriptions,
-        multyLangObjectForPrices,
-        uploadedFiles,
-        companyData,
-        remainingInitialImages,
-        objectRemainingInitialImages,
-        pricesArray,
-        pathname,
-        initialData
-      })
-      toast.dismiss(loadingToast)
-      toast.success(
-        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('gratulation')}</strong>
-          <span>
-            {t('cardSuccess').split(' ')[0] +
-              (initialData?.id ? t('successUpdateCardEndText') : t('successCreateCardEndText'))}
-          </span>
-        </div>,
-        {
-          style: {
-            background: '#2E7D32'
+      try {
+        await submitFormCardData({
+          cardObjectForOthers,
+          companyDataForOthers,
+          faqMatrixForOthers,
+          similarProducts,
+          selectedCategory,
+          langFromPathname,
+          currentLangState,
+          cardTitle,
+          descriptions,
+          multyLangObjectForPrices,
+          uploadedFiles,
+          companyData,
+          remainingInitialImages,
+          objectRemainingInitialImages,
+          pricesArray,
+          pathname,
+          initialData
+        })
+        toast.dismiss(loadingToast)
+        toast.success(
+          <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('gratulation')}</strong>
+            <span>
+              {t('cardSuccess').split(' ')[0] +
+                (initialData?.id ? t('successUpdateCardEndText') : t('successCreateCardEndText'))}
+            </span>
+          </div>,
+          {
+            style: {
+              background: '#2E7D32'
+            }
           }
-        }
-      )
-    } catch (e) {
-      toast.dismiss(loadingToast)
-      toast.error(t('saveError'))
-    }
-  }
+        )
+      } catch (e) {
+        toast.dismiss(loadingToast)
+        toast.error(t('saveError'))
+      }
+    },
+    [
+      isFormValid,
+      cardObjectForOthers,
+      companyDataForOthers,
+      faqMatrixForOthers,
+      similarProducts,
+      selectedCategory,
+      langFromPathname,
+      currentLangState,
+      cardTitle,
+      descriptions,
+      multyLangObjectForPrices,
+      uploadedFiles,
+      companyData,
+      remainingInitialImages,
+      objectRemainingInitialImages,
+      pricesArray,
+      pathname,
+      initialData,
+      t
+    ]
+  )
+
   return (
     <>
       {/* Единое модальное окно для всех изображений подсказок */}

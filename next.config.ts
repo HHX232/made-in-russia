@@ -16,7 +16,8 @@ const nextConfig: NextConfig = {
       'youtu.be',
       'v.ftcdn.net',
       'plus.unsplash.com',
-      'res.cloudinary.com'
+      'res.cloudinary.com',
+      ' TEMP_URL'
     ]
   }
 }
