@@ -183,6 +183,7 @@ const Card = memo<ICardProps>(
         />
         {!!onPreventCardClick && (
           <div
+            id='cy-card'
             onClick={(e) => {
               e.stopPropagation()
               e.preventDefault()
@@ -226,7 +227,7 @@ const Card = memo<ICardProps>(
                 />
               </div>
 
-              <p className={`${styles.card__title} fontInstrument`} itemProp='name'>
+              <p id='cy-card-title' className={`${styles.card__title} fontInstrument`} itemProp='name'>
                 {title}
               </p>
 
@@ -299,6 +300,7 @@ const Card = memo<ICardProps>(
         )}
         {!onPreventCardClick && (
           <Link
+            id='cy-card'
             onClick={(e) => onClickFunction?.(e)}
             href={`/card/${id}`}
             key={id + idFromHook}
@@ -330,7 +332,7 @@ const Card = memo<ICardProps>(
                 />
               </div>
 
-              <p className={`${styles.card__title} fontInstrument`} itemProp='name'>
+              <p id='cy-card-title' className={`${styles.card__title} fontInstrument`} itemProp='name'>
                 {title}
               </p>
 

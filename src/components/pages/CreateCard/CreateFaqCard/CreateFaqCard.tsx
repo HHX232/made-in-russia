@@ -59,6 +59,7 @@ const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
         />
       </div>
       <RowsInputs
+        idNames={['cy-question', 'cy-answer']}
         inputsInRowCount={2}
         maxRows={15}
         initialRowsCount={5}

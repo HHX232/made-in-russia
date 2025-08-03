@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import {FC, useEffect, useRef, useState} from 'react'
+import {FC, useEffect, useId, useRef, useState} from 'react'
 import styles from './Header.module.scss'
 import Link from 'next/link'
 import createTelText from '@/utils/createTelText'
@@ -122,6 +122,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const categoryListRefDesktop = useRef<HTMLDivElement>(null)
   const fullHeaderRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
+  const id = useId()
   // ! Language
   const [activeLanguage, setActiveLanguage] = useState<Languages>(
     localeToLanguage[pathname.split('/')[1] as keyof typeof localeToLanguage]
@@ -454,6 +455,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                   />
 
                   <button
+                    id='cy-category-button'
                     onClick={() => {
                       // setCategoryListIsOpen((prev) => !prev)
                       handleToggleCategories()
@@ -496,7 +498,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                           {process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}
                         </Link>
                       </div>,
-                      <div key={Math.random()} className={styles.header__top_item}>
+                      <div key={id + 'telegram'} className={styles.header__top_item}>
                         <Link
                           className={styles.header__top_link}
                           href={telegramUrl}
@@ -514,7 +516,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                           {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
                         </Link>
                       </div>,
-                      <div key={Math.random()} className={styles.header__top_item}>
+                      <div key={id + 'telephone'} className={styles.header__top_item}>
                         <Link
                           className={styles.header__top_link}
                           href={telephoneUrl}
@@ -593,7 +595,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                               {process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}
                             </Link>
                           </div>,
-                          <div key={Math.random()} className={styles.header__top_item}>
+                          <div key={id + 'telegram second'} className={styles.header__top_item}>
                             <Link
                               className={styles.header__top_link}
                               href={telegramUrl}
@@ -611,7 +613,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                               {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
                             </Link>
                           </div>,
-                          <div key={Math.random()} className={styles.header__top_item}>
+                          <div key={id + 'telephone second'} className={styles.header__top_item}>
                             <Link
                               className={styles.header__top_link}
                               href={telephoneUrl}

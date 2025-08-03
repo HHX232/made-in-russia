@@ -120,9 +120,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   useEffect(() => {
     if (pageResponse) {
       if (pageParams.page === 0) {
-        setAllProducts(pageResponse.content)
+        // setAllProducts(pageResponse.content)
         // ! ИЗМЕНИЛИ ДЛЯ КАТЕГОРИЙ
-        // setAllProducts((prev) => [...prev, ...pageResponse.content])
+        setAllProducts((prev) => [...prev, ...pageResponse.content])
         setIsFiltersChanged(false) // Сбрасываем флаг изменения фильтров
       } else {
         // При подгрузке следующих страниц добавляем уникальные товары
@@ -169,7 +169,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   }
 
   return (
-    <div className={styled.cardsCatalog__box}>
+    <div id='cy-cards-catalog' className={styled.cardsCatalog__box}>
       {canCreateNewProduct && (
         <Link className={`${styled.cardsCatalog__create__link}`} href='/create-card'>
           <div className={`${styled.cardsCatalog__create}`}>
@@ -231,13 +231,13 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
       {showSkeleton && (
         <>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((_, i) => {
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((el, i) => {
             return (
               <>
                 <Card
                   isLoading={true}
                   key={`skeleton-${i}`}
-                  id={Math.random()}
+                  id={el}
                   title='Загрузка...'
                   price={0}
                   discount={0}

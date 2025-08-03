@@ -12,7 +12,11 @@ import Head from 'next/head'
 // Lazy loading слайдера
 const Slider = dynamic(() => import('react-slick').then((mod) => mod.default), {
   ssr: false,
-  loading: () => <div className={styles.slider__loading}>Загрузка...</div>
+  loading: () => (
+    <div style={{height: '100%'}} className={styles.slider__loading}>
+      Загрузка...
+    </div>
+  )
 })
 
 interface IPromoItem {

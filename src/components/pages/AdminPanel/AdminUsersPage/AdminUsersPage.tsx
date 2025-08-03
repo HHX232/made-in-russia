@@ -1,134 +1,187 @@
 'use client'
-import {FC, useState} from 'react'
+import {FC, useState, useRef, useEffect} from 'react'
 import styles from './AdminUsersPage.module.scss'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import {User} from '@/services/users.types'
-import Image from 'next/image'
 import Skeleton from 'react-loading-skeleton'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
+import instance from '@/api/api.interceptor'
+import useUsers from './useUsers'
+import UserRow from './components/UserRole'
 
-const trashImage = '/admin/trash.svg'
-const editImage = '/admin/edit.svg'
-const assets_avatar = '/avatars/avatar-v.svg'
-const MOCK_USERS: User[] = [
-  {
-    id: 1,
-    role: 'User',
-    email: 'user@example.com',
-    login: 'john_doe',
-    phoneNumber: '+79123456789',
-    region: 'Belarus',
-    registrationDate: '2025-05-04T09:17:20.767615Z',
-    lastModificationDate: '2025-05-04T09:17:20.767615Z',
-    avatar: '/avatars/avatar-v.svg'
-  },
-  {
-    id: 2,
-    role: 'User',
-    email: 'user@example.com',
-    login: 'john_doe',
-    phoneNumber: '+79123456789',
-    region: 'Russia',
-    registrationDate: '2025-05-04T09:17:20.767615Z',
-    lastModificationDate: '2025-05-04T09:17:20.767615Z',
-    avatar: '/avatars/avatar-v.svg'
-  },
-  {
-    id: 3,
-    role: 'User',
-    email: 'user@example.com',
-    login: 'john_doe',
-    phoneNumber: '+79123456789',
-    region: 'China',
-    registrationDate: '2025-05-04T09:17:20.767615Z',
-    lastModificationDate: '2025-05-04T09:17:20.767615Z',
-    avatar: '/avatars/avatar-v.svg'
-  }
-]
+// Опции для фильтров
+// const ROLE_OPTIONS = [
+//   {value: '', label: 'Все роли'},
+//   {value: 'user', label: 'Покупатели'},
+//   {value: 'admin', label: 'Админы'},
+//   {value: 'vendor', label: 'Продавцы'}
+// ]
 
-const UserRow: FC<{user: User}> = ({user}) => {
-  const [activeCountry, setActiveCountry] = useState(user.region)
-  const [activeRole, setActiveRole] = useState(user.role)
+const LoadMoreTrigger: FC<{onLoadMore: () => void; hasMore: boolean}> = ({onLoadMore, hasMore}) => {
+  const triggerRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(true)
+
+  useEffect(() => {
+    if (!hasMore) {
+      setIsVisible(false)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            console.log('Intersection Observer: Элемент попал в зону видимости (500px от низа экрана)')
+            onLoadMore()
+          }
+        })
+      },
+      {
+        rootMargin: '0px 0px 500px 0px', // 500px от низа экрана
+        threshold: 0.1
+      }
+    )
+
+    if (triggerRef.current) {
+      observer.observe(triggerRef.current)
+    }
+
+    return () => {
+      if (triggerRef.current) {
+        observer.unobserve(triggerRef.current)
+      }
+    }
+  }, [onLoadMore, hasMore])
+
+  if (!isVisible || !hasMore) return null
 
   return (
-    <div className={styles.user__row}>
-      <div className={`${styles.id__text}`}>{user.id}</div>
-      <div className={`${styles.login__box}`}>
-        <div
-          style={{backgroundImage: `url(${user.avatar ? user.avatar : assets_avatar})`}}
-          className={`${styles.avatar}`}
-        ></div>
-        <div className={`${styles.login__text}`}>{user.login}</div>
-      </div>
-      <div className={`${styles.email__text}`}>{user.email}</div>
-
-      {/* <div>{user.phoneNumber}</div> */}
-      <DropList
-        direction='bottom'
-        trigger='hover'
-        safeAreaEnabled
-        positionIsAbsolute={false}
-        title={activeCountry}
-        extraClass={styles.drop__list__extra__country}
-        items={[
-          <p onClick={() => setActiveCountry('Belarus')} key={1}>
-            Belarus
-          </p>,
-          <p onClick={() => setActiveCountry('Russia')} key={2}>
-            Russia
-          </p>,
-          <p onClick={() => setActiveCountry('China')} key={3}>
-            China
-          </p>
-        ]}
-      />
-      <DropList
-        direction='bottom'
-        trigger='hover'
-        safeAreaEnabled
-        positionIsAbsolute={false}
-        title={activeRole}
-        color='white'
-        extraStyle={{
-          backgroundColor: activeRole === 'User' ? '#2AD246' : activeRole === 'Admin' ? '#EFC81C' : '#C8313E'
-        }}
-        extraClass={styles.drop__list__extra__role}
-        items={[
-          <p className={styles.drop__list__extra__role__item} onClick={() => setActiveRole('User')} key={1}>
-            User
-          </p>,
-          <p className={styles.drop__list__extra__role__item} onClick={() => setActiveRole('Admin')} key={2}>
-            Admin
-          </p>,
-          <p className={styles.drop__list__extra__role__item} onClick={() => setActiveRole('Vendor')} key={3}>
-            Vendor
-          </p>
-        ]}
-      />
-      <div className={styles.user__edits}>
-        <div className={styles.deleat__button}>
-          <Image src={trashImage} alt='trash' width={15} height={17} />
-        </div>
-        <div className={styles.edit__button}>
-          <Image src={editImage} alt='edit' width={15} height={17} />
-        </div>
+    <div ref={triggerRef} className={styles.load__more__trigger}>
+      <div className={styles.load__more__content}>
+        <p className={styles.load__more__text}>Подгружаем больше пользователей...</p>
+        <button
+          className={styles.load__more__button}
+          onClick={() => {
+            console.log('Ручной дозапрос пользователей')
+            onLoadMore()
+          }}
+        >
+          Сделать дозапрос
+        </button>
       </div>
     </div>
   )
 }
+
 const AdminUsersPage: FC = () => {
   const allTitles = ['ID', 'Имя', 'Почта', 'Страна', 'Роль', 'Изменить']
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [usersLoading, setUsersLoading] = useState(false)
+
+  // Используем наш хук для управления пользователями
+  const {
+    users,
+    loading,
+    error,
+    filters,
+    totalElements,
+    hasNextPage,
+    loadMoreUsers,
+    setFilters,
+    clearFilters,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setSort,
+    refreshUsers
+  } = useUsers(instance, 10)
+
+  // Локальные состояния для поиска и фильтров
+  const [searchValue, setSearchValue] = useState('')
+  const [selectedRoleFilter, setSelectedRoleFilter] = useState('Без фильтров')
+
+  // Обработка поиска
+  const handleSearch = (value: string) => {
+    setSearchValue(value)
+    if (value.trim()) {
+      setFilters({login: value.trim()})
+    } else {
+      setFilters({login: undefined})
+    }
+  }
+
+  // Обработка фильтра по роли
+  const handleRoleFilter = (filterValue: string) => {
+    setSelectedRoleFilter(filterValue)
+
+    switch (filterValue) {
+      case 'Админы':
+        setFilters({role: 'admin'})
+        break
+      case 'Покупатели':
+        setFilters({role: 'user'})
+        break
+      case 'Продавцы':
+        setFilters({role: 'vendor'})
+        break
+      default:
+        setFilters({role: undefined})
+        break
+    }
+  }
+
+  // Обработка обновления пользователя
+  const handleUpdateUser = async (userId: number, updates: User) => {
+    try {
+      console.log(`Обновление пользователя ${userId}:`, updates)
+      await instance.put(`/user/${userId}`, {
+        email: updates.email,
+        region: updates.region,
+        login: updates.login,
+        phoneNumber: updates.phoneNumber
+      })
+      await refreshUsers()
+    } catch (err) {
+      console.error('Ошибка обновления пользователя:', err)
+    }
+  }
+
+  const handleUpdateRole = async (userId: number, newRole: User['role']) => {
+    try {
+      await instance.patch(`/user/${userId}/role`, {
+        role: newRole
+      })
+      await refreshUsers()
+    } catch {
+      console.error('ошибка при изменении роли пользователя')
+    }
+  }
+
+  // Обработка дозагрузки пользователей
+  const handleLoadMore = async () => {
+    try {
+      await loadMoreUsers()
+    } catch (err) {
+      console.error('Ошибка дозагрузки пользователей:', err)
+    }
+  }
+
   return (
     <div className={styles.admin__users__page}>
       <p className={styles.users__title}>Пользователи</p>
+
+      {/* Показываем ошибку если есть */}
+      {error && (
+        <div className={styles.error__message}>
+          Ошибка: {error}
+          <button onClick={refreshUsers} className={styles.retry__button}>
+            Повторить
+          </button>
+        </div>
+      )}
+
       <div className={styles.users__actions}>
         <TextInputUI
           extraClass={styles.search__user}
           placeholder='Имя...'
-          currentValue=''
-          onSetValue={() => {}}
+          currentValue={searchValue}
+          onSetValue={handleSearch}
           theme='superWhite'
         />
         <DropList
@@ -136,11 +189,19 @@ const AdminUsersPage: FC = () => {
           extraListClass={styles.extra__list__style}
           extraClass={styles.drop__list__extra}
           positionIsAbsolute
-          title='Без фильтров'
-          items={['Без фильтров', 'Админы', 'Покупатели', 'Продавцы']}
+          title={selectedRoleFilter}
+          items={['Без фильтров', 'Админы', 'Покупатели', 'Продавцы'].map((item) => (
+            <p onClick={() => handleRoleFilter(item)} key={item}>
+              {item}
+            </p>
+          ))}
         />
         <div className={styles.users__actions__create}>Создать</div>
+
+        {/* Информация о количестве пользователей */}
+        <div className={styles.users__count}>Найдено: {totalElements} пользователей</div>
       </div>
+
       <div className={styles.users__table}>
         <div className={styles.table__titles}>
           {allTitles.map((title) => (
@@ -148,11 +209,35 @@ const AdminUsersPage: FC = () => {
           ))}
         </div>
         <div className={styles.table__rows}>
-          {!usersLoading && MOCK_USERS.map((user) => <UserRow user={user} key={user.id} />)}
-          {usersLoading &&
+          {!loading &&
+            users.map((user) => (
+              <UserRow
+                user={user}
+                instance={instance}
+                key={user.id}
+                onUpdateRole={handleUpdateRole}
+                onUpdateUser={handleUpdateUser}
+              />
+            ))}
+
+          {!loading && users.length === 0 && (
+            <div className={styles.no__users}>
+              <p>Пользователи не найдены</p>
+              {Object.keys(filters).length > 0 && (
+                <button onClick={clearFilters} className={styles.clear__filters__button}>
+                  Очистить фильтры
+                </button>
+              )}
+            </div>
+          )}
+
+          {loading &&
             [1, 2, 3, 4, 5].map((i) => {
-              return <Skeleton className={styles.user__row__skeleton} key={i} width={'10vw'} height={80} />
+              return <Skeleton className={styles.user__row__skeleton} key={i} width={'100%'} height={80} />
             })}
+
+          {/* Intersection Observer триггер */}
+          {!loading && users.length > 0 && <LoadMoreTrigger onLoadMore={handleLoadMore} hasMore={hasNextPage} />}
         </div>
       </div>
     </div>

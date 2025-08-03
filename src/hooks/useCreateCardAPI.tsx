@@ -338,7 +338,7 @@ export const useCreateCardAPI = () => {
     } catch (error: any) {
       console.error('Ошибка при сохранении:', error)
       toast.error(
-        <div style={{lineHeight: 1.5}}>
+        <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
           <strong style={{display: 'block', marginBottom: 4}}>{t('saveError')}</strong>
           <span>{error.message || t('saveErrorText')}</span>
         </div>,

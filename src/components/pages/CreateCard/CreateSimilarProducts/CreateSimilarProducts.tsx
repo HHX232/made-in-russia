@@ -132,9 +132,10 @@ const CreateSimilarProducts: FC<CreateSimilarProductsProps> = ({
         />
       </ModalWindowDefault>
 
-      <ul className={`${styles.list__items}`}>
+      <ul id='cy-create-similar-products-list' className={`${styles.list__items}`}>
         {showPlusButton && (
           <li
+            id='cy-create-similar-products-plus-button'
             onClick={handleOpenCatalog}
             className={`${styles.cardsCatalog__create} ${disabled ? styles.disabled : ''}`}
           >

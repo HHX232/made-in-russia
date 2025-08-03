@@ -7,6 +7,7 @@ import instance, {axiosClassic} from '@/api/api.interceptor'
 import {useRouter} from 'next/navigation'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {useNProgress} from '@/hooks/useProgress'
 
 const ava = '/avatars/avatar-v.svg'
 const ava1 = '/avatars/avatar-v-1.svg'
@@ -45,8 +46,9 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   const router = useRouter()
   const t = useTranslations('HomePage')
   const currentLang = useCurrentLanguage()
+  const {start} = useNProgress()
   useEffect(() => {
-    setRandomAvatar(avatarsArray[Math.floor(Math.random() * avatarsArray.length)])
+    setRandomAvatar(avatarsArray[0])
   }, [])
 
   useEffect(() => {
@@ -135,7 +137,9 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
 
   return (
     <div
+      id='cy-profile-button'
       onClick={() => {
+        start()
         if (!userData?.login) {
           router.push('/login')
         } else {

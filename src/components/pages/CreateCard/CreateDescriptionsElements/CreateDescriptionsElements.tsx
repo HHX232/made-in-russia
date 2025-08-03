@@ -308,6 +308,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
           <div className={styles.editor__wrapper} onFocus={handleDescriptionFocus} onBlur={handleDescriptionBlur}>
             <MdEditor
               {...errorEditorConfig}
+              id='cy-editor-main-descr'
               value={descriptions[currentDynamicLang].description}
               onChange={(val) => {
                 setDescriptionOne({language: currentDynamicLang, description: val})
@@ -345,6 +346,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
             />
           </div>
           <MdEditor
+            id='cy-editor-add-descr'
             {...editorConfig}
             value={descriptions[currentDynamicLang].additionalDescription}
             onChange={(val) => {

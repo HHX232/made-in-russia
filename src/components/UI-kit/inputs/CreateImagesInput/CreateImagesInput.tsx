@@ -508,7 +508,7 @@ const ImageUploadItem = memo<{
 
           if (invalidFiles.length > 0) {
             toast.error(
-              <div style={{lineHeight: 1.5}}>
+              <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
                 <strong style={{display: 'block', marginBottom: 4}}>Ошибка загрузки данных</strong>
                 <span>Недопустимые типы файлов: {invalidFiles.join(', ')}</span>
               </div>,
@@ -524,7 +524,7 @@ const ImageUploadItem = memo<{
           if (oversizedFiles.length > 0) {
             const maxSizeMB = Math.round(maxFileSize / (1024 * 1024))
             toast.error(
-              <div style={{lineHeight: 1.5}}>
+              <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
                 <strong style={{display: 'block', marginBottom: 4}}>Ошибка загрузки данных</strong>
                 <span>
                   Превышен размер файлов (макс. {maxSizeMB} МБ): {oversizedFiles.join(', ')}
@@ -548,7 +548,7 @@ const ImageUploadItem = memo<{
 
         if (!isValidFileType(file)) {
           toast.error(
-            <div style={{lineHeight: 1.5}}>
+            <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
               <strong style={{display: 'block', marginBottom: 4}}>Ошибка загрузки данных</strong>
               <span>Пожалуйста, выберите изображение или видео (SVG не поддерживается)</span>
             </div>,
@@ -564,7 +564,7 @@ const ImageUploadItem = memo<{
         if (file.size > maxFileSize) {
           const maxSizeMB = Math.round(maxFileSize / (1024 * 1024))
           toast.error(
-            <div style={{lineHeight: 1.5}}>
+            <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
               <strong style={{display: 'block', marginBottom: 4}}>Ошибка загрузки данных</strong>
               <span>Размер файла не должен превышать {maxSizeMB} МБ</span>
             </div>,
@@ -603,6 +603,7 @@ const ImageUploadItem = memo<{
           isBig ? styles.create__images__input__label__big : ''
         } ${hasContent ? styles.has__file : ''}`}
         htmlFor={inputId}
+        id={`label-${inputId}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -773,7 +774,7 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
       // Если свободных слотов меньше чем файлов, предупреждаем пользователя
       if (freeSlots.length < fileArray.length) {
         toast.error(
-          <div style={{lineHeight: 1.5}}>
+          <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
             <strong style={{display: 'block', marginBottom: 4}}>Недостаточно свободных слотов</strong>
             <span>
               Доступно: {freeSlots.length}, выбрано файлов: {fileArray.length}

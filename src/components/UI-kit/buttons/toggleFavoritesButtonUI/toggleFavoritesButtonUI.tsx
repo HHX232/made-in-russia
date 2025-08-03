@@ -26,7 +26,9 @@ const ToggleFavoritesButtonUI: FC<ToggleFavoritesButtonUIProps> = ({
 
   return (
     <button
+      id='cy-toggle-favorites-button'
       className={`${styles.button} ${extraClass}`}
+      data-active={isActive}
       style={extraStyles}
       onClick={(e) => {
         e.preventDefault()

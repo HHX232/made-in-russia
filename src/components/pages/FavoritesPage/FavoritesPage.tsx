@@ -50,7 +50,7 @@ const FavoritesPage: FC = () => {
         className={`container ${styles.fav__box}`}
       >
         <h1 className={styles.fav__title}>{t('title')}</h1>
-        <div className={styles.fav__cards}>
+        <div id='cy-favorites-cards-catalog' className={styles.fav__cards}>
           {freshProducts.length != 0 &&
             freshProducts.map((product) => (
               <Card

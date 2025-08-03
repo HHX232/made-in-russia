@@ -34,7 +34,11 @@ const ModalWindowDefault: FC<IModalWindowDefaultProps> = ({children, isOpen, onC
     <div className={`${styles.modal__window__default__back} ${extraClass}`} onClick={onBackClick}>
       <div className={`${styles.modal__inner}`} onClick={(e) => e.stopPropagation()}>
         <div className={`${styles.modal__header}`}>
-          <button className={`${styles.modal__header__close__button}`} onClick={(e) => onClose(e)}>
+          <button
+            id='cy-modal-window-default-close-button'
+            className={`${styles.modal__header__close__button}`}
+            onClick={(e) => onClose(e)}
+          >
             <svg
               className={`${styles.modal__header__close__button__svg}`}
               width='24'

@@ -240,7 +240,7 @@ const CategoryPage = ({
       <div className='container'>
         <div className={styles.category__inner}>
           {level < 4 && (
-            <h1 className={styles.category__title__main}>
+            <h1 id='cy-category-page-title' className={styles.category__title__main}>
               {categoryTitleName
                 ? categoryTitleName.slice(0, 1).toUpperCase() +
                   categoryTitleName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')

@@ -59,10 +59,9 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     setCompanyDataForOthers,
     setFaqMatrixForOthers
   } = useCreateCardForm(initialData)
-  // const [productCategoryes, setProductCategoryes] = useState<string[]>([])
+
   const [similarProducts, setSimilarProducts] = useState(new Set<Product>())
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(initialData?.category || null)
-  // const [selectedDeliveryMethodIds, setSelectedDeliveryMethodIds] = useState<number[]>([1]) // Временные значения
 
   const t = useTranslations('createCard')
   // Language start ===========
@@ -81,7 +80,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const {descriptions}: {descriptions: any} = useTypedSelector((state) => state.multilingualDescriptions)
   const {ru, en, zh} = useTypedSelector((state) => state.multiLanguageCardPriceData)
-  const multyLangObjectForPrices = {ru, en, zh}
+  const multyLangObjectForPrices = useMemo(() => ({ru, en, zh}), [ru, en, zh])
   const {setDescriptions, setCharacteristics, setDelivery, setPackaging, updatePriceInfo} = useActions()
 
   useEffect(() => {
@@ -200,8 +199,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       []
   )
 
-  // Состояние для FAQ (CreateFaqCard)
-
   const getFaqMatrixForLang = useCallback((): string[][] => {
     return faqMatrixForOthers[currentLangState]
   }, [currentLangState, faqMatrixForOthers])
@@ -222,9 +219,9 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     faqMatrix: ''
   })
 
-  // Обновляем валидацию при изменении полей
-  const {validationErrors, isFormValid} = useFormValidation(
-    {
+  // ОПТИМИЗИРОВАННАЯ ВАЛИДАЦИЯ - создаем объект формы только при необходимости
+  const createFormState = useCallback(
+    () => ({
       isValidForm: isValidForm,
       submitAttempted: true,
       similarProducts: similarProducts,
@@ -245,28 +242,40 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       faqMatrix: faqMatrixForOthers[currentLangState || 'en'] || [],
       errors: errors,
       selectedDeliveryMethodIds: [1]
-    },
-    () => {
-      return descriptions[currentLangState]?.description
-    },
-    t
+    }),
+    [
+      isValidForm,
+      similarProducts,
+      selectedCategory,
+      multyLangObjectForPrices,
+      currentLangState,
+      cardTitle,
+      uploadedFiles,
+      cardObjectForOthers,
+      remainingInitialImages,
+      objectRemainingInitialImages,
+      pricesArray,
+      descriptionImages,
+      characteristics,
+      companyData,
+      companyDataImages,
+      faqMatrixForOthers,
+      errors
+    ]
   )
 
-  useEffect(() => {
-    setIsValidForm(isFormValid)
-    // Обновляем ошибки только если они изменились
-    setErrors((prev) => {
-      const hasChanges = Object.keys(validationErrors).some(
-        (key) => prev[key as keyof ValidationErrors] !== validationErrors[key as keyof ValidationErrors]
-      )
-      return hasChanges ? validationErrors : prev
-    })
-  }, [isFormValid, validationErrors])
+  // Инициализируем хук валидации
+  const {validateAllFields, validateSingleField} = useFormValidation(
+    createFormState(),
+    () => descriptions[currentLangState]?.description,
+    t
+  )
 
   const handleUploadedFilesChange = useCallback(
     (files: File[]) => {
       setTimeout(() => {
         setUploadedFiles(files)
+        // Валидируем только поле изображений при его изменении
         if (errors.uploadedFiles && files.length + remainingInitialImages.length >= 3) {
           setErrors((prev) => ({...prev, uploadedFiles: ''}))
         }
@@ -274,31 +283,38 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     },
     [errors.uploadedFiles, remainingInitialImages.length]
   )
+
   // Обработчик для обновления оставшихся начальных изображений
-  const handleActiveImagesChange = (remainingUrls: string[]) => {
+  const handleActiveImagesChange = useCallback((remainingUrls: string[]) => {
     setRemainingInitialImages(remainingUrls)
-  }
+  }, [])
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handlePricesArrayChange = (prices: any[]) => {
-    setPricesArray(prices)
-    if (errors.pricesArray) {
-      setErrors((prev) => ({...prev, pricesArray: ''}))
-    }
-  }
+  const handlePricesArrayChange = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (prices: any[]) => {
+      setPricesArray(prices)
+      if (errors.pricesArray) {
+        setErrors((prev) => ({...prev, pricesArray: ''}))
+      }
+    },
+    [errors.pricesArray]
+  )
 
-  const handleDescriptionImagesChange = (images: ImageMapping[]) => {
+  const handleDescriptionImagesChange = useCallback((images: ImageMapping[]) => {
     setTimeout(() => {
       setDescriptionImages(images)
     }, 0)
-  }
+  }, [])
 
-  const handleCompanyDataChange = (data: CompanyDescriptionData) => {
-    setCompanyData(data)
-    if (errors.companyData) {
-      setErrors((prev) => ({...prev, companyData: ''}))
-    }
-  }
+  const handleCompanyDataChange = useCallback(
+    (data: CompanyDescriptionData) => {
+      setCompanyData(data)
+      if (errors.companyData) {
+        setErrors((prev) => ({...prev, companyData: ''}))
+      }
+    },
+    [errors.companyData]
+  )
 
   useEffect(() => {
     // Синхронизируем cardTitle с текущим языком
@@ -319,14 +335,44 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
         title: value
       }
       setCardObjectForOthers(updatedCardTitleForOthers)
+
+      // Очищаем ошибку заголовка при изменении (быстрая валидация)
+      if (errors.cardTitle && value.trim().length > 0) {
+        setErrors((prev) => ({...prev, cardTitle: ''}))
+      }
     },
-    [cardObjectForOthers, currentLangState]
+    [cardObjectForOthers, currentLangState, errors.cardTitle]
   )
 
   const handleNewSave = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault()
-      if (!isFormValid) return
+
+      // Выполняем полную валидацию при сабмите
+      const {validationErrors, isFormValid: isValid} = validateAllFields()
+      setErrors(validationErrors)
+      setIsValidForm(isValid)
+
+      // Показываем ошибки пользователю
+      if (!isValid) {
+        Object.entries(validationErrors).forEach(([key, value]) => {
+          if (value) {
+            toast.error(
+              <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
+                <strong style={{display: 'block', marginBottom: 4}}>{t('error')}</strong>
+                <span>{value}</span>
+              </div>,
+              {
+                style: {
+                  background: '#AC2525'
+                }
+              }
+            )
+          }
+        })
+        return
+      }
+
       const loadingToast = toast.loading('Сохранение карточки...')
 
       try {
@@ -366,11 +412,21 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
         )
       } catch (e) {
         toast.dismiss(loadingToast)
-        toast.error(t('saveError'))
+
+        toast.error(
+          <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
+            <strong style={{display: 'block', marginBottom: 4}}>{t('saveError')}</strong>
+          </div>,
+          {
+            style: {
+              background: '#AC2525'
+            }
+          }
+        )
       }
     },
     [
-      isFormValid,
+      validateAllFields,
       cardObjectForOthers,
       companyDataForOthers,
       faqMatrixForOthers,
@@ -419,6 +475,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             </p>
             <div className={`${styles.language__buttons}`}>
               <button
+                id='cy-language-button--switch-ru'
+                data-active={currentLangState === 'ru'}
                 type='button'
                 className={`${styles.language__button} ${currentLangState === 'ru' ? styles.language__button__active : ''}`}
                 onClick={() => setCurrentLangState('ru')}
@@ -426,6 +484,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 RU
               </button>
               <button
+                id='cy-language-button--switch-en'
+                data-active={currentLangState === 'en'}
                 type='button'
                 className={`${styles.language__button} ${currentLangState === 'en' ? styles.language__button__active : ''}`}
                 onClick={() => setCurrentLangState('en')}
@@ -433,6 +493,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 EN
               </button>
               <button
+                id='cy-language-button--switch-zh'
+                data-active={currentLangState === 'zh'}
                 type='button'
                 className={`${styles.language__button} ${currentLangState === 'zh' ? styles.language__button__active : ''}`}
                 onClick={() => setCurrentLangState('zh')}
@@ -473,7 +535,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               <TextInputUI
                 errorValue={errors.cardTitle}
                 extraClass={`${styles.create__input__title}`}
-                idForLabel='title'
+                idForLabel='cy-title-create-input'
                 placeholder={t('name')}
                 currentValue={getValueForLang(cardTitle, 'title')}
                 onSetValue={handleTitleChange}
@@ -618,18 +680,20 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             )}
             <div className={`${styles.button__box}`}>
               <button
+                id='cy-submit-create-button'
                 style={{
-                  opacity: !isFormValid ? 0.7 : 1,
-                  cursor: !isFormValid ? 'not-allowed' : 'pointer'
+                  opacity: !isValidForm ? 0.7 : 1,
+                  cursor: !isValidForm ? 'not-allowed' : 'pointer'
                 }}
                 className={`${styles.create____submit__button}`}
                 type='submit'
                 // disabled={!isFormValid}
                 onClick={() => {
+                  validateAllFields()
                   Object.entries(errors).forEach(([key, value]) => {
                     if (value) {
                       toast.error(
-                        <div style={{lineHeight: 1.5}}>
+                        <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
                           <strong style={{display: 'block', marginBottom: 4}}>{t('error')}</strong>
                           <span>{value}</span>
                         </div>,

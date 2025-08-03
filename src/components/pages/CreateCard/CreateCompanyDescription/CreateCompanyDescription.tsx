@@ -189,6 +189,7 @@ const CreateCompanyDescription: FC<CreateCompanyDescriptionProps> = ({
       <div className={`${styles.create__inner}`}>
         <div className={`${styles.inner__title}`}>{t('infoAboutCompany')}</div>
         <TextAreaUI
+          idForLabel='cy-top-company-descr'
           extraClass={`${styles.inner__title__input__extra__big}`}
           currentValue={data.topDescription}
           placeholder={t('infoAboutCompanyPlaceholder')}
@@ -207,6 +208,7 @@ const CreateCompanyDescription: FC<CreateCompanyDescriptionProps> = ({
                 inputIdPrefix={`company-image-${index}`}
               />
               <TextInputUI
+                idForLabel={`cy-descr-company-image-${index}`}
                 extraClass={`${styles.company__images__element__title__extra}`}
                 currentValue={item.description}
                 placeholder={t('descriptionPlaceholder')}
@@ -217,6 +219,7 @@ const CreateCompanyDescription: FC<CreateCompanyDescriptionProps> = ({
           ))}
         </ul>
         <TextAreaUI
+          idForLabel='cy-bottom-company-descr'
           extraClass={`${styles.inner__title__input__extra__big}`}
           currentValue={data.bottomDescription}
           placeholder={t('infoAboutCompanyPlaceholder')}

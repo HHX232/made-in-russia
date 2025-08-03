@@ -24,6 +24,7 @@ interface RowsInputsProps {
   titles: string[]
   initialRowsCount?: number
   inputsInRowCount?: number
+  idNames?: string[]
   maxRows?: number
   rowsInitialValues?: string[][] // Новый prop для инициализации значений
   onSetValue: (rowIndex: number, inputIndex: number, value: string) => void
@@ -45,6 +46,7 @@ interface SortableRowProps {
   row: string[]
   titles: string[]
   inputsInRowCount: number
+  idNames?: string[]
   extraClass?: string
   isLastRow: boolean
   canRemove: boolean
@@ -64,6 +66,7 @@ const SortableRow = ({
   extraClass,
   isLastRow,
   canRemove,
+  idNames,
   onUpdateValue,
   onRemoveRow,
   extraButtonMinusClass,
@@ -79,7 +82,7 @@ const SortableRow = ({
   }
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div id={`cy-row-${idNames?.[0]}-${rowIndex}`} ref={setNodeRef} style={style}>
       <div
         className={`${styles.rows__inputs__box} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''}`}
       >
@@ -99,6 +102,10 @@ const SortableRow = ({
             <TextInputUI
               inputType={inputType?.[inputIndex] || 'text'}
               key={inputIndex}
+              idForLabel={
+                `cy-create-card-row-input-${idNames?.[inputIndex]}` ||
+                `cy-create-card-row-input-${inputIndex}-${inputType?.[inputIndex]}`
+              }
               theme='lightBlue'
               placeholder={titles[inputIndex] || 'Введите значение'}
               currentValue={value}
@@ -110,6 +117,7 @@ const SortableRow = ({
         <button
           className={`${styles.rows__inputs__remove} ${extraButtonMinusClass}`}
           onClick={() => onRemoveRow(rowIndex)}
+          id={`cy-create-card-row-remove-${rowIndex}`}
           type='button'
           aria-label='Удалить строку'
           disabled={!canRemove}
@@ -138,7 +146,8 @@ const RowsInputs = ({
   minFilledRows = 0,
   inputType,
   controlled = false,
-  externalValues
+  externalValues,
+  idNames
 }: RowsInputsProps) => {
   const [rows, setRows] = useState<string[][]>(() => {
     if (rowsInitialValues && rowsInitialValues.length > 0) {
@@ -364,6 +373,7 @@ const RowsInputs = ({
                   inputType={inputType}
                   id={rowIds[rowIndex]}
                   rowIndex={rowIndex}
+                  idNames={idNames}
                   row={row}
                   titles={titles}
                   inputsInRowCount={inputsInRowCount}
@@ -382,6 +392,7 @@ const RowsInputs = ({
         {/* Кнопка добавления новой строки */}
         {currentRows.length < maxRows && (
           <button
+            id={`cy-create-card-row-plus-button-${idNames?.[0] || 'default'}`}
             className={`${styles.rows__inputs__add} ${extraButtonPlusClass}`}
             onClick={addRow}
             type='button'

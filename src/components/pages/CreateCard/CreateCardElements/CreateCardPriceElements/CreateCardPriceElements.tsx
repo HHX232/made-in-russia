@@ -18,15 +18,6 @@ import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCard
 
 const vopros = '/vopros.svg'
 
-interface PriceData {
-  quantity: string
-  priceWithoutDiscount: string
-  priceWithDiscount: string
-  currency: string
-  value?: number
-  unit?: string
-}
-
 type TInputType = 'text' | 'number' | 'password'
 
 interface CreateCardPriceElementsProps {
@@ -325,6 +316,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               maxRows={5}
               inputType={inputType}
               initialRowsCount={3}
+              idNames={['elementCount', 'originalPrice', 'priceWithDiscount', 'currency', 'unit']}
               titles={[t('elementCount'), t('originalPrice'), t('priceWithDiscount'), t('currency'), t('unit')]}
               rowsInitialValues={pricesMatrix}
               onSetValue={handlePriceSetValue}
@@ -382,6 +374,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 styles.rows__inputs__box__inner__description__extra
               ]}
               initialRowsCount={5}
+              idNames={['title-characteristic', 'characteristic-characteristic']}
               titles={[t('title'), t('characteristic')]}
               rowsInitialValues={characteristicsMatrix}
               onSetValue={handleCharacteristicSetValue}
@@ -421,6 +414,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               <div className={styles.seller__date__box__inner__date}>
                 <p className={styles.seller__date__box__inner__date__text}>{t('daysCountBeforeSale')}</p>
                 <TextInputUI
+                  idForLabel='cy-daysBeforeSale'
                   inputType='number'
                   currentValue={currentData.priceInfo.daysBeforeSale}
                   onSetValue={handleSaleDateChange}
@@ -432,6 +426,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               <div className={styles.seller__date__box__inner__date}>
                 <p className={styles.seller__date__box__inner__date__text}>{t('minimalVolumeTitle')}</p>
                 <TextInputUI
+                  idForLabel='cy-minimalVolume'
                   inputType='number'
                   currentValue={currentData.priceInfo.minimalVolume}
                   onSetValue={handleMinVolumeChange}
@@ -480,6 +475,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               ]}
               initialRowsCount={2}
               maxRows={5}
+              idNames={['title-delivery', 'daysDelivery-delivery']}
               rowsInitialValues={deliveryMatrix}
               onSetValue={handleDeliverySetValue}
               onRowsChange={handleDeliveryRowsChange}
@@ -513,6 +509,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             </div>
             <RowsInputs
               key={`packaging-${packagingKey}`}
+              idNames={['title-packaging', 'price-packaging']}
               inputType={['text', 'number']}
               extraButtonMinusClass={styles.minus__extra}
               extraClasses={[

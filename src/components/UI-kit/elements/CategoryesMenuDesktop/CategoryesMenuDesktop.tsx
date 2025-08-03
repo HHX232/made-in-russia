@@ -299,7 +299,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
 
   return (
     <div className={`${styles.menu__box}`}>
-      <ul className={`${styles.titles__box}`}>
+      <ul id='cy-category-list-box' className={`${styles.titles__box}`}>
         {categories?.map((el) => {
           return (
             <li
@@ -308,6 +308,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
               key={el.id}
             >
               <Link
+                id='cy-category-list-item-title'
                 href={`/categories/${el.slug}`}
                 style={{width: '100%'}}
                 onClick={() => {
@@ -329,7 +330,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
           <Link href={`/categories/${activeSlug}`}>
             <div className={`${styles.subtitles__title}`}>{activeCategory}</div>
           </Link>
-          <ul className={`${styles.subtitles__box}`}>
+          <ul id='cy-subcategory-list-box' className={`${styles.subtitles__box}`}>
             {categories
               ?.filter((el) => el.name === activeCategory)
               ?.map((el) => {
@@ -339,7 +340,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                     .sort((a, b) => a.name.length - b.name.length)
                     .map((child) => {
                       return (
-                        <li key={child.id}>
+                        <li id='cy-subcategory-list-item' key={child.id}>
                           <ValuesItem key={child.id} {...child} parentPath={el.slug} />
                         </li>
                       )

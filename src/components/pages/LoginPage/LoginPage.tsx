@@ -152,6 +152,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                   <>
                     {' '}
                     <TextInputUI
+                      idForLabel='cy-email-input'
                       extraClass={` ${styles.inputs__text_extra} ${name.length !== 0 && name.length < 3 && styles.extra__name__class} ${error && styles.extra__name__class}`}
                       isSecret={false}
                       onSetValue={handleNameChange}
@@ -160,6 +161,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                       title={<p className={`${styles.input__title}`}>{t('loginAccount')}</p>}
                     />
                     <TextInputUI
+                      idForLabel='cy-password-input'
                       extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2} ${error && styles.extra__name__class}`}
                       isSecret={true}
                       onSetValue={setPasswordState}
@@ -168,7 +170,12 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                       placeholder={t('writePassword')}
                       title={<p className={`${styles.input__title}`}>{t('loginPassword')}</p>}
                     />
-                    <button onClick={(e: any) => onSubmit(e)} className={`${styles.form__button}`} disabled={isLoading}>
+                    <button
+                      id='cy-login-button'
+                      onClick={(e: any) => onSubmit(e)}
+                      className={`${styles.form__button}`}
+                      disabled={isLoading}
+                    >
                       {isLoading ? t('loading') : t('loginButton')}
                     </button>
                     <Link className={`${styles.form__button_register}`} href='/register'>

@@ -117,6 +117,7 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
         <div className={styles.cat__searchWrapper}>
           <input
             type='text'
+            id='cy-create-card-product-category-search'
             placeholder={t('foundCategoryProcessing')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -126,14 +127,19 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
 
           {isDropdownOpen && (
             <>
-              <div className={styles.cat__backdrop} onClick={() => setIsDropdownOpen(false)} />
-              <div className={styles.cat__dropdown}>
+              <div
+                id='cy-create-card-product-category-backdrop-to-open'
+                className={styles.cat__backdrop}
+                onClick={() => setIsDropdownOpen(false)}
+              />
+              <div id='cy-create-card-product-category-dropdown' className={styles.cat__dropdown}>
                 {filteredCategories.length === 0 ? (
                   <div className={styles.cat__noResults}>{t('categoryNotFound')}</div>
                 ) : (
                   <div className={styles.cat__dropdownList}>
                     {filteredCategories.map((category) => (
                       <button
+                        id='cy-create-card-product-category-dropdown-item-add'
                         key={category.id}
                         type='button'
                         onClick={() => handleSelectCategory(category)}
