@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import {User} from '@/services/users.types'
-import {FC, useState} from 'react'
+import {FC, useState, useEffect} from 'react'
 import styles from '../AdminUsersPage.module.scss'
 import Image from 'next/image'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
+import CategoriesService from '@/services/categoryes/categoryes.service'
 
-const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'USA', 'Germany', 'France']
+const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'Kazakhstan']
 const trashImage = '/admin/trash.svg'
 const editImage = '/admin/edit.svg'
 const assets_avatar = '/avatars/avatar-v.svg'
@@ -18,6 +20,20 @@ type UserEditData = {
   phoneNumber: string
   region: string
   role: User['role']
+  // Дополнительные поля для вендора
+  inn?: string
+  countries?: string[]
+  productCategories?: string[]
+}
+
+export interface Category {
+  id: number
+  slug: string
+  name: string
+  imageUrl?: string
+  children: Category[]
+  creationDate: string
+  lastModificationDate: string
 }
 
 const UserRow: FC<{
@@ -27,7 +43,7 @@ const UserRow: FC<{
   onDeleteUser?: (userId: number) => void
   onBanUser?: (userId: number) => void
   onUnbanUser?: (userId: number) => void
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   instance?: any // API instance для запросов
 }> = ({user, onUpdateUser, onUpdateRole, onDeleteUser, onBanUser, onUnbanUser, instance}) => {
   const [activeCountry, setActiveCountry] = useState(user.region)
@@ -39,9 +55,31 @@ const UserRow: FC<{
     email: '',
     phoneNumber: '',
     region: '',
-    role: 'User'
+    role: 'User',
+    inn: '',
+    countries: [],
+    productCategories: []
   })
   const [activeImages, setActiveImages] = useState<string[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCountries, setSelectedCountries] = useState<string[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+
+  // Загрузка категорий при открытии редактирования вендора
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (editData.role === 'Vendor' && categories.length === 0) {
+        try {
+          const categoriesRussian = await CategoriesService.getAll('ru')
+          setCategories(categoriesRussian)
+        } catch (error) {
+          console.error('Ошибка загрузки категорий:', error)
+        }
+      }
+    }
+
+    fetchCategories()
+  }, [editData.role, categories.length])
 
   const handleCountryChange = (newCountry: string) => {
     setActiveCountry(newCountry)
@@ -77,16 +115,53 @@ const UserRow: FC<{
 
     try {
       setIsLoading(true)
-      const response = await instance.get(`/user/${user.id}`)
-      const userData = response.data
 
-      setEditData({
-        login: userData.login || '',
-        email: userData.email || '',
-        phoneNumber: userData.phoneNumber || '',
-        region: userData.region || '',
-        role: userData.role || 'User'
-      })
+      let userData
+
+      // Для вендора делаем запрос на специальный эндпоинт
+      if (user.role === 'Vendor') {
+        const response = await instance.get(`/vendor/${user.id}`)
+        userData = response.data
+
+        // Парсим данные вендора
+        const vendorDetails = userData.vendorDetails || {}
+        const countries = vendorDetails.countries || []
+        const productCategories = vendorDetails.productCategories || []
+
+        setEditData({
+          login: userData.login || '',
+          email: userData.email || '',
+          phoneNumber: userData.phoneNumber || '',
+          region: '',
+          role: 'Vendor',
+          inn: vendorDetails.inn || '',
+          countries: countries.map((country: any) => country.name),
+          productCategories: productCategories.map((category: any) => category.id.toString())
+        })
+
+        // Устанавливаем выбранные страны и категории
+        setSelectedCountries(countries.map((country: any) => country.name))
+        setSelectedCategories(productCategories.map((category: any) => category.id.toString()))
+      } else {
+        // Для обычного пользователя
+        const response = await instance.get(`/user/${user.id}`)
+        userData = response.data
+
+        setEditData({
+          login: userData.login || '',
+          email: userData.email || '',
+          phoneNumber: userData.phoneNumber || '',
+          region: userData.region || '',
+          role: userData.role || 'User',
+          inn: '',
+          countries: [],
+          productCategories: []
+        })
+
+        setSelectedCountries([])
+        setSelectedCategories([])
+      }
+
       setIsEditModalOpen(true)
     } catch (error) {
       console.error('Ошибка при получении данных пользователя:', error)
@@ -96,20 +171,51 @@ const UserRow: FC<{
     }
   }
 
-  const handleSaveChanges = () => {
-    const updatedUser: User = {
-      ...user,
-      login: editData.login,
-      email: editData.email,
-      phoneNumber: editData.phoneNumber,
-      region: editData.region,
-      role: editData.role
-    }
+  const handleSaveChanges = async () => {
+    if (!instance) return
 
-    onUpdateUser?.(user.id, updatedUser)
-    setActiveCountry(editData.region)
-    setActiveRole(editData.role)
-    setIsEditModalOpen(false)
+    try {
+      setIsLoading(true)
+
+      if (editData.role === 'Vendor') {
+        // Обновление вендора - отправляем ID категорий как числа
+        await instance.put(`/vendor/${user.id}`, {
+          email: editData.email,
+          login: editData.login,
+          phoneNumber: editData.phoneNumber,
+          inn: editData.inn,
+          countries: selectedCountries,
+          productCategories: selectedCategories.map((id) => parseInt(id)) // Преобразуем в числа
+        })
+      } else {
+        // Обновление обычного пользователя
+        await instance.put(`/user/${user.id}`, {
+          email: editData.email,
+          region: editData.region,
+          login: editData.login,
+          phoneNumber: editData.phoneNumber
+        })
+      }
+
+      const updatedUser: User = {
+        ...user,
+        login: editData.login,
+        email: editData.email,
+        phoneNumber: editData.phoneNumber,
+        region: editData.region,
+        role: editData.role
+      }
+
+      onUpdateUser?.(user.id, updatedUser)
+      setActiveCountry(editData.region)
+      setActiveRole(editData.role)
+      setIsEditModalOpen(false)
+    } catch (error) {
+      console.error('Ошибка при сохранении изменений:', error)
+      alert('Произошла ошибка при сохранении изменений')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleBanToggle = async () => {
@@ -134,6 +240,16 @@ const UserRow: FC<{
     }
   }
 
+  const toggleCountrySelection = (country: string) => {
+    setSelectedCountries((prev) => (prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]))
+  }
+
+  const toggleCategorySelection = (categoryId: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId) ? prev.filter((c) => c !== categoryId) : [...prev, categoryId]
+    )
+  }
+
   const isBanned = !user.isEnabled
 
   return (
@@ -143,7 +259,6 @@ const UserRow: FC<{
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
       >
-        {/* <div className={styles.modal__content}> */}
         <h3 className={styles.modal__title}>Редактирование пользователя</h3>
 
         <div className={styles.modal__avatar__section}>
@@ -184,50 +299,102 @@ const UserRow: FC<{
             extraClass={styles.form__input}
           />
 
-          {/* <div className={styles.modal__dropdowns}>
-              <DropList
-                direction='bottom'
-                trigger='hover'
-                safeAreaEnabled
-                positionIsAbsolute={false}
-                title={editData.region}
-                extraClass={styles.modal__dropdown}
-                items={REGION_OPTIONS.map((region) => (
-                  <p onClick={() => setEditData((prev) => ({...prev, region}))} key={region}>
-                    {region}
-                  </p>
-                ))}
+          {/* Поля для обычных пользователей */}
+          {editData.role !== 'Vendor' && (
+            <DropList
+              direction='right'
+              trigger='click'
+              safeAreaEnabled
+              positionIsAbsolute={true}
+              title={editData.region || 'Выберите регион'}
+              extraClass={styles.modal__dropdown}
+              items={REGION_OPTIONS.map((region) => (
+                <p onClick={() => setEditData((prev) => ({...prev, region}))} key={region}>
+                  {region}
+                </p>
+              ))}
+            />
+          )}
+
+          {/* Дополнительные поля для вендора */}
+          {editData.role === 'Vendor' && (
+            <>
+              <TextInputUI
+                placeholder='ИНН'
+                currentValue={editData.inn || ''}
+                onSetValue={(value) => setEditData((prev) => ({...prev, inn: value}))}
+                theme='superWhite'
+                extraClass={styles.form__input}
               />
 
-              <DropList
-                direction='bottom'
-                trigger='hover'
-                safeAreaEnabled
-                positionIsAbsolute={false}
-                title={editData.role}
-                color='white'
-                extraStyle={{
-                  backgroundColor:
-                    editData.role.toLowerCase() === 'user'
-                      ? '#1FC13A'
-                      : editData.role.toLowerCase() === 'admin'
-                        ? '#ECC414'
-                        : '#C8313E'
-                }}
-                extraClass={styles.modal__dropdown}
-                items={[
-                  <p onClick={() => setEditData((prev) => ({...prev, role: 'User'}))} key={1}>
-                    User
-                  </p>,
-                  <p onClick={() => setEditData((prev) => ({...prev, role: 'Admin'}))} key={2}>
-                    Admin
-                  </p>,
-                  <p onClick={() => setEditData((prev) => ({...prev, role: 'Vendor'}))} key={3}>
-                    Vendor
-                  </p>
-                ]}
-              />
-            </div> */}
+              {/* Выбор стран */}
+              <div className={styles.multi__select__section}>
+                <h4>Страны работы:</h4>
+                <div className={styles.multi__select__grid}>
+                  {REGION_OPTIONS.map((country) => (
+                    <label key={country} className={styles.checkbox__item}>
+                      <input
+                        type='checkbox'
+                        checked={selectedCountries.includes(country)}
+                        onChange={() => toggleCountrySelection(country)}
+                      />
+                      <span>{country}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Выбор категорий */}
+              {categories.length > 0 && (
+                <div className={styles.multi__select__section}>
+                  <h4>Категории товаров:</h4>
+                  <div className={styles.multi__select__grid}>
+                    {categories.map((category) => (
+                      <label key={category.id} className={styles.checkbox__item}>
+                        <input
+                          type='checkbox'
+                          checked={selectedCategories.includes(category.id.toString())}
+                          onChange={() => toggleCategorySelection(category.id.toString())}
+                        />
+                        <span>{category.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          <div className={styles.modal__dropdowns}>
+            <DropList
+              direction='right'
+              trigger='click'
+              safeAreaEnabled
+              positionIsAbsolute={true}
+              title={editData.role}
+              color='white'
+              extraStyle={{
+                backgroundColor:
+                  editData.role.toLowerCase() === 'user'
+                    ? '#1FC13A'
+                    : editData.role.toLowerCase() === 'admin'
+                      ? '#ECC414'
+                      : '#C8313E'
+              }}
+              extraClass={styles.modal__dropdown}
+              items={[
+                <p onClick={() => setEditData((prev) => ({...prev, role: 'User'}))} key={1}>
+                  User
+                </p>,
+                <p onClick={() => setEditData((prev) => ({...prev, role: 'Admin'}))} key={2}>
+                  Admin
+                </p>,
+                <p onClick={() => setEditData((prev) => ({...prev, role: 'Vendor'}))} key={3}>
+                  Vendor
+                </p>
+              ]}
+            />
+          </div>
 
           <div className={styles.modal__actions}>
             <button
@@ -252,12 +419,11 @@ const UserRow: FC<{
                 onClick={handleSaveChanges}
                 disabled={isLoading}
               >
-                Сохранить
+                {isLoading ? 'Сохранение...' : 'Сохранить'}
               </button>
             </div>
           </div>
         </div>
-        {/* </div> */}
       </ModalWindowDefault>
 
       <div className={`${styles.id__text}`}>{user.id}</div>
@@ -266,7 +432,9 @@ const UserRow: FC<{
           style={{backgroundImage: `url(${user.avatar ? user.avatar : assets_avatar})`}}
           className={`${styles.avatar}`}
         ></div>
-        <div className={`${styles.login__text}`}>{user.login}</div>
+        <div style={{color: isBanned ? '#C8313E' : '#000'}} className={`${styles.login__text}`}>
+          {isBanned ? 'BAN' : ''} {user.login}
+        </div>
       </div>
       <div className={`${styles.email__text}`}>{user.email}</div>
 
@@ -276,6 +444,7 @@ const UserRow: FC<{
         safeAreaEnabled
         positionIsAbsolute={false}
         title={activeCountry}
+        extraStyle={{minWidth: 'fit-content'}}
         extraClass={styles.drop__list__extra__country}
         items={REGION_OPTIONS.map((region) => (
           <p onClick={() => handleCountryChange(region)} key={region}>

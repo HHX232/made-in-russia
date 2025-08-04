@@ -34,7 +34,7 @@ export interface User {
   region?: string // Сделал опциональным, так как в объекте не указан
   registrationDate: string
   lastModificationDate: string
-  isEnabled: boolean
+  isEnabled?: boolean
   avatar?: string // Сделал опциональным, так как в объекте не указан
   vendorDetails?: VendorDetails // Опциональное поле для пользователей с ролью Vendor
 }

@@ -8,14 +8,34 @@ import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import instance from '@/api/api.interceptor'
 import useUsers from './useUsers'
 import UserRow from './components/UserRole'
+import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
+import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
+import CategoriesService from '@/services/categoryes/categoryes.service'
 
-// Опции для фильтров
-// const ROLE_OPTIONS = [
-//   {value: '', label: 'Все роли'},
-//   {value: 'user', label: 'Покупатели'},
-//   {value: 'admin', label: 'Админы'},
-//   {value: 'vendor', label: 'Продавцы'}
-// ]
+const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'Kazakhstan']
+
+type CreateUserData = {
+  login: string
+  email: string
+  password: string
+  phoneNumber: string
+  region: string
+  role: User['role']
+  // Дополнительные поля для вендора
+  inn?: string
+  countries?: string[]
+  productCategories?: string[]
+}
+
+export interface Category {
+  id: number
+  slug: string
+  name: string
+  imageUrl?: string
+  children: Category[]
+  creationDate: string
+  lastModificationDate: string
+}
 
 const LoadMoreTrigger: FC<{onLoadMore: () => void; hasMore: boolean}> = ({onLoadMore, hasMore}) => {
   const triggerRef = useRef<HTMLDivElement>(null)
@@ -87,14 +107,47 @@ const AdminUsersPage: FC = () => {
     loadMoreUsers,
     setFilters,
     clearFilters,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    setSort,
     refreshUsers
   } = useUsers(instance, 10)
 
   // Локальные состояния для поиска и фильтров
   const [searchValue, setSearchValue] = useState('')
   const [selectedRoleFilter, setSelectedRoleFilter] = useState('Без фильтров')
+
+  // Состояния для создания пользователя
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [createLoading, setCreateLoading] = useState(false)
+  const [createData, setCreateData] = useState<CreateUserData>({
+    login: '',
+    email: '',
+    password: '',
+    phoneNumber: '',
+    region: '',
+    role: 'User',
+    inn: '',
+    countries: [],
+    productCategories: []
+  })
+  const [activeImages, setActiveImages] = useState<string[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCountries, setSelectedCountries] = useState<string[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+
+  // Загрузка категорий при открытии модалки для вендора
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (createData.role === 'Vendor' && categories.length === 0) {
+        try {
+          const categoriesRussian = await CategoriesService.getAll('ru')
+          setCategories(categoriesRussian)
+        } catch (error) {
+          console.error('Ошибка загрузки категорий:', error)
+        }
+      }
+    }
+
+    fetchCategories()
+  }, [createData.role, categories.length])
 
   // Обработка поиска
   const handleSearch = (value: string) => {
@@ -162,9 +215,269 @@ const AdminUsersPage: FC = () => {
     }
   }
 
+  // Обработка создания пользователя
+  const handleCreateUser = async () => {
+    if (!createData.login.trim() || !createData.email.trim() || !createData.password.trim()) {
+      alert('Заполните обязательные поля')
+      return
+    }
+
+    try {
+      setCreateLoading(true)
+
+      if (createData.role === 'Vendor') {
+        // Создание вендора
+        await instance.post('/auth/force-register-vendor', {
+          email: createData.email,
+          login: createData.login,
+          password: createData.password,
+          phoneNumber: createData.phoneNumber,
+          inn: createData.inn,
+          countries: selectedCountries,
+          productCategories: selectedCategories
+        })
+      } else {
+        // Создание обычного пользователя
+        await instance.post('/auth/force-register', {
+          email: createData.email,
+          login: createData.login,
+          password: createData.password,
+          region: createData.region,
+          phoneNumber: createData.phoneNumber
+        })
+      }
+
+      // Сброс формы
+      setCreateData({
+        login: '',
+        email: '',
+        password: '',
+        phoneNumber: '',
+        region: '',
+        role: 'User',
+        inn: '',
+        countries: [],
+        productCategories: []
+      })
+      setSelectedCountries([])
+      setSelectedCategories([])
+      setActiveImages([])
+      setIsCreateModalOpen(false)
+
+      // Обновляем список пользователей
+      await refreshUsers()
+    } catch (error) {
+      console.error('Ошибка создания пользователя:', error)
+      alert('Произошла ошибка при создании пользователя')
+    } finally {
+      setCreateLoading(false)
+    }
+  }
+
+  // Сброс данных формы при изменении роли
+  useEffect(() => {
+    if (createData.role !== 'Vendor') {
+      setSelectedCountries([])
+      setSelectedCategories([])
+      setCreateData((prev) => ({
+        ...prev,
+        inn: '',
+        countries: [],
+        productCategories: []
+      }))
+    }
+  }, [createData.role])
+
+  const toggleCountrySelection = (country: string) => {
+    setSelectedCountries((prev) => (prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]))
+  }
+
+  const toggleCategorySelection = (categoryId: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId) ? prev.filter((c) => c !== categoryId) : [...prev, categoryId]
+    )
+  }
+
   return (
     <div className={styles.admin__users__page}>
       <p className={styles.users__title}>Пользователи</p>
+
+      {/* Модальное окно создания пользователя */}
+      <ModalWindowDefault
+        extraClass={styles.create__modal}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      >
+        <h3 className={styles.modal__title}>Создание пользователя</h3>
+
+        <div className={styles.modal__avatar__section}>
+          <CreateImagesInput
+            onFilesChange={(files) => {
+              console.log('Загружены файлы:', files)
+            }}
+            maxFiles={1}
+            inputIdPrefix='create-user'
+            activeImages={activeImages}
+            onActiveImagesChange={setActiveImages}
+          />
+        </div>
+
+        <div className={styles.modal__form}>
+          <TextInputUI
+            placeholder='Логин'
+            currentValue={createData.login}
+            onSetValue={(value) => setCreateData((prev) => ({...prev, login: value}))}
+            theme='superWhite'
+            extraClass={styles.form__input}
+          />
+
+          <TextInputUI
+            placeholder='Email'
+            currentValue={createData.email}
+            onSetValue={(value) => setCreateData((prev) => ({...prev, email: value}))}
+            theme='superWhite'
+            extraClass={styles.form__input}
+          />
+
+          <TextInputUI
+            placeholder='Пароль'
+            currentValue={createData.password}
+            onSetValue={(value) => setCreateData((prev) => ({...prev, password: value}))}
+            theme='superWhite'
+            extraClass={styles.form__input}
+          />
+
+          <TextInputUI
+            placeholder='Номер телефона'
+            currentValue={createData.phoneNumber}
+            onSetValue={(value) => setCreateData((prev) => ({...prev, phoneNumber: value}))}
+            theme='superWhite'
+            extraClass={styles.form__input}
+          />
+
+          {/* Выбор роли */}
+          <div className={styles.modal__dropdowns}>
+            <DropList
+              direction='right'
+              trigger='click'
+              safeAreaEnabled
+              positionIsAbsolute={true}
+              title={createData.role}
+              color='white'
+              extraStyle={{
+                backgroundColor:
+                  createData.role.toLowerCase() === 'user'
+                    ? '#1FC13A'
+                    : createData.role.toLowerCase() === 'admin'
+                      ? '#ECC414'
+                      : '#C8313E'
+              }}
+              extraClass={`${styles.modal__dropdown} ${styles.modal__dropdown__list__extra__user}`}
+              items={[
+                <p onClick={() => setCreateData((prev) => ({...prev, role: 'User'}))} key={1}>
+                  User
+                </p>,
+                <p onClick={() => setCreateData((prev) => ({...prev, role: 'Admin'}))} key={2}>
+                  Admin
+                </p>,
+                <p onClick={() => setCreateData((prev) => ({...prev, role: 'Vendor'}))} key={3}>
+                  Vendor
+                </p>
+              ]}
+            />
+          </div>
+
+          {/* Поля для обычных пользователей */}
+          {createData.role !== 'Vendor' && (
+            <DropList
+              direction='right'
+              extraStyle={{
+                maxWidth: 'fit-content'
+              }}
+              trigger='click'
+              safeAreaEnabled
+              positionIsAbsolute={false}
+              extraListClass={styles.modal__dropdown__list__extra}
+              title={createData.region || 'Выберите регион'}
+              extraClass={styles.modal__dropdown}
+              items={REGION_OPTIONS.map((region) => (
+                <p onClick={() => setCreateData((prev) => ({...prev, region}))} key={region}>
+                  {region}
+                </p>
+              ))}
+            />
+          )}
+
+          {/* Дополнительные поля для вендора */}
+          {createData.role === 'Vendor' && (
+            <>
+              <TextInputUI
+                placeholder='ИНН'
+                currentValue={createData.inn || ''}
+                onSetValue={(value) => setCreateData((prev) => ({...prev, inn: value}))}
+                theme='superWhite'
+                extraClass={styles.form__input}
+              />
+
+              {/* Выбор стран */}
+              <div className={styles.multi__select__section}>
+                <h4>Страны работы:</h4>
+                <div className={styles.multi__select__grid}>
+                  {REGION_OPTIONS.map((country) => (
+                    <label key={country} className={styles.checkbox__item}>
+                      <input
+                        type='checkbox'
+                        checked={selectedCountries.includes(country)}
+                        onChange={() => toggleCountrySelection(country)}
+                      />
+                      <span>{country}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Выбор категорий */}
+              {categories.length > 0 && (
+                <div className={styles.multi__select__section}>
+                  <h4>Категории товаров:</h4>
+                  <div className={styles.multi__select__grid}>
+                    {categories.map((category) => (
+                      <label key={category.id} className={styles.checkbox__item}>
+                        <input
+                          type='checkbox'
+                          checked={selectedCategories.includes(category.id.toString())}
+                          onChange={() => toggleCategorySelection(category.id.toString())}
+                        />
+                        <span>{category.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          <div className={styles.modal__actions}>
+            <div className={styles.modal__main__actions}>
+              <button
+                className={`${styles.modal__button} ${styles.cancel__button}`}
+                onClick={() => setIsCreateModalOpen(false)}
+                disabled={createLoading}
+              >
+                Отмена
+              </button>
+
+              <button
+                className={`${styles.modal__button} ${styles.save__button}`}
+                onClick={handleCreateUser}
+                disabled={createLoading}
+              >
+                {createLoading ? 'Создание...' : 'Создать'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </ModalWindowDefault>
 
       {/* Показываем ошибку если есть */}
       {error && (
@@ -196,7 +509,9 @@ const AdminUsersPage: FC = () => {
             </p>
           ))}
         />
-        <div className={styles.users__actions__create}>Создать</div>
+        <div className={styles.users__actions__create} onClick={() => setIsCreateModalOpen(true)}>
+          Создать
+        </div>
 
         {/* Информация о количестве пользователей */}
         <div className={styles.users__count}>Найдено: {totalElements} пользователей</div>

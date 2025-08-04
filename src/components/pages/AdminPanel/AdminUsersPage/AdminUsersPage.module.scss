@@ -75,7 +75,7 @@
   font-size: 16px;
   font-weight: 600;
   gap: 20px;
-  grid-template-columns: 30px 1fr 1fr 140px 140px 100px;
+  grid-template-columns: 30px 1fr 1fr 170px 140px 100px;
 }
 
 .table__rows {
@@ -92,7 +92,7 @@
   border-radius: 15px;
   background-color: #fff;
   gap: 20px;
-  grid-template-columns: 30px 1fr 1fr 140px 140px 100px;
+  grid-template-columns: 30px 1fr 1fr 170px 140px 100px;
 }
 
 // Стили для конкретных колонок в Grid
@@ -297,17 +297,198 @@
   gap: 15px;
 }
 
-// Добавить эти стили в AdminUsersPage.module.scss
+.modal__dropdown__list__extra {
+  left: 27% !important;
+}
+
+.modal__dropdown__list__extra__user {
+  max-width: 250px;
+  min-height: 36px !important;
+  padding: 8px 12px 4px !important;
+
+  & > div > span {
+    color: #fff !important;
+  }
+}
 
 .edit__modal {
+  // &>div {
+  //    width: 60vw;
+  //    min-width: 400px;
+  // }
   & > div {
-    width: 60vw;
-    min-width: 400px;
+    width: 70vw;
+    min-width: 500px;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   .modal__content {
     width: 100%;
     max-width: 500px;
+    padding: 24px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 20px rgb(0 0 0 / 10%);
+  }
+
+  .modal__title {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .modal__avatar__section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form__input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      border-color: #1fc13a;
+      box-shadow: 0 0 0 2px rgb(31 193 58 / 10%);
+      outline: none;
+    }
+  }
+
+  .modal__dropdowns {
+    display: flex;
+    gap: 12px;
+
+    .modal__dropdown {
+      max-width: 400px;
+      min-height: 44px;
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+
+      &:hover {
+        border-color: #1fc13a;
+      }
+    }
+  }
+
+  .modal__actions {
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+    gap: 16px;
+  }
+
+  .modal__button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  .ban__button {
+    width: 100%;
+
+    &.ban {
+      background-color: #c8313e;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #b02a36;
+      }
+    }
+
+    &.unban {
+      background-color: #1fc13a;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #1ba932;
+      }
+    }
+  }
+
+  .modal__main__actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .cancel__button {
+    flex: 1;
+    background-color: #f5f5f5;
+    color: #666;
+
+    &:hover:not(:disabled) {
+      background-color: #e8e8e8;
+    }
+  }
+
+  .save__button {
+    flex: 1;
+    background-color: #1fc13a;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: #1ba932;
+    }
+  }
+}
+
+// Стили загрузки для кнопок действий
+.user__edits {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+
+  .deleat__button,
+  .edit__button {
+    &.loading {
+      cursor: not-allowed;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  }
+}
+
+// Добавить эти стили к существующему файлу AdminUsersPage.module.scss
+
+// Стили для модального окна создания пользователя
+.create__modal {
+  & > div {
+    width: 70vw;
+    min-width: 500px;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal__content {
+    width: 100%;
     padding: 24px;
     border-radius: 12px;
     background: white;
@@ -438,20 +619,75 @@
   }
 }
 
-// Стили загрузки для кнопок действий
-.user__edits {
+// Стили для множественного выбора
+.multi__select__section {
+  margin: 16px 0;
+
+  h4 {
+    margin: 0 0 12px;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.multi__select__grid {
+  display: grid;
+  max-height: 200px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  overflow-y: auto;
+}
+
+.checkbox__item {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
   gap: 8px;
+  transition: background-color 0.2s ease;
 
-  .deleat__button,
-  .edit__button {
-    &.loading {
-      cursor: not-allowed;
-      opacity: 0.6;
-      pointer-events: none;
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  input[type='checkbox'] {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  span {
+    user-select: none;
+  }
+}
+
+// Responsive стили для модалок
+@media (max-width: 768px) {
+  .create__modal,
+  .edit__modal {
+    & > div {
+      width: 95vw;
+      min-width: 300px;
+      max-height: 95vh;
     }
+  }
+
+  .multi__select__grid {
+    max-height: 150px;
+    grid-template-columns: 1fr;
+  }
+
+  .modal__dropdowns {
+    flex-direction: column;
+  }
+
+  .modal__main__actions {
+    flex-direction: column;
   }
 }
 
@@ -516,7 +752,7 @@
   .table__titles,
   .user__row {
     gap: 15px;
-    grid-template-columns: 30px 1fr 1fr 120px 120px 100px;
+    grid-template-columns: 30px 1fr 1fr 160px 120px 100px;
   }
 }
 
@@ -524,7 +760,7 @@
   .table__titles,
   .user__row {
     gap: 12px;
-    grid-template-columns: 25px 1fr 1fr 100px 100px 100px;
+    grid-template-columns: 25px 1fr 1fr 140px 100px 100px;
   }
 
   .drop__list__extra__country,
