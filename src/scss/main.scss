@@ -2,21 +2,27 @@
 
 /* Для Firefox */
 html {
-	scrollbar-width: thin;
-	/* 'auto' или 'thin' */
-	scrollbar-color: #2A2E46 #EFF1F8;
-	scroll-behavior: smooth;
+  font-family: $font-inter;
+  font-size: 15px;
+  scroll-behavior: smooth;
+
+  /* 'auto' или 'thin' */
+  scrollbar-color: #2a2e46 #eff1f8;
+  scrollbar-width: thin;
+  text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 // Добавьте в глобальные стили или в отдельный файл стилей:
 
 .no-scroll {
-	overflow: hidden !important;
+  overflow: hidden !important;
 
-	// Для предотвращения сдвига контента при скрытии скроллбара
-	&::-webkit-scrollbar {
-		width: 0;
-	}
+  // Для предотвращения сдвига контента при скрытии скроллбара
+  &::-webkit-scrollbar {
+    width: 0;
+  }
 }
 
 // .companies__slider__main>.slick-list>.slick-track {
@@ -33,27 +39,26 @@ html {
 // }
 
 .category__slider__main .slick-dots {
-	position: static !important;
+  position: static !important;
 }
 
 .category__slider__main {
-	.slick-track {
-		height: 220px;
-	}
+  .slick-track {
+    height: 220px;
+  }
 
-	.slick-slide {
-		&>div {
-			height: 100%;
-			padding-bottom: 6px;
-		}
-
-	}
+  .slick-slide {
+    & > div {
+      height: 100%;
+      padding-bottom: 6px;
+    }
+  }
 }
 
 .category__slider__first {
-	.slick-track {
-		height: 270px;
-	}
+  .slick-track {
+    height: 270px;
+  }
 }
 
 // md-editor-custom.module.scss
@@ -61,164 +66,159 @@ html {
 
 // Исправление видимости перегородки между редактором и превью
 .md-editor-resize-operate {
-	background-color: #d9d9d9 !important;
-	width: 2px !important;
+  width: 2px !important;
+  background-color: #d9d9d9 !important;
 }
 
 .md-editor-toolbar-wrapper {
-	border-bottom: 2px solid #B8B8B8 !important;
+  border-bottom: 2px solid #b8b8b8 !important;
 }
 
 .md-editor {
-	border: 2px solid #B8B8B8 !important;
+  border: 2px solid #b8b8b8 !important;
 }
 
 // Дополнительные улучшения для темы
 .md-editor-light {
-	.toolbar-item {
-		&:hover {
-			background-color: #f0f0f0;
-		}
+  .toolbar-item {
+    &:hover {
+      background-color: #f0f0f0;
+    }
 
-		&.active {
-			background-color: #e6f7ff;
-			color: #1890ff;
-		}
-	}
+    &.active {
+      background-color: #e6f7ff;
+      color: #1890ff;
+    }
+  }
 }
 
 .md-editor-toolbar {
-	display: flex;
-	width: 100%;
-	justify-content: space-between;
-	flex-wrap: wrap;
-	row-gap: 15px;
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  row-gap: 15px;
 
-	&-left {
-		width: 100%;
-		justify-content: space-between;
-		flex-wrap: wrap;
-	}
+  // &-left {
+  // 	width: 100%;
+  // 	justify-content: space-between;
+  // 	flex-wrap: wrap;
+  // }
 }
 
 .md-editor-toolbar-left {
-	width: 100% !important;
-	justify-content: space-around !important;
-	flex-wrap: wrap !important;
+  width: 100% !important;
+  flex-wrap: wrap !important;
+  justify-content: space-around !important;
 }
 
 .md-editor-toolbar-right {
-	margin-left: auto;
+  margin-left: auto;
 }
 
 .md-editor-preview h1 {
-	line-height: 1.2 !important;
-	margin-bottom: 20px !important;
-	margin-top: 20px !important;
+  margin-top: 20px !important;
+  margin-bottom: 20px !important;
+  line-height: 1.2 !important;
 }
 
 .md-editor-preview h2 {
-	line-height: 1.2 !important;
-	margin-top: 16px !important;
-	margin-bottom: 16px !important;
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+  line-height: 1.2 !important;
 }
 
 .md-editor-preview h3 {
-	line-height: 1.2 !important;
-	margin-top: 16px !important;
-	margin-bottom: 16px !important;
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+  line-height: 1.2 !important;
 }
 
 .md-editor-preview h4 {
-	line-height: 1.2 !important;
-	margin-top: 10px !important;
-	margin-bottom: 10px !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+  line-height: 1.2 !important;
 }
 
 .md-editor-preview h5 {
-	line-height: 1.2 !important;
-	margin-top: 10px !important;
-	margin-bottom: 10px !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+  line-height: 1.2 !important;
 }
 
-
-
 .md-editor-preview h6 {
-	line-height: 1.2 !important;
-	margin-top: 10px !important;
-	margin-bottom: 10px !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+  line-height: 1.2 !important;
 }
 
 // Или более продвинутый вариант с учетом ширины скроллбара:
 .body-scroll-lock {
-	overflow: hidden !important;
-	position: fixed !important;
-	width: 100% !important;
+  position: fixed !important;
+  overflow: hidden !important;
+  width: 100% !important;
 
-	// Для плавности
-	transition: none !important;
+  // Для плавности
+  transition: none !important;
 }
 
 .react-loading-skeleton {
-	width: 1000px !important;
-	max-width: 100%;
+  width: 1000px !important;
+  max-width: 100%;
 }
 
 /* Для WebKit-браузеров */
 ::-webkit-scrollbar {
-	width: 6px !important;
-	/* Толщина вертикального скроллбара */
-	height: 6px !important;
-	/* Толщина горизонтального скроллбара */
+  width: 6px !important;
+
+  /* Толщина вертикального скроллбара */
+  height: 6px !important;
+
+  /* Толщина горизонтального скроллбара */
 }
 
 ::-webkit-scrollbar-track {
-	background: #EFF1F8;
-	border-radius: 3px;
-	margin: 15px 0;
+  border-radius: 3px;
+  margin: 15px 0;
+  background: #eff1f8;
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: #2A2E46;
-	border-radius: 3px;
-	border: 1px solid #EFF1F8;
-	/* Граница для лучшего визуального разделения */
+  border: 1px solid #eff1f8;
+  border-radius: 3px;
+  background-color: #2a2e46;
+
+  /* Граница для лучшего визуального разделения */
 }
 
 /* Принудительное применение стилей */
 body {
-	overflow: overlay;
-	/* Важно! Позволяет скроллбару накладываться на контент */
+  overflow: overlay;
+
+  // TODO: если что изменить коэффициент
+  line-height: 1.2;
 }
 
 /* Гарантированное применение стилей */
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-	width: 6px !important;
-	height: 6px !important;
-}
-
-html {
-	font-family: $font-inter;
-	font-size: 15px;
+  width: 6px !important;
+  height: 6px !important;
 }
 
 .container {
-	max-width: 1200px;
-	width: 100%;
-	padding: 0 5px;
-	margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 5px;
+  margin: 0 auto;
 }
 
-
-
 .fontJaro {
-	font-family: $font-jaro;
+  font-family: $font-jaro;
 }
 
 .fontInstrument {
-	font-family: $font-instrument-sans;
-
+  font-family: $font-instrument-sans;
 }
 
 /* Reset CSS (Eric Meyer's Reset v2.0 + modern additions) */
@@ -303,13 +303,13 @@ time,
 mark,
 audio,
 video {
-	font-family: $font-inter;
-	font-size: 15px;
-	line-height: 18px;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	vertical-align: baseline;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  font-family: $font-inter;
+  font-size: 15px;
+  line-height: 18px;
+  vertical-align: baseline;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -324,51 +324,37 @@ hgroup,
 menu,
 nav,
 section {
-	display: block;
-}
-
-body {
-	line-height: 1;
+  display: block;
 }
 
 ol,
 ul {
-	list-style: none;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 blockquote,
 q {
-	quotes: none;
+  quotes: none;
 }
 
-blockquote:before,
-blockquote:after,
-q:before,
-q:after {
-	content: '';
-	content: none;
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
+  content: '';
+  content: none;
 }
 
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
 /* Modern additions */
 * {
-	box-sizing: border-box;
-}
-
-html {
-	-webkit-text-size-adjust: 100%;
-	-moz-text-size-adjust: 100%;
-	-ms-text-size-adjust: 100%;
-}
-
-a {
-	background-color: transparent;
-	text-decoration: none;
-	color: inherit;
+  box-sizing: border-box;
 }
 
 button,
@@ -376,29 +362,29 @@ input,
 optgroup,
 select,
 textarea {
-	font-family: inherit;
-	font-size: 100%;
-	line-height: 1.15;
-	margin: 0;
-	padding: 0;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
 }
 
 button,
 input {
-	overflow: visible;
+  overflow: visible;
 }
 
 button,
 select {
-	text-transform: none;
+  text-transform: none;
 }
 
 button,
 [type='button'],
 [type='reset'],
 [type='submit'] {
-	-webkit-appearance: button;
-	appearance: button;
+  appearance: button;
+  appearance: button;
 }
 
 p,
@@ -408,510 +394,445 @@ h3,
 h4,
 h5,
 h6 {
-	margin: 0;
+  margin: 0;
 }
 
 a {
-	display: contents;
-	color: inherit;
-	-webkit-tap-highlight-color: rgb(0 0 0 / 0%);
-	text-decoration: none;
-	-webkit-touch-callout: none;
-	user-select: none;
+  display: contents;
+  background-color: transparent;
+  color: inherit;
+  -webkit-tap-highlight-color: rgb(0 0 0 / 0%);
+  text-decoration: none;
+  -webkit-touch-callout: none;
+  user-select: none;
 
-	&:focus,
-	&:hover,
-	&:visited,
-	&:link,
-	&:active {
-		outline: none;
-	}
+  &:focus,
+  &:hover,
+  &:visited,
+  &:link,
+  &:active {
+    outline: none;
+  }
 
-	&:hover {
-		text-decoration: none;
-	}
-}
-
-ul,
-ol {
-	padding: 0;
-	margin: 0;
-	list-style: none;
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 button {
-	border: unset;
-	background: transparent;
-	cursor: pointer;
+  border: unset;
+  background: transparent;
+  cursor: pointer;
 }
 
 input {
-	outline: none;
+  outline: none;
 }
 
 img {
-	max-width: 100%;
-	height: auto;
-	border-style: none;
+  max-width: 100%;
+  height: auto;
+  border-style: none;
 }
 
-.slick-next:before,
-.slick-prev:before {
-	content: "" !important;
+.slick-next::before,
+.slick-prev::before {
+  content: '' !important;
 }
 
-.spec__slider_2 .slick-next:before {
-	display: none !important;
+.spec__slider_2 .slick-next::before {
+  display: none !important;
 }
 
 .spec__slider_2 .slick-list {
-	// width: 104%;
-	// left: -2%;
+  // width: 104%;
+  // left: -2%;
 }
 
 .spec__slider_2 .slick-slider .slick-list .slick-track {
-	gap: 15px !important;
-	display: flex;
-
+  display: flex;
+  gap: 15px !important;
 }
 
-.mini__card__slider .spec__slider_2 .slick-prev:before {
-	display: none !important;
+.mini__card__slider .spec__slider_2 .slick-prev::before {
+  display: none !important;
 }
 
-.mini__card__slider .slick-list .slick-track>div {
-	max-width: fit-content;
+.mini__card__slider .slick-list .slick-track > div {
+  max-width: fit-content;
 }
 
 @media (max-width: 768px) {
-	.slick-slide {
-		display: block;
-		padding: 0 8px !important;
-	}
+  .slick-slide {
+    display: block;
+    padding: 0 8px !important;
+  }
 
-	.spec__slider_2 .slick-next:before {
-		display: none !important;
-	}
+  .spec__slider_2 .slick-next::before {
+    display: none !important;
+  }
 
-	.spec__slider_2 .slick-prev:before {
-		display: none !important;
-	}
+  .spec__slider_2 .slick-prev::before {
+    display: none !important;
+  }
 
-	.spec__slider .slick-slide {
-		padding: 0 !important;
-	}
+  .spec__slider .slick-slide {
+    padding: 0 !important;
+  }
 }
-
 
 // !MARKDOWN Styles
 .borderText {
-	font-weight: 400;
-	font-size: 16px;
-	line-height: 150%;
-	padding: 2px 6px;
-	cursor: pointer;
-	border-radius: 4px;
-	border: 1px solid #B8B8B8;
-	background-color: #F7F7F7;
-	max-width: fit-content;
+  max-width: fit-content;
+  padding: 2px 6px;
+  border: 1px solid #b8b8b8;
+  border-radius: 4px;
+  background-color: #f7f7f7;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 150%;
 }
 
-
 .mark_box {
-	padding: 0px;
-	font-size: 15px;
-	// max-width: 50%;
+  padding: 0;
+  font-size: 15px;
 
-	&>img {
-		border-radius: 6px;
-		margin: 0 !important;
-	}
+  // max-width: 50%;
 
-	&>p>img {
-		border-radius: 10px;
-		margin: 12px 0;
-		border: 2px solid #EEEFF8;
-		max-width: 500px;
-		max-height: 600px;
-	}
+  & > p > img {
+    max-width: 500px;
+    max-height: 600px;
+    border: 2px solid #eeeff8;
+    border-radius: 10px;
+    margin: 12px 0;
+  }
 
-	&>pre {
-		background-color: red !important;
-	}
+  // &>pre {
+  // 	background-color: red !important;
+  // }
 
-	&>blockquote {
-		width: 100%;
-		padding: 10px;
-		background-color: #fffaebc2;
-		font-size: 19px;
-		border-radius: 10px;
-		margin: 15px 0;
-	}
+  & > blockquote {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 15px 0;
+    background-color: #fffaebc2;
+    font-size: 19px;
+  }
 
-	&>h1 {
+  & > h1 {
+    margin-bottom: 16px;
+  }
 
-		margin-bottom: 16px;
-	}
+  table > td {
+    display: flex;
+    align-items: center;
+  }
 
-	table {
-		border-collapse: collapse;
-	}
+  td > img {
+    max-width: 40%;
+    margin: 0 auto;
+  }
 
-	table>td {
-		display: flex;
-		align-items: center;
-	}
+  & > h2 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
 
-	td>img {
-		max-width: 40%;
-		margin: 0 auto;
+  & > h3 {
+    margin: 14px 0;
+  }
 
-	}
+  & > h4 {
+    margin: 8px 0;
+  }
 
-	&>h2 {
-		margin-bottom: 15px;
-		margin-top: 10px;
-	}
+  & > h5 {
+    margin: 8px 0;
+  }
 
-	&>h3 {
+  & > h6 {
+    margin: 6px 0;
+  }
 
-		margin: 14px 0;
-	}
+  p > img {
+    width: 100%;
+    border: 2px solid #eeeff8;
+    margin: 18px 0 !important;
+  }
 
-	&>h4 {
+  & > p > a {
+    cursor: pointer;
+    font-style: italic !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
-		margin: 8px 0;
-	}
+  & > a {
+    font-style: italic !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
-	&>h5 {
+  & > h1 > a {
+    font-style: italic !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
-		margin: 8px 0;
-	}
+  & > h2 > a {
+    font-style: italic !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
-	&>h6 {
+  & > h3 > a {
+    font-style: italic !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
-		margin: 6px 0;
+  & > h4 > a {
+    font-style: italic !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
-	}
+  & > h5 > a {
+    font-style: italic !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
-	p>img {
-		width: 100%;
-		margin: 18px 0 !important;
-		border: 2px solid #EEEFF8;
-	}
+  & > p {
+    margin: 9px 0 !important;
+    font-size: 15px !important;
+    line-height: 150%;
+  }
 
-	&>p>a {
-		text-decoration: underline;
-		text-underline-offset: 3px;
-		cursor: pointer;
-		font-style: italic !important;
-	}
+  & > li {
+    font-size: 18px !important;
+    line-height: 150%;
+  }
 
-	&>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
+  & > hr {
+    width: 100%;
+    height: 1px !important;
+    margin: 4px 0;
+    background-color: #d9d9d9;
+  }
 
-	&>h1>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
+  & > ol {
+    margin: 15px 0;
+    margin-left: 20px;
+    font-size: 18px !important;
+    list-style: circle;
+  }
 
-	&>h2>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
+  & > ol > li > ol {
+    margin-left: 16px;
+    list-style: disc;
+  }
 
-	&>h3>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
+  & > ul {
+    margin: 10px 0;
+    font-size: 18px !important;
+  }
 
-	&>h4>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
+  & > ul > li > img {
+    border: 2px solid #eeeff8;
+  }
 
-	&>h5>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
+  & > ol > li > img {
+    border: 3px solid #eeeff8;
+    border-radius: 10px;
+    margin: 10px 0;
+  }
 
-	&>p {
-		margin: 9px 0 !important;
-
-		font-size: 15px !important;
-		line-height: 150%;
-	}
-
-	&>li {
-
-		font-size: 18px !important;
-		line-height: 150%;
-	}
-
-	&>hr {
-		width: 100%;
-		height: 1px !important;
-		background-color: #d9d9d9;
-		margin: 4px 0;
-	}
-
-	&>p {
-		margin: 8px 0;
-
-	}
-
-	&>ol {
-
-		font-size: 18px !important;
-		margin: 15px 0;
-		margin-left: 20px;
-		list-style: circle;
-
-	}
-
-	&>ol>li>ol {
-		list-style: disc;
-		margin-left: 16px;
-	}
-
-	&>ul {
-		margin: 10px 0;
-
-		font-size: 18px !important;
-	}
-
-	&>ul>li>img {
-		border: 2px solid #EEEFF8;
-	}
-
-	&>ol>li>img {
-		margin: 10px 0;
-		border-radius: 10px;
-		border: 3px solid #EEEFF8;
-	}
-
-	&>img {
-		width: 100%;
-		margin: 15px 0 !important;
-		border: 2px solid #EEEFF8;
-	}
+  & > img {
+    width: 100%;
+    border: 2px solid #eeeff8;
+    border-radius: 6px;
+    margin: 15px 0 !important;
+  }
 }
 
 .mark_box table {
-	width: 100%;
-	border-collapse: collapse;
-	margin: 1rem 0;
-	font-size: 18px;
-	text-align: left;
+  width: 100%;
+  min-width: 600px;
+  margin: 1rem 0;
+  border-collapse: collapse;
+  font-size: 18px;
+  text-align: left;
 }
 
 .table-wrapper {
-	overflow: auto;
-	max-width: 100%;
-}
-
-.mark_box table {
-	min-width: 600px;
-	width: 100%;
-	border-collapse: collapse;
+  overflow: auto;
+  max-width: 100%;
 }
 
 .mark_box td,
 .mark_box th {
-	padding: 8px 12px;
-	border: 1px solid #ddd;
-	white-space: nowrap;
-}
-
-.mark_box th,
-.mark_box td {
-	padding: 10px 15px;
-	border: 1px solid #ddd;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  white-space: nowrap;
 }
 
 .mark_box th {
-	background-color: #f4f4f4;
-	font-weight: bold;
+  background-color: #f4f4f4;
+  font-weight: bold;
 }
 
 .mark_box tr:nth-child(even) {
-	background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 .mark_box tr:hover {
-	background-color: #e9f5ff;
+  background-color: #e9f5ff;
 }
 
 .mark_box caption {
-	caption-side: top;
-	text-align: center;
-	font-size: 1.2rem;
-	font-weight: bold;
-	color: #555;
-	margin-bottom: 10px;
+  margin-bottom: 10px;
+  caption-side: top;
+  color: #555;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
 }
 
+@media (max-width: 1000px) {
+  .mark_box {
+    & > h1 {
+      font-size: 34px !important;
+    }
 
-@media (max-width:1000px) {
-	.mark_box {
-		&>h1 {
+    & > h2 {
+      font-size: 29px !important;
+    }
 
-			font-size: 34px !important;
-		}
+    & > h3 {
+      font-size: 20px !important;
+    }
 
-		&>h2 {
+    & > h4 {
+      font-size: 20px !important;
+    }
 
-			font-size: 29px !important;
-		}
-
-		&>h3 {
-
-			font-size: 20px !important;
-		}
-
-		&>h4 {
-
-			font-size: 20px !important;
-		}
-
-		&>h5 {
-
-			font-size: 20px !important;
-		}
-
-		&>h6 {}
-	}
+    & > h5 {
+      font-size: 20px !important;
+    }
+  }
 }
 
-@media (max-width:700px) {
-	.mark_box {
-		&>h1 {
+@media (max-width: 700px) {
+  .mark_box {
+    & > h1 {
+      font-size: 30px !important;
+    }
 
-			font-size: 30px !important;
-		}
+    & > h2 {
+      font-size: 25px !important;
+    }
 
-		&>h2 {
+    & > h3 {
+      font-size: 19px !important;
+    }
 
-			font-size: 25px !important;
-		}
+    & > h4 {
+      font-size: 19px !important;
+    }
 
-		&>h3 {
-
-			font-size: 19px !important;
-		}
-
-		&>h4 {
-
-			font-size: 19px !important;
-		}
-
-		&>h5 {
-
-			font-size: 17px !important;
-		}
-
-	}
+    & > h5 {
+      font-size: 17px !important;
+    }
+  }
 }
-
 
 /* Стили для контейнера редактора */
 .editor__wrapper {
+  /* Стилизация изображений в превью */
+  .md-editor-preview img[src^='data:image'] {
+    max-width: 100%;
+    height: auto;
+  }
 
+  /* Стилизация кода с base64 в редакторе */
+  .md-editor-input-wrapper {
+    /* Обрезка длинных строк в редакторе */
+    .cm-string,
+    .cm-url {
+      /* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+      &:has-text('data:image') {
+        display: inline-block;
+        overflow: hidden;
+        max-width: 200px;
+        text-overflow: ellipsis;
+        vertical-align: bottom;
+        white-space: nowrap;
+      }
+    }
 
-	/* Стилизация изображений в превью */
-	.md-editor-preview img[src^="data:image"] {
-		max-width: 100%;
-		height: auto;
-	}
+    /* Альтернативный подход через селектор содержимого */
+    .cm-line:has(.cm-string:contains('data:image')),
+    .cm-line:has(.cm-url:contains('data:image')) {
+      .cm-string,
+      .cm-url {
+        display: inline-block;
+        overflow: hidden;
+        max-width: 200px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
 
-	/* Стилизация кода с base64 в редакторе */
-	.md-editor-input-wrapper {
-
-		/* Обрезка длинных строк в редакторе */
-		.cm-string,
-		.cm-url {
-			&:has-text("data:image") {
-				display: inline-block;
-				max-width: 200px;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-				vertical-align: bottom;
-			}
-		}
-
-		/* Альтернативный подход через селектор содержимого */
-		.cm-line:has(.cm-string:contains("data:image")),
-		.cm-line:has(.cm-url:contains("data:image")) {
-
-			.cm-string,
-			.cm-url {
-				display: inline-block;
-				max-width: 200px;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-			}
-		}
-	}
-
-	/* Стилизация для CodeMirror 6 (если используется) */
-	.cm-editor {
-		.cm-line {
-
-			/* Обрезка только для строк с base64 */
-			.cm-string {
-				&[class*="data:image"] {
-					display: inline-block;
-					max-width: 200px;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-				}
-			}
-		}
-	}
-
+  /* Стилизация для CodeMirror 6 (если используется) */
+  .cm-editor {
+    .cm-line {
+      /* Обрезка только для строк с base64 */
+      .cm-string {
+        &[class*='data:image'] {
+          display: inline-block;
+          overflow: hidden;
+          max-width: 200px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
 }
 
 /* Альтернативное решение через JavaScript + CSS */
 .truncated__base64 {
-	display: inline-block;
-	max-width: 200px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	vertical-align: bottom;
-	cursor: pointer;
-	color: #0969da;
+  display: inline-block;
+  overflow: hidden;
+  max-width: 200px;
+  color: #0969da;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
 
-	&:hover {
-		text-decoration: underline;
-	}
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
-
 @media (max-width: 600px) {
-	html {
-		scrollbar-width: none;
-		/* скрыть скроллбар в Firefox */
-	}
+  html {
+    scrollbar-width: none;
 
-	body {
-		overflow-x: hidden;
-	}
+    /* скрыть скроллбар в Firefox */
+  }
 
-	/* Для WebKit-браузеров */
-	::-webkit-scrollbar {
-		display: none !important;
-	}
+  body {
+    overflow-x: hidden;
+  }
 
+  /* Для WebKit-браузеров */
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
 }

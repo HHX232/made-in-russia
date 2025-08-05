@@ -85,11 +85,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
   const t = useTranslations('CardPage.CardMiddlePage')
   return (
     <div className={`${styles.card__middle__box}`}>
-      <h3
-        id='description__title__id'
-        style={{marginBottom: isLoading ? '15px' : '0'}}
-        className={`${styles.card__middle__title}`}
-      >
+      <h3 id='description__title__id' style={{marginBottom: '15px'}} className={`${styles.card__middle__title}`}>
         {t('description')}
       </h3>
       <div className={`${styles.descr__box}`}>

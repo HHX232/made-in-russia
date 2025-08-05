@@ -30,12 +30,18 @@ async function getLocale(): Promise<string> {
 
 // Параллельное выполнение запросов
 async function getInitialData(locale: string) {
-  const [initialPage1, categories] = await Promise.all([
+  const [initialPage1, categories, adsFromSerfer] = await Promise.all([
     ProductService.getAll({page: 0, size: 20, currentLang: locale}, undefined, locale),
-    CategoriesService.getAll(locale)
+    CategoriesService.getAll(locale),
+    axiosClassic.get<IPromoFromServer[]>('/advertisements', {
+      headers: {
+        'x-locale': locale,
+        'Accept-Language': locale
+      }
+    })
   ])
 
-  return {initialPage1, categories}
+  return {initialPage1, categories, adsFromSerfer}
 }
 export interface IPromoFromServer {
   id: number
@@ -51,8 +57,7 @@ export interface IPromoFromServer {
 }
 export default async function Home() {
   const locale = await getLocale()
-  const {initialPage1, categories} = await getInitialData(locale)
-  const adsFromSerfer = await axiosClassic.get<IPromoFromServer[]>('/advertisements')
+  const {initialPage1, categories, adsFromSerfer} = await getInitialData(locale)
   return (
     <HomePage
       ads={adsFromSerfer.data}

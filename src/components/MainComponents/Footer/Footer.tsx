@@ -6,7 +6,7 @@ import Image from 'next/image'
 import {useTranslations} from 'next-intl'
 import {usePathname} from 'next/navigation'
 
-const logoFavBig = '/logos/logo.svg'
+const logoFavBig = '/logos/logoWithoutText.svg'
 
 interface IFooterProps {
   extraClass?: string

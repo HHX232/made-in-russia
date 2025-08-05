@@ -66,7 +66,8 @@
 
   & > .slick-list {
     max-width: fit-content !important;
-    background-color: red !important;
+
+    // background-color: red !important;
   }
 }
 
@@ -80,11 +81,11 @@
 
 .images__comments__slider__box {
   display: flex;
+  overflow: hidden;
   width: 100%;
   max-width: 350px;
   min-height: 60px;
   justify-content: space-between;
-  overflow: hidden;
 }
 
 .images__comments__slider__box__item_img {
