@@ -3,8 +3,8 @@ import {FC, useState, useCallback, useRef, useEffect} from 'react'
 import styles from './CreateDescriptionsElements.module.scss'
 import Image from 'next/image'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
-import {MdEditor, ToolbarNames} from 'md-editor-rt'
-import 'md-editor-rt/lib/style.css'
+// import {MdEditor, ToolbarNames} from 'md-editor-rt'
+// import 'md-editor-rt/lib/style.css'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import {useImageModal} from '@/hooks/useImageModal'
 import {HELP_IMAGES} from '../CreateCard'
@@ -12,7 +12,11 @@ import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import dynamic from 'next/dynamic'
 // import {useTypedSelector} from '@/hooks/useTypedSelector'
+
+const MdEditor = dynamic(() => import('md-editor-rt').then((mod) => mod.MdEditor), {ssr: false})
+type ToolbarNames = import('md-editor-rt').ToolbarNames
 
 const vopros = '/vopros.svg'
 

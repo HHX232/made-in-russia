@@ -13,7 +13,8 @@
     "lint:fix": "tsc && eslint \"src/**/*.ts\" \"src/**/*.tsx\" --fix",
     "lint:scss": "stylelint \"src/**/*.scss\"",
     "lint:scss:fix": "stylelint \"src/**/*.scss\" --fix",
-    "prepare": "husky"
+    "prepare": "husky",
+    "analyze": "ANALYZE=true next build"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -29,6 +30,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@next/bundle-analyzer": "^15.4.5",
     "@reduxjs/toolkit": "^2.8.2",
     "@svgr/webpack": "^8.1.0",
     "@tanstack/react-query": "^5.74.9",

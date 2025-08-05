@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import {FC, useCallback} from 'react'
-import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import remarkParse from 'remark-parse'
 import rehypeRaw from 'rehype-raw'
+import dynamic from 'next/dynamic'
 
+const Markdown = dynamic(() => import('react-markdown'), {ssr: false, loading: () => <div>loading...</div>})
 const processMarkdown = (markdown: string) => {
   if (!markdown) return ''
 

@@ -3,7 +3,7 @@
 import {ClientMDStyleLoader} from '@/components/ClientStyleLoader'
 import {ReactNode} from 'react'
 
-export default function CardLayout({children}: {children: ReactNode}) {
+export default function CreateCardLayout({children}: {children: ReactNode}) {
   return (
     <>
       <ClientMDStyleLoader />

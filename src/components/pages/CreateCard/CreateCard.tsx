@@ -31,7 +31,7 @@ import {usePathname} from 'next/navigation'
 import {useActions} from '@/hooks/useActions'
 import {setInitialStorageValue} from '@/hooks/createCardHelpers'
 import {submitFormCardData} from '@/utils/createCardHelpers'
-import 'md-editor-rt/lib/style.css'
+// import 'md-editor-rt/lib/style.css'
 
 const vopros = '/vopros.svg'
 // Конфигурация изображений для подсказок
