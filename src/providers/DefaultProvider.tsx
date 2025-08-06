@@ -1,9 +1,8 @@
 'use client'
-import {persistor, store} from '@/store/store'
+import {store} from '@/store/store'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {useState, useEffect, ReactNode} from 'react'
 import {Provider as ReduxProvider} from 'react-redux'
-import {PersistGate} from 'redux-persist/integration/react'
 
 // Типизированная обертка для Redux Provider
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,15 +28,7 @@ export default function DefaultProvider({children}: {children: ReactNode}) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        {isClient ? (
-          <PersistGate loading={null} persistor={persistor}>
-            {children}
-          </PersistGate>
-        ) : (
-          children
-        )}
-      </Provider>
+      <Provider store={store}>{isClient ? children : children}</Provider>
     </QueryClientProvider>
   )
 }

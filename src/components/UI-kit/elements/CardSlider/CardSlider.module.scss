@@ -1,183 +1,226 @@
 .imageSlider {
-   width: 100%;
-   max-width: 500px;
-   min-width: 400px;
-   // margin: 0 auto;
-   height: fit-content;
+  width: 100%;
+  min-width: 400px;
+  max-width: 500px;
+  height: fit-content;
 
-   @media(max-width: 600px) {
-      min-width: 100%;
-   }
+  @media (max-width: 600px) {
+    min-width: 100%;
+  }
 
-   &__main {
-      width: 100%;
-      margin-bottom: 16px;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  &__main {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+
+    // KeenSlider основные стили
+    .keen-slider {
       position: relative;
+    }
 
-      .slick-slide {
-         padding: 0;
-      }
-   }
+    // .keen-slider__slide {
+    // padding: 0;
+    // outline: none;
+    // }
+  }
 
-   &__slide {
-      outline: none;
-   }
+  &__slide {
+    outline: none;
+  }
 
-   &__imageWrapper {
-      width: 100%;
-      aspect-ratio: 1/1;
+  &__imageWrapper {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    aspect-ratio: 1/1;
+  }
+
+  &__mainImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% + 4.5px);
+    border-radius: 10px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .imageSlider__mainVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% + 4.5px);
+    border-radius: 10px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .imageSlider__thumbnailImage,
+  .imageSlider__thumbnailVideo {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  // &__thumbnails {
+  //    margin-top: 16px;
+  //    padding: 0;
+
+  //    // KeenSlider стили для миниатюр
+  //    .keen-slider {
+  //       position: relative;
+  //    }
+
+  //    .keen-slider__slide {
+  //       min-height: 0;
+  //       // Убираем стандартные отступы keen-slider для миниатюр
+  //       padding: 0;
+  //       // Принудительно задаем размер для миниатюр
+  //       width: 100px !important;
+  //       flex: 0 0 100px;
+  //    }
+  // }
+
+  &__thumbnail {
+    overflow: hidden;
+    width: 100px;
+    height: 100px;
+    border: 2px solid transparent;
+    border-radius: 20px !important;
+    cursor: pointer;
+    opacity: 0.7;
+    outline: none;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #2a2e46;
+      opacity: 0.9;
+    }
+  }
+
+  &__thumbnailActive {
+    border: none;
+    box-shadow: -2px 2px 4px #2a2e4644;
+    opacity: 1;
+  }
+
+  .customArrow {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    display: flex;
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    backdrop-filter: blur(4px);
+    background: #ffffff2d;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #ffffff62;
+      box-shadow: 0 3px 8px rgb(0 0 0 / 15%);
+    }
+
+    &Disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    svg {
+      width: 15px;
+      height: 20px;
+    }
+  }
+
+  .customArrowLeft {
+    left: 10px;
+  }
+
+  .customArrowRight {
+    right: 10px;
+  }
+
+  // Стили для стрелок в миниатюрах (если понадобятся)
+  &__thumbnails {
+    padding: 0;
+    margin-top: 16px;
+
+    // KeenSlider стили для миниатюр
+    .keen-slider {
       position: relative;
-      height: 0;
-      padding-bottom: 100%;
-   }
+    }
 
-   &__mainImage {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: calc(100% + 4.5px);
-      object-fit: cover;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      transition: transform 0.3s ease;
-      border-radius: 10px;
-   }
+    .keen-slider__slide {
+      // Принудительно задаем размер для миниатюр
+      width: 100px !important;
+      min-height: 0;
+      flex: 0 0 100px;
 
-   .imageSlider__mainVideo {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: calc(100% + 4.5px);
-      object-fit: cover;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      transition: transform 0.3s ease;
-      border-radius: 10px;
-   }
-
-   .imageSlider__thumbnailImage,
-   .imageSlider__thumbnailVideo {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      transition: transform 0.3s ease;
-      border-radius: 10px;
-   }
-
-   &__thumbnails {
-      margin-top: 16px;
+      // Убираем стандартные отступы keen-slider для миниатюр
       padding: 0;
+    }
 
-
-      .slick-track {
-         display: flex;
-         justify-content: space-between;
-         gap: 33px;
-      }
-
-      .slick-slide {
-         padding: 0 6px;
-      }
-   }
-
-   &__thumbnail {
-      border-radius: 20px !important;
-
-      width: 100px;
-      height: 100px;
-      cursor: pointer;
-      border-radius: 4px;
-      overflow: hidden;
-      opacity: 0.7;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-      outline: none;
-
-      &:hover {
-         opacity: 0.9;
-         // transform: translateY(-2px);
-         border-color: #2A2E46;
-      }
-   }
-
-   &__thumbnailActive {
-      opacity: 1;
-      // border-color: #2A2E46;
-      border: none;
-      box-shadow: -2px 2px 4px #2a2e4644;
-      // transform: translateY(-4px);
-   }
-
-   .customArrow {
-      position: absolute;
-      z-index: 2;
+    .customArrow {
       top: 50%;
+      width: 24px;
+      height: 24px;
       transform: translateY(-50%);
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      // background: rgba(255, 255, 255, 0.8);
-      background: #ffffff2d;
-      backdrop-filter: blur(4px);
-      border-radius: 50%;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      transition: all 0.2s ease;
-
-      &:hover {
-         // background: white;
-         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-         background: #ffffff62;
-      }
 
       svg {
-         width: 15px;
-         height: 20px;
+        width: 10px;
+        height: 14px;
       }
-   }
+    }
 
-   .customArrowLeft {
-      left: 10px;
-   }
+    .customArrowLeft {
+      left: -5px;
+    }
 
-   .customArrowRight {
-      right: 10px;
-   }
+    .customArrowRight {
+      right: -5px;
+    }
+  }
 
-   // Стили для стрелок в миниатюрах
-   &__thumbnails {
+  // Дополнительные стили для адаптации keen-slider
+  .keen-slider {
+    &__slide {
+      overflow: visible;
+    }
+  }
 
-      .customArrow {
-         top: 50%;
-         transform: translateY(-50%);
+  // Убираем возможные конфликты стилей
+  .keen-slider__slide:not(.keen-slider__slide--active) {
+    pointer-events: auto;
+  }
 
-         width: 24px;
-         height: 24px;
-
-         svg {
-            width: 10px;
-            height: 14px;
-         }
-      }
-
-      .customArrowLeft {
-         left: -5px;
-      }
-
-      .customArrowRight {
-         right: -5px;
-      }
-   }
+  // Для главного слайдера - каждый слайд должен занимать 100% ширины
+  &__main .keen-slider__slide {
+    width: 100% !important;
+    flex: 0 0 100%;
+    padding: 0;
+    outline: none;
+  }
 }

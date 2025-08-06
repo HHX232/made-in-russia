@@ -10,8 +10,65 @@ html {
   scrollbar-color: #2a2e46 #eff1f8;
   scrollbar-width: thin;
   text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  text-size-adjust: 100%;
+}
+
+// ! NEW SLIDER
+
+// Глобальные стили для keen-slider
+// Добавить в main.scss
+
+// Базовые стили keen-slider
+.keen-slider {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  border-radius: 20px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+// Кастомизация для промо слайдеров
+.promo-keen-slider {
+  .keen-slider {
+    height: 100%;
+    border-radius: 20px;
+
+    &__slide {
+      display: flex;
+      height: 100%;
+      align-items: stretch;
+      border-radius: 20px;
+
+      & > div {
+        width: 100%;
+        height: 100%;
+        border-radius: 20px;
+      }
+    }
+  }
+}
+
+// Анимации для keen-slider (опционально)
+.keen-slider[data-keen-slider-v] {
+  transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.keen-slider[data-keen-slider-moves] {
+  transform: translate3d(var(--keen-slider-move-x, 0), var(--keen-slider-move-y, 0), 0) rotateZ(0deg);
+  transform: translate3d(var(--keen-slider-move-x, 0), var(--keen-slider-move-y, 0), 0) rotateZ(0deg);
+}
+
+.keen-slider__slide {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border-radius: 20px;
+  transform: translate3d(var(--keen-slider-slide-x, 0), var(--keen-slider-slide-y, 0), 0) rotateZ(0deg);
+  transform: translate3d(var(--keen-slider-slide-x, 0), var(--keen-slider-slide-y, 0), 0) rotateZ(0deg);
 }
 
 // Добавьте в глобальные стили или в отдельный файл стилей:
@@ -383,7 +440,6 @@ button,
 [type='button'],
 [type='reset'],
 [type='submit'] {
-  appearance: button;
   appearance: button;
 }
 

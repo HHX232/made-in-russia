@@ -10,7 +10,6 @@ export default function ClientStyleLoader() {
       await Promise.all([
         import('react-loading-skeleton/dist/skeleton.css'),
         import('@/components/UI-kit/loaders/nprogress-provider.scss')
-        // import('md-editor-rt/lib/style.css')
       ])
     }
 

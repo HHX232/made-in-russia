@@ -9,7 +9,7 @@ import {Category} from '@/services/categoryes/categoryes.service'
 import {useActions} from '@/hooks/useActions'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import useWindowWidth from '@/hooks/useWindoWidth'
-import Slider from 'react-slick'
+import {useKeenSlider} from 'keen-slider/react'
 
 const CATEGORYESCONST = [
   {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: '/category/cat1.jpg'},
@@ -22,8 +22,6 @@ const CATEGORYESCONST = [
 const CategoryPage = ({
   categoryName,
   level = 1,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  parentCategory,
   categories = [],
   idOfFilter,
   categoryTitleName,
@@ -39,11 +37,13 @@ const CategoryPage = ({
 }) => {
   const [sortedCategories, setSortedCategories] = useState<Category[]>(categories)
   const [activeFilterId, setActiveFilterId] = useState<number | null>(idOfFilter || null)
+  const [currentSlide, setCurrentSlide] = useState(0)
   const listRef = useRef<HTMLUListElement>(null)
   const itemRefs = useRef<(HTMLLIElement | null)[]>([])
   const pathname = usePathname()
   const {clearFilters, setFilter} = useActions()
   const windowWidth = useWindowWidth()
+
   useEffect(() => {
     return () => {
       clearFilters()
@@ -60,64 +60,119 @@ const CategoryPage = ({
     }
   }, [clearFilters, idOfFilter, setFilter])
 
-  // Мемоизируем строковое представление категорий для сравнения
   const categoriesKey = useMemo(() => {
     return JSON.stringify(categories.map((cat) => cat.id || cat.slug))
   }, [categories])
 
-  const companiesSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    pauseOnHover: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: true,
-    fade: false,
-    responsive: [
-      {
-        breakpoint: 1200,
-        settings: {
-          autoplaySpeed: 3500
+  // --- Keen-slider settings для компаний ---
+  const companiesSlides = useMemo(
+    () => (companyes ? groupCompaniesIntoSlides(companyes, windowWidth || 1000) : []),
+    [companyes, windowWidth]
+  )
+  const companiesTimer = useRef<NodeJS.Timeout | null>(null)
+
+  const [companiesSliderRef] = useKeenSlider<HTMLDivElement>(
+    {
+      loop: true,
+      mode: 'snap',
+      slides: {perView: 1, spacing: 15}
+    },
+    [
+      (slider) => {
+        function clearNextTimeout() {
+          if (companiesTimer.current) {
+            clearTimeout(companiesTimer.current)
+            companiesTimer.current = null
+          }
         }
-      },
-      {
-        breakpoint: 900,
-        settings: {
-          autoplaySpeed: 4000
+        function nextTimeout() {
+          clearNextTimeout()
+          if (companiesSlides.length > 1) {
+            companiesTimer.current = setTimeout(() => {
+              slider.next()
+            }, 6000)
+          }
         }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          autoplaySpeed: 4500,
-          arrows: false
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          autoplaySpeed: 5000,
-          arrows: false
-        }
+
+        slider.on('created', () => {
+          nextTimeout()
+        })
+        slider.on('dragStarted', () => {
+          clearNextTimeout()
+        })
+        slider.on('animationEnded', () => {
+          nextTimeout()
+        })
+        slider.on('updated', () => {
+          nextTimeout()
+        })
+        slider.on('destroyed', () => {
+          clearNextTimeout()
+        })
       }
     ]
-  }
+  )
 
-  const groupCompaniesIntoSlides = (
-    companies: {name: string; inn: string; ageInYears: string}[],
-    windowWidth: number
-  ) => {
-    let itemsPerSlide = 30 // 2 строки × 3 столбца по умолчанию
+  // --- Keen-slider settings для категорий (основной слайдер для мобильных) ---
+  const slidesPerView = windowWidth && windowWidth < 600 ? 1 : 2
+  const timer = useRef<NodeJS.Timeout | null>(null)
 
+  const [categoriesSliderRef, categoriesSliderInstanceRef] = useKeenSlider<HTMLDivElement>(
+    {
+      loop: false,
+      mode: 'snap',
+      slides: {perView: slidesPerView, spacing: 15},
+      slideChanged(s) {
+        setCurrentSlide(s.track.details.rel)
+      }
+    },
+    [
+      (slider) => {
+        function clearNextTimeout() {
+          if (timer.current) {
+            clearTimeout(timer.current)
+            timer.current = null
+          }
+        }
+        function nextTimeout() {
+          clearNextTimeout()
+          const slidesForCategory = groupCategoriesIntoSlides(categoriesToDisplay)
+          if (slidesForCategory.length > 1) {
+            timer.current = setTimeout(() => {
+              slider.next()
+            }, 6000)
+          }
+        }
+
+        slider.on('created', () => {
+          nextTimeout()
+        })
+        slider.on('dragStarted', () => {
+          clearNextTimeout()
+        })
+        slider.on('animationEnded', () => {
+          nextTimeout()
+        })
+        slider.on('updated', () => {
+          nextTimeout()
+        })
+        slider.on('destroyed', () => {
+          clearNextTimeout()
+        })
+      }
+    ]
+  )
+
+  function groupCompaniesIntoSlides(companies: {name: string; inn: string; ageInYears: string}[], windowWidth: number) {
+    let itemsPerSlide = 30
     if (windowWidth <= 480) {
-      itemsPerSlide = 10 // 10 строки × 1 столбец
+      itemsPerSlide = 10
     } else if (windowWidth <= 600) {
-      itemsPerSlide = 10 // 10 строки × 1 столбец
+      itemsPerSlide = 10
     } else if (windowWidth <= 900) {
-      itemsPerSlide = 20 // 10 строки × 2 столбца
+      itemsPerSlide = 20
     } else if (windowWidth <= 1200) {
-      itemsPerSlide = 30 // 10 строки × 3 столбца
+      itemsPerSlide = 30
     }
 
     const slides = []
@@ -127,9 +182,16 @@ const CategoryPage = ({
     return slides
   }
 
+  function groupCategoriesIntoSlides(categories: Category[]) {
+    const slides = []
+    for (let i = 0; i < categories.length; i += 2) {
+      slides.push(categories.slice(i, i + 2))
+    }
+    return slides
+  }
+
   useEffect(() => {
     if (level === 2 && listRef.current && categories.length > 0) {
-      // Даем время для рендеринга элементов
       const timeoutId = setTimeout(() => {
         const measurements = itemRefs.current
           .filter((ref) => ref !== null)
@@ -144,13 +206,11 @@ const CategoryPage = ({
           })
           .filter((item) => item !== null)
 
-        // Сортируем от меньшей ширины к большей
         const sorted = measurements.sort((a, b) => {
           if (!a || !b) return 0
           return a.width - b.width
         })
 
-        // Обновляем порядок категорий
         const newOrder = sorted.map((item) => item?.category).filter((cat): cat is Category => cat !== undefined)
 
         if (newOrder.length > 0) {
@@ -158,81 +218,41 @@ const CategoryPage = ({
         }
       }, 100)
 
-      // Очищаем таймаут при размонтировании или изменении зависимостей
       return () => clearTimeout(timeoutId)
     } else {
-      // Для level !== 2 или когда нет необходимости в сортировке
       setSortedCategories(categories)
     }
-  }, [level, categoryName, categoriesKey, categories]) // Используем categoriesKey вместо categories
+  }, [level, categoryName, categoriesKey, categories])
 
-  // Используем sortedCategories для отображения
   const categoriesToDisplay = sortedCategories
 
-  // Функция для построения правильного href
   const buildHref = (category: Category) => {
     if (level === 1) {
-      // Для первого уровня: /categories/{categoryName}/{slug}
       return `/categories/${categoryName}/${category.slug.toLowerCase()}`
     } else {
-      // Для второго уровня используем текущий pathname и добавляем к нему новую категорию
       return `${pathname}/${category.slug.toLowerCase()}`
     }
   }
 
-  // Обработчик клика для level === 3
   const handleFilterClick = (category: Category) => {
     if (activeFilterId === category.id) {
-      // Если категория уже активна, деактивируем ее
       clearFilters()
-      // Восстанавливаем базовый фильтр страницы если он есть
       if (idOfFilter) {
         setFilter({filterName: idOfFilter.toString(), checked: true})
       }
       setActiveFilterId(null)
     } else {
-      // Очищаем предыдущие фильтры и устанавливаем новый
       clearFilters()
-      // Устанавливаем базовый фильтр страницы если он есть
       if (idOfFilter) {
         setFilter({filterName: idOfFilter.toString(), checked: true})
       }
-      // Добавляем дополнительный фильтр
       setFilter({filterName: category.id?.toString() || '', checked: true})
       setActiveFilterId(category.id || null)
     }
   }
-  const mainSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 2, // Показывать 2 слайда одновременно
-    slidesToScroll: 1, // Прокручивать по одному слайду
-    arrows: true,
-    fade: false, // Убираем fade для корректной работы с несколькими слайдами
-    responsive: [
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
-  }
 
-  // Функция для группировки категорий по 2 в слайд
-  const groupCategoriesIntoSlides = (categories: Category[]) => {
-    const slides = []
-    for (let i = 0; i < categories.length; i += 2) {
-      slides.push(categories.slice(i, i + 2))
-    }
-    return slides
-  }
-
-  // Получаем слайды для проверки их количества
-  const slides = groupCategoriesIntoSlides(categoriesToDisplay)
-  const shouldUseSlider = slides.length > 1
+  const slidesForCategory = groupCategoriesIntoSlides(categoriesToDisplay)
+  const shouldUseSlider = slidesForCategory.length > 1
 
   return (
     <div style={{overflowX: 'hidden'}}>
@@ -242,27 +262,31 @@ const CategoryPage = ({
           {level < 4 && (
             <h1 id='cy-category-page-title' className={styles.category__title__main}>
               {categoryTitleName
-                ? categoryTitleName.slice(0, 1).toUpperCase() +
+                ? categoryTitleName.charAt(0).toUpperCase() +
                   categoryTitleName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')
-                : categoryName.slice(0, 1).toUpperCase() +
-                  categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
+                : categoryName.charAt(0).toUpperCase() + categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
             </h1>
           )}
 
-          {/* Рендер для level < 3 с ссылками */}
+          {/* Список категорий для desktop (ширина > 900) */}
           {level < 3 && categoriesToDisplay.length > 0 && windowWidth && windowWidth > 900 && (
             <ul
               ref={listRef}
-              className={`${styles.category__list} ${level === 1 ? styles.category__list__first : ''} ${level > 1 ? styles.category__list__more_than_first : ''} ${level === 2 ? styles.category__list__second : ''}`}
+              className={`${styles.category__list} ${
+                level === 1 ? styles.category__list__first : ''
+              } ${level > 1 ? styles.category__list__more_than_first : ''} ${level === 2 ? styles.category__list__second : ''}`}
             >
               {categoriesToDisplay.map((category, index) => (
                 <Link key={category.id || category.slug} href={buildHref(category)}>
                   <li
                     style={{
                       backgroundImage: `
-                                       ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-                                       url(${category.imageUrl ? category.imageUrl : (!category.imageUrl && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''})
-                                       `,
+                          ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
+                          url(${
+                            category.imageUrl
+                              ? category.imageUrl
+                              : (!category.imageUrl && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''
+                          })`,
                       color: level === 1 ? '#FFF' : '#000'
                     }}
                     ref={(el) => {
@@ -270,7 +294,9 @@ const CategoryPage = ({
                         itemRefs.current[index] = el
                       }
                     }}
-                    className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${level === 1 ? styles.category__item__with__image : ''}`}
+                    className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${
+                      level === 1 ? styles.category__item__with__image : ''
+                    }`}
                   >
                     <p
                       className={`${styles.category__item__title} ${level === 2 ? styles.category__item__title__second : ''}`}
@@ -283,62 +309,96 @@ const CategoryPage = ({
             </ul>
           )}
 
-          {/* Рендер для мобильных устройств */}
+          {/* Мобильный слайдер категорий */}
           {level < 3 && categoriesToDisplay.length > 0 && windowWidth && windowWidth < 900 && (
             <>
-              {/* Если слайдов больше 1, используем Slider */}
               {shouldUseSlider ? (
-                <Slider
-                  {...mainSettings}
-                  className={`${styles.category__slider} category__slider__main ${level === 1 && 'category__slider__first'}`}
-                >
-                  {slides.map((slideCategories, slideIndex) => (
-                    <div key={slideIndex} className={styles.category__slide}>
-                      <div className={styles.category__slide__content}>
-                        {slideCategories.map((category, index) => (
-                          <Link key={category.id || category.slug} href={buildHref(category)}>
-                            <div
-                              style={{
-                                backgroundImage: `
-                                                       ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-                                                       url(${category.imageUrl ? category.imageUrl : (!category.imageUrl && level === 1 && CATEGORYESCONST[slideIndex * 2 + index]?.imageSrc) || ''})
-                                                       `,
-                                color: level === 1 ? '#FFF' : '#000'
-                              }}
-                              className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${level === 1 ? styles.category__item__with__image : ''} ${styles.category__item__slider}`}
-                            >
-                              <p
-                                className={`${styles.category__item__title} ${level === 2 ? styles.category__item__title__second : ''}`}
+                <div className={styles.category__slider__wrapper}>
+                  <div
+                    ref={categoriesSliderRef}
+                    className={`${styles.category__slider} category__slider__main ${
+                      level === 1 ? 'category__slider__first' : ''
+                    } keen-slider`}
+                  >
+                    {slidesForCategory.map((slideCategories, slideIndex) => (
+                      <div key={slideIndex} className={`keen-slider__slide ${styles.category__slide}`}>
+                        <div className={styles.category__slide__content}>
+                          {slideCategories.map((category, index) => (
+                            <Link key={category.id || category.slug} href={buildHref(category)}>
+                              <div
+                                style={{
+                                  backgroundImage: `
+                                      ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
+                                      url(${
+                                        category.imageUrl
+                                          ? category.imageUrl
+                                          : (!category.imageUrl &&
+                                              level === 1 &&
+                                              CATEGORYESCONST[slideIndex * 2 + index]?.imageSrc) ||
+                                            ''
+                                      })`,
+                                  color: level === 1 ? '#FFF' : '#000'
+                                }}
+                                className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${
+                                  level === 1 ? styles.category__item__with__image : ''
+                                } ${styles.category__item__slider}`}
                               >
-                                {category.name}
-                              </p>
-                            </div>
-                          </Link>
-                        ))}
+                                <p
+                                  className={`${styles.category__item__title} ${
+                                    level === 2 ? styles.category__item__title__second : ''
+                                  }`}
+                                >
+                                  {category.name}
+                                </p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
                       </div>
+                    ))}
+                  </div>
+
+                  {/* Точки навигации */}
+                  {shouldUseSlider && categoriesSliderInstanceRef.current && (
+                    <div className={styles.category__dots}>
+                      {slidesForCategory.map((_, idx) => (
+                        <button
+                          key={idx}
+                          className={`${styles.category__dot} ${idx === currentSlide ? styles.category__dot__active : ''}`}
+                          onClick={() => {
+                            categoriesSliderInstanceRef.current?.moveToIdx(idx)
+                            setCurrentSlide(idx)
+                          }}
+                        />
+                      ))}
                     </div>
-                  ))}
-                </Slider>
+                  )}
+                </div>
               ) : (
-                /* Если слайдов меньше 2, показываем элементы без слайдера */
+                // Если слайдов мало, показываем список без слайдера
                 <div
-                  className={`${styles.category__simple__container} ${level === 1 && styles.category__simple__container__first} ${styles.category__simple__container__without__slider}`}
+                  className={`${styles.category__simple__container} ${
+                    level === 1 ? styles.category__simple__container__first : ''
+                  } ${styles.category__simple__container__without__slider}`}
                 >
                   {categoriesToDisplay.map((category, index) => (
                     <Link key={category.id || category.slug} href={buildHref(category)}>
                       <div
                         style={{
                           backgroundImage: `
-                                                 ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-                                                 url(${category.imageUrl ? category.imageUrl : (!category.imageUrl && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''})
-                                                 `,
+                              ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
+                              url(${
+                                category.imageUrl
+                                  ? category.imageUrl
+                                  : (!category.imageUrl && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''
+                              })`,
                           color: level === 1 ? '#FFF' : '#000'
                         }}
-                        className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${level === 1 ? styles.category__item__with__image : ''} ${styles.category__item__simple}`}
+                        className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${
+                          level === 1 ? styles.category__item__with__image : ''
+                        } ${styles.category__item__simple}`}
                       >
-                        <p
-                          className={`${styles.category__item__title} ${level === 2 ? styles.category__item__title__second : ''}`}
-                        >
+                        <p className={`${styles.category__item__title} ${styles.category__item__title__second}`}>
                           {category.name}
                         </p>
                       </div>
@@ -349,7 +409,7 @@ const CategoryPage = ({
             </>
           )}
 
-          {/* Рендер для level === 3 с фильтрами */}
+          {/* Фильтры для level === 3 */}
           {level === 3 && categoriesToDisplay.length > 0 && (
             <ul ref={listRef} className={`${styles.category__list} ${styles.category__list__more_than_first}`}>
               {categoriesToDisplay.map((category) => (
@@ -370,26 +430,32 @@ const CategoryPage = ({
             </ul>
           )}
 
+          {/* Секция компаний с keen-slider */}
           {companyes && companyes.length > 0 && windowWidth && (
             <div className={styles.companies__section}>
               <h2 className={styles.companies__title}>Компании</h2>
-              <Slider {...companiesSettings} className={`${styles.companies__slider} companies__slider__main`}>
-                {groupCompaniesIntoSlides(companyes, windowWidth).map((slideCompanies, slideIndex) => (
-                  <div key={slideIndex} className={styles.company__slide__item}>
-                    <div className={styles.company__grid}>
-                      {slideCompanies.map((company, index) => (
-                        <div key={company.name + index} className={styles.company__card}>
-                          <div className={styles.company__info}>
-                            <h3 className={styles.company__name}>{company.name}</h3>
-                            <p className={styles.company__inn}>ИНН: {company.inn}</p>
-                            <p className={styles.company__age}>Опыт: {company.ageInYears} лет</p>
+              <div className={styles.companies__slider__wrapper}>
+                <div
+                  ref={companiesSliderRef}
+                  className={`keen-slider ${styles.companies__slider} companies__slider__main`}
+                >
+                  {companiesSlides.map((slideCompanies, slideIndex) => (
+                    <div key={slideIndex} className={`keen-slider__slide ${styles.company__slide__item}`}>
+                      <div className={styles.company__grid}>
+                        {slideCompanies.map((company, index) => (
+                          <div key={company.name + index} className={styles.company__card}>
+                            <div className={styles.company__info}>
+                              <h3 className={styles.company__name}>{company.name}</h3>
+                              <p className={styles.company__inn}>ИНН: {company.inn}</p>
+                              <p className={styles.company__age}>Опыт: {company.ageInYears} лет</p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </Slider>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
           <Catalog isShowFilters={false} initialProducts={[]} initialHasMore={false} />

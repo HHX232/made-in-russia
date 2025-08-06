@@ -1,83 +1,14 @@
 'use client'
 import {FC, useEffect} from 'react'
 import styles from './CardMiddlePage.module.scss'
-import ShowMarkdown from '@/components/UI-kit/Texts/ShowMarkdown/ShowMarkdown'
 import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
 import Image from 'next/image'
 import Skeleton from 'react-loading-skeleton'
 import ICardFull from '@/services/card/card.types'
 import {useTranslations} from 'next-intl'
-// const markExample1 = `**Применение:**
-// Применение:  Паркетные полы, мебельное производство, отделка интерьеров, строительство террас, декоративные панели.
-// <span style="color: #2E4053; font-weight: 500;">Паркетные полы, мебельные фасады, лестницы, декоративные стеновые панели.</span>
-//  пишем текст текст текст == Whereas recogni == <- Скопировали
+import dynamic from 'next/dynamic'
 
-//   пишем текст текст текст == Whereas recogni == <- Скопировали
-
-// **Сертификация:**
-// <span style="color: #1A5276; font-style: italic;">FSC, 14001, EUTR.</span><span style="color: #a22d2d; font-style: italic;"> PEFC, ISO.</span>
-
-// **Транспортировка:**
-// - <span style=" padding: 2px 14px;">Морские контейнеры</span> (20'/40' HQ, влагозащитная упаковка).
-// - <span style=" padding: 2px 4px;">Автоперевозки</span> (еврофуры, доставка по СНГ/ЕС).
-// - Инкотермс: <span style="text-decoration: underline;">FOB, CIF, DAP</span> (2020).
-
-// **Преимущества:**
-// 🔹 <span style="color: #7D6608;">Эстетика</span> — редкий радиальный распил с шелковистым блеском.
-// 🔹 <span style="color: #7D6608;">Долговечность</span> — плотность 720 кг/м³, устойчивость к деформациям.
-// 🔹 <span style="color: #7D6608;">Экология</span> — сертифицированная древесина с нулевым VOC.
-// 🔹 <span style="color: #7D6608;">Гибкость</span> — совместимость с системами подогрева пола.  `
-
-// const markExample2 = `**Дополнение:**
-// <a href="https://api64w.ilovepdf.com/v1/download/84tr3zp3v3m94jy08xrjygkjsp8c0x3b2qngqnfz4rAd569Ag1y1t44v01r2wvl3bz7q93wr5hml3dt7xllq3c5dnlb6kjtp1twfrfw4mz6r6km9f4yfth4kgp8yrq1yAndqsz50xdbf1n1s5f4wc98qsv58mk5bv5hAmpn1jpz2bwrdwvb1" download>Скачать PDF файл</a>
-
-// == Whereas recogni ==
-
-// | Характеристика       | Дуб натуральный          | Искусственный камень    |
-// |----------------------|--------------------------|-------------------------|
-// | **Плотность**        | 720 кг/м³               | 1200 кг/м³             |
-// | **Влагостойкость**   | Средняя (требует защиты)| Высокая                |
-// | **Термостойкость**   | До 120°C                | До 300°C               |
-// | **Экологичность**    | 100% натуральный        | Без VOC                |
-// | **Срок службы**      | 50+ лет                | 25+ лет                |
-// | **Цветовая гамма**   | Естественные оттенки   | Любой RAL              |
-
-// **Новая таблица способ2**
-
-// <div >
-//   <table>
-// <colgroup><col style="width: 10%" /></colgroup>
-//     <thead>
-//       <tr>
-//         <th colspan="3" style="background-color: #f5f5f5; text-align: center;">Сравнение материалов</th>
-//       </tr>
-//     </thead>
-//     <tbody>
-//       <tr>
-//         <td><strong>Применение</strong></td>
-//         <td>Паркет, мебель, лестницы</td>
-//         <td>Столешницы, фасады, подоконники</td>
-//       </tr>
-//       <tr>
-//         <td><strong>Твердость (по Моосу)</strong></td>
-//         <td>3.5–4</td>
-//         <td>6–7</td>
-//       </tr>
-//       <tr>
-//         <td><strong>Уход</strong></td>
-//         <td>Воск/масло</td>
-//         <td>Мыльный раствор</td>
-//       </tr>
-//       <tr>
-//         <td><strong>Цена</strong></td>
-//         <td>$$$ (элитный сегмент)</td>
-//         <td>$$ (средний сегмент)</td>
-//       </tr>
-//     </tbody>
-//   </table>
-// </div>
-// `
-
+const ShowMarkdown = dynamic(() => import('@/components/UI-kit/Texts/ShowMarkdown/ShowMarkdown'), {ssr: false})
 const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoading, cardData}) => {
   useEffect(() => {
     // console.log('cardData in middle', cardData)

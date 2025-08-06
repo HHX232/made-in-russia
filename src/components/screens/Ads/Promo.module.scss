@@ -23,7 +23,6 @@
   overflow: hidden;
   border-radius: 20px;
   backface-visibility: hidden;
-  backface-visibility: hidden;
   color: #fff;
   transition: transform 0.3s ease;
 
@@ -40,7 +39,7 @@
   }
 
   &_1 {
-    height: 100vh;
+    height: 100vh !important;
     max-height: 500px;
     border-radius: 20px !important;
     grid-column: 1/3;

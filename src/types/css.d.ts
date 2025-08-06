@@ -14,4 +14,4 @@ declare module '*.scss' {
 declare module 'react-loading-skeleton/dist/skeleton.css'
 declare module 'slick-carousel/slick/slick.css'
 declare module 'slick-carousel/slick/slick-theme.css'
-declare module 'md-editor-rt/lib/style.css'
+// declare module 'md-editor-rt/lib/style.css'

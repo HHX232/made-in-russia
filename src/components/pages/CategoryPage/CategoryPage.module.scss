@@ -65,12 +65,18 @@
 .category__item__title {
   font-size: 20px;
   font-weight: 500;
+  hyphens: auto;
   line-height: 24px;
   white-space: nowrap;
+
+  /* Добавляем перенос слов посередине */
+  word-break: break-all;
 }
 
 .category__item__title__second {
+  hyphens: auto;
   white-space: unset;
+  word-break: break-word;
 }
 
 .category__item__image {
@@ -80,15 +86,27 @@
   border-radius: 10px;
 }
 
+/* Стили для обертки слайдера категорий */
+.category__slider__wrapper {
+  position: relative;
+  width: 100%;
+}
+
 /* Стили для слайдера */
 .category__slider {
   overflow: hidden;
   width: 100%;
+
+  /* Устанавливаем минимальную высоту для слайдера */
+  min-height: 200px;
   margin: 0 auto;
 }
 
 .category__slide {
-  height: 100%;
+  /* Убираем фиксированную высоту и позволяем слайду занимать всю высоту */
+  display: flex !important;
+  height: 100% !important;
+  flex-direction: column;
   padding: 0 10px;
   outline: none;
 }
@@ -97,16 +115,33 @@
   display: flex;
   height: 100%;
   flex-direction: column;
-  gap: 20px;
+
+  /* Добавляем равномерное распределение */
+  justify-content: space-between;
+  gap: 15px;
 }
 
 .category__item__slider {
   width: 100% !important;
   min-width: unset !important;
   max-width: unset !important;
-  height: calc(50% - 10px) !important;
-  min-height: 80px;
+
+  /* Убираем фиксированную высоту и позволяем элементу расти */
+  height: auto !important;
+  min-height: 120px !important;
+  flex: 1 !important;
   flex-shrink: 0;
+
+  /* Добавляем отступы для лучшего отображения текста */
+  padding: 20px !important;
+
+  /* Исправляем перенос текста в слайдере */
+  p {
+    hyphens: auto;
+    overflow-wrap: break-word;
+    white-space: normal !important;
+    word-break: break-word;
+  }
 }
 
 .category__simple__container__without__slider {
@@ -116,6 +151,34 @@
   align-items: center;
   justify-content: space-evenly;
   gap: 30px;
+}
+
+/* Стили для точек навигации категорий - маленькие черно-белые */
+.category__dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 0;
+  gap: 8px;
+}
+
+.category__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: #ccc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #666;
+  }
+
+  &__active {
+    background-color: #333;
+  }
 }
 
 /* Стили для точек навигации */
@@ -171,6 +234,12 @@
   font-size: 28px;
   font-weight: 600;
   line-height: 34px;
+}
+
+/* Обертка для слайдера компаний */
+.companies__slider__wrapper {
+  position: relative;
+  width: 100%;
 }
 
 .companies__slider {
@@ -289,9 +358,14 @@
   }
 }
 
+/* Убираем стили для точек навигации компаний */
+
 /* Контейнер для слайда */
 .company__slide__item {
-  height: 100%;
+  height: 100% !important;
+
+  /* Устанавливаем полную высоту для слайда компаний */
+  min-height: 100%;
   padding: 10px;
   outline: none;
 }
@@ -358,6 +432,9 @@
   hyphens: auto;
   line-height: 20px;
   overflow-wrap: break-word;
+
+  /* Добавляем перенос слов посередине */
+  word-break: break-all;
   word-wrap: break-word;
 
   /* Выравниваем текст по верху */
@@ -480,6 +557,26 @@
     font-size: 11px;
     line-height: 14px;
   }
+
+  /* Адаптивные стили для слайдера категорий */
+  .category__slider {
+    min-height: 180px;
+  }
+
+  .category__item__slider {
+    min-height: 80px !important;
+    padding: 12px !important;
+  }
+
+  .category__dots {
+    padding: 12px 0;
+    gap: 6px;
+  }
+
+  .category__dot {
+    width: 6px;
+    height: 6px;
+  }
 }
 
 @media (max-width: 700px) {
@@ -589,6 +686,26 @@
     font-size: 10px;
     line-height: 13px;
   }
+
+  /* Адаптивные стили для категорий на мобильных */
+  .category__slider {
+    min-height: 150px;
+  }
+
+  .category__item__slider {
+    min-height: 60px !important;
+    padding: 10px !important;
+  }
+
+  .category__dots {
+    padding: 10px 0;
+    gap: 5px;
+  }
+
+  .category__dot {
+    width: 5px;
+    height: 5px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -615,6 +732,16 @@
   .companies__slider .slick-dots {
     bottom: -50px !important;
     padding: 10px 0;
+  }
+
+  .companies__dots {
+    padding: 10px 0;
+    gap: 6px;
+  }
+
+  .company__dot {
+    width: 8px;
+    height: 8px;
   }
 }
 
@@ -670,7 +797,9 @@
       justify-content: center;
 
       & > p {
+        hyphens: auto;
         white-space: unset;
+        word-break: break-word;
       }
     }
   }

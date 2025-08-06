@@ -1,9 +1,10 @@
 'use client'
 import {FC, useEffect, useState} from 'react'
 import styles from './AdminCategoriesPage.module.scss'
-import CategoriesService from '@/services/categoryes/categoryes.service'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
+import instance from '@/api/api.interceptor'
+import {getAccessToken} from '@/services/auth/auth.helper'
 
 export interface Category {
   id: number
@@ -13,6 +14,7 @@ export interface Category {
   children: Category[]
   creationDate: string
   lastModificationDate: string
+  okvedCategories: string[]
 }
 
 interface EditingCategory {
@@ -21,14 +23,16 @@ interface EditingCategory {
   name: string
   imageUrl?: string
   children: Category[]
-  parentId?: number
+  parentId?: number | null
   image?: File
+  okvedCategories?: string[]
 }
 
 const AdminCategoriesPage: FC = () => {
   const [categoriesRu, setCategoriesRu] = useState<Category[]>([])
   const [categoriesEn, setCategoriesEn] = useState<Category[]>([])
   const [categoriesZh, setCategoriesZh] = useState<Category[]>([])
+
   const [activeLanguage, setActiveLanguage] = useState<'ru' | 'en' | 'zh'>('ru')
   const [loading, setLoading] = useState(true)
   const [editingCategory, setEditingCategory] = useState<EditingCategory | null>(null)
@@ -38,13 +42,14 @@ const AdminCategoriesPage: FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const categoriesRussion = await CategoriesService.getAll('ru')
-        const categoriesEnglish = await CategoriesService.getAll('en')
-        const categoriesChinese = await CategoriesService.getAll('zh')
-
-        setCategoriesRu(categoriesRussion)
-        setCategoriesEn(categoriesEnglish)
-        setCategoriesZh(categoriesChinese)
+        const [categoriesRussian, categoriesEnglish, categoriesChinese] = await Promise.all([
+          instance.get('/categories?lang=ru'),
+          instance.get('/categories?lang=en'),
+          instance.get('/categories?lang=zh')
+        ])
+        setCategoriesRu(categoriesRussian.data as Category[])
+        setCategoriesEn(categoriesEnglish.data as Category[])
+        setCategoriesZh(categoriesChinese.data as Category[])
       } catch (error) {
         console.error('Error fetching categories:', error)
       } finally {
@@ -54,7 +59,7 @@ const AdminCategoriesPage: FC = () => {
     fetchCategories()
   }, [])
 
-  const getCurrentCategories = () => {
+  const getCurrentCategories = (): Category[] => {
     switch (activeLanguage) {
       case 'ru':
         return categoriesRu
@@ -67,7 +72,6 @@ const AdminCategoriesPage: FC = () => {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const setCurrentCategories = (categories: Category[]) => {
     switch (activeLanguage) {
       case 'ru':
@@ -99,7 +103,8 @@ const AdminCategoriesPage: FC = () => {
       name: category.name,
       imageUrl: category.imageUrl,
       children: category.children,
-      parentId
+      parentId: parentId ?? null,
+      okvedCategories: category.okvedCategories || []
     })
     setIsCreating(false)
   }
@@ -109,7 +114,8 @@ const AdminCategoriesPage: FC = () => {
       slug: '',
       name: '',
       children: [],
-      parentId
+      parentId: parentId ?? null,
+      okvedCategories: []
     })
     setIsCreating(true)
   }
@@ -119,18 +125,70 @@ const AdminCategoriesPage: FC = () => {
 
     try {
       setLoading(true)
-      // Здесь должен быть API вызов для сохранения/создания категории
-      console.log('Saving category:', editingCategory)
 
-      // Имитация API вызова
-      if (isCreating) {
-        alert('Категория создана успешно!')
-      } else {
-        alert('Категория обновлена успешно!')
+      const token = await getAccessToken()
+      if (!token) {
+        alert('Ошибка авторизации, пожалуйста, войдите снова')
+        setLoading(false)
+        return
       }
+
+      const formData = new FormData()
+
+      const nameTranslations = {en: '', ru: '', zh: ''}
+      nameTranslations[activeLanguage] = editingCategory.name
+
+      const dataPayload = {
+        name: editingCategory.name,
+        slug: editingCategory.slug.replace(/^(l[1-5]_)+/, ''),
+        parentId: editingCategory.parentId || null,
+        nameTranslations, // Заполняем только для активного языка
+        okvedCategories: editingCategory.okvedCategories || []
+      }
+
+      // Оборачиваем JSON в Blob и добавляем в formData
+      const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
+      formData.append('data', jsonBlob)
+
+      // Если выбран файл (изображение) - добавляем как бинарник
+      if (editingCategory.image) {
+        formData.append('image', editingCategory.image)
+      }
+
+      const url = isCreating
+        ? `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/categories`
+        : `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/categories/${editingCategory.id}`
+      const method = isCreating ? 'POST' : 'PUT'
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`
+          // НЕ ставим Content-Type — браузер выставит multipart/form-data с подходящими границами
+        },
+        body: formData
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Ошибка ${response.status}: ${errorText}`)
+      }
+
+      alert(isCreating ? 'Категория создана успешно!' : 'Категория обновлена успешно!')
 
       setEditingCategory(null)
       setIsCreating(false)
+
+      // Перезагружаем категории после сохранения
+      setLoading(true)
+      const [categoriesRussian, categoriesEnglish, categoriesChinese] = await Promise.all([
+        instance.get('/categories?lang=ru'),
+        instance.get('/categories?lang=en'),
+        instance.get('/categories?lang=zh')
+      ])
+      setCategoriesRu(categoriesRussian.data as Category[])
+      setCategoriesEn(categoriesEnglish.data as Category[])
+      setCategoriesZh(categoriesChinese.data as Category[])
     } catch (error) {
       console.error('Error saving category:', error)
       alert('Ошибка при сохранении категории')
@@ -144,9 +202,11 @@ const AdminCategoriesPage: FC = () => {
 
     try {
       setLoading(true)
-      // Здесь должен быть API вызов для удаления категории
-      console.log('Deleting category:', categoryId)
+      await instance.delete(`/categories/${categoryId}`)
       alert('Категория удалена успешно!')
+
+      // Убираем из локального стейта после удаления
+      setCurrentCategories(getCurrentCategories().filter((cat) => cat.id !== categoryId))
     } catch (error) {
       console.error('Error deleting category:', error)
       alert('Ошибка при удалении категории')
@@ -175,6 +235,7 @@ const AdminCategoriesPage: FC = () => {
             <button
               className={`${styles.expand__button} ${isExpanded ? styles.expanded : ''}`}
               onClick={() => toggleCategoryExpansion(category.id)}
+              aria-label={isExpanded ? 'Свернуть категорию' : 'Развернуть категорию'}
             >
               ▶
             </button>
@@ -187,6 +248,9 @@ const AdminCategoriesPage: FC = () => {
           <div className={styles.category__info}>
             <span className={styles.category__name}>{category.name}</span>
             <span className={styles.category__slug}>/{category.slug}</span>
+            {category.okvedCategories && category.okvedCategories.length > 0 && (
+              <div className={styles.category__okved}>ОКВЭД: {category.okvedCategories.join(', ')}</div>
+            )}
           </div>
 
           <div className={styles.category__actions}>
@@ -243,6 +307,25 @@ const AdminCategoriesPage: FC = () => {
             />
           </div>
 
+          <div className={styles.form__field}>
+            <label className={styles.form__label}>OKVED коды (через точку)</label>
+            <TextInputUI
+              currentValue={(editingCategory.okvedCategories || []).join('. ')}
+              placeholder='Введите OKVED коды через точку'
+              onSetValue={(value) =>
+                setEditingCategory({
+                  ...editingCategory,
+                  okvedCategories: value
+                    .split('.')
+                    .map((s) => s.trim())
+                    .filter(Boolean)
+                })
+              }
+              theme='superWhite'
+              extraClass={styles.form__input}
+            />
+          </div>
+
           {isFirstLevel && (
             <div className={styles.form__field}>
               <label className={styles.form__label}>Изображение категории (горизонтальное)</label>
@@ -253,12 +336,16 @@ const AdminCategoriesPage: FC = () => {
                 onActiveImagesChange={(images) => {
                   if (images.length > 0) {
                     setEditingCategory({...editingCategory, imageUrl: images[0]})
+                  } else {
+                    setEditingCategory({...editingCategory, imageUrl: undefined})
                   }
                 }}
                 activeImages={editingCategory.imageUrl ? [editingCategory.imageUrl] : []}
                 onFilesChange={(files) => {
                   if (files.length > 0) {
                     setEditingCategory({...editingCategory, image: files[0]})
+                  } else {
+                    setEditingCategory({...editingCategory, image: undefined})
                   }
                 }}
               />

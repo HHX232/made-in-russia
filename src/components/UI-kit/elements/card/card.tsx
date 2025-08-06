@@ -56,7 +56,7 @@ const Card = memo<ICardProps>(
     const {toggleToFavorites} = useActions()
     const {productInFavorites} = useTypedSelector((state) => state.favorites)
     const t = useTranslations('CardComponent')
-    console.log(fullProduct)
+    // console.log(fullProduct)
     const generateStructuredData = () => {
       // TODO Заменить на правильный домен
       const baseUrl = typeof window !== 'undefined' ? process.env.NEXT_PUBLIC_SITE_URL : 'https://yourdomain.com'

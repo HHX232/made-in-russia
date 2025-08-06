@@ -9,8 +9,7 @@ import ClientStyleLoader from '@/components/ClientStyleLoader'
 import '@/fonts/fonts.scss'
 import '@/scss/_variables.scss'
 import '@/scss/main.scss'
-import 'slick-carousel/slick/slick.css'
-import 'slick-carousel/slick/slick-theme.css'
+import 'keen-slider/keen-slider.min.css'
 
 export default async function RootLayoutLanguage({
   children,
@@ -51,7 +50,6 @@ export default async function RootLayoutLanguage({
 // import 'slick-carousel/slick/slick.css'
 // import 'slick-carousel/slick/slick-theme.css'
 // import '@/components/UI-kit/loaders/nprogress-provider.scss'
-// import 'md-editor-rt/lib/style.css'
 // // import {Toaster} from 'sonner'
 // // import ProductService from '@/services/products/product.service'
 // // import {NO_INDEX_PAGE} from '@/constants/seo.constants'
