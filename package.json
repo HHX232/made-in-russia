@@ -31,7 +31,6 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@next/bundle-analyzer": "^15.4.5",
-    "@next/swc-darwin-arm64": "^15.4.5",
     "@reduxjs/toolkit": "^2.8.2",
     "@svgr/webpack": "^8.1.0",
     "@tanstack/react-query": "^5.84.1",
