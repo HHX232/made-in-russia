@@ -132,6 +132,10 @@
     "saw": "注册日期",
     "errorLoadingProfile": "加载资料错误",
     "products": "商品",
+    "deletedSuccess": "删除成功！",
+    "deletedError": "删除失败！",
+    "deleting": "正在删除...",
+    "defaultError": "错误！",
 
 
     "ProfileForm": {

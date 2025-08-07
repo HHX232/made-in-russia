@@ -136,6 +136,10 @@
     "saw":"Дата регистрации",
     "errorLoadingProfile":"Ошибка загрузки профиля",
     "products":"товаров",
+    "deletedSuccess":"Успешно удалено!",
+    "deletedError":"Ошибка удаления!",
+    "deleting":"Удаление...",
+    "defaultError":"Ошибка!",
 
 
     "ProfileForm":{

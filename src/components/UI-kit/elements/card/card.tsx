@@ -58,8 +58,7 @@ const Card = memo<ICardProps>(
     const t = useTranslations('CardComponent')
     // console.log(fullProduct)
     const generateStructuredData = () => {
-      // TODO Заменить на правильный домен
-      const baseUrl = typeof window !== 'undefined' ? process.env.NEXT_PUBLIC_SITE_URL : 'https://yourdomain.com'
+      const baseUrl = typeof window !== 'undefined' ? process.env.NEXT_PUBLIC_SITE_URL : 'https://exporteru.com'
       const hasDiscount = discount !== 0 && price !== discountedPrice && discountedPrice !== null
 
       return {

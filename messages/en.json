@@ -133,7 +133,11 @@
    "saw": "Registration date",
     "errorLoadingProfile": "Error loading profile",
     "products": "products",
-
+    "deletedSuccess": "Successfully deleted!",
+    "deletedError": "Deletion error!",
+    "deleting": "Deleting...",
+    "defaultError": "Error!",
+    
     "ProfileForm": {
     "phoneNumber": "Mobile phone number",
     "errorLoadingCAtegoryes": "Error loading categories",

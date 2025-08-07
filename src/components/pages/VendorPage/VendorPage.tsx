@@ -310,11 +310,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
     // TODO: Implement devices logic
   }, [])
 
-  const handlePaymentClick = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    // TODO: Implement payment logic
-  }, [])
-
   const safeSetNeedToSave = useCallback(
     (value: boolean) => {
       if (initialLoadComplete) {
@@ -327,6 +322,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
   const handleDeleteAccount = useCallback(() => {
     // TODO: Implement delete account logic
   }, [])
+
   const currentLang = useCurrentLanguage()
 
   const handleCreateNewQuestion = useCallback(() => {
@@ -517,7 +513,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
               <QuickActions
                 isForVendor={isPageForVendor}
                 onDevicesClick={handleDevicesClick}
-                onPaymentClick={handlePaymentClick}
+                onPaymentClick={() => {}}
               />
               <ProfileForm
                 isShowForOwner={isPageForVendor}

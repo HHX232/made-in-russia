@@ -79,7 +79,6 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
   const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mov']
   const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES]
   const t = useTranslations('CardPage.CardBottomPage')
-  // TODO проверить заголовок
   const currentLang = useCurrentLanguage()
   const validateFile = (file: File): boolean => {
     const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)

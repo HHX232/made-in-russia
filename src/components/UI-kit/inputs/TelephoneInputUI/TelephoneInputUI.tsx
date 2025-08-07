@@ -18,9 +18,6 @@ interface ITelephoneProps {
 // В TelephoneInputUI.tsx обновите функцию getCountryCode:
 
 const getCountryCode = (country: TNumberStart): string => {
-  // TODO вернуть логи
-  // console.log('getCountryCode called with:', country, 'type:', typeof country)
-
   switch (country) {
     case 'Belarus':
       // console.log('Returning +375 for Belarus')

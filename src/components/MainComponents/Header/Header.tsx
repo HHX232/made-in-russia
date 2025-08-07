@@ -150,12 +150,13 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     '@type': 'Organization',
     name: 'Exporteru',
     url: typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL,
+    // TODO: заменить иконки на реальные СС
     sameAs: [instagramUrl, telegramUrl],
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '+78005553535',
       contactType: 'customer service',
-      availableLanguage: ['Russian', 'English']
+      availableLanguage: ['Russian', 'English', 'Chinese']
     }
   }
 
@@ -178,12 +179,11 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     '@context': 'https://schema.org',
     '@type': 'Site-Navigation-Element',
     name: 'Main Navigation',
-    // TODO заменить ссылки
     url: [
       `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/categories`,
-      `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/contacts`,
-      `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/about`,
-      `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/help`
+      // `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/contacts`,
+      `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/about-us`
+      // `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/help`
     ]
   }
 

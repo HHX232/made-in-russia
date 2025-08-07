@@ -13,7 +13,7 @@ export default async function ProfilePageMain() {
   const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
 
   try {
-    console.log('accessToken:', accessToken)
+    // console.log('accessToken:', accessToken)
     userData = await instance.get<User>('/me', {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -21,7 +21,7 @@ export default async function ProfilePageMain() {
         'Accept-Language': locale
       }
     })
-    console.log('userData:', userData?.data)
+    // console.log('userData:', userData?.data)
   } catch (e) {
     console.log('Error fetching userData:', e)
   }

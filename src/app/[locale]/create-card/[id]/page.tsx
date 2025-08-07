@@ -1,13 +1,11 @@
 import CreateCard from '@/components/pages/CreateCard/CreateCard'
-import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 import cardService from '@/services/card/card.service'
 import {Metadata} from 'next'
 // import {headers} from 'next/headers'
 import {notFound} from 'next/navigation'
 
 export const metadata: Metadata = {
-  title: 'Create card',
-  ...NO_INDEX_PAGE
+  title: 'Create card'
 }
 
 export default async function CreateCardPageWithId({params}: {params: Promise<{id: string; locale: string}>}) {
@@ -33,7 +31,7 @@ export default async function CreateCardPageWithId({params}: {params: Promise<{i
   let isSuccess = true
   try {
     res = await cardService.getFullCardById(id, locale, true)
-    console.log('res full card with translates', res.data)
+    // console.log('res full card with translates', res.data)
   } catch {
     isSuccess = false
     notFound()
@@ -42,6 +40,6 @@ export default async function CreateCardPageWithId({params}: {params: Promise<{i
     notFound()
   }
 
-  console.log('res.data', locale, res?.data)
+  // console.log('res.data', locale, res?.data)
   return <CreateCard initialData={(isSuccess && res?.data) || undefined} />
 }

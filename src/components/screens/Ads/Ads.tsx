@@ -14,8 +14,7 @@ import {
   generateBreadcrumbSchema,
   stripHtml
 } from './ads.helpers'
-// TODO : добавить в лайаут
-// import 'keen-slider/keen-slider.min.css'
+
 import {useKeenSlider} from 'keen-slider/react'
 
 interface PromoItemOptimizedProps {
@@ -371,12 +370,11 @@ interface PromoProps {
   siteTitle?: string
 }
 
-// TODO: проверить все данные
 const Promo: FC<PromoProps> = ({
   ads,
-  organizationName = 'Your Company Name',
-  baseUrl = 'https://your-domain.com',
-  siteTitle = 'Your Site Title'
+  organizationName = 'Exporteru',
+  baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exporteru.com',
+  siteTitle = 'Exporteru.com'
 }) => {
   const [isPageLoaded, setIsPageLoaded] = useState(false)
 
@@ -395,11 +393,11 @@ const Promo: FC<PromoProps> = ({
     const mainPromoSchema = generateMainPromoSchema(ads, organizationName, baseUrl)
     const itemListSchema = generateItemListSchema(ads, baseUrl)
     const organizationSchema = generateOrganizationSchema(organizationName, baseUrl)
-    const webSiteSchema = generateWebSiteSchema(baseUrl, siteTitle, organizationName)
+    // const webSiteSchema = generateWebSiteSchema(baseUrl, siteTitle, organizationName)
 
     return {
       '@context': 'https://schema.org',
-      '@graph': [webSiteSchema, organizationSchema, mainPromoSchema, itemListSchema]
+      '@graph': [organizationSchema, mainPromoSchema, itemListSchema]
     }
   }, [ads, organizationName, baseUrl, siteTitle])
 
@@ -419,7 +417,7 @@ const Promo: FC<PromoProps> = ({
         <meta itemProp='name' content='Promotional Section' />
         <meta itemProp='description' content='Featured promotional content and offers' />
 
-        <div className='container'>
+        <div id='promo-list' className='container'>
           <DynamicSlider ads={ads} isLoading={!isPageLoaded} />
         </div>
       </div>

@@ -52,11 +52,9 @@ html {
 // Анимации для keen-slider (опционально)
 .keen-slider[data-keen-slider-v] {
   transform: translateZ(0);
-  transform: translateZ(0);
 }
 
 .keen-slider[data-keen-slider-moves] {
-  transform: translate3d(var(--keen-slider-move-x, 0), var(--keen-slider-move-y, 0), 0) rotateZ(0deg);
   transform: translate3d(var(--keen-slider-move-x, 0), var(--keen-slider-move-y, 0), 0) rotateZ(0deg);
 }
 
@@ -67,7 +65,6 @@ html {
   height: 100%;
   min-height: 0;
   border-radius: 20px;
-  transform: translate3d(var(--keen-slider-slide-x, 0), var(--keen-slider-slide-y, 0), 0) rotateZ(0deg);
   transform: translate3d(var(--keen-slider-slide-x, 0), var(--keen-slider-slide-y, 0), 0) rotateZ(0deg);
 }
 
@@ -252,7 +249,7 @@ html {
 body {
   overflow: overlay;
 
-  // TODO: если что изменить коэффициент
+  // 50/50-TODO: если что изменить коэффициент
   line-height: 1.2;
 }
 

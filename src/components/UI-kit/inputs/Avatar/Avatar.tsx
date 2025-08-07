@@ -59,6 +59,10 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange}) => {
       })
 
       if (response.ok) {
+        // Сервер возвращает только 200, поэтому оставляем локальный аватар
+        // Локальный URL остается в localAvatar для отображения
+        // При перезагрузке страницы аватар будет загружен с сервера через avatarUrl prop
+
         toast.success(
           <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
             <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('congratulations')}</strong>
@@ -70,17 +74,10 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange}) => {
             }
           }
         )
-        const data = await response.json()
-        // Предполагаем, что сервер возвращает URL нового аватара
-        const newAvatarUrl = data.avatarUrl || data.avatar
 
-        // Освобождаем локальный URL
-        if (localAvatar) {
-          URL.revokeObjectURL(localAvatar)
-        }
-
-        setLocalAvatar(null)
-        onAvatarChange?.(newAvatarUrl)
+        // Уведомляем родительский компонент, что аватар был загружен
+        // Передаем специальный флаг или текущий localAvatar
+        onAvatarChange?.(localAvatar)
       } else {
         toast.error(
           <div style={{lineHeight: 1.5}}>
@@ -104,6 +101,10 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange}) => {
       }
     } finally {
       setIsLoading(false)
+      // Очищаем input для возможности повторной загрузки того же файла
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
     }
   }
 
@@ -119,8 +120,15 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange}) => {
       })
 
       if (response.ok) {
+        // Освобождаем локальный URL если он есть
+        if (localAvatar) {
+          URL.revokeObjectURL(localAvatar)
+        }
+
+        // Очищаем все состояние аватара
         setLocalAvatar(null)
         onAvatarChange?.(null)
+
         toast.success(
           <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
             <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('congratulations')}</strong>
@@ -163,6 +171,15 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange}) => {
     }
   }
 
+  // Очистка URL при размонтировании компонента
+  React.useEffect(() => {
+    return () => {
+      if (localAvatar) {
+        URL.revokeObjectURL(localAvatar)
+      }
+    }
+  }, [localAvatar])
+
   return (
     <div
       className={styles.avatar}
@@ -170,7 +187,15 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange}) => {
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
     >
-      <Image width={60} height={60} src={displayAvatar} alt='avatar' className={styles.avatar__image} />
+      <Image
+        width={60}
+        height={60}
+        src={displayAvatar}
+        alt='avatar'
+        className={styles.avatar__image}
+        // Добавляем key для принудительного обновления изображения
+        key={displayAvatar}
+      />
 
       {(isHovered || isLoading) && (
         <div className={styles.avatar__overlay}>

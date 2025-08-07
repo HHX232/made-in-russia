@@ -11,6 +11,7 @@ import AdminCards from './AdminCards/AdminCards'
 import AdminCategoriesPage from './AdminCategoriesPage/AdminCategoriesPage'
 import AdminAds from './AdminAds/AdminAds'
 import AdminFAQPage from './AdminFAQPage/AdminFAQPage'
+import AdminReviewsPage from './AdminReviewsPage/AdminReviewsPage'
 
 export type TAdminTab = 'users' | 'categories' | 'cards' | 'ads' | 'FAQ' | 'translates'
 
@@ -39,6 +40,8 @@ const AdminPanel: FC = () => {
         return <AdminAds />
       case 'translates':
         return <AdminTranslatesPage />
+      case 'reviews':
+        return <AdminReviewsPage />
       case 'faq':
         return <AdminFAQPage />
       default:

@@ -429,7 +429,7 @@ const UserRow: FC<{
       <div className={`${styles.id__text}`}>{user.id}</div>
       <div className={`${styles.login__box}`}>
         <div
-          style={{backgroundImage: `url(${user.avatar ? user.avatar : assets_avatar})`}}
+          style={{backgroundImage: `url(${user.avatarUrl ? user.avatarUrl : assets_avatar})`}}
           className={`${styles.avatar}`}
         ></div>
         <div style={{color: isBanned ? '#C8313E' : '#000'}} className={`${styles.login__text}`}>

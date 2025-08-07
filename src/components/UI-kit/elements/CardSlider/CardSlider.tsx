@@ -232,7 +232,7 @@ const SlickCardSlider = ({
     const baseUrl =
       typeof window !== 'undefined'
         ? process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
-        : 'https://yourdomain.com'
+        : 'https://exporteru.com'
 
     const mediaObjects = images.map((media, index) => {
       const isVideo = media.match(/\.(mp4|webm|mov)$/i)
@@ -281,7 +281,7 @@ const SlickCardSlider = ({
     const baseUrl =
       typeof window !== 'undefined'
         ? process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
-        : 'https://yourdomain.com'
+        : 'https://exporteru.com'
     return `${baseUrl}${media}`
   }
 

@@ -7,7 +7,6 @@ import '@/components/UI-kit/loaders/nprogress-provider.scss'
 import {Toaster} from 'sonner'
 import NProgressProvider from '@/components/UI-kit/loaders/nprogress-provider'
 import ProductService from '@/services/products/product.service'
-import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 import {NextIntlClientProvider} from 'next-intl'
 import {cookies, headers} from 'next/headers'
 // import {NextIntlClientProvider} from 'next-intl'
@@ -55,20 +54,15 @@ export async function generateMetadata() {
     const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale}, undefined, locale)
 
     return {
-      // TODO Убрать ноу индекс
-      ...NO_INDEX_PAGE,
       title: {
         absolute: 'Exporteru',
         template: `%s | Exporteru`
       },
-      description:
-        'Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками. ' +
-        `Предоставляем товары наподобие ${initialPage1.content.map((item) => item.title).join(', ')} и многое другое!`,
+      description: `Exporteru — онлайн-платформа для экспорта товаров из России. Мы помогаем российским компаниям находить иностранных контрагентов и выходить на международные рынки. Специализируемся на оптовых поставках продукции, таких как: ${initialPage1.content.map((item) => item.title).join(', ')} и других категорий. Комплексное сопровождение: от размещения до заключения экспортного контракта. Персональный менеджер на весь период сотрудничества.`,
+
       openGraph: {
         title: 'Exporteru',
-        description:
-          'Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками'
-        // images: initialPage1.content[0].media ? [initialPage1.content[0].media[0]] : []
+        description: `Exporteru — сервис для экспорта товаров из России. Предлагаем поддержку на всех этапах: подбор контрагентов, переговоры, заключение сделок. ${initialPage1.content.map((item) => item.title).join(', ')} и другие экспортные позиции. Работаем напрямую с поставщиками и международными покупателями.`
       },
       icons: {
         icon: '/mstile-c-144x144.png',

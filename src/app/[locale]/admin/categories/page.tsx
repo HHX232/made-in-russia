@@ -1,8 +1,7 @@
 import AdminPanel from '@/components/pages/AdminPanel/AdminPanel'
-import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 export const metadata = {
-  title: 'Admin - users',
-  ...NO_INDEX_PAGE
+  // TODO проверить тайтлы на всех страницах
+  title: 'Admin - users'
 }
 export default function CategoryesPage() {
   return <AdminPanel />

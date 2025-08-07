@@ -120,7 +120,7 @@ interface ICardFull {
 
 interface Author {
   id: number
-  avatar?: string
+  avatarUrl?: string
   role: string
   email: string
   login: string

@@ -33,36 +33,69 @@ const ASSETS = {
   ]
 }
 
-// TODO: добавить поддержку языков
-function formatDateToRussian(dateString: string): string {
+type TCurrentLang = 'ru' | 'en' | 'zh'
+
+function formatDateLocalized(dateString: string, currentLang: TCurrentLang = 'ru'): string {
   const date = new Date(dateString)
 
   // Проверка на валидность даты
   if (isNaN(date.getTime())) {
-    return 'Некорректная дата'
+    switch (currentLang) {
+      case 'en':
+        return 'Invalid date'
+      case 'zh':
+        return '无效日期'
+      default:
+        return 'Некорректная дата'
+    }
   }
 
   const day = date.getDate()
   const month = date.getMonth()
   const year = date.getFullYear()
 
-  // Массив с названиями месяцев в родительном падеже
-  const months = [
-    'января',
-    'февраля',
-    'марта',
-    'апреля',
-    'мая',
-    'июня',
-    'июля',
-    'августа',
-    'сентября',
-    'октября',
-    'ноября',
-    'декабря'
-  ]
+  // Локализованные названия месяцев
+  const months = {
+    ru: [
+      'января',
+      'февраля',
+      'марта',
+      'апреля',
+      'мая',
+      'июня',
+      'июля',
+      'августа',
+      'сентября',
+      'октября',
+      'ноября',
+      'декабря'
+    ],
+    en: [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ],
+    zh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+  }
 
-  return `${day} ${months[month]} ${year}`
+  // Форматирование в зависимости от языка
+  switch (currentLang) {
+    case 'en':
+      return `${months.en[month]} ${day}, ${year}` // "May 15, 2024"
+    case 'zh':
+      return `${year}年 ${months.zh[month]} ${day}日` // "2024年 五月 15日"
+    default:
+      return `${day} ${months.ru[month]} ${year} года` // "15 мая 2024 года"
+  }
 }
 
 export const REGIONS: RegionType[] = [
@@ -181,6 +214,43 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
       lastLoginDate: string | Date
     }[]
   >([])
+  const handleDeleteSession = async (id: string) => {
+    const loadingToast = toast.loading(t('deleting'))
+    try {
+      await instance.delete(`/me/sessions/${id}`, {
+        headers: {
+          'Accept-Language': currentLang
+        }
+      })
+      setSessions((prev) => prev.filter((session) => session.id !== id))
+      toast.dismiss(loadingToast)
+      toast.success(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('congratulations')}</strong>
+          <span>{t('deletedSuccess')}</span>
+        </div>,
+        {
+          style: {
+            background: '#2E7D32'
+          }
+        }
+      )
+    } catch (e) {
+      console.error(e)
+      toast.dismiss(loadingToast)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('deletedError')}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
+    }
+  }
 
   const onNewDeviceClick = async (e: React.MouseEvent) => {
     onDevicesClick(e)
@@ -216,27 +286,37 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
           <ul className={styles.modal__sessions__list}>
             {sessions.map((el, i) => {
               return (
-                <li key={i} className={styles.modal__sessions__list__item}>
-                  <p className={`${styles.device__type}`}>
-                    <span className={`${styles.sessions__item__title}`}> {t('deviceType')}:</span>{' '}
-                    <span className={`${styles.sessions__item__value}`}>{el.deviceType}</span>
-                  </p>
-                  <p className={`${styles.browser}`}>
-                    <span className={`${styles.sessions__item__title}`}> {t('browser')}:</span>{' '}
-                    <span className={`${styles.sessions__item__value}}`}>{el.browser}</span>
-                  </p>
-                  <p className={`${styles.os}`}>
-                    <span className={`${styles.sessions__item__title}`}> {t('os')}:</span>{' '}
-                    <span className={`${styles.sessions__item__value}}`}>{el.os}</span>
-                  </p>
-                  <p className={`${styles.last__login__date}`}>
-                    <span className={`${styles.sessions__item__title}`}> {t('lastLoginDate')}:</span>{' '}
-                    <span className={`${styles.sessions__item__value}`}>
-                      {typeof el.lastLoginDate === 'string'
-                        ? formatDateToRussian(el.lastLoginDate)
-                        : formatDateToRussian(el.lastLoginDate.toISOString())}
-                    </span>
-                  </p>
+                <li style={{width: '100%', display: 'flex', alignItems: 'center'}} key={i}>
+                  <div className={styles.modal__sessions__list__item}>
+                    <p className={`${styles.device__type}`}>
+                      <span className={`${styles.sessions__item__title}`}> {t('deviceType')}:</span>{' '}
+                      <span className={`${styles.sessions__item__value}`}>{el.deviceType}</span>
+                    </p>
+                    <p className={`${styles.browser}`}>
+                      <span className={`${styles.sessions__item__title}`}> {t('browser')}:</span>{' '}
+                      <span className={`${styles.sessions__item__value}}`}>{el.browser}</span>
+                    </p>
+                    <p className={`${styles.os}`}>
+                      <span className={`${styles.sessions__item__title}`}> {t('os')}:</span>{' '}
+                      <span className={`${styles.sessions__item__value}}`}>{el.os}</span>
+                    </p>
+                    <p className={`${styles.last__login__date}`}>
+                      <span className={`${styles.sessions__item__title}`}> {t('lastLoginDate')}:</span>{' '}
+                      <span className={`${styles.sessions__item__value}`}>
+                        {typeof el.lastLoginDate === 'string'
+                          ? formatDateLocalized(el.lastLoginDate, (currentLang as TCurrentLang) || 'en')
+                          : formatDateLocalized(el.lastLoginDate.toISOString(), (currentLang as TCurrentLang) || 'en')}
+                      </span>
+                    </p>
+                  </div>
+                  <button
+                    className={styles.modal__sessions__list__item__button}
+                    onClick={() => {
+                      handleDeleteSession(el.id)
+                    }}
+                  >
+                    X
+                  </button>
                 </li>
               )
             })}

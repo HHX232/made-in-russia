@@ -686,7 +686,6 @@ export async function middleware(request: NextRequest) {
 
         console.log('✅ Найден продавец:', data.role)
 
-        // TODO РАСКОММЕНТИРОВАТЬ
         const {data: userData} = await instance.get<User>('/me', {
           headers: {
             Authorization: `Bearer ${accessToken}`,

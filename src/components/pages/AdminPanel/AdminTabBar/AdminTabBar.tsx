@@ -9,7 +9,8 @@ const IMAGES__ASSESTS = {
   ads: '/admin/ads.svg',
   faq: '/admin/faq.svg',
   categories: '/admin/categoryes.svg',
-  translates: '/admin/lang.svg'
+  translates: '/admin/lang.svg',
+  reviews: '/admin/comment.svg'
 }
 const AdminTabBar = () => {
   return (
@@ -62,6 +63,18 @@ const AdminTabBar = () => {
               height={22}
             />
             <p>FAQ</p>
+          </div>
+        </Link>
+        <Link href={'/admin/reviews'}>
+          <div className={styles.admin__tab__bar__inner__item}>
+            <Image
+              className={`${styles.admin__tab__image}`}
+              src={IMAGES__ASSESTS.reviews}
+              alt='reviews'
+              width={22}
+              height={22}
+            />
+            <p>Отзывы</p>
           </div>
         </Link>
         <Link href={'/admin/categories'}>

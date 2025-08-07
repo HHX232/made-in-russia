@@ -1,6 +1,5 @@
 import {axiosClassic} from '@/api/api.interceptor'
 import HomePage from '@/components/pages/HomePage/HomePage'
-import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 import CategoriesService from '@/services/categoryes/categoryes.service'
 import ProductService from '@/services/products/product.service'
 import {cookies, headers} from 'next/headers'
@@ -69,56 +68,100 @@ export default async function Home() {
 }
 
 export async function generateMetadata() {
-  const locale = await getLocale()
+  const cookieStore = await cookies()
+  let locale = cookieStore.get('NEXT_LOCALE')?.value
 
+  const headersList = await headers()
+
+  locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
+
+  if (!locale) {
+    const referer = headersList.get('referer')
+    if (referer) {
+      const match = referer.match(/\/([a-z]{2})\//)
+      if (match && ['en', 'ru', 'zh'].includes(match[1])) {
+        locale = match[1]
+      }
+    }
+  }
   try {
-    // Уменьшить количество товаров для метаданных
-    const initialPage1 = await ProductService.getAll({page: 0, size: 5, currentLang: locale}, undefined, locale)
-
-    const productTitles = initialPage1.content
-      .slice(0, 3) // Ограничить количество товаров в описании
-      .map((item) => item.title)
-      .join(', ')
+    const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale}, undefined, locale)
 
     return {
-      ...NO_INDEX_PAGE,
       title: {
         absolute: 'Exporteru',
         template: `%s | Exporteru`
       },
-      description: `Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками. Предоставляем товары наподобие ${productTitles} и многое другое!`,
+      description: `Exporteru — онлайн-платформа для экспорта товаров из России. Мы помогаем российским компаниям находить иностранных контрагентов и выходить на международные рынки. Специализируемся на оптовых поставках продукции, таких как: ${initialPage1.content.map((item) => item.title).join(', ')} и других категорий. Комплексное сопровождение: от размещения до заключения экспортного контракта. Персональный менеджер на весь период сотрудничества.`,
+
       openGraph: {
         title: 'Exporteru',
-        description:
-          'Exporteru — оптовые поставки стройматериалов из России в Китай, РБ, Казахстан: пиломатериалы (брус, доска), натуральный камень (гранит, мрамор), металлопрокат (арматура, профнастил), изоляция (минвата, пенопласт). Работаем напрямую с поставщиками'
+        description: `Exporteru — сервис для экспорта товаров из России. Предлагаем поддержку на всех этапах: подбор контрагентов, переговоры, заключение сделок. ${initialPage1.content.map((item) => item.title).join(', ')} и другие экспортные позиции. Работаем напрямую с поставщиками и международными покупателями.`
       },
       icons: {
         icon: '/mstile-c-144x144.png',
+
+        // Альтернативные иконки
         shortcut: '/favicon-c-32x32.png',
         apple: [
           {
             url: '/apple-touch-icon-cpec-144x144.png',
             sizes: '144x144',
             type: 'image/png'
+          },
+          {
+            url: '/apple-touch-icon-c-152x152.png',
+            sizes: '152x152',
+            type: 'image/png'
           }
         ],
+
+        // Другие важные форматы
         other: [
+          // Для старых устройств
+          {
+            rel: 'apple-touch-icon-precomposed',
+            url: '/apple-touch-icon-c-144x144.png',
+            sizes: '144x144',
+            type: 'image/png'
+          },
+
+          // Для Windows
+          {
+            rel: 'msapplication-TileImage',
+            url: '/mstile-c-144x144.png'
+          },
+          {
+            rel: 'msapplication-TileImage',
+            url: '/mstile-c-150x150.png',
+            sizes: '150x150'
+          },
+
+          // Базовые favicon
+          {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '16x16',
+            url: '/favicon-16x16.png'
+          },
           {
             rel: 'icon',
             type: 'image/png',
             sizes: '32x32',
             url: '/favicon-c-32x32.png'
           }
+          // {
+          //   rel: 'icon',
+          //   type: 'image/x-icon',
+          //   url: '/favicon.ico'
+          // }
         ]
       }
     }
   } catch (error) {
     console.error('Error fetching card data:', error)
     return {
-      title: {
-        absolute: 'Exporteru',
-        template: `%s | Exporteru`
-      }
+      title: 'Exporteru'
     }
   }
 }

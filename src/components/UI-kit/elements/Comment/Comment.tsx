@@ -5,15 +5,17 @@ import ModalWindowDefault from '../../modals/ModalWindowDefault/ModalWindowDefau
 import SlickCardSlider from '../CardSlider/CardSlider'
 import formatDateToDayMonth from '@/utils/formatedDateToMonth'
 import {Review} from '@/services/card/card.types'
+import {useLocale} from 'next-intl'
 const yellowStars = '/comments/yellow__start.svg'
 const grayStars = '/comments/gray__start.svg'
 
 const avatar1 = '/avatars/avatar-v-1.svg'
-const avatar2 = '/avatars/avatar-v-2.svg'
 
 const Comment: FC<Review> = ({id: commentID, media, author, text, rating, creationDate}) => {
   const id = useId()
   const [modalIsOpen, setModalIsOpen] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const currentLang: any = useLocale()
 
   const closeModal = () => {
     setModalIsOpen(false)
@@ -62,14 +64,14 @@ const Comment: FC<Review> = ({id: commentID, media, author, text, rating, creati
       <div className={`${styles.comment__user__data}`}>
         <Image
           className={`${styles.user__image}`}
-          src={author.avatar || (Math.random() > 0.5 ? avatar1 : avatar2)}
+          src={author.avatarUrl || avatar1}
           alt='userImage'
           width={28}
           height={28}
         />
         <div className={`${styles.comment__user__data__name}`}>{author.login}</div>
         <div className={`${styles.comment__user__data__date}`}>
-          {formatDateToDayMonth(creationDate || Date.now().toString())}
+          {formatDateToDayMonth(creationDate || Date.now().toString(), currentLang)}
         </div>
         <div className={`${styles.start__box}`}>
           <p className={`${styles.start__count}`}>{rating}</p>

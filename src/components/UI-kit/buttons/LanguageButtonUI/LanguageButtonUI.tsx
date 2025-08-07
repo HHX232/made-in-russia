@@ -25,10 +25,14 @@ const LanguageButtonUI: FC = () => {
   // For UI display purpose - to force re-render when ref value changes
   const [displayLanguage, setDisplayLanguage] = useState<Languages>(languageRef.current)
 
-  //TODO: Заменить на получение из куков
   useEffect(() => {
-    languageRef.current = Languages.RUSSIAN
-    setDisplayLanguage(languageRef.current)
+    const cookies = document.cookie.split(';')
+    const languageCookie = cookies.find((cookie) => cookie.startsWith('NEXT_LOCALE='))
+    if (languageCookie) {
+      const language = languageCookie.split('=')[1]
+      languageRef.current = language as Languages
+      setDisplayLanguage(languageRef.current)
+    }
   }, [])
 
   const changeLanguage = (language: Languages) => {
