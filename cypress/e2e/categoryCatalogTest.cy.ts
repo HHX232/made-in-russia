@@ -72,7 +72,7 @@ describe('use category catalog', () => {
         // 4. Запрашиваем данные карточки с API
         cy.request({
           method: 'GET',
-          url: `http://181.215.18.219/api/v1/products/${productId}`,
+          url: `https://exporteru.com/api/v1/products/${productId}`,
           headers: {
             'Accept-language': 'ru',
             'x-language': 'ru'

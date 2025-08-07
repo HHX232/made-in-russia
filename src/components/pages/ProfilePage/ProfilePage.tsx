@@ -18,6 +18,7 @@ import Footer from '@/components/MainComponents/Footer/Footer'
 import {toast} from 'sonner'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
 
 // Константы
 const ASSETS = {
@@ -153,17 +154,9 @@ export const useUserData = () => {
 export const ProfileHeader: FC<ProfileHeaderProps> = ({userData}) => {
   return (
     <div className={styles.profile__user__box__inner}>
-      <div className={styles.profile__user__box__inner__avatar}>
-        <Image
-          width={100}
-          height={100}
-          style={{width: '100%', height: '100%', borderRadius: '50%'}}
-          src={userData?.avatar || ASSETS.avatar1}
-          alt='avatar'
-        />
-      </div>
+      <Avatar avatarUrl={userData?.avatarUrl} />
       <div className={styles.user__names__box}>
-        <p className={styles.user__name}>{userData?.login}</p>
+        <p className={styles.user__name}>{userData?.login} </p>
         <p className={styles.user__email}>{userData?.email}</p>
       </div>
     </div>

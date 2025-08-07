@@ -10,7 +10,7 @@ export default defineConfig({
       // Дополнительные env-переменные
       config.env = {
         ...config.env,
-        apiUrl: 'http://181.215.18.219/api/v1',
+        apiUrl: 'https://exporteru.com/api/v1',
         defaultEmail: 'uguan@mailto.plus',
         defaultPassword: '123123123'
       }

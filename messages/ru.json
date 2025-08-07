@@ -102,6 +102,10 @@
    },
 
    "ProfilePage":{
+    "createAvatarSuccess":"Успешно создан аватар!",
+    "deleteAvatarSuccess":"Успешно удален аватар!",
+    "createAvatarError":"Ошибка создания аватара!",
+    "deleteAvatarError":"Ошибка удаления аватара!",
     "mySessions":"Мои сессии",
     "deviceType":"Тип устройства",
     "browser":"Браузер",

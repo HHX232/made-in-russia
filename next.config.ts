@@ -9,6 +9,10 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig: NextConfig = {
   output: 'standalone',
   reactStrictMode: true,
+  // serverRuntimeConfig: {
+  //   // Отключает проверку SSL (только для разработки!)
+  //   NODE_TLS_REJECT_UNAUTHORIZED: '0'
+  // },
   // webpack(config) {
   //   if (!config.optimization.splitChunks || typeof config.optimization.splitChunks === 'boolean') {
   //     config.optimization.splitChunks = {}

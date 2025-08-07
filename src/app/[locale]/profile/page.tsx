@@ -50,7 +50,7 @@ export default async function ProfilePageMain() {
     region: userData?.data.region || '',
     registrationDate: userData?.data.registrationDate || '',
     lastModificationDate: userData?.data.lastModificationDate || '',
-    avatar: userData?.data.avatar || '',
+    avatarUrl: userData?.data.avatarUrl || '',
     vendorDetails: userData?.data.vendorDetails || undefined
   }
   return <ProfilePage firstUserData={initialUserData} />

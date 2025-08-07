@@ -100,6 +100,10 @@
 },
 "ProfilePage": {
     "mySessions": "My Sessions",
+    "createAvatarSuccess": "Avatar created successfully!",
+    "deleteAvatarSuccess": "Avatar deleted successfully!",
+    "createAvatarError": "Failed to create avatar!",
+    "deleteAvatarError": "Failed to delete avatar!",
     "deviceType": "Device type",
     "browser": "Browser",
     "os": "Operating system",

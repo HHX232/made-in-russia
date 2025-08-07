@@ -98,6 +98,10 @@
     "fifthParagraph": "立即加入我们开始出口业务，您将自动获得来自中国、土耳其和东南亚国家买家的关注。"
 },
 "ProfilePage": {
+  "createAvatarSuccess": "头像创建成功！",
+  "deleteAvatarSuccess": "头像删除成功！",
+  "createAvatarError": "头像创建失败！",
+  "deleteAvatarError": "头像删除失败！",
     "mySessions": "我的会话",
     "deviceType": "设备类型",
     "browser": "浏览器",

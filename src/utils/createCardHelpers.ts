@@ -562,8 +562,8 @@ export const submitFormCardData = async ({
   // API call
   const method = isUpdate ? 'PUT' : 'POST'
   const url = isUpdate
-    ? `http://181.215.18.219/api/v1/products/${initialData?.id}`
-    : 'http://181.215.18.219/api/v1/products'
+    ? `https://exporteru.com/api/v1/products/${initialData?.id}`
+    : 'https://exporteru.com/api/v1/products'
 
   try {
     const response = await fetch(url, {
