@@ -68,35 +68,35 @@ export default async function Home() {
 }
 
 export async function generateMetadata() {
-  const cookieStore = await cookies()
-  let locale = cookieStore.get('NEXT_LOCALE')?.value
+  // const cookieStore = await cookies()
+  // let locale = cookieStore.get('NEXT_LOCALE')?.value
 
-  const headersList = await headers()
+  // const headersList = await headers()
 
-  locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
+  // locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
 
-  if (!locale) {
-    const referer = headersList.get('referer')
-    if (referer) {
-      const match = referer.match(/\/([a-z]{2})\//)
-      if (match && ['en', 'ru', 'zh'].includes(match[1])) {
-        locale = match[1]
-      }
-    }
-  }
+  // if (!locale) {
+  //   const referer = headersList.get('referer')
+  //   if (referer) {
+  //     const match = referer.match(/\/([a-z]{2})\//)
+  //     if (match && ['en', 'ru', 'zh'].includes(match[1])) {
+  //       locale = match[1]
+  //     }
+  //   }
+  // }
   try {
-    const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale}, undefined, locale)
+    // const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale}, undefined, locale)
 
     return {
       title: {
         absolute: 'Exporteru',
         template: `%s | Exporteru`
       },
-      description: `Exporteru — онлайн-платформа для экспорта товаров из России. Мы помогаем российским компаниям находить иностранных контрагентов и выходить на международные рынки. Специализируемся на оптовых поставках продукции, таких как: ${initialPage1.content.map((item) => item.title).join(', ')} и других категорий. Комплексное сопровождение: от размещения до заключения экспортного контракта. Персональный менеджер на весь период сотрудничества.`,
+      description: `Exporteru — онлайн-платформа для экспорта товаров из России. Мы помогаем российским компаниям находить иностранных контрагентов и выходить на международные рынки. Специализируемся на оптовых поставках продукции. Комплексное сопровождение: от размещения до заключения экспортного контракта. Персональный менеджер на весь период сотрудничества.`,
 
       openGraph: {
         title: 'Exporteru',
-        description: `Exporteru — сервис для экспорта товаров из России. Предлагаем поддержку на всех этапах: подбор контрагентов, переговоры, заключение сделок. ${initialPage1.content.map((item) => item.title).join(', ')} и другие экспортные позиции. Работаем напрямую с поставщиками и международными покупателями.`
+        description: `Exporteru — сервис для экспорта товаров из России. Предлагаем поддержку на всех этапах: подбор контрагентов, переговоры, заключение сделок. Работаем напрямую с поставщиками и международными покупателями.`
       },
       icons: {
         icon: '/mstile-c-144x144.png',
