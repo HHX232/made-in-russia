@@ -20,7 +20,8 @@ instance.interceptors.request.use((config) => {
 
   if (!config.headers?.['Accept-Language']) {
     const currentHeaders = getContentType()
-    config.headers = {...config.headers, ...currentHeaders}
+    // Use Object.assign or set individual headers instead of spread operator
+    Object.assign(config.headers, currentHeaders)
   }
 
   return config
@@ -30,7 +31,7 @@ instance.interceptors.request.use((config) => {
 axiosClassic.interceptors.request.use((config) => {
   if (!config.headers?.['Accept-Language']) {
     const currentHeaders = getContentType()
-    config.headers = {...config.headers, ...currentHeaders}
+    Object.assign(config.headers, currentHeaders)
   }
 
   return config
