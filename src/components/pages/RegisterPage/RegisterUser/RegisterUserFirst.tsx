@@ -118,14 +118,14 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
   setListIsOpen,
   onSubmit
 }) => {
+  const t = useTranslations('RegisterUserPage')
   const regions = [
-    {imageSrc: belarusSvg, title: 'Беларусь', altName: 'Belarus'},
-    {imageSrc: kazakhstanSvg, title: 'Казахстан', altName: 'Kazakhstan'},
-    {imageSrc: chinaSvg, title: 'Китай', altName: 'China'},
-    {imageSrc: russiaSvg, title: 'Россия', altName: 'Russia'}
+    {imageSrc: belarusSvg, title: t('Belarus'), altName: 'Belarus'},
+    {imageSrc: kazakhstanSvg, title: t('Kazakhstan'), altName: 'Kazakhstan'},
+    {imageSrc: chinaSvg, title: t('China'), altName: 'China'},
+    {imageSrc: russiaSvg, title: t('Russia'), altName: 'Russia'}
   ]
 
-  const t = useTranslations('RegisterUserPage')
   const handleRegionSelect = (region: RegionType) => {
     setSelectedRegion(region)
     setListIsOpen(false)

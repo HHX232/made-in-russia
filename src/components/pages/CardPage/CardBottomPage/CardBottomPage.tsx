@@ -1,16 +1,15 @@
 'use client'
 import Skeleton from 'react-loading-skeleton'
 import styles from './CardBottomPage.module.scss'
-import {useEffect, useRef, useState} from 'react'
+import React, {useState, useRef, useEffect, useCallback} from 'react'
 import Comment from '@/components/UI-kit/elements/Comment/Comment'
-import Image from 'next/image'
 import Accordion from '@/components/UI-kit/Texts/Accordions/Accordions'
 import ICardFull, {Review} from '@/services/card/card.types'
 import StarRating from '@/components/UI-kit/inputs/StarRating/StarRating'
-import instance from '@/api/api.interceptor'
 import {toast} from 'sonner'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {getAccessToken} from '@/services/auth/auth.helper'
 
 interface ICardBottomPageProps {
   isLoading: boolean
@@ -66,6 +65,77 @@ const AutoResizeTextarea = ({
   )
 }
 
+// Мемоизированный компонент для превью файла
+const FilePreview = React.memo(({fileObj, onRemove}: {fileObj: IUploadedFile; onRemove: (id: string) => void}) => {
+  const [objectURL, setObjectURL] = useState<string>('')
+
+  // Создаем URL при монтировании компонента
+  useEffect(() => {
+    const url = URL.createObjectURL(fileObj.file)
+    setObjectURL(url)
+
+    // Очищаем URL при размонтировании компонента
+    return () => {
+      URL.revokeObjectURL(url)
+    }
+  }, [fileObj.file])
+
+  const handleRemove = useCallback(() => {
+    onRemove(fileObj.id)
+  }, [fileObj.id, onRemove])
+
+  // Не рендерим, пока URL не создан
+  if (!objectURL) return null
+
+  return (
+    <li className={`${styles.file__preview}`}>
+      {fileObj.type === 'image' ? (
+        <img
+          src={objectURL}
+          alt={fileObj.file.name}
+          width={60}
+          height={60}
+          className={styles.file__preview}
+          style={{objectFit: 'cover'}}
+        />
+      ) : (
+        <video className={styles.file__preview} width={60} height={60} style={{objectFit: 'cover'}}>
+          <source src={objectURL} type={fileObj.file.type} />
+        </video>
+      )}
+      <button type='button' onClick={handleRemove} className={`${styles.remove__button}`}>
+        ×
+      </button>
+    </li>
+  )
+})
+
+FilePreview.displayName = 'FilePreview'
+
+// Мемоизированный компонент для списка превью
+const FilesPreviewList = React.memo(
+  ({uploadedFiles, onRemoveFile}: {uploadedFiles: IUploadedFile[]; onRemoveFile: (id: string) => void}) => {
+    const memoizedRemoveFile = useCallback(
+      (id: string) => {
+        onRemoveFile(id)
+      },
+      [onRemoveFile]
+    )
+
+    if (uploadedFiles.length === 0) return null
+
+    return (
+      <ul className={`${styles.files__preview__container}`}>
+        {uploadedFiles.map((fileObj) => (
+          <FilePreview key={fileObj.id} fileObj={fileObj} onRemove={memoizedRemoveFile} />
+        ))}
+      </ul>
+    )
+  }
+)
+
+FilesPreviewList.displayName = 'FilesPreviewList'
+
 const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICardBottomPageProps) => {
   const [activeIndex, setActiveIndex] = useState(1)
   const [commentValue, setCommentValue] = useState('')
@@ -80,6 +150,12 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
   const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES]
   const t = useTranslations('CardPage.CardBottomPage')
   const currentLang = useCurrentLanguage()
+
+  // Мемоизируем функцию удаления файла
+  const removeFile = useCallback((fileId: string) => {
+    setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
+  }, [])
+
   const validateFile = (file: File): boolean => {
     const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)
     const isVideo = ALLOWED_VIDEO_TYPES.includes(file.type)
@@ -193,89 +269,57 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
     }
   }
 
-  const removeFile = (fileId: string) => {
-    setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
-  }
-
-  const uploadFilesToServer = async (files: IUploadedFile[]): Promise<string[]> => {
-    const formData = new FormData()
-
-    files.forEach((fileObj, index) => {
-      formData.append(`files[${index}]`, fileObj.file)
-    })
-
-    try {
-      const response = await fetch('/api/upload-files', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Accept-Language': currentLang
-        }
-      })
-
-      if (!response.ok) {
-        throw new Error('Ошибка загрузки файлов на сервер')
-      }
-
-      const result = await response.json()
-      return result.fileUrls || []
-    } catch (error) {
-      console.error('Upload error:', error)
-      throw new Error('Не удалось загрузить файлы')
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!commentValue.trim() && uploadedFiles.length === 0) {
-      return
-    }
-
-    try {
-      let fileUrls: string[] = []
-
-      if (uploadedFiles.length > 0) {
-        fileUrls = await uploadFilesToServer(uploadedFiles)
-      }
-
-      // Отправляем комментарий с URL загруженных файлов
-      const commentData = {
-        text: commentValue,
-        fileUrls: fileUrls,
-        timestamp: new Date().toISOString()
-      }
-
-      console.log('Comment data:', commentData)
-
-      // Здесь будет логика отправки комментария на сервер
-      // const response = await fetch('/api/comments', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(commentData),
-      // })
-
-      // Очистка формы после успешной отправки
-      setCommentValue('')
-      setUploadedFiles([])
-    } catch (error) {
-      console.error('Submit error:', error)
-    }
+    await publishComment()
   }
 
   const publishComment = async () => {
+    const loadingToast = toast.loading(t('publishing'))
     try {
-      const res = await instance.post(`products/${cardData?.id}/reviews`, {
-        text: commentValue,
-        // fileUrls: uploadedFiles.map((file) => file.fileUrl),
-        rating: starsCountSet,
+      // Get access token
+      const token = getAccessToken()
+
+      const formDataToSend = new FormData()
+
+      // Prepare the data object
+      const dataPayload = {
+        text: commentValue.trim(),
+        rating: starsCountSet
+      }
+
+      // Create Blob for JSON data with correct content type
+      const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
+      formDataToSend.append('data', jsonBlob)
+
+      // Append media files
+      if (uploadedFiles.length > 0) {
+        uploadedFiles.forEach((fileObj) => {
+          formDataToSend.append('media', fileObj.file)
+        })
+      }
+
+      // Send request using fetch with authorization token
+      const response = await fetch(`https://exporteru.com/api/v1/products/${cardData?.id}/reviews`, {
+        method: 'POST',
         headers: {
+          Authorization: `Bearer ${token}`,
           'Accept-Language': currentLang
-        }
+          // Don't set Content-Type, browser will set correct type for FormData
+        },
+        body: formDataToSend
       })
-      console.log(res)
+
+      if (!response.ok) {
+        const errorData = await response.text()
+        throw new Error(`HTTP error! message: ${errorData}`)
+      }
+
+      const result = await response.json()
+      console.log(result)
+
+      toast.dismiss(loadingToast)
+
       toast.success(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
           <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('success')}</strong>
@@ -287,13 +331,19 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
           }
         }
       )
+
+      // Clear form after successful submission
+      setCommentValue('')
+      setUploadedFiles([])
+      setStarsCountSet(4)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       console.log(e)
+      toast.dismiss(loadingToast)
       toast.error(
         <div style={{lineHeight: 1.5}}>
           <strong style={{display: 'block', marginBottom: 4}}>{t('errorPublished')}</strong>
-          <span>{e.response?.data?.message || t('errorPublishedText')}</span>
+          <span>{e.message || t('errorPublishedText')}</span>
         </div>,
         {
           style: {
@@ -309,7 +359,9 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
       <div className={`${styles.tabs__box}`}>
         <div
           onClick={() => setActiveIndex(1)}
-          className={`fontInstrument ${styles.tabs__box__item} ${activeIndex === 1 ? styles.tabs__box__item__active : ''}`}
+          className={`fontInstrument ${styles.tabs__box__item} ${
+            activeIndex === 1 ? styles.tabs__box__item__active : ''
+          }`}
         >
           {t('revues')}
           <span className={`${styles.tabs__box__item__count__comments}`}>
@@ -318,7 +370,9 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
         </div>
         <div
           onClick={() => setActiveIndex(2)}
-          className={`fontInstrument ${styles.tabs__box__item} ${activeIndex === 2 ? styles.tabs__box__item__active : ''}`}
+          className={`fontInstrument ${styles.tabs__box__item} ${
+            activeIndex === 2 ? styles.tabs__box__item__active : ''
+          }`}
         >
           {t('questions')}
           <span className={`${styles.tabs__box__item__count__comments}`}>
@@ -353,47 +407,20 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
             )}
 
             <div className={`${styles.create__comment__box}`}>
-              {/* <p className={`${styles.create__comment__box__text}`}>
-                Здесь будет превью ранее сделанного заказа: товар, его кол-во, цена, адрес доставки и тп. (превью как в
-                корзине)
-              </p> */}
               <div className={`${styles.create__comment__box__rating}`}>
                 <p>{t('pleaseCreateComment')}</p>
                 <StarRating starsCountSet={starsCountSet} setStarsCountSet={setStarsCountSet} />
               </div>
 
               <form onSubmit={handleSubmit} className={`${styles.create__comment__form}`}>
-                {uploadedFiles.length > 0 && (
-                  <ul className={`${styles.files__preview__container}`}>
-                    {uploadedFiles.map((fileObj) => (
-                      <li key={fileObj.id} className={`${styles.file__preview}`}>
-                        {fileObj.type === 'image' ? (
-                          <Image
-                            src={URL.createObjectURL(fileObj.file)}
-                            alt={fileObj.file.name}
-                            width={60}
-                            height={60}
-                            className={styles.file__preview}
-                          />
-                        ) : (
-                          <video className={styles.file__preview}>
-                            <source src={URL.createObjectURL(fileObj.file)} type={fileObj.file.type} />
-                          </video>
-                        )}
-                        <button
-                          type='button'
-                          onClick={() => removeFile(fileObj.id)}
-                          className={`${styles.remove__button}`}
-                        >
-                          ×
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                {/* Используем мемоизированный компонент для превью */}
+                <FilesPreviewList uploadedFiles={uploadedFiles} onRemoveFile={removeFile} />
+
                 <span>
                   <label
-                    className={`${styles.add__image__label} ${uploadedFiles.length >= MAX_FILES_COUNT ? styles.disabled : ''}`}
+                    className={`${styles.add__image__label} ${
+                      uploadedFiles.length >= MAX_FILES_COUNT ? styles.disabled : ''
+                    }`}
                     htmlFor='image__input'
                   >
                     <svg
@@ -423,25 +450,18 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
                       className={`${styles.add__image__input}`}
                       id='image__input'
                       type='file'
-                      accept={`${ALLOWED_IMAGE_TYPES.join(',')}`}
+                      accept={`${ALLOWED_IMAGE_TYPES.join(',')},${ALLOWED_VIDEO_TYPES.join(',')}`}
                       onChange={handleFilesChange}
                       multiple
                       disabled={uploadedFiles.length >= MAX_FILES_COUNT}
                     />
-                    {/* {uploadedFiles.length > 0 && <span className={`${styles.file__indicator}`}></span>} */}
                   </label>
                   <AutoResizeTextarea
                     onChange={(e) => setCommentValue(e.target.value)}
                     value={commentValue}
-                    placeholder='Напишите отзыв...'
+                    placeholder={t('writeCommentPlaceholder')}
                   />
-                  <button
-                    type='submit'
-                    onClick={publishComment}
-                    className={`${styles.send__comment__button}`}
-                    // && uploadedFiles.length === 0
-                    disabled={!commentValue.trim()}
-                  >
+                  <button type='submit' className={`${styles.send__comment__button}`} disabled={!commentValue.trim()}>
                     <svg
                       className={`${styles.send__comment__image}`}
                       width='20'

@@ -43,10 +43,14 @@
     "loading":"Loading..."
 },
 "RegisterUserPage": {
+  "Belarus": "Belarus",
+  "Kazakhstan": "Kazakhstan",
+  "China": "China",
+  "Russia": "Russia",
     "registerTitle": "Registration",
     "registerTitleCompany": "Company Registration",
     "registerRegion": "Country/Region",
-    "registerFullName": "Full name",
+    "registerFullName": "Login",
     "password": "Account password",
     "phoneNumber": "Mobile phone number",
     "passwordError": "Password must be at least 6 characters",
@@ -228,7 +232,7 @@
   "noComments": "No reviews yet. Be the first!",
   "pleaseCreateComment": "Please share your experience with this product",
   "writeCommentPlaceholder": "Write a review...",
-
+ "publishing":"Publishing...",
   "defaultError": "Error",
   "fileUploadErrorType": "File {fileName} has an unsupported format",
   "fileUploadErrorTypeSubtext": "The file format is not supported",

@@ -223,7 +223,7 @@ const AdminReviewsPage: FC = () => {
     setEditLoading(true)
 
     try {
-      await instance.put(`/products/${productId}/reviews/${editingReview.id}`, {
+      await instance.patch(`/products/${productId}/reviews/${editingReview.id}`, {
         text: editText,
         rating: editRating
       })

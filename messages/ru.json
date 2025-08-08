@@ -43,10 +43,14 @@
     "loading":"Загрузка..."
    },
    "RegisterUserPage":{
+    "Belarus":"Беларусь",
+    "Kazakhstan":"Казахстан",
+    "China":"Китай",
+    "Russia":"Россия",
     "registerTitle":"Регистрация",
     "registerTitleCompany":"Регистрация компании",
     "registerRegion":"Страна/Регион",
-    "registerFullName":"Полное имя",
+    "registerFullName":"Логин",
     "password":"Пароль аккаунта",
     "passwordPlaceholder":"Введите пароль, 6-20 символов",
     "phoneNumber":"Номер мобильного телефона",
@@ -241,7 +245,8 @@
       "svgError":"SVG файлы не поддерживаются",
       "bigImage":"Изображение превышает размер 5MB",
       "bigVideo":"Видео превышает размер 200MB",
-      "bigFiles":"Можно загрузить не более {maxFilesCount} файлов"
+      "bigFiles":"Можно загрузить не более {maxFilesCount} файлов",
+      "publishing":"Публикация..."
     }
    },
    "NotFoundPage":{

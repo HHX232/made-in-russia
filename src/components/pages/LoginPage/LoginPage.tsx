@@ -28,7 +28,6 @@ const decorImage2 = '/new_login.webp'
 const LoginPage = ({categories}: {categories: Category[]}) => {
   const [name, setNameState] = useState('')
   const [password, setPasswordState] = useState('')
-  const [telText, setTelText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [showResetForm, setShowResetForm] = useState(false)
@@ -187,13 +186,18 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                     <div className={`${styles.apps__login}`}>
                       <p className={`${styles.apps__text}`}>{t('loginWithSocial')}</p>
                       <div className={`${styles.apps__images}`}>
-                        <Image
+                        <Link
                           className={`${styles.registr__image}`}
-                          src={google}
-                          width={50}
-                          height={50}
-                          alt='registr with google'
-                        />
+                          href={`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/oauth2/google`}
+                        >
+                          <Image
+                            className={`${styles.registr__image}`}
+                            src={google}
+                            width={50}
+                            height={50}
+                            alt='registr with google'
+                          />
+                        </Link>
                         <Image
                           className={`${styles.registr__image}`}
                           src={tg}

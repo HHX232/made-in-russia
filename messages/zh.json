@@ -43,10 +43,14 @@
     "loading":"加载中..."
 },
 "RegisterUserPage": {
+  "Belarus": "白俄罗斯",
+  "Kazakhstan": "哈萨克斯坦",
+  "China": "中国",
+  "Russia": "俄罗斯",
   "registerTitle": "注册",
   "registerTitleCompany": "企业注册",
   "registerRegion": "国家/地区",
-  "registerFullName": "全名",
+  "registerFullName": "登录",
   "password": "账户密码",
   "phoneNumber": "手机号码",
   "passwordPlaceholder": "输入密码, 6-20个字符",
@@ -136,6 +140,7 @@
     "deletedError": "删除失败！",
     "deleting": "正在删除...",
     "defaultError": "错误！",
+    "publishing":"发布中…",
 
 
     "ProfileForm": {

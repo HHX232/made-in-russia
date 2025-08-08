@@ -57,7 +57,8 @@ const nextConfig: NextConfig = {
       'v.ftcdn.net',
       'plus.unsplash.com',
       'res.cloudinary.com',
-      'TEMP_URL'
+      'TEMP_URL',
+      'https://lh3.googleusercontent.com'
     ]
   }
 }

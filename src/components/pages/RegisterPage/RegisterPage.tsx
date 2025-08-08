@@ -1,6 +1,5 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Image from 'next/image'
 import styles from './RegisterPage.module.scss'
 import MinimalHeader from '@/components/MainComponents/MinimalHeader/MinimalHeader'
 import {useEffect, useState} from 'react'
@@ -10,7 +9,7 @@ import {useTypedSelector} from '@/hooks/useTypedSelector'
 import Link from 'next/link'
 import {axiosClassic} from '@/api/api.interceptor'
 import {saveTokenStorage} from '@/services/auth/auth.helper'
-import {useRouter} from 'next/navigation'
+import {useRouter, useSearchParams} from 'next/navigation'
 import {toast} from 'sonner'
 import RegisterUserFirst from './RegisterUser/RegisterUserFirst'
 import RegisterUserSecond from './RegisterUser/RegisterUserSecond'
@@ -34,7 +33,9 @@ interface AuthResponse {
 
 const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const t = useTranslations('RegisterUserPage')
+
   // Form steps state
   const [showNextStep, setShowNextStep] = useState(false)
   const [showFinalStep, setShowFinalStep] = useState(false)
@@ -50,15 +51,17 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const [trueTelephoneNumber, setTrueTelephoneNumber] = useState('')
   const [otpValue, setOtpValue] = useState<string>('')
   const [selectedOption, setSelectedOption] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('')
 
   const currentLang = useCurrentLanguage()
+
   // User-specific state
   const [listIsOpen, setListIsOpen] = useState(false)
   const [errorInName, setErrorInName] = useState<null | string>(null)
   const [isValidNumber, setIsValidNumber] = useState(true)
   const [selectedRegion, setSelectedRegion] = useState({
     imageSrc: belarusSvg,
-    title: 'Беларусь',
+    title: t('Belarus'),
     altName: 'Belarus'
   })
 
@@ -77,19 +80,45 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     setTrueTelephoneNumber(cleanedNumber)
   }, [telText])
 
+  // Обработка параметров из URL (Google OAuth)
+  useEffect(() => {
+    const emailFromUrl = searchParams?.get('email')
+    const pictureFromUrl = searchParams?.get('picture')
+
+    if (emailFromUrl) {
+      const decodedEmail = decodeURIComponent(emailFromUrl)
+      setEmailStore(decodedEmail)
+    }
+
+    if (pictureFromUrl) {
+      const decodedPicture = decodeURIComponent(pictureFromUrl)
+      setAvatarUrl(decodedPicture)
+    }
+  }, [searchParams])
+
   // Reset form when switching between user and company
   useEffect(() => {
     setShowNextStep(false)
     setShowFinalStep(false)
-    setEmail('')
+    // Не сбрасываем email и avatarUrl если они пришли из Google OAuth
+    const emailFromUrl = searchParams?.get('email')
+    const pictureFromUrl = searchParams?.get('picture')
+
+    if (!emailFromUrl) {
+      setEmailStore('')
+    }
+    if (!pictureFromUrl) {
+      setAvatarUrl('')
+    }
+
     setNameState('')
-    setPassword('')
+    setPasswordState('')
     setTelText('')
     setSelectedOption('')
     setInn('')
     setSelectedCountries([])
     setSelectedCategories([])
-  }, [isUser])
+  }, [isUser, searchParams])
 
   // Handlers
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,12 +146,8 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   }
 
   const handleNameChange = (value: string) => {
-    if (isUser && /[0-9!@#$%^&*()_+=|<>?{}\[\]~\/]/.test(value)) {
-      setErrorInName(t('nameError'))
-    } else {
-      setErrorInName(null)
-      setNameState(value)
-    }
+    setErrorInName(null)
+    setNameState(value)
   }
 
   // Helper function to get country code
@@ -193,7 +218,8 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             login: name,
             password,
             region: selectedRegion.altName,
-            phoneNumber: fullPhoneNumber
+            phoneNumber: fullPhoneNumber,
+            avatarUrl: avatarUrl
             // type: 'user'
           }
         : {
@@ -203,7 +229,8 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             password,
             countries: selectedCountries.map((c) => c.value),
             productCategories: selectedCategories.map((c) => c.value),
-            phoneNumber: fullPhoneNumber
+            phoneNumber: fullPhoneNumber,
+            avatarUrl: avatarUrl
             // type: 'company'
           }
 

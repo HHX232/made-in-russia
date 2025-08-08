@@ -270,7 +270,7 @@ const DynamicSlider: FC<DynamicSliderProps> = ({ads, isLoading}) => {
     <div className={styles.promo_box__inner}>
       {/* Большие рекламы слайдер — показываем по одному */}
       <div className={styles.promo__item_box_1} style={{height: '100%'}}>
-        <KeenSliderWrapper slidesToShow={1} autoplaySpeed={4500} className=''>
+        <KeenSliderWrapper autoplay slidesToShow={1} autoplaySpeed={4500} className=''>
           {bigAdItems}
         </KeenSliderWrapper>
       </div>
@@ -280,7 +280,7 @@ const DynamicSlider: FC<DynamicSliderProps> = ({ads, isLoading}) => {
         style={{height: '100%', display: 'block', minWidth: 0}}
         className={`${styles.promo__item_box_2} ${styles.desktop_only} ${styles.slider__box__custom}`}
       >
-        <KeenSliderWrapper slidesToShow={1} autoplaySpeed={4500} className=''>
+        <KeenSliderWrapper autoplay slidesToShow={1} autoplaySpeed={4500} className=''>
           {smallAdItems}
         </KeenSliderWrapper>
       </div>
@@ -290,14 +290,14 @@ const DynamicSlider: FC<DynamicSliderProps> = ({ads, isLoading}) => {
         style={{height: '100%', display: 'block', minWidth: 0}}
         className={`${styles.promo__item_box_2} ${styles.desktop_only} ${styles.slider__box__custom}`}
       >
-        <KeenSliderWrapper slidesToShow={1} autoplaySpeed={4500} className=''>
+        <KeenSliderWrapper autoplay slidesToShow={1} autoplaySpeed={4500} className=''>
           {[...smallAdItems].reverse()}
         </KeenSliderWrapper>
       </div>
 
       {/* Мобильная версия маленьких слайдеров, показываем по одному */}
       <div style={{height: '100%'}} className={`${styles.slider__box__custom} ${styles.slider__box__custom__hidden}`}>
-        <KeenSliderWrapper slidesToShow={1} autoplaySpeed={4500} className=''>
+        <KeenSliderWrapper autoplay slidesToShow={1} autoplaySpeed={4500} className=''>
           {smallAdItemsForMobile}
         </KeenSliderWrapper>
       </div>

@@ -5,7 +5,7 @@ export default defineConfig({
   projectId: 'jhaphr',
   e2e: {
     setupNodeEvents(on, config) {
-      cypressSplit(on, config) // Добавляем поддержку параллельного выполнения
+      cypressSplit(on, config)
 
       // Дополнительные env-переменные
       config.env = {
@@ -26,3 +26,4 @@ export default defineConfig({
     runMode: 1
   }
 })
+// npx cypress run --spec "cypress/e2e/**/*.cy.ts"
