@@ -3,19 +3,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Image from 'next/image'
 import styles from './LoginPage.module.scss'
+import telegramStyles from './telegramStyles.module.scss'
 import MinimalHeader from '@/components/MainComponents/MinimalHeader/MinimalHeader'
-import {SetStateAction, MouseEvent, useEffect, useState} from 'react'
+import {SetStateAction, MouseEvent, useEffect, useState, useRef} from 'react'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {axiosClassic} from '@/api/api.interceptor'
 import Link from 'next/link'
 import {toast} from 'sonner'
 import {saveTokenStorage} from '@/services/auth/auth.helper'
-import {useRouter} from 'next/navigation'
+import {useRouter, useSearchParams} from 'next/navigation'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import ResetPasswordForm from './ResetPAsswordForm/ResetPasswordForm'
 import {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import TelegramLoginWidget from './TelegramLoginWidget/TelegramLoginWidget'
 
 const google = '/google_registr.svg'
 const wechat = '/wechat_registr.svg'
@@ -31,9 +33,25 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [showResetForm, setShowResetForm] = useState(false)
+  const [showTelegramWidget, setShowTelegramWidget] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const t = useTranslations('LoginPage')
   const currentLang = useCurrentLanguage()
+
+  // Обработка токенов из URL
+  useEffect(() => {
+    const accessToken = searchParams?.get('accessToken')
+    const refreshToken = searchParams?.get('refreshToken')
+
+    // Сохраняем токены если они пришли в URL
+    if (accessToken && refreshToken) {
+      saveTokenStorage({accessToken, refreshToken})
+      router.push('/') // Перенаправляем на главную после успешной авторизации
+      return
+    }
+  }, [searchParams, router])
+
   const handleNameChange = (value: SetStateAction<string>) => {
     setNameState(value)
     setError('')
@@ -128,6 +146,48 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
     setError('')
   }
 
+  const handleTelegramAuth = async (user: any) => {
+    try {
+      setShowTelegramWidget(false) // Скрываем виджет после авторизации
+
+      const response = await axiosClassic.post('/auth/telegram-auth', user, {
+        headers: {
+          'Accept-Language': currentLang
+        }
+      })
+
+      const {accessToken, refreshToken} = response.data
+
+      if (accessToken && refreshToken) {
+        // Пользователь уже зарегистрирован, сохраняем токены и перенаправляем
+        saveTokenStorage({accessToken, refreshToken})
+        router.push('/')
+      }
+    } catch (error: any) {
+      console.error('Telegram auth error:', error)
+
+      if (error.response?.status === 404) {
+        // Пользователь не найден, перенаправляем на регистрацию с данными Telegram
+        const queryParams = new URLSearchParams({
+          email: user.email || '',
+          picture: user.photo_url || '',
+          telegram_id: user.id?.toString() || '',
+          username: user.username || '',
+          first_name: user.first_name || '',
+          last_name: user.last_name || ''
+        })
+
+        router.push(`/register?${queryParams.toString()}`)
+      } else {
+        toast.error('Ошибка авторизации через Telegram')
+      }
+    }
+  }
+
+  const handleTelegramClick = () => {
+    setShowTelegramWidget(true)
+  }
+
   return (
     <div className={`${styles.login__box}`}>
       <MinimalHeader categories={categories} />
@@ -204,7 +264,26 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                           width={50}
                           height={50}
                           alt='registr with telegram'
+                          onClick={handleTelegramClick}
+                          style={{cursor: 'pointer'}}
                         />
+                        {showTelegramWidget && (
+                          <div className={telegramStyles.telegram__widget__overlay}>
+                            <div className={telegramStyles.telegram__widget__modal}>
+                              <button
+                                className={telegramStyles.close__button}
+                                onClick={() => setShowTelegramWidget(false)}
+                              >
+                                ×
+                              </button>
+                              <h3>Войти через Telegram</h3>
+                              <TelegramLoginWidget
+                                onAuth={handleTelegramAuth}
+                                className={telegramStyles.telegram__widget}
+                              />
+                            </div>
+                          </div>
+                        )}
                         <Image
                           className={`${styles.registr__image}`}
                           src={wechat}

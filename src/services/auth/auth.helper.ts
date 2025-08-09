@@ -2,7 +2,7 @@
 
 import Cookies from 'js-cookie'
 
-export const saveTokenStorage = (data: any) => {
+export const saveTokenStorage = (data: {accessToken: string; refreshToken: string}) => {
   Cookies.set('accessToken', data.accessToken)
   Cookies.set('refreshToken', data.refreshToken)
 }

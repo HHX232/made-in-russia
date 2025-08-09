@@ -8,7 +8,6 @@ import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import Link from 'next/link'
 import {axiosClassic} from '@/api/api.interceptor'
-import {saveTokenStorage} from '@/services/auth/auth.helper'
 import {useRouter, useSearchParams} from 'next/navigation'
 import {toast} from 'sonner'
 import RegisterUserFirst from './RegisterUser/RegisterUserFirst'
@@ -20,12 +19,14 @@ import Footer from '@/components/MainComponents/Footer/Footer'
 import {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {saveTokenStorage} from '@/middleware'
 
 const decorImage = '/login__image.jpg'
 const belarusSvg = '/countries/belarus.svg'
 const kazakhstanSvg = '/countries/kazakhstan.svg'
 const chinaSvg = '/countries/china.svg'
 const russiaSvg = '/countries/russia.svg'
+
 interface AuthResponse {
   accessToken: string
   refreshToken: string
@@ -80,10 +81,17 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     setTrueTelephoneNumber(cleanedNumber)
   }, [telText])
 
-  // Обработка параметров из URL (Google OAuth)
   useEffect(() => {
     const emailFromUrl = searchParams?.get('email')
     const pictureFromUrl = searchParams?.get('picture')
+    const accessToken = searchParams?.get('accessToken')
+    const refreshToken = searchParams?.get('refreshToken')
+
+    if (accessToken && refreshToken) {
+      saveTokenStorage({accessToken, refreshToken})
+      router.push('/')
+      return
+    }
 
     if (emailFromUrl) {
       const decodedEmail = decodeURIComponent(emailFromUrl)
@@ -94,7 +102,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
       const decodedPicture = decodeURIComponent(pictureFromUrl)
       setAvatarUrl(decodedPicture)
     }
-  }, [searchParams])
+  }, [searchParams, router])
 
   // Reset form when switching between user and company
   useEffect(() => {
