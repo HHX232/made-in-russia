@@ -62,6 +62,7 @@ const TelegramLoginWidget: React.FC<TelegramLoginWidgetProps> = ({
 
     // Добавляем скрипт в контейнер
     if (containerRef.current) {
+      script.setAttribute('style', 'cursor: pointer !important')
       containerRef.current.appendChild(script)
     }
 

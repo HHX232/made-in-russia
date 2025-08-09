@@ -8,6 +8,7 @@ import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import Link from 'next/link'
 import {axiosClassic} from '@/api/api.interceptor'
+import {saveTokenStorage} from '@/services/auth/auth.helper'
 import {useRouter, useSearchParams} from 'next/navigation'
 import {toast} from 'sonner'
 import RegisterUserFirst from './RegisterUser/RegisterUserFirst'
@@ -19,7 +20,6 @@ import Footer from '@/components/MainComponents/Footer/Footer'
 import {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
-import {saveTokenStorage} from '@/middleware'
 
 const decorImage = '/login__image.jpg'
 const belarusSvg = '/countries/belarus.svg'
@@ -81,15 +81,21 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     setTrueTelephoneNumber(cleanedNumber)
   }, [telText])
 
+  // Обработка параметров из URL (Google OAuth, Telegram и токенов)
   useEffect(() => {
     const emailFromUrl = searchParams?.get('email')
     const pictureFromUrl = searchParams?.get('picture')
     const accessToken = searchParams?.get('accessToken')
     const refreshToken = searchParams?.get('refreshToken')
+    const telegramId = searchParams?.get('telegram_id')
+    const username = searchParams?.get('username')
+    const firstName = searchParams?.get('first_name')
+    const lastName = searchParams?.get('last_name')
 
+    // Сохраняем токены если они пришли в URL
     if (accessToken && refreshToken) {
       saveTokenStorage({accessToken, refreshToken})
-      router.push('/')
+      router.push('/') // Перенаправляем на главную после успешной авторизации
       return
     }
 
@@ -102,15 +108,34 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
       const decodedPicture = decodeURIComponent(pictureFromUrl)
       setAvatarUrl(decodedPicture)
     }
+
+    // Обрабатываем данные из Telegram
+    if (username) {
+      const decodedUsername = decodeURIComponent(username)
+      setNameState(decodedUsername) // Устанавливаем username как имя
+    }
+
+    // Можно также использовать имя и фамилию из Telegram если username нет
+    if (!username && (firstName || lastName)) {
+      const decodedFirstName = firstName ? decodeURIComponent(firstName) : ''
+      const decodedLastName = lastName ? decodeURIComponent(lastName) : ''
+      const fullName = `${decodedFirstName} ${decodedLastName}`.trim()
+      if (fullName) {
+        setNameState(fullName)
+      }
+    }
   }, [searchParams, router])
 
   // Reset form when switching between user and company
   useEffect(() => {
     setShowNextStep(false)
     setShowFinalStep(false)
-    // Не сбрасываем email и avatarUrl если они пришли из Google OAuth
+    // Не сбрасываем email, avatarUrl, name если они пришли из OAuth (Google/Telegram)
     const emailFromUrl = searchParams?.get('email')
     const pictureFromUrl = searchParams?.get('picture')
+    const usernameFromUrl = searchParams?.get('username')
+    const firstNameFromUrl = searchParams?.get('first_name')
+    const lastNameFromUrl = searchParams?.get('last_name')
 
     if (!emailFromUrl) {
       setEmailStore('')
@@ -118,8 +143,10 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     if (!pictureFromUrl) {
       setAvatarUrl('')
     }
-
-    setNameState('')
+    // Не сбрасываем имя если оно пришло из Telegram
+    if (!usernameFromUrl && !firstNameFromUrl && !lastNameFromUrl) {
+      setNameState('')
+    }
     setPasswordState('')
     setTelText('')
     setSelectedOption('')

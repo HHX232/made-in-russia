@@ -158,6 +158,40 @@
   }
 }
 
+/* Добавьте эти стили в ваш LoginPage.module.scss */
+
+.telegram__button__container {
+  position: relative;
+  display: inline-block;
+}
+
+.telegram__widget__overlay {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+
+  /* Делаем виджет Telegram прозрачным и невидимым */
+  iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    opacity: 0 !important;
+  }
+
+  /* Скрываем содержимое виджета, но оставляем кликабельность */
+  > * {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+}
+
 .input__title {
   position: relative;
   color: #2a2e46;

@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Image from 'next/image'
 import styles from './LoginPage.module.scss'
-import telegramStyles from './telegramStyles.module.scss'
 import MinimalHeader from '@/components/MainComponents/MinimalHeader/MinimalHeader'
 import {SetStateAction, MouseEvent, useEffect, useState, useRef} from 'react'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
@@ -33,7 +32,6 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [showResetForm, setShowResetForm] = useState(false)
-  const [showTelegramWidget, setShowTelegramWidget] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations('LoginPage')
@@ -148,8 +146,6 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
 
   const handleTelegramAuth = async (user: any) => {
     try {
-      setShowTelegramWidget(false) // Скрываем виджет после авторизации
-
       const response = await axiosClassic.post('/auth/telegram-auth', user, {
         headers: {
           'Accept-Language': currentLang
@@ -182,10 +178,6 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
         toast.error('Ошибка авторизации через Telegram')
       }
     }
-  }
-
-  const handleTelegramClick = () => {
-    setShowTelegramWidget(true)
   }
 
   return (
@@ -258,32 +250,19 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                             alt='registr with google'
                           />
                         </Link>
-                        <Image
-                          className={`${styles.registr__image}`}
-                          src={tg}
-                          width={50}
-                          height={50}
-                          alt='registr with telegram'
-                          onClick={handleTelegramClick}
-                          style={{cursor: 'pointer'}}
-                        />
-                        {showTelegramWidget && (
-                          <div className={telegramStyles.telegram__widget__overlay}>
-                            <div className={telegramStyles.telegram__widget__modal}>
-                              <button
-                                className={telegramStyles.close__button}
-                                onClick={() => setShowTelegramWidget(false)}
-                              >
-                                ×
-                              </button>
-                              <h3>Войти через Telegram</h3>
-                              <TelegramLoginWidget
-                                onAuth={handleTelegramAuth}
-                                className={telegramStyles.telegram__widget}
-                              />
-                            </div>
-                          </div>
-                        )}
+                        <div className={styles.telegram__button__container}>
+                          <Image
+                            className={`${styles.registr__image}`}
+                            src={tg}
+                            width={50}
+                            height={50}
+                            alt='registr with telegram'
+                          />
+                          <TelegramLoginWidget
+                            onAuth={handleTelegramAuth}
+                            className={styles.telegram__widget__overlay}
+                          />
+                        </div>
                         <Image
                           className={`${styles.registr__image}`}
                           src={wechat}

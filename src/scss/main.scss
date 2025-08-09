@@ -13,6 +13,21 @@ html {
 }
 
 // ! NEW SLIDER
+#telegram-login-exporterubot {
+  cursor: pointer !important;
+
+  & > * {
+    cursor: pointer !important;
+  }
+
+  & > body {
+    cursor: pointer !important;
+  }
+
+  & > html > body {
+    cursor: pointer !important;
+  }
+}
 
 // Глобальные стили для keen-slider
 // Добавить в main.scss
