@@ -1,162 +1,363 @@
 .error__message {
-   font-size: 16px;
-   margin-top: 20px;
-   color: #AC2525;
+  margin-top: 20px;
+  color: #ac2525;
+  font-size: 16px;
 }
 
 .rows__inputs {
-   width: 100%;
+  width: 100%;
 
-   &__titles {
-      display: grid;
-      gap: 20px;
-      margin-bottom: 20px;
-      // Ширина должна совпадать с шириной блока инпутов (без кнопки)
-      padding-right: 59px; // 39px (ширина кнопки) + 20px (gap)
-      padding-left: 30px;
-   }
+  &__titles {
+    display: grid;
 
-   &__title {
-      font-size: 16px;
-      font-weight: 500;
-      color: #818181;
-      margin: 0;
-      text-align: center;
-   }
+    // Ширина должна совпадать с шириной блока инпутов (без кнопки)
+    padding-right: 59px; // 39px (ширина кнопки) + 20px (gap)
+    padding-left: 30px;
+    margin-bottom: 20px;
+    gap: 20px;
+  }
 
-   &__container {
-      display: flex;
+  &__title {
+    margin: 0;
+    color: #818181;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; // Уменьшен gap до 10px
+  }
+
+  &__box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  &__row {
+    display: grid;
+    flex: 1;
+    gap: 20px;
+  }
+
+  &__remove {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  &__add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    margin: 20px auto 0;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  // Стили для серой линии
+  .gray__bottom__line {
+    height: 1px;
+    margin-top: 10px;
+
+    // Ширина линии должна совпадать с шириной блока инпутов (без кнопки)
+    margin-right: 59px; // 39px (ширина кнопки) + 20px (gap)
+    background-color: #969696;
+  }
+
+  // Адаптив для планшетов
+  @media (max-width: 768px) {
+    &__titles {
+      padding-right: 49px; // 34px (уменьшенная кнопка) + 15px (gap)
+      padding-left: 20px;
+      font-size: 12px;
+      gap: 15px;
+    }
+
+    &__container {
+      gap: 8px;
+    }
+
+    &__row {
+      gap: 15px;
+    }
+
+    &__box {
+      gap: 15px;
+    }
+
+    &__remove {
+      img {
+        width: 34px;
+        height: 34px;
+      }
+    }
+
+    &__add {
+      padding: 15px;
+
+      img {
+        width: 34px;
+        height: 34px;
+      }
+    }
+
+    .gray__bottom__line {
+      margin-right: 49px; // 34px + 15px (gap)
+    }
+  }
+
+  // Адаптив для мобильных устройств
+  @media (max-width: 480px) {
+    &__titles {
+      display: none; // Скрываем заголовки на мобильных
+    }
+
+    &__container {
+      gap: 15px; // Увеличиваем gap на мобильных для лучшей читаемости
+    }
+
+    &__box {
       flex-direction: column;
-      gap: 10px; // Уменьшен gap до 10px
-   }
+      align-items: stretch;
+      gap: 10px;
+    }
 
-   &__box {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      position: relative;
-   }
+    &__row {
+      gap: 10px;
 
-   &__row {
-      display: grid;
-      gap: 20px;
-      flex: 1;
-   }
+      // Меняем на колонку для лучшей читаемости
+      grid-template-columns: 1fr;
+    }
 
-   &__remove {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.3s ease;
-      flex-shrink: 0;
+    &__remove {
+      align-self: center;
+      margin-top: 5px;
+    }
+
+    .gray__bottom__line {
+      margin-right: 0; // На мобильных линия на всю ширину
+      margin-bottom: 5px;
+    }
+  }
+}
+
+// Добавьте эти стили в ваш RowsInputs.module.scss
+
+.dropdown {
+  position: relative;
+  width: 100%;
+
+  &__trigger {
+    display: flex;
+    min-height: 46px; // Совпадает с высотой TextInputUI
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 21px;
+    border: 1px solid #2a2e46;
+    border-radius: 15px;
+    background-color: #f3f6fa;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #1a1d35;
+    }
+  }
+
+  &__value {
+    color: #2a2e46;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  &__placeholder {
+    color: #818181;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  &__arrow {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+
+    &__open {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__list {
+    position: absolute;
+    z-index: 1000;
+    top: 100%;
+    right: 0;
+    left: 0;
+    max-height: 200px;
+    border: 1px solid #2a2e46;
+    border-radius: 15px;
+    margin-top: 4px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+    overflow-y: auto;
+
+    // Стили для скроллбара
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      border-radius: 10px;
+      background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background: #c1c1c1;
 
       &:hover {
-         opacity: 0.7;
+        background: #a8a8a8;
       }
-   }
+    }
+  }
 
-   &__add {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 20px auto 0 auto;
-      transition: transform 0.3s ease;
+  &__option {
+    padding: 12px 21px;
+    color: #2a2e46;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f3f6fa;
+    }
+
+    &:first-child {
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+    }
+
+    &__selected {
+      background-color: #d9dffb;
+      font-weight: 500;
 
       &:hover {
-         transform: scale(1.1);
+        background-color: #d9dffb;
       }
-   }
+    }
+  }
+}
 
-   // Стили для серой линии
-   .gray__bottom__line {
-      height: 1px;
-      background-color: #969696;
-      margin-top: 10px;
-      // Ширина линии должна совпадать с шириной блока инпутов (без кнопки)
-      margin-right: 59px; // 39px (ширина кнопки) + 20px (gap)
-   }
+// Стили для ошибки dropdown
+.error__dropdown {
+  border: 2px solid #ac2525 !important;
 
-   // Адаптив для планшетов
-   @media (max-width: 768px) {
-      &__titles {
-         gap: 15px;
-         font-size: 12px;
-         padding-right: 49px; // 34px (уменьшенная кнопка) + 15px (gap)
-         padding-left: 20px;
-      }
+  .dropdown__placeholder {
+    color: #d61414;
+    font-weight: 500;
+  }
+}
 
-      &__container {
-         gap: 8px;
-      }
+// Стили для ручки перетаскивания
+.rows__inputs__drag {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: none;
+  background: none;
+  cursor: grab;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
 
-      &__row {
-         gap: 15px;
-      }
+  &:hover {
+    opacity: 1;
+  }
 
-      &__box {
-         gap: 15px;
-      }
+  &:active {
+    cursor: grabbing;
+  }
+}
 
-      &__remove {
-         img {
-            width: 34px;
-            height: 34px;
-         }
-      }
+// Адаптивные стили для dropdown
+@media (max-width: 768px) {
+  .dropdown {
+    &__trigger {
+      min-height: 46px;
+      padding: 12px 18px;
+    }
 
-      &__add {
-         padding: 15px;
+    &__value,
+    &__placeholder {
+      font-size: 14px;
+    }
 
-         img {
-            width: 34px;
-            height: 34px;
-         }
-      }
+    &__option {
+      padding: 10px 18px;
+      font-size: 14px;
+    }
 
-      .gray__bottom__line {
+    &__list {
+      max-height: 150px;
+    }
+  }
 
-         margin-right: 49px; // 34px + 15px (gap)
-      }
-   }
+  .rows__inputs__drag {
+    padding: 6px;
 
-   // Адаптив для мобильных устройств
-   @media (max-width: 480px) {
-      &__titles {
-         display: none; // Скрываем заголовки на мобильных
-      }
+    img {
+      width: 10px;
+      height: 15px;
+    }
+  }
+}
 
-      &__container {
-         gap: 15px; // Увеличиваем gap на мобильных для лучшей читаемости
-      }
+@media (max-width: 480px) {
+  .dropdown {
+    &__trigger {
+      min-height: 42px;
+      padding: 10px 15px;
+    }
 
-      &__box {
-         flex-direction: column;
-         align-items: stretch;
-         gap: 10px;
-      }
+    &__value,
+    &__placeholder {
+      font-size: 12px;
+    }
 
-      &__row {
-         gap: 10px;
-         // Меняем на колонку для лучшей читаемости
-         grid-template-columns: 1fr;
-      }
+    &__option {
+      padding: 8px 15px;
+      font-size: 12px;
+    }
 
-      &__remove {
-         align-self: center;
-         margin-top: 5px;
-      }
-
-      .gray__bottom__line {
-         margin-right: 0; // На мобильных линия на всю ширину
-         margin-bottom: 5px;
-      }
-   }
+    &__list {
+      max-height: 120px;
+    }
+  }
 }

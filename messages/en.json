@@ -38,7 +38,8 @@
     "writePassword": "Enter password",
     "passwordError": "Password must be at least 6 characters",
     "nicknameError": "Please enter your username or email",
-    "autorithationError": "Authorization error",
+ "autorithationError": "Incorrect login or password",
+ "authorizationErrorTelegram": "Telegram authorization error",
     "decorationImage": "decorative image 'Wide range of materials'",
     "loading":"Loading..."
 },

@@ -1,5 +1,5 @@
 'use client'
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import Image from 'next/image'
 import {
   DndContext,
@@ -18,25 +18,108 @@ import styles from './RowsInputs.module.scss'
 
 const plusCircle = '/create-card/plus-circle.svg'
 const minusCircle = '/create-card/minusCircle.svg'
-const dragHandle = '/create-card/drag-handle.svg' // Добавьте иконку для перетаскивания
-type TInputType = 'text' | 'number' | 'password'
+const dragHandle = '/create-card/drag-handle.svg'
+// const dropdownArrow = '/create-card/dropdown-arrow.svg' // Добавьте иконку стрелки
+
+type TInputType = 'text' | 'number' | 'password' | 'dropdown'
+
 interface RowsInputsProps {
   titles: string[]
   initialRowsCount?: number
   inputsInRowCount?: number
   idNames?: string[]
   maxRows?: number
-  rowsInitialValues?: string[][] // Новый prop для инициализации значений
+  rowsInitialValues?: string[][]
   onSetValue: (rowIndex: number, inputIndex: number, value: string) => void
-  onRowsChange?: (rows: string[][]) => void // Callback для передачи всей матрицы
+  onRowsChange?: (rows: string[][]) => void
   extraClasses?: string[]
   extraButtonPlusClass?: string
   extraButtonMinusClass?: string
-  errorMessage?: string // Сообщение об ошибке
-  minFilledRows?: number // Минимальное количество заполненных строк
+  errorMessage?: string
+  minFilledRows?: number
   inputType?: TInputType[]
-  controlled?: boolean // флаг для включения контролируемого режима
+  controlled?: boolean
   externalValues?: string[][]
+  dropdownOptions?: string[][] // Новый prop для опций dropdown'ов
+}
+
+// Компонент Dropdown
+interface DropdownProps {
+  value: string
+  options: string[]
+  placeholder: string
+  onSelect: (value: string) => void
+  hasError?: boolean
+  inputId: string
+}
+
+const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId}: DropdownProps) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Закрытие при клике вне элемента
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Закрытие при скролле страницы
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsOpen(false)
+    }
+
+    if (isOpen) {
+      document.addEventListener('scroll', handleScroll, true)
+      return () => document.removeEventListener('scroll', handleScroll, true)
+    }
+  }, [isOpen])
+
+  const handleSelect = (option: string) => {
+    onSelect(option)
+    setIsOpen(false)
+  }
+
+  return (
+    <div key={inputId} className={styles.dropdown} ref={dropdownRef}>
+      <div
+        className={`${styles.dropdown__trigger} ${hasError ? styles.error__dropdown : ''}`}
+        onClick={() => setIsOpen(!isOpen)}
+        id={inputId}
+      >
+        <span style={{margin: '0 auto'}} className={value ? styles.dropdown__value : styles.dropdown__placeholder}>
+          {value || placeholder}
+        </span>
+        {/* <Image
+          src={dropdownArrow}
+          alt='dropdown arrow'
+          width={12}
+          height={8}
+          className={`${styles.dropdown__arrow} ${isOpen ? styles.dropdown__arrow__open : ''}`}
+        /> */}
+      </div>
+
+      {isOpen && (
+        <div className={styles.dropdown__list}>
+          {options.map((option, index) => (
+            <div
+              key={index + inputId}
+              className={`${styles.dropdown__option} ${option === value ? styles.dropdown__option__selected : ''}`}
+              onClick={() => handleSelect(option)}
+            >
+              {option}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 // Компонент для сортируемой строки
@@ -53,8 +136,9 @@ interface SortableRowProps {
   onUpdateValue: (rowIndex: number, inputIndex: number, value: string) => void
   onRemoveRow: (rowIndex: number) => void
   extraButtonMinusClass?: string
-  hasError?: boolean // Показывать ли ошибку для этой строки
+  hasError?: boolean
   inputType?: TInputType[]
+  dropdownOptions?: string[][]
 }
 
 const SortableRow = ({
@@ -71,7 +155,8 @@ const SortableRow = ({
   onRemoveRow,
   extraButtonMinusClass,
   hasError,
-  inputType
+  inputType,
+  dropdownOptions
 }: SortableRowProps) => {
   const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id})
 
@@ -81,12 +166,46 @@ const SortableRow = ({
     opacity: isDragging ? 0.5 : 1
   }
 
+  const renderInput = (value: string, inputIndex: number) => {
+    const currentInputType = inputType?.[inputIndex] || 'text'
+    const inputId =
+      `cy-create-card-row-input-${idNames?.[inputIndex]}` ||
+      `cy-create-card-row-input-${inputIndex}-${currentInputType}`
+
+    if (currentInputType === 'dropdown') {
+      const options = dropdownOptions?.[inputIndex] || []
+      return (
+        <Dropdown
+          value={value}
+          options={options}
+          placeholder={titles[inputIndex] || 'Выберите значение'}
+          onSelect={(newValue) => onUpdateValue(rowIndex, inputIndex, newValue)}
+          hasError={hasError && !value}
+          inputId={inputId}
+        />
+      )
+    }
+
+    return (
+      <TextInputUI
+        inputType={currentInputType}
+        key={inputIndex}
+        idForLabel={inputId}
+        theme='lightBlue'
+        placeholder={titles[inputIndex] || 'Введите значение'}
+        currentValue={value}
+        onSetValue={(newValue) => onUpdateValue(rowIndex, inputIndex, newValue)}
+        errorValue={hasError && !value ? ' ' : ''}
+      />
+    )
+  }
+
   return (
     <div id={`cy-row-${idNames?.[0]}-${rowIndex}`} ref={setNodeRef} style={style}>
       <div
         className={`${styles.rows__inputs__box} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''}`}
       >
-        {/* Добавляем ручку для перетаскивания */}
+        {/* Ручка для перетаскивания */}
         <button
           className={styles.rows__inputs__drag}
           {...attributes}
@@ -98,22 +217,9 @@ const SortableRow = ({
         </button>
 
         <div className={styles.rows__inputs__row} style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}>
-          {row.map((value, inputIndex) => (
-            <TextInputUI
-              inputType={inputType?.[inputIndex] || 'text'}
-              key={inputIndex}
-              idForLabel={
-                `cy-create-card-row-input-${idNames?.[inputIndex]}` ||
-                `cy-create-card-row-input-${inputIndex}-${inputType?.[inputIndex]}`
-              }
-              theme='lightBlue'
-              placeholder={titles[inputIndex] || 'Введите значение'}
-              currentValue={value}
-              onSetValue={(newValue) => onUpdateValue(rowIndex, inputIndex, newValue)}
-              errorValue={hasError && !value ? ' ' : ''} // Показываем визуальную ошибку для пустых полей
-            />
-          ))}
+          {row.map((value, inputIndex) => renderInput(value, inputIndex))}
         </div>
+
         <button
           className={`${styles.rows__inputs__remove} ${extraButtonMinusClass}`}
           onClick={() => onRemoveRow(rowIndex)}
@@ -147,7 +253,8 @@ const RowsInputs = ({
   inputType,
   controlled = false,
   externalValues,
-  idNames
+  idNames,
+  dropdownOptions
 }: RowsInputsProps) => {
   const [rows, setRows] = useState<string[][]>(() => {
     if (rowsInitialValues && rowsInitialValues.length > 0) {
@@ -164,7 +271,6 @@ const RowsInputs = ({
 
   useEffect(() => {
     if (controlled && externalValues) {
-      // В контролируемом режиме синхронизируем с внешними значениями
       if (JSON.stringify(externalValues) !== JSON.stringify(rows)) {
         setRows(externalValues)
 
@@ -176,59 +282,35 @@ const RowsInputs = ({
         }
       }
     }
-    //  else if (!controlled && rowsInitialValues) {
-    //   const isCurrentStateEmpty = rows.every((row) => row.every((cell) => cell.trim() === ''))
-
-    //   if (isCurrentStateEmpty || JSON.stringify(rowsInitialValues) !== JSON.stringify(rows)) {
-    //     setRows(rowsInitialValues)
-
-    //     // Обновляем rowIds если количество строк изменилось
-    //     if (rowsInitialValues.length !== rowIds.length) {
-    //       const newRowIds = rowsInitialValues.map((_, index) =>
-    //         index < rowIds.length ? rowIds[index] : `row-${index}-${Date.now()}`
-    //       )
-    //       setRowIds(newRowIds)
-    //     }
-    //   }
-    // }
   }, [controlled, externalValues, rowsInitialValues])
 
-  // Получаем актуальные значения строк
   const currentRows = controlled && externalValues ? externalValues : rows
 
-  // Проверка, полностью ли заполнена строка
   const isRowFullyFilled = (row: string[]) => {
     return row.every((cell) => cell.trim() !== '')
   }
 
-  // Проверка, частично ли заполнена строка
   const isRowPartiallyFilled = (row: string[]) => {
     const filledCells = row.filter((cell) => cell.trim() !== '').length
     return filledCells > 0 && filledCells < row.length
   }
 
-  // Подсчет полностью заполненных строк
   const getFilledRowsCount = () => {
     return currentRows.filter(isRowFullyFilled).length
   }
 
-  // Проверка, какие строки нужно подсветить как ошибочные
   const getRowsWithErrors = () => {
     if (!errorMessage || minFilledRows === 0) return []
 
     const filledCount = getFilledRowsCount()
-
-    // Собираем индексы строк с ошибками
     const errorRows: number[] = []
 
-    // Проверяем частично заполненные строки
     currentRows.forEach((row, index) => {
       if (isRowPartiallyFilled(row)) {
         errorRows.push(index)
       }
     })
 
-    // Если заполнено меньше минимума, подсвечиваем также пустые строки до minFilledRows
     if (filledCount < minFilledRows) {
       currentRows.forEach((row, index) => {
         if (index < minFilledRows && !isRowFullyFilled(row) && !errorRows.includes(index)) {
@@ -242,22 +324,18 @@ const RowsInputs = ({
 
   const rowsWithErrors = getRowsWithErrors()
 
-  // Обновляем rowIds при изменении количества строк
   useEffect(() => {
     if (currentRows.length > rowIds.length) {
-      // Добавляем новые ID для новых строк
       const newIds = [...rowIds]
       for (let i = rowIds.length; i < currentRows.length; i++) {
         newIds.push(`row-${i}-${Date.now()}`)
       }
       setRowIds(newIds)
     } else if (currentRows.length < rowIds.length) {
-      // Удаляем лишние ID
       setRowIds(rowIds.slice(0, currentRows.length))
     }
   }, [currentRows.length])
 
-  // Настройка сенсоров для drag and drop
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -269,7 +347,6 @@ const RowsInputs = ({
     })
   )
 
-  // Добавление новой строки
   const addRow = () => {
     if (currentRows.length < maxRows) {
       const newRows = [...currentRows, new Array(inputsInRowCount).fill('')]
@@ -279,14 +356,12 @@ const RowsInputs = ({
         setRowIds([...rowIds, `row-${currentRows.length}-${Date.now()}`])
       }
 
-      // Уведомляем родительский компонент об изменении
       if (onRowsChange) {
         onRowsChange(newRows)
       }
     }
   }
 
-  // Удаление строки
   const removeRow = (rowIndex: number) => {
     if (currentRows.length === 1) return
     const newRows = currentRows.filter((_, index) => index !== rowIndex)
@@ -297,13 +372,11 @@ const RowsInputs = ({
       setRowIds(newRowIds)
     }
 
-    // Уведомляем родительский компонент об изменении
     if (onRowsChange) {
       onRowsChange(newRows)
     }
   }
 
-  // Обновление значения в конкретном инпуте
   const updateValue = (rowIndex: number, inputIndex: number, value: string) => {
     const newRows = [...currentRows]
     newRows[rowIndex][inputIndex] = value
@@ -314,13 +387,11 @@ const RowsInputs = ({
 
     onSetValue(rowIndex, inputIndex, value)
 
-    // Уведомляем родительский компонент об изменении
     if (onRowsChange) {
       onRowsChange(newRows)
     }
   }
 
-  // Обработка окончания перетаскивания
   const handleDragEnd = (event: DragEndEvent) => {
     const {active, over} = event
 
@@ -336,16 +407,13 @@ const RowsInputs = ({
         setRowIds(newRowIds)
       }
 
-      // Уведомляем родительский компонент об изменении
       if (onRowsChange) {
         onRowsChange(newRows)
       }
 
-      // Если есть extraClasses, также переставляем их
       if (extraClasses.length > 0) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const newExtraClasses = arrayMove([...extraClasses], oldIndex, newIndex)
-        // Здесь вам нужно будет добавить callback для обновления extraClasses в родительском компоненте
       }
     }
   }
@@ -383,6 +451,7 @@ const RowsInputs = ({
                   onUpdateValue={updateValue}
                   onRemoveRow={removeRow}
                   hasError={rowsWithErrors.includes(rowIndex)}
+                  dropdownOptions={dropdownOptions}
                 />
               ))}
             </div>

@@ -116,7 +116,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
 
       toast.error(
         <div style={{lineHeight: 1.5}}>
-          <strong style={{display: 'block', marginBottom: 4}}>Ошибка входа</strong>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('autorithationError')}</strong>
           {/* <span>Пожалуйста, перепроверьте введенные данные</span> */}
         </div>,
         {
@@ -175,7 +175,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
 
         router.push(`/register?${queryParams.toString()}`)
       } else {
-        toast.error('Ошибка авторизации через Telegram')
+        toast.error(t('autorithationErrorTelegram'))
       }
     }
   }
@@ -235,10 +235,10 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                     <div className={`${styles.form__reset__password__button}`} onClick={handleResetPassword}>
                       {t('loginForgotPassword')}
                     </div>
-                    {currentLang !== 'zh' && (
-                      <div className={`${styles.apps__login}`}>
-                        <p className={`${styles.apps__text}`}>{t('loginWithSocial')}</p>
-                        <div className={`${styles.apps__images}`}>
+                    <div className={`${styles.apps__login}`}>
+                      <p className={`${styles.apps__text}`}>{t('loginWithSocial')}</p>
+                      <div className={`${styles.apps__images}`}>
+                        {currentLang === 'en' && (
                           <Link
                             className={`${styles.registr__image}`}
                             href={`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/oauth2/google`}
@@ -251,37 +251,23 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                               alt='registr with google'
                             />
                           </Link>
+                        )}
 
-                          <div className={styles.telegram__button__container}>
-                            <Image
-                              className={`${styles.registr__image}`}
-                              src={tg}
-                              width={50}
-                              height={50}
-                              alt='registr with telegram'
-                            />
-                            <TelegramLoginWidget
-                              onAuth={handleTelegramAuth}
-                              className={styles.telegram__widget__overlay}
-                            />
-                          </div>
-                          {/* <Image
-                          className={`${styles.registr__image}`}
-                          src={wechat}
-                          width={50}
-                          height={50}
-                          alt='registr with telegram'
-                        />
-                        <Image
-                          className={`${styles.registr__image}`}
-                          src={weibo}
-                          width={50}
-                          height={50}
-                          alt='registr with telegram'
-                        /> */}
+                        <div className={styles.telegram__button__container}>
+                          <Image
+                            className={`${styles.registr__image}`}
+                            src={tg}
+                            width={50}
+                            height={50}
+                            alt='registr with telegram'
+                          />
+                          <TelegramLoginWidget
+                            onAuth={handleTelegramAuth}
+                            className={styles.telegram__widget__overlay}
+                          />
                         </div>
                       </div>
-                    )}
+                    </div>
                   </>
                 }
               </div>

@@ -1,157 +1,169 @@
+/* stylelint-disable selector-pseudo-class-no-unknown */
+
+.second__drop__extra {
+  & > ul {
+    transform: translate(-100%, -8px) !important;
+  }
+}
+
+.editor__extra__text {
+  & > div:last-child {
+    max-width: 70vw;
+
+    @media (max-width: 900px) {
+      max-width: 90vw;
+      margin: 0 auto !important;
+    }
+  }
+}
+
 .editor__wrapper {
+  width: 100%;
 
+  /* Стилизация изображений в превью */
+  .md-editor-preview img[src^='data:image'] {
+    max-width: 100%;
+    height: auto;
+  }
 
-   /* Стилизация изображений в превью */
-   .md-editor-preview img[src^="data:image"] {
-      max-width: 100%;
-      height: auto;
-   }
+  /* Стилизация кода с base64 в редакторе */
+  .md-editor-input-wrapper {
+    /* Обрезка длинных строк в редакторе */
+    .cm-string,
+    .cm-url {
+      &:has-text('data:image') {
+        display: inline-block;
+        overflow: hidden;
+        max-width: 200px;
+        text-overflow: ellipsis;
+        vertical-align: bottom;
+        white-space: nowrap;
+      }
+    }
 
-   /* Стилизация кода с base64 в редакторе */
-   .md-editor-input-wrapper {
-
-      /* Обрезка длинных строк в редакторе */
+    /* Альтернативный подход через селектор содержимого */
+    .cm-line:has(.cm-string:contains('data:image')),
+    .cm-line:has(.cm-url:contains('data:image')) {
       .cm-string,
       .cm-url {
-         &:has-text("data:image") {
-            display: inline-block;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            vertical-align: bottom;
-         }
+        display: inline-block;
+        overflow: hidden;
+        max-width: 200px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
+    }
+  }
 
-      /* Альтернативный подход через селектор содержимого */
-      .cm-line:has(.cm-string:contains("data:image")),
-      .cm-line:has(.cm-url:contains("data:image")) {
-
-         .cm-string,
-         .cm-url {
-            display: inline-block;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-         }
+  /* Стилизация для CodeMirror 6 (если используется) */
+  .cm-editor {
+    .cm-line {
+      /* Обрезка только для строк с base64 */
+      .cm-string {
+        &[class*='data:image'] {
+          display: inline-block;
+          overflow: hidden;
+          max-width: 200px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
       }
-   }
-
-   /* Стилизация для CodeMirror 6 (если используется) */
-   .cm-editor {
-      .cm-line {
-
-         /* Обрезка только для строк с base64 */
-         .cm-string {
-            &[class*="data:image"] {
-               display: inline-block;
-               max-width: 200px;
-               overflow: hidden;
-               text-overflow: ellipsis;
-               white-space: nowrap;
-            }
-         }
-      }
-   }
-
+    }
+  }
 }
 
 .right {
-   display: flex;
-   flex-shrink: 1;
-   min-width: 300px;
+  display: flex;
+  min-width: 300px;
+  flex-shrink: 1;
 }
 
 .descr__el__title__right {
-   gap: 20px !important;
-   width: 100%;
-   justify-content: space-between;
-   max-height: fit-content;
+  width: 100%;
+  max-height: fit-content;
+  justify-content: space-between;
+  gap: 20px !important;
 }
 
 .truncated__base64 {
-   display: inline-block;
-   max-width: 200px;
-   overflow: hidden;
-   text-overflow: ellipsis;
-   white-space: nowrap;
-   vertical-align: bottom;
-   cursor: pointer;
-   color: #0969da;
+  display: inline-block;
+  overflow: hidden;
+  max-width: 200px;
+  color: #0969da;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
 
-   &:hover {
-      text-decoration: underline;
-   }
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .descr__el__title {
-   display: flex;
-   align-items: center;
-   gap: 40px;
-   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 40px;
 }
 
 .descr__title {
-   font-size: 24px;
-   font-weight: 500;
+  font-size: 24px;
+  font-weight: 500;
 }
 
 .left {
-   width: 100%;
+  width: 100%;
 }
 
 .left__top__descr,
 .left__bottom__descr {
-   margin-bottom: 35px;
+  margin-bottom: 35px;
 }
 
 .create__descriptions__box {
-   margin-top: 50px;
-   display: flex;
-   width: 100%;
-   gap: 20px;
+  display: flex;
+  width: 100%;
+  margin-top: 50px;
+  gap: 20px;
 }
 
-.drop__extra>div>svg {
-   display: none !important;
+.drop__extra > div > svg {
+  display: none !important;
 }
 
 // Добавьте эти стили к существующим
 
 .has__error {
-   .editor__wrapper {
-      position: relative;
+  .editor__wrapper {
+    position: relative;
 
-      // Визуальная индикация ошибки будет применена через конфиг редактора
-   }
+    // Визуальная индикация ошибки будет применена через конфиг редактора
+  }
 }
 
 .error__message {
-   color: #ff4444;
-   font-size: 14px;
-   margin: 8px 0 0 0;
-   padding: 0 8px;
+  padding: 0 8px;
+  margin: 8px 0 0;
+  color: #f44;
+  font-size: 14px;
 }
 
 .required {
-   color: #000;
+  color: #000;
 }
 
 .required__error {
-   color: #ff4444 !important;
-   font-weight: normal;
-   margin-left: 4px;
-   // display: block !important;
+  margin-left: 4px;
+  color: #f44 !important;
+  font-weight: normal;
+
+  // display: block !important;
 }
 
 .optional {
-   color: #666;
-   font-size: 14px;
-   font-weight: normal;
-   margin-left: 8px;
-}
-
-.editor__wrapper {
-   width: 100%;
+  margin-left: 8px;
+  color: #666;
+  font-size: 14px;
+  font-weight: normal;
 }

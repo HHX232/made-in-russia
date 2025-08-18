@@ -1,21 +1,15 @@
 'use client'
-import {FC, useState, useCallback, useRef, useEffect} from 'react'
+import {FC, useState, useRef, useEffect} from 'react'
 import styles from './CreateDescriptionsElements.module.scss'
 import Image from 'next/image'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import {useImageModal} from '@/hooks/useImageModal'
 import {HELP_IMAGES} from '../CreateCard'
-import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-import dynamic from 'next/dynamic'
-
-const MdEditor = dynamic(() => import('md-editor-rt').then((mod) => mod.MdEditor), {
-  ssr: false,
-  loading: () => <div>Loading editor...</div>
-})
+import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 
 const vopros = '/vopros.svg'
 
@@ -45,7 +39,6 @@ interface CreateDescriptionsElementsProps {
 }
 
 const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
-  onImagesChange,
   descriptionError = '',
   currentDynamicLang
   // fullObjectForDescriptions,
@@ -57,10 +50,6 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
   // Локальное состояние для отображения ошибки с учетом фокуса
   const [showDescriptionError, setShowDescriptionError] = useState(false)
   const [descriptionTouched, setDescriptionTouched] = useState(false)
-
-  // Храним маппинг blob URL -> File
-  const imageMappingsRef = useRef<ImageMapping[]>([])
-  const createdUrlsRef = useRef<Set<string>>(new Set())
 
   // Проверка, является ли описание пустым (только заголовок)
   const isDescriptionEmpty = (value: string) => {
@@ -91,172 +80,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
     }
   }, [descriptionError, descriptionTouched, currentDynamicLang, descriptions])
 
-  const onUploadImg = useCallback(
-    async (files: File[], callback: (urls: string[]) => void) => {
-      const newMappings: ImageMapping[] = []
-
-      // Проверка размера файлов
-      const maxSize = 10 * 1024 * 1024 // 10MB
-      const oversizedFiles = files.filter((file) => file.size > maxSize)
-
-      if (oversizedFiles.length > 0) {
-        alert(`Следующие файлы превышают максимальный размер (10MB): ${oversizedFiles.map((f) => f.name).join(', ')}`)
-        // Фильтруем только подходящие файлы
-        files = files.filter((file) => file.size <= maxSize)
-      }
-
-      // Проверка типа файлов
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
-      const invalidFiles = files.filter((file) => !validTypes.includes(file.type))
-      if (invalidFiles.length > 0) {
-        alert(`This files are have invalid type: ${invalidFiles.map((f) => f.name).join(', ')}`)
-        // Фильтруем только подходящие файлы
-        files = files.filter((file) => validTypes.includes(file.type))
-      }
-
-      if (files.length === 0) {
-        callback([])
-        return
-      }
-
-      const urls = files.map((file) => {
-        const blobUrl = URL.createObjectURL(file)
-        createdUrlsRef.current.add(blobUrl)
-
-        // Создаем маппинг для каждого файла
-        const mapping: ImageMapping = {
-          blobUrl,
-          file
-        }
-
-        newMappings.push(mapping)
-        return blobUrl
-      })
-
-      // Добавляем новые маппинги к существующим
-      imageMappingsRef.current = [...imageMappingsRef.current, ...newMappings]
-
-      // Уведомляем родительский компонент
-      if (onImagesChange) {
-        onImagesChange(imageMappingsRef.current)
-      }
-
-      callback(urls)
-    },
-    [onImagesChange]
-  )
-
-  // Очистка созданных URL при размонтировании
-  useEffect(() => {
-    return () => {
-      createdUrlsRef.current.forEach((url) => {
-        URL.revokeObjectURL(url)
-      })
-    }
-  }, [])
-
-  // Функция для очистки неиспользуемых изображений
-  useEffect(() => {
-    // Проверяем, какие blob URL все еще используются в markdown
-    const checkUnusedImages = () => {
-      const currentDescription = descriptions[currentDynamicLang].description
-      const currentAdditionalDescription = descriptions[currentDynamicLang].additionalDescription
-      const allMarkdown = currentDescription + '\n' + currentAdditionalDescription
-
-      // Находим все blob URL в markdown
-      const usedBlobUrls = new Set<string>()
-      const blobUrlRegex = /!\[.*?\]\((blob:[^\)]+)\)/g
-      let match
-
-      while ((match = blobUrlRegex.exec(allMarkdown)) !== null) {
-        usedBlobUrls.add(match[1])
-      }
-
-      // Фильтруем только используемые изображения
-      const activeImages = imageMappingsRef.current.filter((mapping) => usedBlobUrls.has(mapping.blobUrl))
-
-      // Если список изменился, уведомляем родительский компонент
-      if (activeImages.length !== imageMappingsRef.current.length) {
-        imageMappingsRef.current = activeImages
-        if (onImagesChange) {
-          onImagesChange(activeImages)
-        }
-      }
-    }
-
-    // Проверяем при каждом изменении описаний
-    checkUnusedImages()
-  }, [descriptions, currentDynamicLang, onImagesChange])
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const toolbars: any[] = [
-    'bold',
-    'underline',
-    'italic',
-    '-',
-    'title',
-    'strikeThrough',
-    'sub',
-    'sup',
-    'quote',
-    'unorderedList',
-    'orderedList',
-    'task',
-    '-',
-    'codeRow',
-    'code',
-    'link',
-    '-',
-    // 'image',
-    'table',
-    'mermaid',
-    'katex',
-    '-',
-    'revoke',
-    'next',
-    'save',
-    '=',
-    'pageFullscreen',
-    'fullscreen',
-    'preview',
-    'htmlPreview',
-    'catalog'
-  ]
-
-  const editorConfig = {
-    language: 'en-US' as const,
-    theme: 'light' as const,
-    previewTheme: 'default' as const,
-    codeTheme: 'atom' as const,
-    toolbars,
-    footers: [],
-    tableShape: [10, 10] as [number, number],
-    showCodeRowNumber: true,
-    autoFocus: false,
-    disabled: false,
-    readOnly: false,
-    autoDetectCode: true,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (err: any) => console.error('Ошибка редактора:', err),
-    formatCopiedText: (text: string) => `${text}\n\n— Скопировано из редактора`,
-    style: {
-      height: '400px',
-      border: '1px solid #e0e0e0',
-      borderRadius: '8px'
-    }
-  }
-
-  // Конфиг для редактора с ошибкой
-  const errorEditorConfig = {
-    ...editorConfig,
-    style: {
-      ...editorConfig.style,
-      border: showDescriptionError ? '1px solid #ff4444' : '1px solid #e0e0e0'
-    }
-  }
-
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
-  const windowWidth = useWindowWidth()
   const t = useTranslations('CreateDescription')
 
   const lastActiveLangRef = useRef<string[]>([])
@@ -264,6 +88,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
   useEffect(() => {
     lastActiveLangRef.current.push(currentDynamicLang)
   }, [currentDynamicLang])
+
   return (
     <div className={styles.create__descriptions__box}>
       {/* <div style={{display: 'flex', flexDirection: 'column'}} className=''>
@@ -290,7 +115,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
               <span className={`${styles.required} ${showDescriptionError ? styles.required__error : ''}`}>*</span>
             </p>
             <DropList
-              direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+              direction={'bottom'}
               safeAreaEnabled
               extraClass={`${styles.drop__extra}`}
               positionIsAbsolute={false}
@@ -310,15 +135,13 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
             />
           </div>
           <div className={styles.editor__wrapper} onFocus={handleDescriptionFocus} onBlur={handleDescriptionBlur}>
-            <MdEditor
-              {...errorEditorConfig}
-              id='cy-editor-main-descr'
-              value={descriptions[currentDynamicLang].description}
-              onChange={(val) => {
-                setDescriptionOne({language: currentDynamicLang, description: val})
-              }}
+            <TextAreaUI
+              extraClass={`${styles.editor__extra__text}`}
+              rows={18}
+              onSetValue={(val) => setDescriptionOne({language: currentDynamicLang, description: val})}
+              currentValue={descriptions[currentDynamicLang].description}
               placeholder={t('writeDescription')}
-              onUploadImg={onUploadImg}
+              theme='superWhite'
             />
           </div>
           {showDescriptionError && <p className={styles.error__message}>{descriptionError}</p>}
@@ -330,9 +153,9 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
               <span className={styles.optional}>({t('secondDescrSpan')})</span>
             </p>
             <DropList
-              direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+              direction={'left'}
               safeAreaEnabled
-              extraClass={`${styles.drop__extra}`}
+              extraClass={`${styles.drop__extra} ${styles.second__drop__extra}`}
               positionIsAbsolute={false}
               trigger='hover'
               arrowClassName={`${styles.arrow__none}`}
@@ -349,15 +172,14 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
               ]}
             />
           </div>
-          <MdEditor
-            id='cy-editor-add-descr'
-            {...editorConfig}
-            value={descriptions[currentDynamicLang].additionalDescription}
-            onChange={(val) => {
-              setAdditionalDescription({language: currentDynamicLang, additionalDescription: val})
-            }}
+
+          <TextAreaUI
+            theme='superWhite'
+            rows={15}
+            extraClass={`${styles.editor__extra__text}`}
+            onSetValue={(val) => setAdditionalDescription({language: currentDynamicLang, additionalDescription: val})}
+            currentValue={descriptions[currentDynamicLang].additionalDescription}
             placeholder={t('writeSecondDescr')}
-            onUploadImg={onUploadImg}
           />
         </div>
       </div>

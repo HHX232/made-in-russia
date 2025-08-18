@@ -1,4 +1,4 @@
-import {FC, useState, useEffect} from 'react'
+import {FC, useState, useEffect, useRef, JSX} from 'react'
 import styles from './CreateCardProductCategory.module.scss'
 import {ICategory} from '@/services/card/card.types'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
@@ -17,8 +17,12 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
+
+  const dropdownRef = useRef<HTMLDivElement>(null)
   const t = useTranslations('CreateCardProductCategory')
   const currentLang = useCurrentLanguage()
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -41,37 +45,95 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     onSetCategory(selectedCategory)
   }, [selectedCategory, onSetCategory])
 
-  // Функция для получения всех категорий с учетом вложенности
-  const flattenCategories = (categories: Category[], level = 0): Array<Category & {level: number}> => {
-    const result: Array<Category & {level: number}> = []
-
-    categories.forEach((category) => {
-      result.push({...category, level})
-      if (category.children && category.children.length > 0) {
-        result.push(...flattenCategories(category.children, level + 1))
+  // Обработчик скролла для закрытия списка (только скролл страницы, не списка)
+  useEffect(() => {
+    const handleScroll = (e: Event) => {
+      if (isDropdownOpen && dropdownRef.current) {
+        // Проверяем, что скролл происходит не внутри нашего дропдауна
+        if (!dropdownRef.current.contains(e.target as Node)) {
+          setIsDropdownOpen(false)
+        }
       }
-    })
+    }
 
-    return result
+    if (isDropdownOpen) {
+      window.addEventListener('scroll', handleScroll, true)
+      return () => {
+        window.removeEventListener('scroll', handleScroll, true)
+      }
+    }
+  }, [isDropdownOpen])
+
+  const toggleCategoryExpanded = (categoryId: string) => {
+    const newExpanded = new Set(expandedCategories)
+    if (newExpanded.has(categoryId)) {
+      newExpanded.delete(categoryId)
+    } else {
+      newExpanded.add(categoryId)
+    }
+    setExpandedCategories(newExpanded)
   }
 
-  const flattenedCategories = flattenCategories(allCategories)
+  const handleSelectCategory = (category: Category) => {
+    // Всегда выбираем категорию как активную
+    setSelectedCategory(category as ICategory)
 
-  const filteredCategories = flattenedCategories.filter((category) => {
-    const matchesSearch = category.name.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesSearch
-  })
-
-  const handleSelectCategory = (category: Category & {level: number}) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {level, ...categoryWithoutLevel} = category
-    setSelectedCategory(categoryWithoutLevel as ICategory)
-    setSearchQuery('')
-    setIsDropdownOpen(false)
+    // Если у категории есть дети, то переключаем состояние раскрытия
+    if (category.children && category.children.length > 0) {
+      toggleCategoryExpanded(category.id.toString())
+    } else {
+      // Если детей нет, закрываем список полностью
+      setSearchQuery('')
+      setIsDropdownOpen(false)
+      setExpandedCategories(new Set())
+    }
   }
 
   const handleRemoveCategory = () => {
     setSelectedCategory(null)
+  }
+
+  // Рекурсивная функция для рендеринга категорий
+  const renderCategories = (categories: Category[], level = 0): JSX.Element[] => {
+    return categories
+      .filter((category) => category.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      .map((category) => {
+        const isExpanded = expandedCategories.has(category.id.toString())
+        const hasChildren = category.children && category.children.length > 0
+
+        return (
+          <div key={category.id} className={styles.cat__categoryGroup}>
+            <button
+              type='button'
+              onClick={() => handleSelectCategory(category)}
+              className={`${styles.cat__dropdownItem} ${
+                styles[`cat__dropdownItem--level${level}`]
+              } ${selectedCategory?.id === category.id ? styles['cat__dropdownItem--selected'] : ''}`}
+              style={{paddingLeft: `${12 + level * 20}px`}}
+            >
+              {level > 0 && <span className={styles.cat__levelIndicator}>{'└'.repeat(level)}</span>}
+
+              {hasChildren && (
+                <span className={`${styles.cat__expandIcon} ${isExpanded ? styles['cat__expandIcon--expanded'] : ''}`}>
+                  ▶
+                </span>
+              )}
+
+              {category.imageUrl && (
+                <img src={category.imageUrl} alt={category.name} className={styles.cat__dropdownImage} />
+              )}
+
+              <span className={styles.cat__dropdownName}>{category.name}</span>
+
+              {selectedCategory?.id === category.id && <span className={styles.cat__checkmark}>✓</span>}
+            </button>
+
+            {hasChildren && isExpanded && (
+              <div className={styles.cat__childrenContainer}>{renderCategories(category.children!, level + 1)}</div>
+            )}
+          </div>
+        )
+      })
   }
 
   if (isLoading) {
@@ -106,9 +168,7 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
               onClick={handleRemoveCategory}
               className={styles.cat__remove}
               aria-label={'removeCategory'}
-            >
-              ×
-            </button>
+            ></button>
           </div>
         )}
       </div>
@@ -130,35 +190,16 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
               <div
                 id='cy-create-card-product-category-backdrop-to-open'
                 className={styles.cat__backdrop}
-                onClick={() => setIsDropdownOpen(false)}
+                onClick={() => {
+                  setIsDropdownOpen(false)
+                  setExpandedCategories(new Set())
+                }}
               />
-              <div id='cy-create-card-product-category-dropdown' className={styles.cat__dropdown}>
-                {filteredCategories.length === 0 ? (
+              <div ref={dropdownRef} id='cy-create-card-product-category-dropdown' className={styles.cat__dropdown}>
+                {allCategories.length === 0 ? (
                   <div className={styles.cat__noResults}>{t('categoryNotFound')}</div>
                 ) : (
-                  <div className={styles.cat__dropdownList}>
-                    {filteredCategories.map((category) => (
-                      <button
-                        id='cy-create-card-product-category-dropdown-item-add'
-                        key={category.id}
-                        type='button'
-                        onClick={() => handleSelectCategory(category)}
-                        className={`${styles.cat__dropdownItem} ${
-                          styles[`cat__dropdownItem--level${category.level}`]
-                        } ${selectedCategory?.id === category.id ? styles['cat__dropdownItem--selected'] : ''}`}
-                        style={{paddingLeft: `${12 + category.level * 20}px`}}
-                      >
-                        {category.level > 0 && (
-                          <span className={styles.cat__levelIndicator}>{'└'.repeat(category.level)}</span>
-                        )}
-                        {category.imageUrl && (
-                          <img src={category.imageUrl} alt={category.name} className={styles.cat__dropdownImage} />
-                        )}
-                        <span className={styles.cat__dropdownName}>{category.name}</span>
-                        {selectedCategory?.id === category.id && <span className={styles.cat__checkmark}>✓</span>}
-                      </button>
-                    ))}
-                  </div>
+                  <div className={styles.cat__dropdownList}>{renderCategories(allCategories)}</div>
                 )}
               </div>
             </>

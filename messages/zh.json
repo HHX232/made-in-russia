@@ -38,7 +38,8 @@
     "writePassword": "输入密码",
     "passwordError": "密码至少需要6个字符",
     "nicknameError": "请输入用户名或邮箱",
-    "autorithationError": "授权错误",
+    "autorithationError": "用户名或密码错误",
+    "authorizationErrorTelegram": "Telegram 授权错误",
     "decorationImage": "装饰图片 '大量材料'",
     "loading":"加载中..."
 },

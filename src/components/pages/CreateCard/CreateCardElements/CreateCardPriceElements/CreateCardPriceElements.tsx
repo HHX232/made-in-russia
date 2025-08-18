@@ -18,7 +18,7 @@ import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCard
 
 const vopros = '/vopros.svg'
 
-type TInputType = 'text' | 'number' | 'password'
+type TInputType = 'text' | 'number' | 'password' | 'dropdown'
 
 interface CreateCardPriceElementsProps {
   pricesArray?: string[][]
@@ -27,10 +27,11 @@ interface CreateCardPriceElementsProps {
   pricesError?: string
   inputType?: TInputType[]
   currentLanguage: Language
+  dropdownPricesOptions?: string[]
 }
 
 const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
-  ({pricesArray, onSetPricesArray, pricesError = '', inputType, currentLanguage}) => {
+  ({pricesArray, onSetPricesArray, pricesError = '', inputType, currentLanguage, dropdownPricesOptions = []}) => {
     // RTK actions
     const {
       updateCharacteristic,
@@ -314,8 +315,9 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             <RowsInputs
               inputsInRowCount={5}
               maxRows={5}
+              dropdownOptions={[[], [], [], dropdownPricesOptions]}
               inputType={inputType}
-              initialRowsCount={3}
+              initialRowsCount={1}
               idNames={['elementCount', 'originalPrice', 'priceWithDiscount', 'currency', 'unit']}
               titles={[t('elementCount'), t('originalPrice'), t('priceWithDiscount'), t('currency'), t('unit')]}
               rowsInitialValues={pricesMatrix}
@@ -373,7 +375,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 styles.rows__inputs__box__inner__description__extra,
                 styles.rows__inputs__box__inner__description__extra
               ]}
-              initialRowsCount={5}
+              initialRowsCount={1}
               idNames={['title-characteristic', 'characteristic-characteristic']}
               titles={[t('title'), t('characteristic')]}
               rowsInitialValues={characteristicsMatrix}
@@ -473,7 +475,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 styles.rows__extra__del,
                 styles.rows__extra__del
               ]}
-              initialRowsCount={2}
+              initialRowsCount={1}
               maxRows={5}
               idNames={['title-delivery', 'daysDelivery-delivery']}
               rowsInitialValues={deliveryMatrix}
@@ -522,7 +524,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 styles.rows__extra__del,
                 styles.rows__extra__del
               ]}
-              initialRowsCount={2}
+              initialRowsCount={1}
               maxRows={5}
               onSetValue={handlePackagingSetValue}
               rowsInitialValues={packagingMatrix}

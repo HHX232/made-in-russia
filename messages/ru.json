@@ -38,7 +38,8 @@
     "writePassword":"Введите пароль",
     "passwordError":"Пароль должен быть не менее 6 символов",
     "nicknameError":"Пожалуйста, введите имя или почту",
-    "autorithationError": "Ошибка авторизации",
+    "autorithationError": "Неверный логин или пароль",
+    "autorithationErrorTelegram":"Ошибка авторизации через Telegram",
     "decorationImage":"декоративное изображение 'Большое количество материалов'",
     "loading":"Загрузка..."
    },
