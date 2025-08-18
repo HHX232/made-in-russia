@@ -162,10 +162,10 @@ const Filters: FC = () => {
               filterName='priceRange'
               title={t('filtersPrice')}
               min={0}
-              max={100000}
-              step={10}
+              max={1000000}
+              step={100}
               defaultMin={100}
-              defaultMax={100000}
+              defaultMax={1000000}
               debounceTime={500}
             />
           </div>

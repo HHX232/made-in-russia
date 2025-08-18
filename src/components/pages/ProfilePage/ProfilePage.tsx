@@ -24,6 +24,9 @@ import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
 const ASSETS = {
   avatar1: '/avatars/avatar-v-2.svg',
   belarusSvg: '/belarus.svg',
+  kazakhstanSvg: '/countries/kazakhstan.svg',
+  chinaSvg: '/countries/china.svg',
+  russiaSvg: '/countries/russia.svg',
   redStar: '/profile/red_star.svg',
   basket: '/profile/red_basket.svg',
   paymentsList: [
@@ -100,10 +103,9 @@ function formatDateLocalized(dateString: string, currentLang: TCurrentLang = 'ru
 
 export const REGIONS: RegionType[] = [
   {imageSrc: ASSETS.belarusSvg, title: 'Беларусь', altName: 'Belarus'},
-  {imageSrc: ASSETS.belarusSvg, title: 'Казахстан', altName: 'Kazakhstan'},
-  {imageSrc: ASSETS.belarusSvg, title: 'Китай', altName: 'China'},
-  {imageSrc: ASSETS.belarusSvg, title: 'Россия', altName: 'Russia'},
-  {imageSrc: ASSETS.belarusSvg, title: 'Другая страна', altName: 'other'}
+  {imageSrc: ASSETS.kazakhstanSvg, title: 'Казахстан', altName: 'Kazakhstan'},
+  {imageSrc: ASSETS.chinaSvg, title: 'Китай', altName: 'China'},
+  {imageSrc: ASSETS.russiaSvg, title: 'Россия', altName: 'Russia'}
 ]
 
 // Типы

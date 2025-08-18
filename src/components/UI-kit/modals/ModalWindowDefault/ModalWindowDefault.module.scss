@@ -1,35 +1,35 @@
 .modal__window__default__back {
-   position: fixed;
-   width: 100vw;
-   height: 100dvh;
-   top: 0;
-   left: 0;
-   background-color: rgba(0, 0, 0, 0.5);
-   z-index: 9999999999999999999999999999999999999999;
-   cursor: pointer;
+  position: fixed;
+  z-index: 1000000005;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  background-color: rgb(0 0 0 / 50%);
+  cursor: pointer;
 }
 
 .modal__inner {
-   position: relative;
-   z-index: 200001;
-   max-width: 900px;
-   width: fit-content;
-   max-height: 95vh;
-   height: fit-content;
-   margin: 0 auto;
-   top: 50%;
-   transform: translateY(-50%);
-   border-radius: 20px;
-   padding: 20px;
-   cursor: default !important;
-   background-color: #fff;
-   box-shadow: -2px 4px 4px #00000015;
-   overflow-y: auto;
+  position: relative;
+  z-index: 1000000000;
+  top: 50%;
+  width: fit-content;
+  max-width: 900px;
+  height: fit-content;
+  max-height: 95vh;
+  padding: 20px;
+  border-radius: 20px;
+  margin: 0 auto;
+  background-color: #fff;
+  box-shadow: -2px 4px 4px #00000015;
+  cursor: default !important;
+  overflow-y: auto;
+  transform: translateY(-50%);
 }
 
 .modal__header {
-   display: flex;
-   justify-content: flex-end;
-   width: 100%;
-   margin-bottom: 40px;
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  margin-bottom: 40px;
 }

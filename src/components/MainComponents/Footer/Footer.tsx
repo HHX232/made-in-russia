@@ -78,10 +78,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
             itemProp='logo'
           />
           <meta itemProp='name' content='Exporteru' />
-          <meta
-            itemProp='url'
-            content={typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}
-          />
+          <meta itemProp='url' content={process.env.NEXT_PUBLIC_SITE_URL} />
         </Link>
         <ul className={`${styles.footer__links}`}>
           <Link className={`${styles.footer__link}`} href={'/'}>

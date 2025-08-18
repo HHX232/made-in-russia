@@ -1,5 +1,6 @@
 import {axiosClassic} from '@/api/api.interceptor'
 import VendorPageComponent from '@/components/pages/VendorPage/VendorPage'
+import {Product} from '@/services/products/product.types'
 import {cookies} from 'next/headers'
 
 export default async function VendorDataPage({params}: {params: Promise<{id: string}>}) {
@@ -33,6 +34,19 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
 
     return phoneNumber
   }
+  let initialProductsForView
+  try {
+    console.log('start try')
+    initialProductsForView = await axiosClassic.get<{content: Product[]}>(`/vendor/${id}/products-summary`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
+        'Accept-Language': currentLang
+      }
+    })
+    console.log('initialProductsForView', initialProductsForView)
+    console.log('initialProductsForView:', initialProductsForView.data)
+  } catch {}
 
   return (
     <VendorPageComponent
@@ -40,6 +54,7 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
         ...vendorData?.data,
         phoneNumber: trimPhonePrefix(vendorData?.data.phoneNumber)
       }}
+      initialProductsForView={initialProductsForView?.data.content}
       isPageForVendor={false}
     />
   )

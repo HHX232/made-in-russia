@@ -7,7 +7,7 @@ import {axiosClassic} from '@/api/api.interceptor'
 import {toast} from 'sonner'
 import InputOtp from '@/components/UI-kit/inputs/inputOTP/inputOTP'
 import {saveTokenStorage} from '@/middleware'
-import {useRouter} from 'next/router'
+import {useRouter} from 'next/navigation'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 interface ResetPasswordFormProps {

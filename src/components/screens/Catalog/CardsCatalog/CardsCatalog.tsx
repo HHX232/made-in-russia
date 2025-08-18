@@ -30,7 +30,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 }) => {
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
-  const [allProducts, setAllProducts] = useState<Product[]>(initialProducts)
+
+  // Используем Set для хранения ID товаров и отдельный массив для отображения
+  const [productIds, setProductIds] = useState<Set<number>>(new Set())
   const [hasMore, setHasMore] = useState(initialHasMore)
   const [isFiltersChanged, setIsFiltersChanged] = useState(false)
   const observerRef = useRef<IntersectionObserver | null>(null)
@@ -49,14 +51,46 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   }
 
   const [pageParams, setPageParams] = useState<PageParams>({
-    page: initialProducts.length > 0 ? 2 : 0,
+    page: 0, // Всегда начинаем с 0
     size: 10,
     minPrice: priceRange?.min,
     maxPrice: priceRange?.max,
     deliveryMethodIds: delivery?.join(',') ? delivery?.join(',') : '',
     title: searchTitle
   })
+
   const t = useTranslations('HomePage')
+
+  // Функция для добавления товаров с использованием Set
+  const addProducts = (newProducts: Product[], replace: boolean = false) => {
+    if (replace) {
+      // Заменяем все товары
+      const newIds = new Set(newProducts.map((p) => p.id))
+      setProductIds(newIds)
+    } else {
+      // Добавляем только уникальные товары
+      const currentIds = productIds
+      const uniqueProducts = newProducts.filter((product) => !currentIds.has(product.id))
+
+      if (uniqueProducts.length > 0) {
+        const newIds = new Set([...currentIds, ...uniqueProducts.map((p) => p.id)])
+        setProductIds(newIds)
+      }
+    }
+  }
+
+  // Инициализация с initialProducts
+  useEffect(() => {
+    if (initialProducts.length > 0) {
+      addProducts(initialProducts, true)
+      // Устанавливаем следующую страницу для пагинации
+      setPageParams((prev) => ({
+        ...prev,
+        page: 1
+      }))
+    }
+  }, []) // Выполняется только один раз при монтировании
+
   useEffect(() => {
     const numericKeys = Object.keys(selectedFilters)
       .filter((key) => !isNaN(Number(key)))
@@ -65,9 +99,11 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     setNumericFilters(numericKeys)
   }, [selectedFilters])
 
-  // Добавляем отдельный useEffect для searchTitle
+  // useEffect для searchTitle
   useEffect(() => {
     setIsFiltersChanged(true)
+    // Очищаем все товары при изменении поискового запроса
+    setProductIds(new Set())
     setPageParams((prev) => ({
       ...prev,
       page: 0,
@@ -75,9 +111,11 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }))
   }, [searchTitle])
 
+  // useEffect для остальных фильтров
   useEffect(() => {
-    // Устанавливаем флаг, что фильтры изменились
     setIsFiltersChanged(true)
+    // Очищаем все товары при изменении фильтров
+    setProductIds(new Set())
 
     setPageParams((prev) => {
       const newParams: PageParams = {
@@ -100,41 +138,25 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     })
   }, [numericFilters, priceRange, delivery])
 
-  const {data: pageResponse, isLoading, isError, isFetching} = useProducts(pageParams, specialRoute)
+  const {data: pageResponse, isLoading, isError, isFetching, resData} = useProducts(pageParams, specialRoute)
 
-  const showSkeleton = (isLoading || (isFetching && isFiltersChanged)) && allProducts.length === 0
+  const showSkeleton = (isLoading || (isFetching && isFiltersChanged)) && (resData || initialProducts).length === 0
 
-  // useEffect(() => {
-  //   initialProducts.map((item) => {
-  //     console.log('item.previewImageUrl', item.previewImageUrl)
-  //     if (
-  //       item.previewImageUrl.includes('mp4') ||
-  //       item.previewImageUrl.includes('mov') ||
-  //       item.previewImageUrl.includes('avi')
-  //     ) {
-  //       console.log('Это ВИДЕО!')
-  //     }
-  //   })
-  // }, [initialProducts])
-
+  // Основной useEffect для обработки ответов API
   useEffect(() => {
     if (pageResponse) {
-      if (pageParams.page === 0) {
-        // setAllProducts(pageResponse.content)
-        // ! ИЗМЕНИЛИ ДЛЯ КАТЕГОРИЙ
-        setAllProducts((prev) => [...prev, ...pageResponse.content])
-        setIsFiltersChanged(false) // Сбрасываем флаг изменения фильтров
+      if (isFiltersChanged || pageParams.page === 0) {
+        // Если фильтры изменились или это первая страница - заменяем
+        addProducts(pageResponse.content, true)
+        setIsFiltersChanged(false)
       } else {
-        // При подгрузке следующих страниц добавляем уникальные товары
-        const newProducts = pageResponse.content.filter(
-          (newProduct) => !allProducts.some((existingProduct) => existingProduct.id === newProduct.id)
-        )
-        setAllProducts((prev) => [...prev, ...newProducts])
+        // Иначе добавляем к существующим
+        addProducts(pageResponse.content, false)
       }
 
       setHasMore(!pageResponse.last && pageResponse.content.length > 0)
     }
-  }, [pageResponse, pageParams.page])
+  }, [pageResponse])
 
   const lastElementRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -146,9 +168,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
       lastProductRef.current = node
 
-      // Создаем новый observer
       observerRef.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
+        if (entries[0].isIntersecting && hasMore && !isFetching) {
           setPageParams((prev) => ({
             ...prev,
             page: prev.page + 1
@@ -156,12 +177,11 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
         }
       })
 
-      // Начинаем наблюдение за последним элементом
       if (node) {
         observerRef.current.observe(node)
       }
     },
-    [showSkeleton, hasMore]
+    [showSkeleton, hasMore, isFetching]
   )
 
   if (isError) {
@@ -181,11 +201,11 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
           </div>
         </Link>
       )}
+
       {!showSkeleton &&
-        allProducts.map((product, index) => {
+        (resData || initialProducts).map((product, index) => {
           const uniqueKey = `${product.id}-${index}`
-          // Для последнего элемента добавляем ref
-          if (index === allProducts.length - 1) {
+          if (index === (resData || initialProducts).length - 1) {
             return (
               <div style={{height: '100%', width: '100%'}} key={uniqueKey} ref={lastElementRef}>
                 <Card
@@ -233,26 +253,24 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
         <>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((el, i) => {
             return (
-              <>
-                <Card
-                  isLoading={true}
-                  key={`skeleton-${i}`}
-                  id={el}
-                  title='Загрузка...'
-                  price={0}
-                  discount={0}
-                  previewImageUrl=''
-                  discountedPrice={0}
-                  deliveryMethod={'Самовывоз' as any}
-                  fullProduct={{} as any}
-                />
-              </>
+              <Card
+                isLoading={true}
+                key={`skeleton-${i}`}
+                id={el}
+                title='Загрузка...'
+                price={0}
+                discount={0}
+                previewImageUrl=''
+                discountedPrice={0}
+                deliveryMethod={'Самовывоз' as any}
+                fullProduct={{} as any}
+              />
             )
           })}
         </>
       )}
 
-      {!showSkeleton && allProducts.length === 0 && (
+      {!showSkeleton && (resData || initialProducts).length === 0 && (
         <div className={styled.cardsCatalog__empty}>
           <p>{t('noResultsCatalog')}</p>
         </div>

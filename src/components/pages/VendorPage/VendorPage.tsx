@@ -11,7 +11,6 @@ import Image from 'next/image'
 import {HelpListButton} from '../ProfilePage/ProfilePageBottom/ProfilePageBottomHelp'
 import {useAnimatedCounter} from '@/hooks/useAnimatedCounter'
 import Comment from '@/components/UI-kit/elements/Comment/Comment'
-import {Review} from '@/services/card/card.types'
 import {useProductReviews} from '@/hooks/useMyProductsReviews'
 import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
 import CardsCatalog from '@/components/screens/Catalog/CardsCatalog/CardsCatalog'
@@ -101,17 +100,15 @@ export interface IVendorPageProps {
   isPageForVendor?: boolean
   vendorData?: IVendorData
   numberCode?: string // Новый пропс для кода страны
+  initialProductsForView?: Product[]
 }
 
-// Интерфейс для запроса на обновление данных (Пароль не надо отправлять)
-interface Vendor {
-  phoneNumber?: string
-  inn?: string
-  countries?: string[]
-  categories?: string[]
-}
-
-const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vendorData, numberCode = ''}) => {
+const VendorPageComponent: FC<IVendorPageProps> = ({
+  isPageForVendor = true,
+  vendorData,
+  numberCode = '',
+  initialProductsForView
+}) => {
   const [needToSave, setNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const [startAnimation, setStartAnimation] = useState(false)
@@ -674,6 +671,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({isPageForVendor = true, vend
             <div className={styles.products__list}>
               <Filters />
               <CardsCatalog
+                initialProducts={initialProductsForView}
                 canCreateNewProduct={isPageForVendor}
                 specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}
               />

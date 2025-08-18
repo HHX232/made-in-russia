@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {axiosClassic} from '@/api/api.interceptor'
 import HomePage from '@/components/pages/HomePage/HomePage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
-import ProductService from '@/services/products/product.service'
+import {Product} from '@/services/products/product.types'
+// import ProductService from '@/services/products/product.service'
 import {cookies, headers} from 'next/headers'
 
 // Вынести определение локали в отдельную функцию
@@ -30,7 +32,13 @@ async function getLocale(): Promise<string> {
 // Параллельное выполнение запросов
 async function getInitialData(locale: string) {
   const [initialPage1, categories, adsFromSerfer] = await Promise.all([
-    ProductService.getAll({page: 0, size: 20, currentLang: locale}, undefined, locale),
+    // ProductService.getAll({page: 0, size: 20, currentLang: locale}, undefined, locale),
+    axiosClassic.get<{content: Product[]; last: boolean}>('/products-summary?page=0&size=20', {
+      headers: {
+        'Accept-Language': locale,
+        'x-locale': locale
+      }
+    }),
     CategoriesService.getAll(locale),
     axiosClassic.get<IPromoFromServer[]>('/advertisements', {
       headers: {
@@ -60,8 +68,8 @@ export default async function Home() {
   return (
     <HomePage
       ads={adsFromSerfer.data}
-      initialProducts={initialPage1.content}
-      initialHasMore={!initialPage1.last}
+      initialProducts={(initialPage1 as any).content}
+      initialHasMore={!(initialPage1 as any).last}
       categories={categories}
     />
   )

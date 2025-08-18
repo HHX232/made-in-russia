@@ -10,13 +10,28 @@ import ICardFull from '@/services/card/card.types'
 import CommentsSection from './CommentSection/CommentSection'
 import CardBottomPage from './CardBottomPage/CardBottomPage'
 import Footer from '@/components/MainComponents/Footer/Footer'
-import {cookies} from 'next/headers'
+import {cookies, headers} from 'next/headers'
 // import SEOHeader from '@/components/MainComponents/SEOHeader/SEOHeader'
 
 async function CardContent({id}: {id: string}) {
   let cardData: ICardFull
   const cookieStore = await cookies()
-  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+  let locale = cookieStore.get('NEXT_LOCALE')?.value
+  if (!locale) {
+    const headersList = await headers()
+
+    locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
+
+    if (!locale) {
+      const referer = headersList.get('referer')
+      if (referer) {
+        const match = referer.match(/\/([a-z]{2})\//)
+        if (match && ['en', 'ru', 'zh'].includes(match[1])) {
+          locale = match[1]
+        }
+      }
+    }
+  }
   try {
     const {data} = await cardService.getFullCardById(id, locale)
     cardData = data as ICardFull

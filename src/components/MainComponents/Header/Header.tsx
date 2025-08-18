@@ -390,10 +390,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
               />
 
               <meta itemProp='name' content='Exporteru' />
-              <meta
-                itemProp='url'
-                content={typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}
-              />
+              <meta itemProp='url' content={process.env.NEXT_PUBLIC_SITE_URL} />
             </Link>
 
             <div className={`${styles.searchBox}`} role='search' aria-label='Поиск по сайту'>
