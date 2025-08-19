@@ -19,6 +19,7 @@ interface CardsCatalogProps {
   specialRoute?: string
   canCreateNewProduct?: boolean
   onPreventCardClick?: (item: Product) => void
+  extraButtonsBoxClass?: string
 }
 
 const CardsCatalog: FC<CardsCatalogProps> = ({
@@ -26,7 +27,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   initialHasMore = true,
   specialRoute = undefined,
   canCreateNewProduct = false,
-  onPreventCardClick
+  onPreventCardClick,
+  extraButtonsBoxClass
 }) => {
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
@@ -209,6 +211,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
             return (
               <div style={{height: '100%', width: '100%'}} key={uniqueKey} ref={lastElementRef}>
                 <Card
+                  extraButtonsBoxClass={extraButtonsBoxClass}
                   onPreventCardClick={onPreventCardClick}
                   canUpdateProduct={canCreateNewProduct}
                   isLoading={false}
@@ -229,6 +232,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
           } else {
             return (
               <Card
+                extraButtonsBoxClass={extraButtonsBoxClass}
                 onPreventCardClick={onPreventCardClick}
                 canUpdateProduct={canCreateNewProduct}
                 isLoading={false}

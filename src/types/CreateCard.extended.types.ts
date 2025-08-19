@@ -1,8 +1,4 @@
-import {
-  ICurrentLanguage,
-  CompanyDescriptionData,
-  ValidationErrors
-} from '@/components/pages/CreateCard/CreateCard.types'
+import {ICurrentLanguage, ValidationErrors} from '@/components/pages/CreateCard/CreateCard.types'
 import {ImageMapping} from '@/components/pages/CreateCard/CreateDescriptionsElements/CreateDescriptionsElements'
 import {ICategory} from '@/services/card/card.types'
 import {Product} from '@/services/products/product.types'
@@ -25,8 +21,8 @@ export interface FormState {
   descriptionImages: ImageMapping[]
   descriptionMatrix: string[][]
   packageArray: string[][]
-  companyData: CompanyDescriptionData
-  companyDataImages: {id: number; position: number}[]
+  // companyData: CompanyDescriptionData
+  // companyDataImages: {id: number; position: number}[]
   faqMatrix: string[][]
   errors: ValidationErrors
 }

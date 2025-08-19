@@ -671,6 +671,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
             <div className={styles.products__list}>
               <Filters />
               <CardsCatalog
+                extraButtonsBoxClass={styles.extraButtonsBoxClass}
                 initialProducts={initialProductsForView}
                 canCreateNewProduct={isPageForVendor}
                 specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}

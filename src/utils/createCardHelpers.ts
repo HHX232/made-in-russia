@@ -39,7 +39,6 @@ export const validateField = (
   pricesArray: PriceItem[],
   description: string,
   descriptionMatrix: string[][],
-  companyData: CompanyDescriptionData,
   faqMatrix: string[][],
   translations: (val: string) => string
 ): string => {
@@ -242,7 +241,6 @@ export const initializeDescriptionMatrixForOthers = (
 
 export const submitFormCardData = async ({
   cardObjectForOthers,
-  companyDataForOthers,
   faqMatrixForOthers,
   similarProducts,
   selectedCategory,
@@ -252,7 +250,6 @@ export const submitFormCardData = async ({
   descriptions,
   multyLangObjectForPrices,
   uploadedFiles,
-  companyData,
   remainingInitialImages,
   objectRemainingInitialImages,
   pricesArray,
@@ -260,7 +257,6 @@ export const submitFormCardData = async ({
   initialData
 }: {
   cardObjectForOthers: Record<string, Partial<ICardFull>>
-  companyDataForOthers: Record<string, CompanyDescriptionData>
   faqMatrixForOthers: Record<string, string[][]>
   similarProducts: Set<Product>
   selectedCategory: ICategory | null
@@ -274,7 +270,6 @@ export const submitFormCardData = async ({
   }
   multyLangObjectForPrices: Record<string, CardPriceElementsData>
   uploadedFiles: File[]
-  companyData: CompanyDescriptionData
   remainingInitialImages: string[]
   objectRemainingInitialImages: {id: number; position: number}[]
   pricesArray: {
@@ -290,7 +285,6 @@ export const submitFormCardData = async ({
 }) => {
   console.log('--- submitFormCardData props ---')
   console.log('cardObjectForOthers:', cardObjectForOthers)
-  console.log('companyDataForOthers:', companyDataForOthers)
   console.log('faqMatrixForOthers:', faqMatrixForOthers)
   console.log('similarProducts:', similarProducts)
   console.log('selectedCategory:', selectedCategory)
@@ -300,7 +294,6 @@ export const submitFormCardData = async ({
   console.log('descriptions:', descriptions)
   console.log('multyLangObjectForPrices:', multyLangObjectForPrices)
   console.log('uploadedFiles:', uploadedFiles)
-  console.log('companyData:', companyData)
   console.log('remainingInitialImages:', remainingInitialImages)
   console.log('objectRemainingInitialImages:', objectRemainingInitialImages)
   console.log('pricesArray:', pricesArray)
@@ -421,26 +414,6 @@ export const submitFormCardData = async ({
       priceUnit: pricesArrayForSubmit[0].currency || 'RUB'
     })) || []
 
-  // Process about vendor media - separate old and new images
-  const oldAboutVendorMedia: {id: number; position: number}[] = []
-  const newAboutVendorFiles: File[] = []
-
-  companyDataForOthers?.[langFromPathname]?.images?.forEach((img, index) => {
-    if (img.image instanceof File) {
-      // New file - add to new files array
-      newAboutVendorFiles.push(img.image)
-    } else if (typeof img.image === 'string' && isUpdate) {
-      // Old image URL - find corresponding media object from initialData
-      const oldMedia = initialData?.aboutVendor?.media?.find((media) => media.url === img.image)
-      if (oldMedia) {
-        oldAboutVendorMedia.push({
-          id: oldMedia?.id,
-          position: index
-        })
-      }
-    }
-  })
-
   // Process product media - separate old and new images
   const oldProductMedia: {id: number; position: number}[] = []
 
@@ -458,48 +431,6 @@ export const submitFormCardData = async ({
   })
 
   // Prepare about vendor data
-  const aboutVendor = {
-    mainDescription: companyData.topDescription || companyDataForOthers?.[langFromPathname]?.topDescription,
-    mainDescriptionTranslations: {
-      ru: companyDataForOthers?.ru?.topDescription || (langFromPathname === 'ru' ? companyData?.topDescription : ''),
-      en: companyDataForOthers?.en?.topDescription || (langFromPathname === 'en' ? companyData?.topDescription : ''),
-      zh: companyDataForOthers?.zh?.topDescription || (langFromPathname === 'zh' ? companyData?.topDescription : '')
-    },
-    furtherDescription: companyData?.bottomDescription || companyDataForOthers?.[langFromPathname]?.bottomDescription,
-    furtherDescriptionTranslations: {
-      ru:
-        companyDataForOthers?.ru?.bottomDescription ||
-        (langFromPathname === 'ru' ? companyData?.bottomDescription : ''),
-      en:
-        companyDataForOthers?.en?.bottomDescription ||
-        (langFromPathname === 'en' ? companyData?.bottomDescription : ''),
-      zh:
-        companyDataForOthers?.zh?.bottomDescription || (langFromPathname === 'zh' ? companyData?.bottomDescription : '')
-    },
-    mediaAltTexts:
-      companyDataForOthers?.[langFromPathname]?.images
-        ?.filter((img) => img?.image !== null)
-        .reduce<
-          Array<{
-            altText: string
-            translations: {ru: string; en: string; zh: string}
-          }>
-        >((acc, img) => {
-          const originalIndex = companyDataForOthers?.[langFromPathname]?.images?.indexOf(img)
-
-          if (originalIndex !== undefined && originalIndex !== -1) {
-            acc.push({
-              altText: img?.description || '',
-              translations: {
-                ru: companyDataForOthers?.ru?.images?.[originalIndex]?.description || '',
-                en: companyDataForOthers?.en?.images?.[originalIndex]?.description || '',
-                zh: companyDataForOthers?.zh?.images?.[originalIndex]?.description || ''
-              }
-            })
-          }
-          return acc
-        }, []) || []
-  }
 
   // Prepare the main data object
   const data = {
@@ -519,7 +450,6 @@ export const submitFormCardData = async ({
     faq,
     deliveryMethodDetails,
     packageOptions,
-    aboutVendor,
     minimumOrderQuantity: parseInt(multyLangObjectForPrices[langFromPathname || 'en']?.priceInfo?.minimalVolume || '1'),
     discountExpirationDate: parseInt(
       multyLangObjectForPrices[langFromPathname || 'en']?.priceInfo?.daysBeforeSale || '30'
@@ -527,8 +457,7 @@ export const submitFormCardData = async ({
 
     // Add old media fields only for updates
     ...(isUpdate && {
-      oldProductMedia: oldProductMedia.length > 0 ? oldProductMedia : [],
-      oldAboutVendorMedia: oldAboutVendorMedia.length > 0 ? oldAboutVendorMedia : []
+      oldProductMedia: oldProductMedia.length > 0 ? oldProductMedia : []
     })
   }
 
@@ -546,18 +475,11 @@ export const submitFormCardData = async ({
     }
   })
 
-  // Add about vendor media files (только новые файлы)
-  newAboutVendorFiles.forEach((file) => {
-    formData.append('aboutVendorMedia', file)
-  })
-
   // Log final data object
   console.log('--- Final data object ---')
   console.log('Data to be sent:', JSON.stringify(data, null, 2))
   console.log('Product media files count:', uploadedFiles.length)
-  console.log('About vendor media files count:', newAboutVendorFiles.length)
   console.log('Old product media:', oldProductMedia)
-  console.log('Old about vendor media:', oldAboutVendorMedia)
 
   // API call
   const method = isUpdate ? 'PUT' : 'POST'

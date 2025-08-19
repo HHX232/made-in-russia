@@ -176,6 +176,7 @@ const SortableRow = ({
       const options = dropdownOptions?.[inputIndex] || []
       return (
         <Dropdown
+          key={inputIndex + inputId}
           value={value}
           options={options}
           placeholder={titles[inputIndex] || 'Выберите значение'}

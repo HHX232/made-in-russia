@@ -78,7 +78,6 @@ export interface ValidationErrors {
   description: string
   descriptionImages?: string
   descriptionMatrix: string
-  companyData: string
   faqMatrix: string
 }
 

@@ -10,7 +10,6 @@ import Image from 'next/image'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import CreateCardPriceElements from './CreateCardElements/CreateCardPriceElements/CreateCardPriceElements'
 import CreateDescriptionsElements, {ImageMapping} from './CreateDescriptionsElements/CreateDescriptionsElements'
-import CreateCompanyDescription from './CreateCompanyDescription/CreateCompanyDescription'
 import CreateFaqCard from './CreateFaqCard/CreateFaqCard'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import {useImageModal} from '@/hooks/useImageModal'
@@ -21,7 +20,7 @@ import CreateCardProductCategory from './CreateCardProductCategory/CreateCardPro
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
-import {ValidationErrors, CompanyDescriptionData, CreateCardProps, ICurrentLanguage} from './CreateCard.types'
+import {ValidationErrors, CreateCardProps, ICurrentLanguage} from './CreateCard.types'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useFormValidation} from '@/hooks/useFormValidation'
 import {useCreateCardForm} from '@/hooks/useCreateCardForm'
@@ -50,14 +49,8 @@ export const HELP_IMAGES = {
 const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const [isValidForm, setIsValidForm] = useState(true)
 
-  const {
-    cardObjectForOthers,
-    companyDataForOthers,
-    faqMatrixForOthers,
-    setCardObjectForOthers,
-    setCompanyDataForOthers,
-    setFaqMatrixForOthers
-  } = useCreateCardForm(initialData)
+  const {cardObjectForOthers, faqMatrixForOthers, setCardObjectForOthers, setFaqMatrixForOthers} =
+    useCreateCardForm(initialData)
 
   const [similarProducts, setSimilarProducts] = useState(new Set<Product>())
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(initialData?.category || null)
@@ -170,42 +163,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     (state) => state.multiLanguageCardPriceData[(langFromPathname as Language) || (currentLang as Language)]
   )
 
-  // Состояние для описания компании (CreateCompanyDescription)
-  const [companyData, setCompanyData] = useState<CompanyDescriptionData>({
-    topDescription: initialData?.aboutVendor?.mainDescription || '',
-    images:
-      initialData && initialData?.aboutVendor && initialData?.aboutVendor?.media?.length > 0
-        ? initialData.aboutVendor.media.map((el) => ({
-            image: el.url as string,
-            description: el.altText
-          }))
-        : [
-            {image: null, description: ''},
-            {image: null, description: ''},
-            {image: null, description: ''},
-            {image: null, description: ''}
-          ],
-    bottomDescription: initialData?.aboutVendor?.furtherDescription || ''
-  })
-  const [companyDataImages, setCompanyDataImages] = useState<{id: number; position: number}[]>(
-    (initialData &&
-      initialData?.aboutVendor?.media.map((el, i) => {
-        return {
-          id: el.id,
-          position: i
-        }
-      })) ||
-      []
-  )
-
-  const getFaqMatrixForLang = useCallback((): string[][] => {
-    return faqMatrixForOthers[currentLangState]
-  }, [currentLangState, faqMatrixForOthers])
-
-  const getCompanyDataForLang = useCallback((): CompanyDescriptionData => {
-    return companyDataForOthers[currentLangState] || companyData
-  }, [currentLangState, companyData, companyDataForOthers])
-
   // Состояние для ошибок валидации
   const [errors, setErrors] = useState<ValidationErrors>({
     cardTitle: '',
@@ -214,7 +171,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     description: '',
     descriptionImages: '',
     descriptionMatrix: '',
-    companyData: '',
     faqMatrix: ''
   })
 
@@ -236,8 +192,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       descriptionImages: descriptionImages,
       descriptionMatrix: characteristics.map((el) => [el.title, el.characteristic]),
       packageArray: multyLangObjectForPrices[currentLangState].packaging.map((el) => [el.title, el.price]),
-      companyData: companyData,
-      companyDataImages: companyDataImages,
       faqMatrix: faqMatrixForOthers[currentLangState || 'en'] || [],
       errors: errors,
       selectedDeliveryMethodIds: [1]
@@ -256,19 +210,13 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       pricesArray,
       descriptionImages,
       characteristics,
-      companyData,
-      companyDataImages,
       faqMatrixForOthers,
       errors
     ]
   )
 
   // Инициализируем хук валидации
-  const {validateAllFields, validateSingleField} = useFormValidation(
-    createFormState(),
-    () => descriptions[currentLangState]?.description,
-    t
-  )
+  const {validateAllFields} = useFormValidation(createFormState(), () => descriptions[currentLangState]?.description, t)
 
   const handleUploadedFilesChange = useCallback(
     (files: File[]) => {
@@ -297,22 +245,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       }
     },
     [errors.pricesArray]
-  )
-
-  const handleDescriptionImagesChange = useCallback((images: ImageMapping[]) => {
-    setTimeout(() => {
-      setDescriptionImages(images)
-    }, 0)
-  }, [])
-
-  const handleCompanyDataChange = useCallback(
-    (data: CompanyDescriptionData) => {
-      setCompanyData(data)
-      if (errors.companyData) {
-        setErrors((prev) => ({...prev, companyData: ''}))
-      }
-    },
-    [errors.companyData]
   )
 
   useEffect(() => {
@@ -352,7 +284,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       setErrors(validationErrors)
       setIsValidForm(isValid)
 
-      // Показываем ошибки пользователю
       if (!isValid) {
         Object.entries(validationErrors).forEach(([key, value]) => {
           if (value) {
@@ -377,7 +308,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       try {
         await submitFormCardData({
           cardObjectForOthers,
-          companyDataForOthers,
           faqMatrixForOthers,
           similarProducts,
           selectedCategory,
@@ -387,7 +317,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
           descriptions,
           multyLangObjectForPrices,
           uploadedFiles,
-          companyData,
           remainingInitialImages,
           objectRemainingInitialImages,
           pricesArray,
@@ -427,7 +356,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     [
       validateAllFields,
       cardObjectForOthers,
-      companyDataForOthers,
       faqMatrixForOthers,
       similarProducts,
       selectedCategory,
@@ -437,7 +365,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       descriptions,
       multyLangObjectForPrices,
       uploadedFiles,
-      companyData,
       remainingInitialImages,
       objectRemainingInitialImages,
       pricesArray,
@@ -633,7 +560,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             />
 
             <CreateDescriptionsElements descriptionError={errors.description} currentDynamicLang={currentLangState} />
-            <CreateCompanyDescription
+            {/* <CreateCompanyDescription
               data={getCompanyDataForLang()}
               onChange={(data) => {
                 handleCompanyDataChange(data)
@@ -642,7 +569,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 updatedCompanyDataForOthers[currentLangState] = data
                 setCompanyDataForOthers(updatedCompanyDataForOthers)
               }}
-            />
+            /> */}
             {/* CreateFaqCard */}
             {currentLangState === 'ru' && (
               <CreateFaqCard

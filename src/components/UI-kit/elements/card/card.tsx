@@ -20,6 +20,7 @@ const t2 = '/tree2.jpg'
 
 export interface ICardProps {
   id: number
+  extraButtonsBoxClass?: string
   deliveryMethod: Omit<DeliveryMethod, 'creationDate' | 'lastModificationDate'>
   title: string
   price: number
@@ -38,6 +39,7 @@ export interface ICardProps {
 const Card = memo<ICardProps>(
   ({
     id,
+    extraButtonsBoxClass,
     // deliveryMethod = 'Доставка',
     title = 'default Title',
     price = '10000',
@@ -254,21 +256,21 @@ const Card = memo<ICardProps>(
             </div>
 
             {!isLoading && isShowButton && !canUpdateProduct && (
-              <span onClick={(e) => onClickFunction?.(e)} className={`${styles.button__span}`}>
+              <span onClick={(e) => onClickFunction?.(e)} className={`${styles.button__span} ${extraButtonsBoxClass}`}>
                 {/* <BasketButtonUI product={fullProduct as Product} /> */}
                 {specialButtonText || t('saw')}
               </span>
             )}
 
             {!isLoading && isShowButton && canUpdateProduct && (
-              <div className={styles.update__buttons__box}>
+              <div className={`${styles.update__buttons__box} ${extraButtonsBoxClass}`}>
                 <button
                   onClick={(e) => {
                     e.preventDefault()
                     e.stopPropagation()
                     deleteProduct(id.toString())
                   }}
-                  className={styles.deleate__button}
+                  className={`${styles.deleate__button} `}
                 >
                   <svg width='17' height='19' viewBox='0 0 17 19' fill='none' xmlns='http://www.w3.org/2000/svg'>
                     <path
@@ -359,13 +361,13 @@ const Card = memo<ICardProps>(
             </div>
 
             {!isLoading && isShowButton && !canUpdateProduct && (
-              <span onClick={(e) => onClickFunction?.(e)} className={`${styles.button__span}`}>
+              <span onClick={(e) => onClickFunction?.(e)} className={`${styles.button__span} ${extraButtonsBoxClass}`}>
                 {/* <BasketButtonUI product={fullProduct as Product} /> */}
                 {specialButtonText || t('saw')}
               </span>
             )}
             {!isLoading && isShowButton && canUpdateProduct && (
-              <div className={styles.update__buttons__box}>
+              <div className={`${styles.update__buttons__box} ${extraButtonsBoxClass}`}>
                 <button
                   onClick={(e) => {
                     e.preventDefault()

@@ -36,7 +36,6 @@ export const useFormValidation = (
         formState.pricesArray,
         currentMainDescription,
         formState.descriptionMatrix,
-        formState.companyData,
         formState.faqMatrix,
         translations
       ),
@@ -48,7 +47,6 @@ export const useFormValidation = (
         formState.pricesArray,
         currentMainDescription,
         formState.descriptionMatrix,
-        formState.companyData,
         formState.faqMatrix,
         translations
       ),
@@ -60,7 +58,6 @@ export const useFormValidation = (
         formState.pricesArray,
         currentMainDescription,
         formState.descriptionMatrix,
-        formState.companyData,
         formState.faqMatrix,
         translations
       ),
@@ -72,7 +69,7 @@ export const useFormValidation = (
         formState.pricesArray,
         currentMainDescription,
         formState.descriptionMatrix,
-        formState.companyData,
+
         formState.faqMatrix,
         translations
       ),
@@ -84,19 +81,7 @@ export const useFormValidation = (
         formState.pricesArray,
         currentMainDescription,
         formState.descriptionMatrix,
-        formState.companyData,
-        formState.faqMatrix,
-        translations
-      ),
-      companyData: validateField(
-        'companyData',
-        currentTitle,
-        formState.uploadedFiles,
-        formState.remainingInitialImages,
-        formState.pricesArray,
-        currentMainDescription,
-        formState.descriptionMatrix,
-        formState.companyData,
+
         formState.faqMatrix,
         translations
       ),
@@ -108,7 +93,7 @@ export const useFormValidation = (
         formState.pricesArray,
         currentMainDescription,
         formState.descriptionMatrix,
-        formState.companyData,
+
         formState.faqMatrix,
         translations
       ),
@@ -121,7 +106,7 @@ export const useFormValidation = (
     formState.pricesArray,
     currentMainDescription,
     formState.descriptionMatrix,
-    formState.companyData,
+
     formState.faqMatrix,
     translations
   ])
@@ -149,7 +134,6 @@ export const useFormValidation = (
         formState.pricesArray,
         currentMainDescription,
         formState.descriptionMatrix,
-        formState.companyData,
         formState.faqMatrix,
         translations
       )
@@ -161,7 +145,6 @@ export const useFormValidation = (
       formState.pricesArray,
       currentMainDescription,
       formState.descriptionMatrix,
-      formState.companyData,
       formState.faqMatrix,
       translations
     ]
@@ -179,7 +162,6 @@ export const useFormValidation = (
       description: '',
       descriptionImages: '',
       descriptionMatrix: '',
-      companyData: '',
       faqMatrix: ''
     },
     isFormValid: lastValidationResult.current?.isFormValid ?? true

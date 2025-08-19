@@ -449,6 +449,10 @@
   align-items: center;
   margin: auto auto 0;
   gap: 30px;
+
+  @media (max-width: 600px) {
+    flex-wrap: wrap;
+  }
 }
 
 // !EXTRA

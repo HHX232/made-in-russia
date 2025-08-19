@@ -10,7 +10,12 @@ const AdminCards = () => {
         <h1 className={styles.admin__cards__title}>Товары</h1>
         <SearchInputUI />
       </div>
-      <CardsCatalog canCreateNewProduct initialProducts={[]} initialHasMore={true} />
+      <CardsCatalog
+        extraButtonsBoxClass={styles.extraButtonsBoxClass}
+        canCreateNewProduct
+        initialProducts={[]}
+        initialHasMore={true}
+      />
     </div>
   )
 }
