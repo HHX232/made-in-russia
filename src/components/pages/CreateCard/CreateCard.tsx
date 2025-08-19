@@ -434,7 +434,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             {/* Поле "Название" */}
             <span className={`${styles.create__input__box__span}`}>
               <div className={`${styles.label__title__box}`}>
-                <label className={`${styles.create__label__title}`} htmlFor='title'>
+                <label className={`${styles.create__label__title}`} htmlFor='cy-title-create-input'>
                   {t('name')}
                 </label>
                 <DropList

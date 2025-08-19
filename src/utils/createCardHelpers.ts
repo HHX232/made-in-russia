@@ -1,4 +1,4 @@
-import {ValidationErrors, CompanyDescriptionData} from '@/components/pages/CreateCard/CreateCard.types'
+import {ValidationErrors} from '@/components/pages/CreateCard/CreateCard.types'
 import {getAccessToken} from '@/services/auth/auth.helper'
 import ICardFull, {ICategory} from '@/services/card/card.types'
 import {Product} from '@/services/products/product.types'
@@ -178,24 +178,6 @@ export const initializeMultilingualData = (allLanguages: Language[], currentLang
             : `${initialData?.primaryDescription || ''} ${lang}`,
         priceUnit: lang === currentLang ? initialData?.priceUnit || '' : `${initialData?.priceUnit || ''} ${lang}`,
         previewImageUrl: initialData?.previewImageUrl
-      }
-    }),
-    {}
-  )
-}
-export const initializeCompanyDataForOthers = (
-  allLanguages: string[],
-  currentLang: string,
-  initialData: ICardFull,
-  companyData: CompanyDescriptionData
-) => {
-  return allLanguages?.reduce(
-    (acc, lang) => ({
-      ...acc,
-      [lang]: {
-        topDescription: `${initialData?.aboutVendor?.mainDescriptionTranslations[lang as Language] || ''}`,
-        images: companyData.images,
-        bottomDescription: `${initialData?.aboutVendor?.furtherDescriptionTranslations[lang as Language] || ''}`
       }
     }),
     {}

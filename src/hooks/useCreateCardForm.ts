@@ -3,10 +3,9 @@
 import {useState} from 'react'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {Product} from '@/services/products/product.types'
-import {CompanyDescriptionData, ICurrentLanguage} from '@/components/pages/CreateCard/CreateCard.types'
+import {ICurrentLanguage} from '@/components/pages/CreateCard/CreateCard.types'
 import {
   initializeMultilingualData,
-  initializeCompanyDataForOthers,
   initializeFaqMatrixForOthers,
   initializeDescriptionMatrixForOthers
 } from '@/utils/createCardHelpers'
@@ -96,10 +95,6 @@ export const useCreateCardForm = (initialData?: ICardFull) => {
 
   // Многоязычные данные
 
-  const [companyDataForOthers, setCompanyDataForOthers] = useState<Record<string, CompanyDescriptionData>>(() =>
-    initializeCompanyDataForOthers(allLanguages, currentLang, initialData as ICardFull, formState.companyData)
-  )
-
   const [faqMatrixForOthers, setFaqMatrixForOthers] = useState<{[key: string]: string[][]}>(() =>
     initializeFaqMatrixForOthers(allLanguages, currentLang, initialData as ICardFull)
   )
@@ -115,8 +110,6 @@ export const useCreateCardForm = (initialData?: ICardFull) => {
     setFormState,
     cardObjectForOthers,
     setCardObjectForOthers,
-    companyDataForOthers,
-    setCompanyDataForOthers,
     faqMatrixForOthers,
     setFaqMatrixForOthers,
     descriptionMatrixForOthers,

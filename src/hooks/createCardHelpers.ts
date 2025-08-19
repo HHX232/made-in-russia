@@ -64,16 +64,6 @@ export const validateField = (
       const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell.trim()))
       if (filledRows.length === 0) return 'Необходимо заполнить хотя бы одну строку в таблице характеристик'
       return ''
-
-    case 'companyData':
-      if (!companyData.topDescription.trim()) return 'Верхнее описание компании обязательно для заполнения'
-      if (!companyData.bottomDescription.trim()) return 'Нижнее описание компании обязательно для заполнения'
-      const companyImagesWithContent = companyData.images.filter((img) => img.image !== null)
-      if (companyImagesWithContent.length === 0) return 'Необходимо загрузить хотя бы одно изображение компании'
-      const imagesWithoutDescription = companyImagesWithContent.filter((img) => !img.description.trim())
-      if (imagesWithoutDescription.length > 0) return 'У всех загруженных изображений должны быть описания'
-      return ''
-
     case 'faqMatrix':
       const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
       if (filledFaqRows.length === 0) return 'Необходимо добавить хотя бы один вопрос и ответ'
