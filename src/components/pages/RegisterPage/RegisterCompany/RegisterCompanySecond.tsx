@@ -34,8 +34,7 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
   onNext
 }) => {
   const isEmailValid = email.includes('@') && email.includes('.') && email.length !== 0
-  const canProceed =
-    selectedOption === 'Personal' && isEmailValid && password.length >= 6 && selectedCategories.length > 0
+  const canProceed = selectedOption === 'Personal' && isEmailValid && password.length >= 6
   const [isClient, setIsClient] = useState(false)
   const windowWidth = useWindowWidth()
   const [allCategories, setAllCategories] = useState<Category[]>([])
@@ -108,7 +107,7 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
       />
 
       <div className={`${styles.some__drop__box}`} style={{marginTop: '16px', marginBottom: '16px'}}>
-        <p className={`${styles.input__title}`}>{t('categories')}</p>
+        <p className={`${styles.input__title} ${styles.input__title__tel}`}>{t('categories')}</p>
         {/* <MultiDropSelect
           options={categoryOptions}
           selectedValues={selectedCategories}

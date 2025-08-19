@@ -10,7 +10,7 @@ import Link from 'next/link'
 import Head from 'next/head'
 import styles from './CardPage.module.scss'
 import Image from 'next/image'
-import {ReactNode, useEffect, useState} from 'react'
+import {ReactNode, useEffect, useLayoutEffect, useRef, useState} from 'react'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import ICardFull from '@/services/card/card.types'
 import {useTranslations} from 'next-intl'
@@ -470,148 +470,170 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   )
 
   // Общий компонент для информации о цене и доставке
-  const PriceAndDeliveryInfo = () => (
-    <div className={`${styles.card__state}`}>
-      <div className={`${styles.card__state__big}`}>
-        <ul className={`${styles.prices__list}`}>
-          {cardData?.prices.map((el, i) => {
-            return (
-              <li className={`${styles.prices__list_item}`} key={i}>
-                {!isReallyLoading ? (
-                  <p className={`${styles.price__list__title}`}>
-                    {el.to == 999999 ? el.from + ' ' + el.unit + '+' : el.from + '-' + el.to + ' ' + el.unit}
-                  </p>
-                ) : (
-                  <Skeleton style={{width: 100000, maxWidth: '45px'}} height={30} />
-                )}
-                {!isReallyLoading ? (
-                  <p className={`${styles.price__list__value__start}`}>
-                    <span
-                      className={`${styles.price__original__price} ${el.discountedPrice !== el.originalPrice && styles.price__original__with__discount}`}
+  const PriceAndDeliveryInfo = () => {
+    const priceUnitRef = useRef<HTMLParagraphElement>(null)
+    const [isWide, setIsWide] = useState(false)
+
+    useLayoutEffect(() => {
+      if (priceUnitRef.current) {
+        setIsWide(priceUnitRef.current.offsetWidth >= 190)
+      }
+    }, [cardData])
+
+    return (
+      <div className={`${styles.card__state}`}>
+        <div className={`${styles.card__state__big}`}>
+          <ul className={`${styles.prices__list}`}>
+            {cardData?.prices.map((el, i) => {
+              return (
+                <li className={`${styles.prices__list_item}`} key={i}>
+                  {!isReallyLoading ? (
+                    <p className={`${styles.price__list__title}`}>
+                      {el.to == 999999
+                        ? el.from + ' ' + el.unit + '+'
+                        : el.from + '\u00AD-\u00AD' + el.to + ' ' + el.unit}
+                    </p>
+                  ) : (
+                    <Skeleton style={{width: 100000, maxWidth: '45px'}} height={30} />
+                  )}
+                  {!isReallyLoading ? (
+                    <p
+                      style={{flexWrap: isWide ? 'wrap' : 'nowrap', justifyContent: isWide ? 'end' : 'center'}}
+                      ref={priceUnitRef}
+                      className={`${styles.price__list__value__start}`}
                     >
-                      {createPriceWithDot(el.originalPrice.toString())}
-                    </span>
-                    {el.originalPrice !== el.discountedPrice ? (
-                      <span className={`${styles.discount__price}`}>
-                        {createPriceWithDot(el.discountedPrice.toString())}
+                      <span
+                        className={`${styles.price__original__price} ${el.discountedPrice !== el.originalPrice && styles.price__original__with__discount}`}
+                      >
+                        {createPriceWithDot(el.originalPrice.toString())}
                       </span>
-                    ) : (
-                      ''
-                    )}
-                    <span className={`${styles.price__unit}`}>
-                      {renderPriceUnit(
-                        el.currency + '/' + el.unit,
-                        [
-                          styles.price__currency__first,
-                          el.discountedPrice !== el.originalPrice ? styles.price__currency__first__active : ''
-                        ],
-                        [styles.price__unitMeasure]
+                      {el.originalPrice !== el.discountedPrice ? (
+                        <span className={`${styles.discount__price}`}>
+                          {createPriceWithDot(el.discountedPrice.toString())}
+                        </span>
+                      ) : (
+                        ''
                       )}
-                    </span>
-                  </p>
+                      <span className={`${styles.price__unit}`}>
+                        {renderPriceUnit(
+                          el.currency + `/` + el.unit,
+                          [
+                            styles.price__currency__first,
+                            el.discountedPrice !== el.originalPrice ? styles.price__currency__first__active : ''
+                          ],
+                          [styles.price__unitMeasure]
+                        )}
+                      </span>
+                    </p>
+                  ) : (
+                    <Skeleton style={{width: '100%', maxWidth: '150px'}} height={30} />
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+          {!(Number(cardData?.daysBeforeDiscountExpires) <= 0) && (
+            <div className={`${styles.discount__date__box}`}>
+              <span className={`${styles.date__count}`}>
+                {!isReallyLoading ? (
+                  cardData?.daysBeforeDiscountExpires?.toString() + t('days')
                 ) : (
-                  <Skeleton style={{width: '100%', maxWidth: '150px'}} height={30} />
+                  <Skeleton style={{width: 100000, maxWidth: '45px'}} height={16} />
                 )}
-              </li>
-            )
-          })}
-        </ul>
-        <div className={`${styles.discount__date__box}`}>
-          <span className={`${styles.date__count}`}>
+              </span>
+              <span className={`${styles.date__text__end}`}>
+                {!isReallyLoading ? (
+                  ' ' + ' ' + t('discountDate')
+                ) : (
+                  <Skeleton style={{width: 100000, maxWidth: '100%'}} height={16} />
+                )}
+              </span>
+            </div>
+          )}
+          <div
+            style={{marginTop: Number(cardData?.daysBeforeDiscountExpires) <= 0 ? '15px' : '0'}}
+            className={`${styles.min__weight}`}
+          >
             {!isReallyLoading ? (
-              cardData?.daysBeforeDiscountExpires?.toString() + t('days')
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '45px'}} height={16} />
-            )}
-          </span>
-          <span className={`${styles.date__text__end}`}>
-            {!isReallyLoading ? (
-              ' ' + ' ' + t('discountDate')
+              `${t('minimumOrderQuantity')} ${cardData?.minimumOrderQuantity} ${cardData?.prices[0].unit}`
             ) : (
               <Skeleton style={{width: 100000, maxWidth: '100%'}} height={16} />
             )}
-          </span>
-        </div>
-        <div className={`${styles.min__weight}`}>
-          {!isReallyLoading ? (
-            `${t('minimumOrderQuantity')} ${cardData?.minimumOrderQuantity}${cardData?.prices[0].unit}`
-          ) : (
-            <Skeleton style={{width: 100000, maxWidth: '100%'}} height={16} />
-          )}
-        </div>
+          </div>
 
-        <div className='styles.buttons__box'>
-          {!isReallyLoading ? (
-            <Link
-              href={`/data-vendor/${cardData?.user.id}`}
-              onClick={(event) => {
-                event.preventDefault()
-              }}
-              className={`${styles.by__now__button}`}
-            >
-              {t('byNow')}
-            </Link>
-          ) : (
-            <Skeleton height={48} width={150} />
-          )}
+          <div className='styles.buttons__box'>
+            {!isReallyLoading ? (
+              <Link
+                href={`/data-vendor/${cardData?.user.id}`}
+                onClick={(event) => {
+                  event.preventDefault()
+                }}
+                className={`${styles.by__now__button}`}
+              >
+                {t('byNow')}
+              </Link>
+            ) : (
+              <Skeleton height={48} width={150} />
+            )}
+          </div>
         </div>
-      </div>
-      <div className={`${styles.card__state__mini}`}>
-        {!isReallyLoading ? (
-          <h4 className={`${styles.state__mini__title}`}>{t('deliveryMethodsInfo')}</h4>
-        ) : (
-          <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
-        )}
-        <ul className={`${styles.state__mini__list}`}>
-          {cardData?.deliveryMethodsDetails?.map((el, i) => {
-            return (
-              <li key={el.name.toString() + i} className={`${styles.state__mini__list__item}`}>
-                {!isReallyLoading ? (
-                  <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
-                ) : (
-                  <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-                )}
-                {!isReallyLoading ? (
-                  <p className={`${styles.state__mini__list__item__value}`}>{el.value}</p>
-                ) : (
-                  <Skeleton style={{width: 100000, maxWidth: '100px'}} height={16} />
-                )}
-              </li>
-            )
-          })}
-        </ul>
-        {!isReallyLoading ? (
-          <h4 className={`${styles.state__mini__title}`}>{t('packagingOptions')}</h4>
-        ) : (
-          <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
-        )}
-
-        <ul className={`${styles.state__mini__list}`}>
-          {cardData?.packagingOptions?.map((el, i) => {
-            return (
-              <li className={`${styles.state__mini__list__item}`} key={el.name.toString() + i}>
-                {!isReallyLoading ? (
-                  <>
+        <div className={`${styles.card__state__mini}`}>
+          {!isReallyLoading ? (
+            <h4 className={`${styles.state__mini__title}`}>{t('deliveryMethodsInfo')}</h4>
+          ) : (
+            <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
+          )}
+          <ul className={`${styles.state__mini__list}`}>
+            {cardData?.deliveryMethodsDetails?.map((el, i) => {
+              return (
+                <li key={el.name.toString() + i} className={`${styles.state__mini__list__item}`}>
+                  {!isReallyLoading ? (
                     <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
-                    <p className={`${styles.state__mini__list__item__text}`}>{el.price + ' ' + el.priceUnit}</p>
-                  </>
-                ) : (
-                  <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-                )}
-              </li>
-            )
-          })}
-          {/* <li className={`${styles.state__mini__list__item}`}>
+                  ) : (
+                    <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
+                  )}
+                  {!isReallyLoading ? (
+                    <p className={`${styles.state__mini__list__item__value}`}>{el.value}</p>
+                  ) : (
+                    <Skeleton style={{width: 100000, maxWidth: '100px'}} height={16} />
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+          {!isReallyLoading ? (
+            <h4 className={`${styles.state__mini__title}`}>{t('packagingOptions')}</h4>
+          ) : (
+            <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
+          )}
+
+          <ul className={`${styles.state__mini__list}`}>
+            {cardData?.packagingOptions?.map((el, i) => {
+              return (
+                <li className={`${styles.state__mini__list__item}`} key={el.name.toString() + i}>
+                  {!isReallyLoading ? (
+                    <>
+                      <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
+                      <p className={`${styles.state__mini__list__item__text}`}>{el.price + ' ' + el.priceUnit}</p>
+                    </>
+                  ) : (
+                    <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
+                  )}
+                </li>
+              )
+            })}
+            {/* <li className={`${styles.state__mini__list__item}`}>
             {!isReallyLoading ? (
               <p className={`${styles.state__mini__list__item__text}`}>Коробки</p>
             ) : (
               <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
             )}
           </li> */}
-        </ul>
+          </ul>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <>

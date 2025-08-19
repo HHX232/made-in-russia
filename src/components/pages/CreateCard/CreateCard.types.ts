@@ -78,7 +78,7 @@ export interface ValidationErrors {
   description: string
   descriptionImages?: string
   descriptionMatrix: string
-  faqMatrix: string
+  // faqMatrix: string
 }
 
 export interface CreateCardProps {

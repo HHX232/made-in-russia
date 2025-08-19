@@ -28,6 +28,7 @@ export const getContentType = (overrideLang?: string) => {
 
   return headers
 }
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const errorCatch = (error: any): string =>
   error.response && error.response.data && error.response.data.message

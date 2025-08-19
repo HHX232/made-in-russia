@@ -1,340 +1,349 @@
+/* stylelint-disable no-duplicate-selectors */
 .create__inner {
-   width: 100%;
-   margin-top: 40px;
+  width: 100%;
+  margin-top: 40px;
 }
 
 .create__title {
-   font-size: 40px;
-   line-height: 48px;
-   font-weight: 500;
-   margin-bottom: 50px;
+  margin-bottom: 50px;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 48px;
 }
 
 .create__label__title {
-   font-size: 24px;
-   line-height: 29px;
-   font-weight: 500;
+  position: relative;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+
+  &::before {
+    position: absolute;
+    top: -3px;
+    right: -10px;
+    color: #2a2e46;
+    content: '*';
+    font-size: 18px;
+  }
 }
 
 .arrow__none {
-   display: none !important;
+  display: none !important;
 }
 
 .label__title__box {
-   display: flex;
-   align-items: center;
-   margin-bottom: 15px;
-   gap: 30px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 30px;
 }
 
-.create__input__title>div {
-   max-width: 700px !important;
+.create__input__title > div {
+  max-width: 700px !important;
 
-   &:nth-child(3) {
-      font-size: 16px;
-      color: #AC2525;
-      margin-top: 10px;
-   }
+  &:nth-child(3) {
+    margin-top: 10px;
+    color: #ac2525;
+    font-size: 16px;
+  }
 }
 
 .create__input__box__span__category {
-   display: flex;
-   flex-direction: column;
-   margin-top: 20px;
-   max-width: 700px;
+  display: flex;
+  max-width: 700px;
+  flex-direction: column;
+  margin-top: 20px;
 }
 
 .create__similar__products__box__title {
-   font-size: 24px;
-   line-height: 27px;
-   color: #2A2E46;
-   font-weight: 600;
+  color: #2a2e46;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 27px;
 }
 
 .create__input__box__span {
-   margin-bottom: 30px;
+  margin-bottom: 30px;
 }
 
 .create__input__box__span__images {
-   margin-top: 30px !important;
+  margin-top: 30px !important;
 }
 
 .create____submit__button {
-   font-size: 20px;
-   line-height: 24px;
-   padding: 15px 45px;
-   background-color: #AC2525;
-   border-radius: 10px;
-   color: #fff;
-   max-height: fit-content;
-   width: fit-content;
-   margin: 0 auto;
-   transition: opacity 0.3s ease;
+  width: fit-content;
+  max-height: fit-content;
+  padding: 15px 45px;
+  border-radius: 10px;
+  margin: 0 auto;
+  background-color: #ac2525;
+  color: #fff;
+  font-size: 20px;
+  line-height: 24px;
+  transition: opacity 0.3s ease;
 }
 
 .button__box {
-   width: 100%;
-   display: flex;
-   margin-bottom: 30px;
-   justify-content: center;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 30px;
 }
 
 .drop__extra__image {
-   margin: 10px;
+  margin: 10px;
 }
 
 .drop__extra__image__modal {
-   width: 90vw;
-   height: 90vh;
-   max-height: 600px;
+  width: 90vw;
+  height: 90vh;
+  max-height: 600px;
 }
 
-.drop__extra>ul {
-   max-width: none !important;
+.drop__extra > ul {
+  max-width: none !important;
 }
 
 .drop__extra__first {
-   z-index: 1000000 !important;
+  z-index: 1000000 !important;
 }
 
 .drop__extra__second {
-   z-index: 999988 !important;
+  z-index: 999988 !important;
 }
 
 /* Стили для переключателя языков */
 .language__switcher {
-   display: flex;
-   flex-direction: column;
-   gap: 15px;
-   margin-bottom: 40px;
-   padding: 20px;
-   background-color: #f8f9fa;
-   border-radius: 10px;
-   max-width: 700px;
+  display: flex;
+  max-width: 700px;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 40px;
+  background-color: #f8f9fa;
+  gap: 15px;
 }
 
 .language__switcher__title {
-   font-size: 18px;
-   font-weight: 600;
-   color: #2A2E46;
-   margin: 0;
+  margin: 0;
+  color: #2a2e46;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .language__buttons {
-   display: flex;
-   gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .language__button {
-   padding: 8px 16px;
-   border: 2px solid #e0e0e0;
-   background-color: #fff;
-   border-radius: 8px;
-   font-size: 14px;
-   font-weight: 600;
-   color: #666;
-   cursor: pointer;
-   transition: all 0.3s ease;
-   min-width: 50px;
+  min-width: 50px;
+  padding: 8px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .language__switcher {
-   display: flex;
-   flex-direction: column;
-   gap: 15px;
-   margin-bottom: 40px;
-   padding: 20px;
-   background-color: #f8f9fa;
-   border-radius: 10px;
-   max-width: 700px;
+  display: flex;
+  max-width: 700px;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 40px;
+  background-color: #f8f9fa;
+  gap: 15px;
 }
 
 .language__switcher__title {
-   font-size: 18px;
-   font-weight: 600;
-   color: #2A2E46;
-   margin: 0;
+  margin: 0;
+  color: #2a2e46;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .language__buttons {
-   display: flex;
-   gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .language__button {
-   padding: 8px 16px;
-   border: 2px solid #e0e0e0;
-   background-color: #fff;
-   border-radius: 8px;
-   font-size: 14px;
-   font-weight: 600;
-   color: #666;
-   cursor: pointer;
-   transition: all 0.3s ease;
-   min-width: 50px;
+  min-width: 50px;
+  padding: 8px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .language__button:hover {
-   border-color: #AC2525;
-   color: #AC2525;
+  border-color: #ac2525;
+  color: #ac2525;
 }
 
 .language__button__active {
-   background-color: #AC2525;
-   border-color: #AC2525;
-   color: #fff;
+  border-color: #ac2525;
+  background-color: #ac2525;
+  color: #fff;
 }
 
 .language__button__active:hover {
-   background-color: #8B1F1F;
-   border-color: #8B1F1F;
+  border-color: #8b1f1f;
+  background-color: #8b1f1f;
 }
 
 /* Стили для индикаторов переводов */
 .translation__indicators {
-   display: flex;
-   gap: 8px;
-   margin-top: 10px;
-   align-items: center;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 8px;
 }
 
 .translation__indicator {
-   padding: 4px 8px;
-   border-radius: 4px;
-   font-size: 12px;
-   font-weight: 600;
-   background-color: #f0f0f0;
-   color: #999;
-   border: 1px solid #e0e0e0;
-   transition: all 0.3s ease;
+  padding: 4px 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #999;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .translation__indicator__filled {
-   background-color: #e8f5e8;
-   color: #2e7d32;
-   border-color: #4caf50;
+  border-color: #4caf50;
+  background-color: #e8f5e8;
+  color: #2e7d32;
 }
 
-
-
 .language__button:hover {
-   border-color: #AC2525;
-   color: #AC2525;
+  border-color: #ac2525;
+  color: #ac2525;
 }
 
 .language__button__active {
-   background-color: #AC2525;
-   border-color: #AC2525;
-   color: #fff;
+  border-color: #ac2525;
+  background-color: #ac2525;
+  color: #fff;
 }
 
 .language__button__active:hover {
-   background-color: #8B1F1F;
-   border-color: #8B1F1F;
+  border-color: #8b1f1f;
+  background-color: #8b1f1f;
 }
 
 /* Стили для индикаторов переводов */
 .translation__indicators {
-   display: flex;
-   gap: 8px;
-   margin-top: 10px;
-   align-items: center;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 8px;
 }
 
 .translation__indicator {
-   padding: 4px 8px;
-   border-radius: 4px;
-   font-size: 12px;
-   font-weight: 600;
-   background-color: #f0f0f0;
-   color: #999;
-   border: 1px solid #e0e0e0;
-   transition: all 0.3s ease;
+  padding: 4px 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  color: #999;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .translation__indicator__filled {
-   background-color: #e8f5e8;
-   color: #2e7d32;
-   border-color: #4caf50;
+  border-color: #4caf50;
+  background-color: #e8f5e8;
+  color: #2e7d32;
 }
 
 /* Адаптивные стили */
 @media (max-width: 768px) {
-   .create__title {
-      font-size: 32px;
-      line-height: 38px;
-      margin-bottom: 30px;
-   }
+  .create__title {
+    margin-bottom: 30px;
+    font-size: 32px;
+    line-height: 38px;
+  }
 
-   .language__switcher {
-      margin-bottom: 30px;
-      padding: 15px;
-   }
+  .language__switcher {
+    padding: 15px;
+    margin-bottom: 30px;
+  }
 
-   .language__buttons {
-      flex-wrap: wrap;
-   }
+  .language__buttons {
+    flex-wrap: wrap;
+  }
 
-   .language__button {
-      padding: 6px 12px;
-      font-size: 12px;
-   }
+  .language__button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
 
-   .language__buttons {
-      flex-wrap: wrap;
-   }
+  .language__buttons {
+    flex-wrap: wrap;
+  }
 
-   .language__button {
-      padding: 6px 12px;
-      font-size: 12px;
-   }
+  .language__button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
 
-   .create__label__title {
-      font-size: 20px;
-      line-height: 24px;
-   }
+  .create__label__title {
+    font-size: 20px;
+    line-height: 24px;
+  }
 
-   .label__title__box {
-      gap: 15px;
-      flex-wrap: wrap;
-   }
+  .label__title__box {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
 
-   .create__input__title>div {
-      max-width: 100% !important;
-   }
+  .create__input__title > div {
+    max-width: 100% !important;
+  }
 
-   .translation__indicators {
-      margin-top: 8px;
-   }
+  .translation__indicators {
+    margin-top: 8px;
+  }
 
-   .translation__indicator {
-      padding: 3px 6px;
-      font-size: 11px;
-   }
+  .translation__indicator {
+    padding: 3px 6px;
+    font-size: 11px;
+  }
 }
 
 @media (max-width: 480px) {
-   .create__title {
-      font-size: 28px;
-      line-height: 34px;
-      margin-bottom: 25px;
-   }
+  .create__title {
+    margin-bottom: 25px;
+    font-size: 28px;
+    line-height: 34px;
+  }
 
-   .language__switcher {
-      padding: 12px;
-   }
+  .language__switcher {
+    padding: 12px;
+  }
 
-   .language__switcher__title {
-      font-size: 16px;
-   }
+  .language__switcher__title {
+    font-size: 16px;
+  }
 
-   .create__label__title {
-      font-size: 18px;
-      line-height: 22px;
-   }
+  .create__label__title {
+    font-size: 18px;
+    line-height: 22px;
+  }
 
-   .create____submit__button {
-      font-size: 18px;
-      padding: 12px 35px;
-   }
+  .create____submit__button {
+    padding: 12px 35px;
+    font-size: 18px;
+  }
 }

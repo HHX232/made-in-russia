@@ -99,7 +99,7 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
       />
 
       <div className={`${styles.some__drop__box}`}>
-        <p className={`${styles.input__title}`}>{t('companyTel')}</p>
+        <p className={`${styles.input__title} ${styles.input__title__tel}`}>{t('companyTel')}</p>
         <TelephoneInputUI
           currentValue={telText}
           error={!isValidNumber ? 'error' : ''}

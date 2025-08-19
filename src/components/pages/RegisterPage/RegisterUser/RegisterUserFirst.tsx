@@ -167,7 +167,7 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
       />
 
       <div className={`${styles.some__drop__box}`}>
-        <p className={`${styles.input__title}`}>{t('phoneNumber')}</p>
+        <p className={`${styles.input__title} ${styles.input__title__tel}`}>{t('phoneNumber')}</p>
         <TelephoneInputUI
           currentValue={telText}
           error={!isValidNumber ? 'error' : ''}

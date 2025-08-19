@@ -46,6 +46,9 @@
    "RegisterUserPage":{
     "Belarus":"Беларусь",
     "Kazakhstan":"Казахстан",
+    "chooseUserType":"Выберите тип аккаунта",
+    "imBuyer":"Я покупатель",
+    "imExporter":"Я компания Экспортер",
     "China":"Китай",
     "Russia":"Россия",
     "registerTitle":"Регистрация",
@@ -87,7 +90,7 @@
     "corporateEmailPlaceholder":"Введите корпоративную почту...",
     "categories":"Категории товаров",
     "categoriesPlaceholder":"Выберите категории товаров...",
-    "categoriesSubtext":"Выберите основные категории материалов, с которыми работает ваша компания"
+    "categoriesSubtext":"Выберите основные категории товаров, с которыми работает ваша компания"
    },
    "MinimalHeader":{
     "category": "Категории",

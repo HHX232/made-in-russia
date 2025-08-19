@@ -25,7 +25,7 @@ import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useFormValidation} from '@/hooks/useFormValidation'
 import {useCreateCardForm} from '@/hooks/useCreateCardForm'
 import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
-import {usePathname} from 'next/navigation'
+import {usePathname, useRouter} from 'next/navigation'
 import {useActions} from '@/hooks/useActions'
 import {setInitialStorageValue} from '@/hooks/createCardHelpers'
 import {submitFormCardData} from '@/utils/createCardHelpers'
@@ -48,7 +48,7 @@ export const HELP_IMAGES = {
 
 const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const [isValidForm, setIsValidForm] = useState(true)
-
+  const router = useRouter()
   const {cardObjectForOthers, faqMatrixForOthers, setCardObjectForOthers, setFaqMatrixForOthers} =
     useCreateCardForm(initialData)
 
@@ -170,30 +170,29 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     pricesArray: '',
     description: '',
     descriptionImages: '',
-    descriptionMatrix: '',
-    faqMatrix: ''
+    descriptionMatrix: ''
+    // faqMatrix: ''
   })
 
-  // ОПТИМИЗИРОВАННАЯ ВАЛИДАЦИЯ - создаем объект формы только при необходимости
-  const createFormState = useCallback(
+  const formState = useMemo(
     () => ({
-      isValidForm: isValidForm,
+      isValidForm,
       submitAttempted: true,
-      similarProducts: similarProducts,
-      selectedCategory: selectedCategory,
+      similarProducts,
+      selectedCategory,
       saleDate: multyLangObjectForPrices[currentLangState].priceInfo.daysBeforeSale,
-      currentLangState: currentLangState,
-      cardTitle: cardTitle,
-      uploadedFiles: uploadedFiles,
-      cardObjectForOthers: cardObjectForOthers,
-      remainingInitialImages: remainingInitialImages,
-      objectRemainingInitialImages: objectRemainingInitialImages,
-      pricesArray: pricesArray,
-      descriptionImages: descriptionImages,
+      currentLangState,
+      cardTitle,
+      uploadedFiles,
+      cardObjectForOthers,
+      remainingInitialImages,
+      objectRemainingInitialImages,
+      pricesArray,
+      descriptionImages,
       descriptionMatrix: characteristics.map((el) => [el.title, el.characteristic]),
       packageArray: multyLangObjectForPrices[currentLangState].packaging.map((el) => [el.title, el.price]),
       faqMatrix: faqMatrixForOthers[currentLangState || 'en'] || [],
-      errors: errors,
+      errors,
       selectedDeliveryMethodIds: [1]
     }),
     [
@@ -216,7 +215,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   )
 
   // Инициализируем хук валидации
-  const {validateAllFields} = useFormValidation(createFormState(), () => descriptions[currentLangState]?.description, t)
+  const {validateAllFields} = useFormValidation(formState, () => descriptions[currentLangState]?.description, t)
 
   const handleUploadedFilesChange = useCallback(
     (files: File[]) => {
@@ -338,6 +337,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             }
           }
         )
+        router.push(`/vendor`)
       } catch (e) {
         toast.dismiss(loadingToast)
 
@@ -560,16 +560,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             />
 
             <CreateDescriptionsElements descriptionError={errors.description} currentDynamicLang={currentLangState} />
-            {/* <CreateCompanyDescription
-              data={getCompanyDataForLang()}
-              onChange={(data) => {
-                handleCompanyDataChange(data)
-
-                const updatedCompanyDataForOthers = {...companyDataForOthers}
-                updatedCompanyDataForOthers[currentLangState] = data
-                setCompanyDataForOthers(updatedCompanyDataForOthers)
-              }}
-            /> */}
             {/* CreateFaqCard */}
             {currentLangState === 'ru' && (
               <CreateFaqCard

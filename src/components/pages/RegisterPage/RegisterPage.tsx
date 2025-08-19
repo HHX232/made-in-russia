@@ -37,6 +37,9 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const searchParams = useSearchParams()
   const t = useTranslations('RegisterUserPage')
 
+  // Новое состояние для выбора типа пользователя
+  const [userTypeSelected, setUserTypeSelected] = useState(false)
+
   // Form steps state
   const [showNextStep, setShowNextStep] = useState(false)
   const [showFinalStep, setShowFinalStep] = useState(false)
@@ -200,6 +203,18 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     }
   }
 
+  // Новые обработчики для выбора типа пользователя
+  const handleUserTypeSelect = (type: 'user' | 'company') => {
+    setIsUser(type === 'user')
+    setUserTypeSelected(true)
+  }
+
+  const handleBackToUserTypeSelection = () => {
+    setUserTypeSelected(false)
+    setShowNextStep(false)
+    setShowFinalStep(false)
+  }
+
   // Step 1 submit
   const onSubmitFirstStep = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
@@ -253,7 +268,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             login: name,
             password,
             region: selectedRegion.altName,
-            phoneNumber: fullPhoneNumber,
+            phoneNumber: fullPhoneNumber?.length <= 4 ? '' : fullPhoneNumber,
             avatarUrl: avatarUrl
             // type: 'user'
           }
@@ -264,7 +279,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             password,
             countries: selectedCountries.map((c) => c.value),
             productCategories: selectedCategories.map((c) => c.value),
-            phoneNumber: fullPhoneNumber,
+            phoneNumber: fullPhoneNumber?.length <= 4 ? '' : fullPhoneNumber,
             avatarUrl: avatarUrl
             // type: 'company'
           }
@@ -329,6 +344,33 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     setShowFinalStep(false)
   }
 
+  // Компонент выбора типа пользователя
+  const UserTypeSelection = () => (
+    <div className={styles.user_type_selection}>
+      <h2 className={styles.login__title}>{t('chooseUserType') || 'Выберите тип аккаунта'}</h2>
+
+      <div className={styles.user_type_buttons}>
+        <button
+          className={`${styles.user_type_button} ${styles.buyer_button}`}
+          onClick={() => handleUserTypeSelect('user')}
+        >
+          <span className={styles.button_text}>{t('imBuyer') || 'Я покупатель'}</span>
+        </button>
+
+        <button
+          className={`${styles.user_type_button} ${styles.exporter_button}`}
+          onClick={() => handleUserTypeSelect('company')}
+        >
+          <span className={styles.button_text}>{t('imExporter') || 'Я компания Экспортер'}</span>
+        </button>
+
+        <Link href='/login' className={styles.login_link_button}>
+          {t('haveAccount') || 'Есть аккаунт? Войти!'}
+        </Link>
+      </div>
+    </div>
+  )
+
   return (
     <div className={`${styles.login__box}`}>
       <MinimalHeader categories={categories} />
@@ -337,98 +379,106 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
           <div className={styles.decor__image}></div>
 
           <form className={`${styles.login__form__box}`}>
-            <div className={`${styles.top__links}`}>
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  setIsUser(!isUser)
-                }}
-                className={`${styles.toggle__action__button}`}
-              >
-                {isUser ? t('imVendor') : t('imUser')}
-              </button>
-              <Link href='/login' className={`${styles.toggle__action__button}`}>
-                {t('haveAccount')}
-              </Link>
-            </div>
+            {/* Показываем выбор типа пользователя если тип не выбран */}
+            {!userTypeSelected && <UserTypeSelection />}
 
-            <h2 className={`${styles.login__title}`}>{isUser ? t('registerTitle') : t('registerTitleCompany')}</h2>
+            {/* Показываем форму регистрации если тип выбран */}
+            {userTypeSelected && (
+              <>
+                <div className={`${styles.top__links}`}>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setIsUser(!isUser)
+                    }}
+                    className={`${styles.toggle__action__button}`}
+                  >
+                    {isUser ? t('imVendor') : t('imUser')}
+                  </button>
+                  <Link href='/login' className={`${styles.toggle__action__button}`}>
+                    {t('haveAccount')}
+                  </Link>
+                </div>
 
-            <div className={`${styles.inputs__box}`}>
-              {/* Для пользователей */}
-              {isUser && !showNextStep && !showFinalStep && (
-                <RegisterUserFirst
-                  name={name}
-                  password={password}
-                  telText={telText}
-                  selectedRegion={selectedRegion}
-                  listIsOpen={listIsOpen}
-                  isValidNumber={isValidNumber}
-                  setName={setNameState}
-                  setPassword={setPasswordState}
-                  setTelText={setTelText}
-                  setSelectedRegion={setSelectedRegion}
-                  setListIsOpen={setListIsOpen}
-                  setIsValidNumber={setIsValidNumber}
-                  handleNameChange={handleNameChange}
-                  onChangeTelNumber={onChangeTelNumber}
-                  onSubmit={onSubmitFirstStep}
-                />
-              )}
+                <h2 className={`${styles.login__title}`}>{isUser ? t('registerTitle') : t('registerTitleCompany')}</h2>
 
-              {isUser && showNextStep && !showFinalStep && (
-                <RegisterUserSecond
-                  email={email}
-                  selectedOption={selectedOption}
-                  setEmail={setEmailStore}
-                  handleOptionChange={handleOptionChange}
-                  onBack={handleBackToFirst}
-                  onNext={onSubmitSecondStep}
-                />
-              )}
+                <div className={`${styles.inputs__box}`}>
+                  {/* Для пользователей */}
+                  {isUser && !showNextStep && !showFinalStep && (
+                    <RegisterUserFirst
+                      name={name}
+                      password={password}
+                      telText={telText}
+                      selectedRegion={selectedRegion}
+                      listIsOpen={listIsOpen}
+                      isValidNumber={isValidNumber}
+                      setName={setNameState}
+                      setPassword={setPasswordState}
+                      setTelText={setTelText}
+                      setSelectedRegion={setSelectedRegion}
+                      setListIsOpen={setListIsOpen}
+                      setIsValidNumber={setIsValidNumber}
+                      handleNameChange={handleNameChange}
+                      onChangeTelNumber={onChangeTelNumber}
+                      onSubmit={onSubmitFirstStep}
+                    />
+                  )}
 
-              {/* Для компаний */}
-              {!isUser && !showFinalStep && (
-                <RegisterCompany
-                  inn={inn}
-                  name={name}
-                  password={password}
-                  telText={telText}
-                  email={email}
-                  selectedOption={selectedOption}
-                  isValidNumber={isValidNumber}
-                  selectedCountries={selectedCountries}
-                  selectedCategories={selectedCategories}
-                  setInn={setInn}
-                  setName={setNameState}
-                  setPassword={setPasswordState}
-                  setTelText={setTelText}
-                  setEmail={setEmailStore}
-                  setIsValidNumber={setIsValidNumber}
-                  setSelectedCountries={setSelectedCountries}
-                  setSelectedCategories={setSelectedCategories}
-                  handleNameChange={handleNameChange}
-                  onChangeTelNumber={onChangeTelNumber}
-                  handleOptionChange={handleOptionChange}
-                  showNextStep={showNextStep}
-                  onSubmitFirstStep={onSubmitFirstStep}
-                  onSubmitSecondStep={onSubmitSecondStep}
-                  handleBackToFirst={handleBackToFirst}
-                />
-              )}
+                  {isUser && showNextStep && !showFinalStep && (
+                    <RegisterUserSecond
+                      email={email}
+                      selectedOption={selectedOption}
+                      setEmail={setEmailStore}
+                      handleOptionChange={handleOptionChange}
+                      onBack={handleBackToFirst}
+                      onNext={onSubmitSecondStep}
+                    />
+                  )}
 
-              {/* Общий третий шаг для всех */}
-              {showFinalStep && (
-                <RegisterUserThird
-                  email={email}
-                  otpValue={otpValue}
-                  setOtpValue={setOtpValue}
-                  handleOtpComplete={handleOtpComplete}
-                  onBack={handleBackToSecond}
-                  onConfirm={onSubmitThirdStep}
-                />
-              )}
-            </div>
+                  {/* Для компаний */}
+                  {!isUser && !showFinalStep && (
+                    <RegisterCompany
+                      inn={inn}
+                      name={name}
+                      password={password}
+                      telText={telText}
+                      email={email}
+                      selectedOption={selectedOption}
+                      isValidNumber={isValidNumber}
+                      selectedCountries={selectedCountries}
+                      selectedCategories={selectedCategories}
+                      setInn={setInn}
+                      setName={setNameState}
+                      setPassword={setPasswordState}
+                      setTelText={setTelText}
+                      setEmail={setEmailStore}
+                      setIsValidNumber={setIsValidNumber}
+                      setSelectedCountries={setSelectedCountries}
+                      setSelectedCategories={setSelectedCategories}
+                      handleNameChange={handleNameChange}
+                      onChangeTelNumber={onChangeTelNumber}
+                      handleOptionChange={handleOptionChange}
+                      showNextStep={showNextStep}
+                      onSubmitFirstStep={onSubmitFirstStep}
+                      onSubmitSecondStep={onSubmitSecondStep}
+                      handleBackToFirst={handleBackToFirst}
+                    />
+                  )}
+
+                  {/* Общий третий шаг для всех */}
+                  {showFinalStep && (
+                    <RegisterUserThird
+                      email={email}
+                      otpValue={otpValue}
+                      setOtpValue={setOtpValue}
+                      handleOtpComplete={handleOtpComplete}
+                      onBack={handleBackToSecond}
+                      onConfirm={onSubmitThirdStep}
+                    />
+                  )}
+                </div>
+              </>
+            )}
           </form>
         </div>
       </div>
@@ -439,7 +489,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
 
 const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
   const cleanedPhone = phone.replace(/\D/g, '')
-
+  if (cleanedPhone.length === 0) return true
   switch (country) {
     case 'Belarus':
       return cleanedPhone.length === 9

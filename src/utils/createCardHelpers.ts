@@ -39,7 +39,7 @@ export const validateField = (
   pricesArray: PriceItem[],
   description: string,
   descriptionMatrix: string[][],
-  faqMatrix: string[][],
+
   translations: (val: string) => string
 ): string => {
   switch (fieldName) {
@@ -84,15 +84,15 @@ export const validateField = (
     //   if (imagesWithoutDescription.length > 0) return translations('altTextImagesError')
     //   return ''
 
-    case 'faqMatrix':
-      // console.log('faqMatrix in valid', faqMatrix)
-      const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
-      if (filledFaqRows.length === 0) return translations('oneFaqError')
-      const incompleteRows = filledFaqRows.filter(
-        (row) => (row[0].trim() && !row[1].trim()) || (!row[0].trim() && row[1].trim())
-      )
-      if (incompleteRows.length > 0) return translations('fullFaqError')
-      return ''
+    // case 'faqMatrix':
+    //   // console.log('faqMatrix in valid', faqMatrix)
+    //   const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
+    //   if (filledFaqRows.length === 0) return translations('oneFaqError')
+    //   const incompleteRows = filledFaqRows.filter(
+    //     (row) => (row[0].trim() && !row[1].trim()) || (!row[0].trim() && row[1].trim())
+    //   )
+    //   if (incompleteRows.length > 0) return translations('fullFaqError')
+    //   return ''
 
     default:
       return ''
@@ -350,7 +350,7 @@ export const submitFormCardData = async ({
     })) || []
 
   // Prepare FAQ data
-  const faq =
+  const faq = (
     faqMatrixForOthers[langFromPathname]?.map((faqItem, i) => ({
       question: faqItem?.[0] || '',
       questionTranslations: {
@@ -365,6 +365,7 @@ export const submitFormCardData = async ({
         zh: faqMatrixForOthers?.zh?.[i]?.[1] || ''
       }
     })) || []
+  ).filter((item) => item.question && item.answer)
 
   // Prepare delivery method details
   const deliveryMethodDetails =

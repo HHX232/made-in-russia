@@ -47,6 +47,9 @@
   "Belarus": "白俄罗斯",
   "Kazakhstan": "哈萨克斯坦",
   "China": "中国",
+  "chooseUserType": "选择账户类型",
+  "imBuyer": "我是买家",
+  "imExporter": "我是出口商公司",
   "Russia": "俄罗斯",
   "registerTitle": "注册",
   "registerTitleCompany": "企业注册",
@@ -84,7 +87,7 @@
     "corporateEmailPlaceholder": "请输入企业邮箱...",
     "categories": "商品类别",
     "categoriesPlaceholder": "请选择商品类别...",
-    "categoriesSubtext": "请选择贵公司主要经营的材料类别"
+    "categoriesSubtext":"选择贵公司经营的主要产品类别"
 },
 "MinimalHeader":{
   "category": "分类",

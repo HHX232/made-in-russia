@@ -277,7 +277,7 @@
 .prices__list_item {
   display: flex;
   width: 100%;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
   gap: 15px;
   white-space: nowrap;
@@ -290,6 +290,7 @@
 
 .price__list__value__start {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .price__original__price {

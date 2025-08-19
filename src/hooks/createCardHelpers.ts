@@ -33,9 +33,9 @@ export const validateField = (
   remainingInitialImages: string[],
   pricesArray: PriceItem[],
   description: string,
-  descriptionMatrix: string[][],
-  companyData: CompanyDescriptionData,
-  faqMatrix: string[][]
+  descriptionMatrix: string[][]
+  // companyData: CompanyDescriptionData,
+  // faqMatrix: string[][]
 ): string => {
   switch (fieldName) {
     case 'cardTitle':
@@ -64,14 +64,14 @@ export const validateField = (
       const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell.trim()))
       if (filledRows.length === 0) return 'Необходимо заполнить хотя бы одну строку в таблице характеристик'
       return ''
-    case 'faqMatrix':
-      const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
-      if (filledFaqRows.length === 0) return 'Необходимо добавить хотя бы один вопрос и ответ'
-      const incompleteRows = filledFaqRows.filter(
-        (row) => (row[0].trim() && !row[1].trim()) || (!row[0].trim() && row[1].trim())
-      )
-      if (incompleteRows.length > 0) return 'Каждый вопрос должен иметь ответ и наоборот'
-      return ''
+    // case 'faqMatrix':
+    //   const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
+    //   if (filledFaqRows.length === 0) return 'Необходимо добавить хотя бы один вопрос и ответ'
+    //   const incompleteRows = filledFaqRows.filter(
+    //     (row) => (row[0].trim() && !row[1].trim()) || (!row[0].trim() && row[1].trim())
+    //   )
+    //   if (incompleteRows.length > 0) return 'Каждый вопрос должен иметь ответ и наоборот'
+    //   return ''
 
     default:
       return ''
@@ -329,13 +329,7 @@ export const initializeFaqMatrixForOthers = (allLanguages: string[], currentLang
     .reduce(
       (acc, lang) => ({
         ...acc,
-        [lang]: initialData?.faq.map((el: any) => [`${el.question} ${lang}`, `${el.answer} ${lang}`]) || [
-          ['', ''],
-          ['', ''],
-          ['', ''],
-          ['', ''],
-          ['', '']
-        ]
+        [lang]: initialData?.faq.map((el: any) => [`${el.question} ${lang}`, `${el.answer} ${lang}`]) || [['', '']]
       }),
       {}
     )

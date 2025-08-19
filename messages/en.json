@@ -46,6 +46,9 @@
 "RegisterUserPage": {
   "Belarus": "Belarus",
   "Kazakhstan": "Kazakhstan",
+  "chooseUserType": "Choose account type",
+  "imBuyer": "I am a buyer",
+  "imExporter": "I am an exporter company",
   "China": "China",
   "Russia": "Russia",
     "registerTitle": "Registration",
@@ -84,7 +87,7 @@
   "corporateEmailPlaceholder": "Enter corporate email...",
   "categories": "Product categories",
   "categoriesPlaceholder": "Select product categories...",
-  "categoriesSubtext": "Select the main material categories your company works with"
+  "categoriesSubtext":"Select the main categories of products your company works with"
     
 }, 
 "MinimalHeader":{
