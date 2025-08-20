@@ -2,7 +2,7 @@ import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
 import {notFound} from 'next/navigation'
-import {getAbsoluteLanguage} from '../page'
+import {getAbsoluteLanguage} from '@/api/api.helper'
 
 export default async function CategoryPageSpecial({params}: {params: Promise<{categoryName: string}>}) {
   const {categoryName} = await params
