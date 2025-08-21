@@ -21,6 +21,15 @@ interface CardsCatalogProps {
   onPreventCardClick?: (item: Product) => void
   extraButtonsBoxClass?: string
 }
+interface PageParams {
+  page: number
+  size: number
+  minPrice?: number
+  maxPrice?: number
+  categoryIds?: string
+  title?: string
+  [key: string]: any
+}
 
 const CardsCatalog: FC<CardsCatalogProps> = ({
   initialProducts = [],
@@ -41,16 +50,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const lastProductRef = useRef<HTMLDivElement | null>(null)
   const [numericFilters, setNumericFilters] = useState<number[]>([])
   const {addToLatestViews} = useActions()
-
-  interface PageParams {
-    page: number
-    size: number
-    minPrice?: number
-    maxPrice?: number
-    categoryIds?: string
-    title?: string
-    [key: string]: any
-  }
 
   const [pageParams, setPageParams] = useState<PageParams>({
     page: 0, // Всегда начинаем с 0

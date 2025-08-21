@@ -7,6 +7,12 @@
   margin-top: 40px;
 }
 
+.extra_extraDropListClass {
+  & > li:hover {
+    background-color: transparent !important;
+  }
+}
+
 .login__form__box {
   display: flex;
   width: 50%;
@@ -315,10 +321,10 @@
   &::before {
     position: absolute;
     z-index: -1;
-    inset: -3px;
     border: 3px solid transparent;
     border-radius: 15px;
     content: '';
+    inset: -3px;
     opacity: 0;
     transition: opacity 0.3s ease;
   }

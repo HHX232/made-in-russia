@@ -21,7 +21,7 @@ import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
 
 // Константы
-const ASSETS = {
+export const ASSETS_COUNTRIES = {
   avatar1: '/avatars/avatar-v-2.svg',
   belarusSvg: '/belarus.svg',
   kazakhstanSvg: '/countries/kazakhstan.svg',
@@ -101,19 +101,7 @@ function formatDateLocalized(dateString: string, currentLang: TCurrentLang = 'ru
   }
 }
 
-export const REGIONS: RegionType[] = [
-  {imageSrc: ASSETS.belarusSvg, title: 'Беларусь', altName: 'Belarus'},
-  {imageSrc: ASSETS.kazakhstanSvg, title: 'Казахстан', altName: 'Kazakhstan'},
-  {imageSrc: ASSETS.chinaSvg, title: 'Китай', altName: 'China'},
-  {imageSrc: ASSETS.russiaSvg, title: 'Россия', altName: 'Russia'}
-]
-
 // Типы
-interface RegionType {
-  imageSrc: string
-  title: string
-  altName: string
-}
 
 interface ProfileHeaderProps {
   userData?: User
@@ -349,7 +337,7 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
         <h3 className={styles.payments__methods__title}>{t('paymentsMethodsTitle')}</h3>
 
         <ul className={styles.payments__methods__list}>
-          {ASSETS.paymentsList.map((el, i) => {
+          {ASSETS_COUNTRIES.paymentsList.map((el, i) => {
             return (
               <li className={styles.payments__methods__list__item} key={i}>
                 <p className={styles.payments__methods__list__item__title}>{el.title}</p>
@@ -526,7 +514,7 @@ const ProfileStats: FC<ProfileStatsProps> = ({favoriteCount, registrationDate}) 
         <span className={styles.profile__data__favourite}>
           <span className={styles.profile__data__favourite__span}>
             <h3 className={styles.mini__link__info__title}>{t('favorites')}</h3>
-            <Image width={25} height={23} src={ASSETS.redStar} alt='go to favorite' />
+            <Image width={25} height={23} src={ASSETS_COUNTRIES.redStar} alt='go to favorite' />
           </span>
           <p className={styles.profile__data__favourite__subtitle}>
             {isClient ? favoriteCount : 0} {t('products')}
@@ -539,7 +527,7 @@ const ProfileStats: FC<ProfileStatsProps> = ({favoriteCount, registrationDate}) 
             <h3 className={styles.mini__link__info__title}>
               {registrationDate.length > 0 ? t('shopping', {memberSince: new Date(registrationDate)}) : ''}
             </h3>
-            <Image width={25} height={23} src={ASSETS.basket} alt='go to basket' />
+            <Image width={25} height={23} src={ASSETS_COUNTRIES.basket} alt='go to basket' />
           </span>
           <p className={styles.profile__data__favourite__subtitle}>{t('saw')} </p>
         </span>
@@ -624,6 +612,18 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
   const handleDeleteAccount = () => {
     // TODO: Implement delete account logic
   }
+  interface RegionType {
+    imageSrc: string
+    title: string
+    altName: string
+  }
+  const REGIONS: RegionType[] = [
+    {imageSrc: ASSETS_COUNTRIES.belarusSvg, title: t('belarus'), altName: 'Belarus'},
+    {imageSrc: ASSETS_COUNTRIES.kazakhstanSvg, title: t('kazakhstan'), altName: 'Kazakhstan'},
+    {imageSrc: ASSETS_COUNTRIES.chinaSvg, title: t('china'), altName: 'China'},
+    {imageSrc: ASSETS_COUNTRIES.russiaSvg, title: t('russia'), altName: 'Russia'}
+  ]
+
   const currentLang = useCurrentLanguage()
   const handleLogout = () => {
     try {

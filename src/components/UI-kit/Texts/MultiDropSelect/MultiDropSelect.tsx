@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {JSX, useState, useEffect} from 'react'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI'
 import styles from './MultiDropSelect.module.scss'
@@ -8,6 +8,8 @@ export interface MultiSelectOption {
   label: string
   value: string
   icon?: string
+  children?: MultiSelectOption[]
+  imageUrl?: string
 }
 
 interface MultiDropSelectProps {
@@ -21,6 +23,8 @@ interface MultiDropSelectProps {
   isOnlyShow?: boolean
   showSearchInput?: boolean
   onSetSearchInput?: (value: string) => void
+  isCategories?: boolean
+  extraDropListClass?: string
 }
 
 const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
@@ -33,10 +37,102 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   isOnlyShow = false,
   extraClass,
   showSearchInput = false,
-  onSetSearchInput
+  onSetSearchInput,
+  isCategories = false,
+  extraDropListClass
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
+
+  // Функция для поиска категории и получения пути к ней
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const findCategoryPath = (
+    categories: MultiSelectOption[],
+    searchTerm: string,
+    currentPath: string[] = []
+  ): string[] => {
+    for (const category of categories) {
+      const newPath = [...currentPath, category.id.toString()]
+
+      // Если текущая категория соответствует поиску
+      if (category.label.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return newPath
+      }
+
+      // Если есть дети, ищем в них
+      if (category.children && category.children.length > 0) {
+        const childPath = findCategoryPath(category.children, searchTerm, newPath)
+        if (childPath.length > 0) {
+          return childPath
+        }
+      }
+    }
+    return []
+  }
+
+  // Функция для получения всех путей к найденным категориям
+  const getAllMatchingPaths = (
+    categories: MultiSelectOption[],
+    searchTerm: string,
+    currentPath: string[] = []
+  ): string[][] => {
+    const paths: string[][] = []
+
+    for (const category of categories) {
+      const newPath = [...currentPath, category.id.toString()]
+
+      // Если текущая категория соответствует поиску
+      if (category.label.toLowerCase().includes(searchTerm.toLowerCase())) {
+        paths.push(newPath)
+      }
+
+      // Если есть дети, ищем в них
+      if (category.children && category.children.length > 0) {
+        const childPaths = getAllMatchingPaths(category.children, searchTerm, newPath)
+        paths.push(...childPaths)
+      }
+    }
+    return paths
+  }
+
+  // Функция для проверки, должна ли категория быть видимой при поиске
+  const shouldShowCategory = (category: MultiSelectOption, searchTerm: string, currentPath: string[] = []): boolean => {
+    if (!searchTerm) return true
+
+    const newPath = [...currentPath, category.id.toString()]
+
+    // Если сама категория подходит под поиск
+    if (category.label.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return true
+    }
+
+    // Если в детях есть подходящие категории
+    if (category.children && category.children.length > 0) {
+      return category.children.some((child) => shouldShowCategory(child, searchTerm, newPath))
+    }
+
+    return false
+  }
+
+  // Эффект для автоматического раскрытия категорий при поиске
+  useEffect(() => {
+    if (searchQuery && isCategories) {
+      const allPaths = getAllMatchingPaths(options, searchQuery)
+      const categoriesToExpand = new Set<string>()
+
+      // Для каждого найденного пути добавляем все родительские категории для раскрытия
+      allPaths.forEach((path) => {
+        // Исключаем последний элемент пути (саму найденную категорию)
+        for (let i = 0; i < path.length - 1; i++) {
+          categoriesToExpand.add(path[i])
+        }
+      })
+
+      setExpandedCategories(categoriesToExpand)
+    }
+  }, [searchQuery, isCategories, options])
+
   // Проверка, выбран ли элемент
   const isSelected = (option: MultiSelectOption) => {
     return selectedValues.some((selected) => selected.id === option.id)
@@ -44,7 +140,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
   // Обработчик выбора элемента
   const handleSelectOption = (option: MultiSelectOption) => {
-    if (isOnlyShow) return // Блокируем изменения в режиме только просмотра
+    if (isOnlyShow) return
 
     const newSelected = isSelected(option)
       ? selectedValues.filter((item) => item.id !== option.id)
@@ -55,11 +151,103 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
   // Обработчик удаления выбранного элемента
   const handleRemoveOption = (optionId: string | number, e: React.MouseEvent) => {
-    if (isOnlyShow) return // Блокируем изменения в режиме только просмотра
+    if (isOnlyShow) return
 
     e.stopPropagation()
     const newSelected = selectedValues.filter((item) => item.id !== optionId)
     onChange(newSelected)
+  }
+
+  // Переключение раскрытия категории
+  const toggleCategoryExpanded = (categoryId: string) => {
+    const newExpanded = new Set(expandedCategories)
+    if (newExpanded.has(categoryId)) {
+      newExpanded.delete(categoryId)
+    } else {
+      newExpanded.add(categoryId)
+    }
+    setExpandedCategories(newExpanded)
+  }
+
+  // Обработчик выбора категории
+  const handleSelectCategory = (category: MultiSelectOption, e: React.MouseEvent) => {
+    e.stopPropagation()
+
+    if (isOnlyShow) return
+
+    // Всегда выбираем/отменяем выбор категории
+    handleSelectOption(category)
+
+    // Если у категории есть дети и клик был не по чекбоксу, переключаем раскрытие
+    const target = e.target as HTMLElement
+    if (category.children && category.children.length > 0 && !target.closest(`.${styles.radioWrapper}`)) {
+      toggleCategoryExpanded(category.id.toString())
+    }
+  }
+
+  // Рекурсивная функция для рендеринга категорий
+  const renderCategories = (categories: MultiSelectOption[], level = 0): JSX.Element[] => {
+    return categories
+      .filter((category) => shouldShowCategory(category, searchQuery))
+      .map((category) => {
+        const isExpanded = expandedCategories.has(category.id.toString())
+        const hasChildren = category.children && category.children.length > 0
+        const selected = isSelected(category)
+
+        const categoryElement = (
+          <div key={category.id} className={styles.categoryGroup}>
+            <div
+              className={`${styles.categoryItem} ${
+                styles[`categoryItem--level${level}`]
+              } ${selected ? styles.categoryItemSelected : ''}`}
+              style={{paddingLeft: `${12 + level * 20}px`}}
+              onClick={(e) => handleSelectCategory(category, e)}
+            >
+              {level > 0 && <span className={styles.levelIndicator}>{'└'.repeat(level)}</span>}
+
+              {hasChildren && (
+                <span
+                  className={`${styles.expandIcon} ${isExpanded ? styles.expandIconExpanded : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleCategoryExpanded(category.id.toString())
+                  }}
+                >
+                  ▶
+                </span>
+              )}
+
+              {(category.imageUrl || category.icon) && (
+                <img src={category.imageUrl || category.icon} alt={category.label} className={styles.categoryImage} />
+              )}
+
+              <span className={styles.categoryLabel}>{category.label}</span>
+
+              {!isOnlyShow && (
+                <div className={styles.radioWrapper}>
+                  <RadioButton
+                    label=''
+                    name={`category-${category.id}`}
+                    value={`category-${category.id}`}
+                    checked={selected}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      e.stopPropagation()
+                      handleSelectOption(category)
+                    }}
+                    allowUnchecked={true}
+                  />
+                </div>
+              )}
+            </div>
+
+            {hasChildren && isExpanded && (
+              <div className={styles.childrenContainer}>{renderCategories(category.children!, level + 1)}</div>
+            )}
+          </div>
+        )
+
+        return categoryElement
+      })
   }
 
   // Компонент заголовка дропдауна
@@ -71,7 +259,9 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
         <div className={styles.selectedItems}>
           {selectedValues.map((item) => (
             <span key={item.id} className={styles.selectedItem}>
-              {item.icon && <img src={item.icon} alt='' className={styles.itemIcon} />}
+              {(item.icon || item.imageUrl) && (
+                <img src={item.imageUrl || item.icon} alt='' className={styles.itemIcon} />
+              )}
               <span className={styles.itemLabel}>{item.label}</span>
               {!isOnlyShow && (
                 <button
@@ -118,11 +308,12 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
   // Создаем массив элементов для DropList
   const dropListItems = [
-    // Каждая опция - отдельный элемент
+    // Поле поиска
     showSearchInput && (
       <input
+        key='search-input'
         type='text'
-        placeholder='Поиск категории...'
+        placeholder={isCategories ? 'Поиск категории...' : 'Поиск...'}
         value={searchQuery}
         onChange={(e) => {
           setSearchQuery(e.target.value)
@@ -131,43 +322,49 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
         className={styles.cat__search}
       />
     ),
-    ...options
-      .filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
-      .map((option) => {
-        const selected = isSelected(option)
-        return (
-          <div key={option.id} className={`${styles.optionItem} ${selected ? styles.optionSelected : ''}`}>
-            <div
-              className={styles.optionContent}
-              onClick={(e) => {
-                if (isOnlyShow) return // Блокируем клики в режиме только просмотра
-                e.stopPropagation()
-                handleSelectOption(option)
-              }}
-              style={isOnlyShow ? {cursor: 'default'} : undefined}
-            >
-              {option.icon && <img src={option.icon} alt='' className={styles.optionIcon} />}
-              <span className={styles.optionLabel}>{option.label}</span>
-            </div>
 
-            {!isOnlyShow && (
-              <div className={styles.radioWrapper}>
-                <RadioButton
-                  label=''
-                  name={`multiselect-option-${option.id}`}
-                  value={`option-${option.id}`}
-                  checked={selected}
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+    // Рендерим либо категории, либо обычные опции
+    ...(isCategories
+      ? renderCategories(options)
+      : options
+          .filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
+          .map((option) => {
+            const selected = isSelected(option)
+            return (
+              <div key={option.id} className={`${styles.optionItem} ${selected ? styles.optionSelected : ''}`}>
+                <div
+                  className={styles.optionContent}
+                  onClick={(e) => {
+                    if (isOnlyShow) return
+                    e.stopPropagation()
                     handleSelectOption(option)
                   }}
-                  allowUnchecked={true}
-                />
+                  style={isOnlyShow ? {cursor: 'default'} : undefined}
+                >
+                  {(option.icon || option.imageUrl) && (
+                    <img src={option.imageUrl || option.icon} alt='' className={styles.optionIcon} />
+                  )}
+                  <span className={styles.optionLabel}>{option.label}</span>
+                </div>
+
+                {!isOnlyShow && (
+                  <div className={styles.radioWrapper}>
+                    <RadioButton
+                      label=''
+                      name={`multiselect-option-${option.id}`}
+                      value={`option-${option.id}`}
+                      checked={selected}
+                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        handleSelectOption(option)
+                      }}
+                      allowUnchecked={true}
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        )
-      }),
+            )
+          })),
 
     // Разделитель (только если не в режиме просмотра)
     ...(!isOnlyShow ? [<div style={{pointerEvents: 'none'}} key='divider' className={styles.divider} />] : []),
@@ -182,6 +379,9 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
               onClick={(e) => {
                 e.stopPropagation()
                 onChange([])
+                if (isCategories) {
+                  setExpandedCategories(new Set())
+                }
               }}
               disabled={selectedValues.length === 0}
             >
@@ -218,7 +418,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
       <DropList
         extraClass={styles.dropList}
         gap='0'
-        extraListClass={styles.dropListContent}
+        extraListClass={`${styles.dropListContent} ${extraDropListClass}`}
         title={<DropdownTitle />}
         isOpen={isOpen}
         direction={direction}

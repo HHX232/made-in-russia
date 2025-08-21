@@ -64,9 +64,9 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const [errorInName, setErrorInName] = useState<null | string>(null)
   const [isValidNumber, setIsValidNumber] = useState(true)
   const [selectedRegion, setSelectedRegion] = useState({
-    imageSrc: belarusSvg,
-    title: t('Belarus'),
-    altName: 'Belarus'
+    imageSrc: russiaSvg,
+    title: t('Russia'),
+    altName: 'Russia'
   })
 
   // Company-specific state

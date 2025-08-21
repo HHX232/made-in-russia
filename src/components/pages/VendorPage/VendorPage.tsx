@@ -4,7 +4,7 @@
 import Header from '@/components/MainComponents/Header/Header'
 import {FC, useCallback, useEffect, useState, useRef, useMemo} from 'react'
 import ProfileForm from '../ProfilePage/ProfileForm/ProfileForm'
-import {ProfileHeader, QuickActions, ProfileActions, useUserData, REGIONS} from '../ProfilePage/ProfilePage'
+import {ProfileHeader, QuickActions, ProfileActions, useUserData, ASSETS_COUNTRIES} from '../ProfilePage/ProfilePage'
 import styles from './VendorPage.module.scss'
 import instance from '@/api/api.interceptor'
 import Image from 'next/image'
@@ -117,6 +117,19 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const [isCommentsOpen, setIsCommentsOpen] = useState(true)
   const windowWidth = useWindowWidth()
   const [isQuestOpen, setIsQuestOpen] = useState(false)
+
+  const t = useTranslations('VendorPage')
+  interface RegionType {
+    imageSrc: string
+    title: string
+    altName: string
+  }
+  const REGIONS: RegionType[] = [
+    {imageSrc: ASSETS_COUNTRIES.belarusSvg, title: t('belarus'), altName: 'Belarus'},
+    {imageSrc: ASSETS_COUNTRIES.kazakhstanSvg, title: t('kazakhstan'), altName: 'Kazakhstan'},
+    {imageSrc: ASSETS_COUNTRIES.chinaSvg, title: t('china'), altName: 'China'},
+    {imageSrc: ASSETS_COUNTRIES.russiaSvg, title: t('russia'), altName: 'Russia'}
+  ]
 
   // Состояния для текущих значений
   const [userPhoneNumber, setUserPhoneNumber] = useState(vendorData?.phoneNumber)
@@ -420,8 +433,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   //   console.log('isCommentsOpen:', isCommentsOpen)
   //   console.log('===========================')
   // }, [reviews, totalElements, reviewsLoading, hasMore, isCommentsOpen])
-
-  const t = useTranslations('VendorPage')
 
   // Мемоизируем данные для кнопок помощи
   const helpListButtonData = useMemo(

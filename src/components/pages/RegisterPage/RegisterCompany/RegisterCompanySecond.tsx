@@ -63,21 +63,7 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
   useEffect(() => {
     setIsClient(true)
   }, [])
-  // Категории товаров компании
-  const flattenCategories = (categories: Category[], level = 0): Array<Category & {level: number}> => {
-    const result: Array<Category & {level: number}> = []
 
-    categories.forEach((category) => {
-      result.push({...category, level})
-      if (category.children && category.children.length > 0) {
-        result.push(...flattenCategories(category.children, level + 1))
-      }
-    })
-
-    return result
-  }
-
-  const flattenedCategories = flattenCategories(allCategories)
   const t = useTranslations('RegisterUserPage')
   return (
     <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '22px'}}>
@@ -118,12 +104,26 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
         <MultiDropSelect
           showSearchInput
           extraClass={styles.profile__region__dropdown__extra}
-          options={flattenedCategories.map((category) => ({
+          extraDropListClass={styles.extra_extraDropListClass}
+          options={allCategories.map((category) => ({
             id: category.id,
             label: category.name,
             value: category.name,
-            icon: ''
+            imageUrl: category.imageUrl, // важно для отображения иконок
+            children: category.children?.map((child) => ({
+              id: child.id,
+              label: child.name,
+              value: child.name,
+              imageUrl: child.imageUrl,
+              children: child.children?.map((grandChild) => ({
+                id: grandChild.id,
+                label: grandChild.name,
+                value: grandChild.name,
+                imageUrl: grandChild.imageUrl
+              }))
+            }))
           }))}
+          isCategories
           selectedValues={selectedCategories}
           onChange={(values) => {
             setSelectedCategories(values)

@@ -23,12 +23,6 @@ const kazakhstanSvg = '/countries/kazakhstan.svg'
 const chinaSvg = '/countries/china.svg'
 const russiaSvg = '/countries/russia.svg'
 
-const countryOptions: MultiSelectOption[] = [
-  {id: 'belarus', label: 'Беларусь', value: 'Belarus', icon: belarusSvg},
-  {id: 'kazakhstan', label: 'Казахстан', value: 'Kazakhstan', icon: kazakhstanSvg},
-  {id: 'china', label: 'Китай', value: 'China', icon: chinaSvg},
-  {id: 'russia', label: 'Россия', value: 'Russia', icon: russiaSvg}
-]
 const categoryOptions: MultiSelectOption[] = [
   {id: 'lumber', label: 'Пиломатериалы', value: 'Lumber', icon: belarusSvg},
   {id: 'drywall', label: 'Гипсокартон', value: 'Drywall', icon: belarusSvg},
@@ -169,11 +163,10 @@ const ProfileForm: FC<ProfileFormProps> = ({
 }) => {
   const [password, setPassword] = useState('')
   const [telText, setTelText] = useState('')
-  const [trueTelephoneNumber, setTrueTelephoneNumber] = useState('')
+  // const [trueTelephoneNumber, setTrueTelephoneNumber] = useState('')
   const [isValidNumber, setIsValidNumber] = useState(true)
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [categoriesMultiSelect, setCategoriesMultiSelect] = useState<MultiSelectOption[]>([])
   const currentLang = useCurrentLanguage()
   const t = useTranslations('ProfilePage.ProfileForm')
   useEffect(() => {
@@ -181,14 +174,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
       try {
         const categories = await CategoriesService.getAll(currentLang)
         setAllCategories(categories)
-        setCategoriesMultiSelect(
-          categories.map((category) => ({
-            id: category.id,
-            label: category.name,
-            value: category.name,
-            icon: belarusSvg
-          }))
-        )
+
         setError(null)
       } catch (err) {
         setError(t('errorLoadingCAtegoryes'))
@@ -454,31 +440,31 @@ const ProfileForm: FC<ProfileFormProps> = ({
   }, [userData, regions, userInteracted, isVendor])
 
   // Вычисление национального номера
-  useEffect(() => {
-    const cleanedNumber = telText.replace(/\D/g, '')
-    let nationalNumber = cleanedNumber
+  // useEffect(() => {
+  //   const cleanedNumber = telText.replace(/\D/g, '')
+  //   let nationalNumber = cleanedNumber
 
-    switch (selectedRegion.altName) {
-      case 'Belarus':
-        if (cleanedNumber.startsWith('375')) {
-          nationalNumber = cleanedNumber.slice(3)
-        }
-        break
-      case 'China':
-        if (cleanedNumber.startsWith('86')) {
-          nationalNumber = cleanedNumber.slice(2)
-        }
-        break
-      case 'Russia':
-      case 'Kazakhstan':
-        if (cleanedNumber.startsWith('7')) {
-          nationalNumber = cleanedNumber.slice(1)
-        }
-        break
-    }
+  //   switch (selectedRegion.altName) {
+  //     case 'Belarus':
+  //       if (cleanedNumber.startsWith('375')) {
+  //         nationalNumber = cleanedNumber.slice(3)
+  //       }
+  //       break
+  //     case 'China':
+  //       if (cleanedNumber.startsWith('86')) {
+  //         nationalNumber = cleanedNumber.slice(2)
+  //       }
+  //       break
+  //     case 'Russia':
+  //     case 'Kazakhstan':
+  //       if (cleanedNumber.startsWith('7')) {
+  //         nationalNumber = cleanedNumber.slice(1)
+  //       }
+  //       break
+  //   }
 
-    setTrueTelephoneNumber(nationalNumber)
-  }, [telText, selectedRegion.altName])
+  //   setTrueTelephoneNumber(nationalNumber)
+  // }, [telText, selectedRegion.altName])
 
   // Очистка таймера при размонтировании
   useEffect(() => {
@@ -550,7 +536,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
         break
     }
 
-    setTrueTelephoneNumber(nationalNumber)
+    // setTrueTelephoneNumber(nationalNumber)
   }
 
   const handlePasswordBlur = () => {
@@ -630,6 +616,13 @@ const ProfileForm: FC<ProfileFormProps> = ({
     }
   }
 
+  const countryOptions: MultiSelectOption[] = [
+    {id: 'belarus', label: t('belarus'), value: 'Belarus', icon: belarusSvg},
+    {id: 'kazakhstan', label: t('kazakhstan'), value: 'Kazakhstan', icon: kazakhstanSvg},
+    {id: 'china', label: t('china'), value: 'China', icon: chinaSvg},
+    {id: 'russia', label: t('russia'), value: 'Russia', icon: russiaSvg}
+  ]
+
   return (
     <div className={styles.create__box}>
       <ModalWindowDefault isOpen={modalIsOpen} onClose={closeModal}>
@@ -703,15 +696,29 @@ const ProfileForm: FC<ProfileFormProps> = ({
             {t('categoryes')}
           </p>
           <MultiDropSelect
+            extraDropListClass={styles.extra_extraDropListClass}
             showSearchInput
             isOnlyShow={!isShowForOwner}
             extraClass={styles.profile__region__dropdown__extra}
-            options={flattenedCategories.map((category) => ({
+            options={allCategories.map((category) => ({
               id: category.id,
               label: category.name,
               value: category.name,
-              icon: ''
+              imageUrl: category?.imageUrl,
+              children: category.children?.map((child) => ({
+                id: child.id,
+                label: child.name,
+                value: child.name,
+                imageUrl: child.imageUrl,
+                children: child.children?.map((grandChild) => ({
+                  id: grandChild.id,
+                  label: grandChild.name,
+                  value: grandChild.name,
+                  imageUrl: grandChild.imageUrl
+                }))
+              }))
             }))}
+            isCategories={true}
             selectedValues={categories}
             onChange={(values) => {
               setCategories(values)

@@ -81,10 +81,10 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
           <meta itemProp='url' content={process.env.NEXT_PUBLIC_SITE_URL} />
         </Link>
         <ul className={`${styles.footer__links}`}>
-          <Link className={`${styles.footer__link}`} href={'/'}>
+          <Link className={`${styles.footer__link}`} href={'/terms'}>
             <li>{t('ugreement')}</li>
           </Link>
-          <Link className={`${styles.footer__link}`} href={'/'}>
+          <Link className={`${styles.footer__link}`} href={'/privacy'}>
             <li>{t('privacy')}</li>
           </Link>
           <Link className={`${styles.footer__link}`} href={'/'}>
