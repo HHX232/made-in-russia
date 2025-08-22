@@ -8,9 +8,8 @@ import {useRouter} from 'next/navigation'
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import styles from './PrivacyPage.module.scss'
-import Link from 'next/link'
 
-//  /Users/nikitatisevic/Desktop/made-in-russia/public/privacy/privacy-pdf.pdf
+// /Users/nikitatisevic/Desktop/made-in-russia/public/privacy.pdf
 
 const Privacy = () => {
   const t = useTranslations('Privacy')
@@ -78,8 +77,8 @@ const Privacy = () => {
       // Проверяем наличие текста
       try {
         const textValue = t(`policyLists.${sectionKey}.text`)
-        // Если текст не пустая строка и не совпадает с ключом, используем его
-        if (textValue && textValue.trim() !== '' && !textValue.includes('policyLists')) {
+        // Для секции 11 всегда пытаемся получить текст
+        if (sectionKey === '11' || (textValue && textValue.trim() !== '' && !textValue.includes('policyLists'))) {
           text = textValue
         }
       } catch (error) {
@@ -97,7 +96,8 @@ const Privacy = () => {
             {sectionKey}. {title}
           </h3>
           {text && <p className={styles.sectionText}>{renderText(text)}</p>}
-          <div className={styles.subPoints}>{renderSubPoints(sectionKey)}</div>
+          {/* Для секции 11 не рендерим подпункты */}
+          {sectionKey !== '11' && <div className={styles.subPoints}>{renderSubPoints(sectionKey)}</div>}
         </div>
       )
     } catch (error) {
@@ -213,7 +213,7 @@ const Privacy = () => {
               </svg>
               {t('back')}
             </button>
-            <a download='privacy.pdf' href={'/privacy.pdf'} className={styles.downloadButton}>
+            <a download='privacy.pdf' href={'privacy.pdf'} className={styles.downloadButton}>
               <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
                 <path
                   d='M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M7 10L12 15L17 10M12 15V3'

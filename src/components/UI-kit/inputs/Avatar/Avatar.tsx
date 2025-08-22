@@ -7,10 +7,11 @@ import {useTranslations} from 'next-intl'
 
 interface AvatarProps {
   avatarUrl?: string
+  isOnlyShow?: boolean
   onAvatarChange?: (newAvatarUrl: string | null) => void
 }
 
-const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange}) => {
+const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange, isOnlyShow = false}) => {
   const [isHovered, setIsHovered] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [localAvatar, setLocalAvatar] = useState<string | null>(null)
@@ -186,6 +187,7 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange}) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
+      style={{pointerEvents: isOnlyShow ? 'none' : 'auto'}}
     >
       <Image
         width={60}

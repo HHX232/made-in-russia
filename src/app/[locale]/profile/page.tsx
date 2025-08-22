@@ -1,3 +1,4 @@
+import {getAbsoluteLanguage} from '@/api/api.helper'
 import instance from '@/api/api.interceptor'
 import ProfilePage from '@/components/pages/ProfilePage/ProfilePage'
 import {User} from '@/services/users.types'
@@ -9,8 +10,8 @@ export default async function ProfilePageMain() {
   // Правильный способ получения cookies в серверном компоненте
   const cookieStore = await cookies()
   const accessToken = cookieStore.get('accessToken')?.value || ''
-  // ! МЫ ПОЛУЧИЛИ ЯЗЫК
-  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+
+  const locale = await getAbsoluteLanguage()
 
   try {
     // console.log('accessToken:', accessToken)
@@ -18,7 +19,8 @@ export default async function ProfilePageMain() {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
-        'Accept-Language': locale
+        'Accept-Language': locale,
+        'x-language': locale
       }
     })
     // console.log('userData:', userData?.data)
@@ -53,5 +55,6 @@ export default async function ProfilePageMain() {
     avatarUrl: userData?.data.avatarUrl || '',
     vendorDetails: userData?.data.vendorDetails || undefined
   }
+  // console.log('initialUserData:', initialUserData)
   return <ProfilePage firstUserData={initialUserData} />
 }

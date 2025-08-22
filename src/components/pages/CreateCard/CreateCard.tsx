@@ -302,7 +302,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
         return
       }
 
-      const loadingToast = toast.loading('Сохранение карточки...')
+      const loadingToast = toast.loading('Saving...')
 
       try {
         await submitFormCardData({
@@ -338,19 +338,21 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
           }
         )
         router.push(`/vendor`)
-      } catch (e) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (e: any) {
         toast.dismiss(loadingToast)
-
-        toast.error(
-          <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-            <strong style={{display: 'block', marginBottom: 4}}>{t('saveError')}</strong>
-          </div>,
-          {
-            style: {
-              background: '#AC2525'
-            }
-          }
-        )
+        console.log(e, 'path:', e?.message?.errors?.message)
+        // toast.error(
+        //   <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
+        //     <strong style={{display: 'block', marginBottom: 4}}>{t('saveError')}</strong>
+        //     <span>{e?.message?.errors?.message}</span>
+        //   </div>,
+        //   {
+        //     style: {
+        //       background: '#AC2525'
+        //     }
+        //   }
+        // )
       }
     },
     [

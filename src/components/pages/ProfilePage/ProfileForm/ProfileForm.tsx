@@ -23,23 +23,6 @@ const kazakhstanSvg = '/countries/kazakhstan.svg'
 const chinaSvg = '/countries/china.svg'
 const russiaSvg = '/countries/russia.svg'
 
-const categoryOptions: MultiSelectOption[] = [
-  {id: 'lumber', label: 'Пиломатериалы', value: 'Lumber', icon: belarusSvg},
-  {id: 'drywall', label: 'Гипсокартон', value: 'Drywall', icon: belarusSvg},
-  {id: 'insulation', label: 'Утеплители', value: 'Insulation', icon: belarusSvg},
-  {id: 'roofing', label: 'Кровельные материалы', value: 'Roofing', icon: belarusSvg},
-  {id: 'paints', label: 'Лакокрасочные материалы', value: 'Paints', icon: belarusSvg},
-  {id: 'tiles', label: 'Плитка и керамика', value: 'Tiles', icon: belarusSvg},
-  {id: 'plumbing', label: 'Сантехника', value: 'Plumbing', icon: belarusSvg},
-  {id: 'hardware', label: 'Крепеж и метизы', value: 'Hardware', icon: belarusSvg},
-  {id: 'windows', label: 'Окна и двери', value: 'Windows', icon: belarusSvg},
-  {id: 'flooring', label: 'Напольные покрытия', value: 'Flooring', icon: belarusSvg},
-  {id: 'cement', label: 'Цемент и смеси', value: 'Cement', icon: belarusSvg},
-  {id: 'metal', label: 'Металлопрокат', value: 'Metal', icon: belarusSvg},
-  {id: 'tools', label: 'Инструменты', value: 'Tools', icon: belarusSvg},
-  {id: 'electrical', label: 'Электротовары', value: 'Electrical', icon: belarusSvg},
-  {id: 'decor', label: 'Отделочные материалы', value: 'Decor', icon: belarusSvg}
-]
 interface PhoneInputSectionProps {
   telText: string
   isValidNumber: boolean
@@ -308,12 +291,30 @@ const ProfileForm: FC<ProfileFormProps> = ({
     if (userData?.vendorDetails?.inn) {
       setInn(userData?.vendorDetails?.inn)
     }
+    // console.log('userData?.vendorDetails?.countries', userData?.vendorDetails?.countries)
     if (userData?.vendorDetails?.countries) {
       const countryOptions = userData?.vendorDetails?.countries.map((country) => ({
         id: country.id,
-        label: country.name,
+        label: t(country.name.toLowerCase()) || country.name,
         value: country.name,
-        icon: belarusSvg
+        icon:
+          country.name.toLowerCase() === 'belarus' ||
+          country.name.toLowerCase() === 'беларусь' ||
+          country.name.toLowerCase() === '白俄罗斯'
+            ? belarusSvg
+            : country.name.toLowerCase() === 'china' ||
+                country.name.toLowerCase() === '中国' ||
+                country.name.toLowerCase() === 'китай'
+              ? chinaSvg
+              : country.name.toLowerCase() === 'russia' ||
+                  country.name.toLowerCase() === '俄罗斯' ||
+                  country.name.toLowerCase() === 'россия'
+                ? russiaSvg
+                : country.name.toLowerCase() === 'kazakhstan' ||
+                    country.name.toLowerCase() === '哈萨克斯坦' ||
+                    country.name.toLowerCase() === 'казахстан'
+                  ? russiaSvg
+                  : ''
       }))
       setSelectedCountries(countryOptions)
     }
@@ -322,7 +323,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
         id: category.id,
         label: category.name,
         value: category.name,
-        icon: belarusSvg
+        icon: ''
       }))
       setCategories(categoryOptions)
     }

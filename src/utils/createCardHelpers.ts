@@ -7,6 +7,7 @@ import {
   Language
 } from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
 import {PriceItem} from '@/types/CreateCard.extended.types'
+import {toast} from 'sonner'
 
 // utils/createCardHelpers.ts
 export const parseQuantityRange = (quantityStr: string): {from: number; to: number | null} => {
@@ -246,9 +247,9 @@ export const submitFormCardData = async ({
   currentLangState: string
   cardTitle: string
   descriptions: {
-    ru: {description: string; additionalDescription: string; furtherDescription: string}
-    en: {description: string; additionalDescription: string; furtherDescription: string}
-    zh: {description: string; additionalDescription: string; furtherDescription: string}
+    ru: {description: string; additionalDescription: string | null; furtherDescription: string}
+    en: {description: string; additionalDescription: string | null; furtherDescription: string}
+    zh: {description: string; additionalDescription: string | null; furtherDescription: string}
   }
   multyLangObjectForPrices: Record<string, CardPriceElementsData>
   uploadedFiles: File[]
@@ -302,16 +303,16 @@ export const submitFormCardData = async ({
 
   // Prepare main descriptions for all languages
   const mainDescriptionTranslations = {
-    ru: descriptions.ru?.description || (langFromPathname === 'ru' ? descriptions.ru?.description : ''),
-    en: descriptions.en?.description || (langFromPathname === 'en' ? descriptions.en?.description : ''),
-    zh: descriptions.zh?.description || (langFromPathname === 'zh' ? descriptions.zh?.description : '')
+    ru: descriptions.ru?.description || (langFromPathname === 'ru' ? descriptions.ru?.description : null),
+    en: descriptions.en?.description || (langFromPathname === 'en' ? descriptions.en?.description : null),
+    zh: descriptions.zh?.description || (langFromPathname === 'zh' ? descriptions.zh?.description : null)
   }
 
   // Prepare further descriptions for all languages
   const furtherDescriptionTranslations = {
-    ru: descriptions.ru?.furtherDescription || descriptions.ru?.additionalDescription || '',
-    en: descriptions.en?.furtherDescription || descriptions.en?.additionalDescription || '',
-    zh: descriptions.zh?.furtherDescription || descriptions.zh?.additionalDescription || ''
+    ru: descriptions.ru?.furtherDescription || descriptions.ru?.additionalDescription || null,
+    en: descriptions.en?.furtherDescription || descriptions.en?.additionalDescription || null,
+    zh: descriptions.zh?.furtherDescription || descriptions.zh?.additionalDescription || null
   }
 
   // Prepare prices data
@@ -422,8 +423,7 @@ export const submitFormCardData = async ({
     mainDescription:
       mainDescriptionTranslations[(langFromPathname || 'en') as keyof typeof mainDescriptionTranslations],
     mainDescriptionTranslations,
-    furtherDescription:
-      furtherDescriptionTranslations[(langFromPathname || 'en') as keyof typeof furtherDescriptionTranslations],
+    furtherDescription: typeof furtherDescriptionTranslations.ru,
     furtherDescriptionTranslations,
     categoryId: selectedCategory?.id || 0,
     deliveryMethodIds: [1],
@@ -481,8 +481,17 @@ export const submitFormCardData = async ({
     })
 
     if (!response.ok) {
-      const errorData = await response.text()
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorData}`)
+      // Правильно парсим JSON ответ
+      const errorData = await response.json()
+      console.log('full res', response, 'response.body', response.body)
+
+      // Извлекаем сообщение об ошибке из правильной структуры
+      const errorMessage = errorData?.errors?.message || errorData?.message || `HTTP error! status: ${response.status}`
+
+      toast.error(errorMessage)
+      console.log('errorData in !response.ok', errorData, 'response', response)
+      console.log('сообщение об ошибке', errorMessage)
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorMessage}`)
     }
 
     const result = await response.json()

@@ -276,18 +276,18 @@ const Card = memo<ICardProps>(
                     <path
                       d='M5.96204 2.75C6.32239 1.73046 7.29475 1 8.43767 1C9.5806 1 10.553 1.73046 10.9133 2.75'
                       stroke='#F4F7FF'
-                      stroke-width='1.3'
-                      stroke-linecap='round'
+                      strokeWidth='1.3'
+                      strokeLinecap='round'
                     />
-                    <path d='M15.8751 4.5H1' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
+                    <path d='M15.8751 4.5H1' stroke='#F4F7FF' strokeWidth='1.3' strokeLinecap='round' />
                     <path
                       d='M14.4166 6.6875L14.0141 12.7242C13.8592 15.0472 13.7818 16.2088 13.0249 16.9169C12.2681 17.625 11.104 17.625 8.77575 17.625H8.09911C5.77087 17.625 4.60677 17.625 3.84989 16.9169C3.09301 16.2088 3.01557 15.0472 2.8607 12.7242L2.45825 6.6875'
                       stroke='#F4F7FF'
-                      stroke-width='1.3'
-                      stroke-linecap='round'
+                      strokeWidth='1.3'
+                      strokeLinecap='round'
                     />
-                    <path d='M6.25 8.875L6.6875 13.25' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
-                    <path d='M10.625 8.875L10.1875 13.25' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
+                    <path d='M6.25 8.875L6.6875 13.25' stroke='#F4F7FF' strokeWidth='1.3' strokeLinecap='round' />
+                    <path d='M10.625 8.875L10.1875 13.25' stroke='#F4F7FF' strokeWidth='1.3' strokeLinecap='round' />
                   </svg>
                 </button>
 
@@ -380,18 +380,18 @@ const Card = memo<ICardProps>(
                     <path
                       d='M5.96204 2.75C6.32239 1.73046 7.29475 1 8.43767 1C9.5806 1 10.553 1.73046 10.9133 2.75'
                       stroke='#F4F7FF'
-                      stroke-width='1.3'
-                      stroke-linecap='round'
+                      strokeWidth='1.3'
+                      strokeLinecap='round'
                     />
-                    <path d='M15.8751 4.5H1' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
+                    <path d='M15.8751 4.5H1' stroke='#F4F7FF' strokeWidth='1.3' strokeLinecap='round' />
                     <path
                       d='M14.4166 6.6875L14.0141 12.7242C13.8592 15.0472 13.7818 16.2088 13.0249 16.9169C12.2681 17.625 11.104 17.625 8.77575 17.625H8.09911C5.77087 17.625 4.60677 17.625 3.84989 16.9169C3.09301 16.2088 3.01557 15.0472 2.8607 12.7242L2.45825 6.6875'
                       stroke='#F4F7FF'
-                      stroke-width='1.3'
-                      stroke-linecap='round'
+                      strokeWidth='1.3'
+                      strokeLinecap='round'
                     />
-                    <path d='M6.25 8.875L6.6875 13.25' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
-                    <path d='M10.625 8.875L10.1875 13.25' stroke='#F4F7FF' stroke-width='1.3' stroke-linecap='round' />
+                    <path d='M6.25 8.875L6.6875 13.25' stroke='#F4F7FF' strokeWidth='1.3' strokeLinecap='round' />
+                    <path d='M10.625 8.875L10.1875 13.25' stroke='#F4F7FF' strokeWidth='1.3' strokeLinecap='round' />
                   </svg>
                 </button>
 

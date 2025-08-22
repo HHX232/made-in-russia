@@ -677,7 +677,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
               ) : (
                 <h3 className={styles.vendor__products__title}>{t('noMyProducts')}</h3>
               )}
-              <SearchInputUI />
+              <SearchInputUI vendorId={vendorData?.id.toString()} />
             </div>
             <div className={styles.products__list}>
               <Filters />

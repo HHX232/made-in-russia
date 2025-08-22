@@ -29,9 +29,10 @@ interface IHints {
 interface ISearchProps {
   placeholder?: string
   disabled?: boolean
+  vendorId?: string
 }
 
-const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
+const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId}) => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [inputValue, setInputValue] = useState('')
   const [listIsOpen, setListIsOpen] = useState(false)
@@ -64,7 +65,8 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
     try {
       const res = await axiosClassic.get<IHints[]>('/products/hints', {
         params: {
-          text: text
+          text: text,
+          vendorId: vendorId
         },
         headers: {
           'Accept-Language': currentLang
@@ -95,19 +97,6 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled}) => {
       debouncedFetchHints(value)
     },
     [debouncedSetSearchTitle, debouncedFetchHints]
-  )
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleSelectItem = useCallback(
-    (text: string) => {
-      if (inputRef.current) {
-        inputRef.current.value = text
-      }
-      setInputValue(text)
-      setSearchTitle(text)
-      setListIsOpen(false)
-    },
-    [setSearchTitle]
   )
 
   useEffect(() => {

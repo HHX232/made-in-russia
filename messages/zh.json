@@ -107,9 +107,13 @@
 },
 "ProfilePage": {
   "belarus": "白俄罗斯",
-  "kazakhstan": "哈萨克斯坦",
-  "china": "中国",
-  "russia": "俄罗斯",
+    "白俄罗斯":"白俄罗斯",
+    "kazakhstan": "哈萨克斯坦",
+    "哈萨克斯坦":"哈萨克斯坦",
+    "china": "中国",
+    "中国":"中国",
+    "russia": "俄罗斯",
+    "俄罗斯":"俄罗斯",
   "createAvatarSuccess": "头像创建成功！",
   "deleteAvatarSuccess": "头像删除成功！",
   "createAvatarError": "头像创建失败！",
@@ -152,10 +156,14 @@
 
 
     "ProfileForm": {
-      "belarus": "白俄罗斯",
-  "kazakhstan": "哈萨克斯坦",
-  "china": "中国",
-  "russia": "俄罗斯",
+    "belarus": "白俄罗斯",
+    "白俄罗斯":"白俄罗斯",
+    "kazakhstan": "哈萨克斯坦",
+    "哈萨克斯坦":"哈萨克斯坦",
+    "china": "中国",
+    "中国":"中国",
+    "russia": "俄罗斯",
+    "俄罗斯":"俄罗斯",
     "phoneNumber": "手机号码",
     "errorLoadingCAtegoryes": "加载类别错误",
     "codeInEmail": "验证码已发送至邮箱",
@@ -523,7 +531,7 @@
   "back":" 返回",
   "download":" 下载文件 \"用户协议\"",
   "text":"本用户协议（以下简称“协议”）规范有限责任公司 EXPORTERU（以下简称 exporteru.com 或 管理方）与网站用户之间的关系。网站 exporteru.com 不是大众传媒。",
-  "secondText":"使用本网站即表示您同意本协议条款。<b>如果您不同意本协议条款，请不要使用 exporteru.com！</b>",
+  "secondText":"使用本网站即表示您同意本协议条款。<br/>如果您不同意本协议条款，请不要使用 exporteru.com！<br/>",
   "agreementList":{
     "2":{
       "1-title":"用户有权：",

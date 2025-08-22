@@ -135,7 +135,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
   // Проверка, выбран ли элемент
   const isSelected = (option: MultiSelectOption) => {
-    return selectedValues.some((selected) => selected.id === option.id)
+    return selectedValues.some((selected) => selected?.value?.toLowerCase() === option?.value?.toLowerCase())
   }
 
   // Обработчик выбора элемента
@@ -171,16 +171,30 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
   // Обработчик выбора категории
   const handleSelectCategory = (category: MultiSelectOption, e: React.MouseEvent) => {
-    e.stopPropagation()
-
     if (isOnlyShow) return
 
-    // Всегда выбираем/отменяем выбор категории
+    const target = e.target as HTMLElement
+
+    // Если клик был по чекбоксу, не обрабатываем здесь (обработает сам чекбокс)
+    if (target.closest(`.${styles.radioWrapper}`)) {
+      return
+    }
+
+    // Если клик был по стрелке раскрытия, только переключаем раскрытие
+    if (target.closest(`.${styles.expandIcon}`)) {
+      e.stopPropagation()
+      if (category.children && category.children.length > 0) {
+        toggleCategoryExpanded(category.id.toString())
+      }
+      return
+    }
+
+    // В остальных случаях выбираем категорию и при необходимости раскрываем
+    e.stopPropagation()
     handleSelectOption(category)
 
-    // Если у категории есть дети и клик был не по чекбоксу, переключаем раскрытие
-    const target = e.target as HTMLElement
-    if (category.children && category.children.length > 0 && !target.closest(`.${styles.radioWrapper}`)) {
+    // Если у категории есть дети, также переключаем раскрытие
+    if (category.children && category.children.length > 0) {
       toggleCategoryExpanded(category.id.toString())
     }
   }
@@ -230,10 +244,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
                     name={`category-${category.id}`}
                     value={`category-${category.id}`}
                     checked={selected}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      e.stopPropagation()
-                      handleSelectOption(category)
-                    }}
+                    onChange={() => handleSelectOption(category)}
                     allowUnchecked={true}
                   />
                 </div>
@@ -336,6 +347,11 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
                   className={styles.optionContent}
                   onClick={(e) => {
                     if (isOnlyShow) return
+                    const target = e.target as HTMLElement
+                    // Если клик был по чекбоксу, не обрабатываем здесь
+                    if (target.closest(`.${styles.radioWrapper}`)) {
+                      return
+                    }
                     e.stopPropagation()
                     handleSelectOption(option)
                   }}
@@ -354,10 +370,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
                       name={`multiselect-option-${option.id}`}
                       value={`option-${option.id}`}
                       checked={selected}
-                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        handleSelectOption(option)
-                      }}
+                      onChange={() => handleSelectOption(option)}
                       allowUnchecked={true}
                     />
                   </div>

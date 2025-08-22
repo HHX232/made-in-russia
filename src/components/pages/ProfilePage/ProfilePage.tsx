@@ -153,7 +153,8 @@ export const useUserData = () => {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
-            'Accept-Language': currentLang
+            'Accept-Language': currentLang,
+            'x-language': currentLang
           }
         })
         setUserData(response.data)
@@ -209,7 +210,8 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
     try {
       await instance.delete(`/me/sessions/${id}`, {
         headers: {
-          'Accept-Language': currentLang
+          'Accept-Language': currentLang,
+          'x-language': currentLang
         }
       })
       setSessions((prev) => prev.filter((session) => session.id !== id))
@@ -258,7 +260,8 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
         }[]
       >('/me/sessions', {
         headers: {
-          'Accept-Language': currentLang
+          'Accept-Language': currentLang,
+          'x-language': currentLang
         }
       })
       setSessions(response.data)
@@ -402,7 +405,8 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
           },
           {
             headers: {
-              'Accept-Language': currentLang
+              'Accept-Language': currentLang,
+              'x-language': currentLang
             }
           }
         )
@@ -416,7 +420,8 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
           },
           {
             headers: {
-              'Accept-Language': currentLang
+              'Accept-Language': currentLang,
+              'x-language': currentLang
             }
           }
         )
@@ -646,7 +651,8 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
   }
 
   if (error) {
-    return <div>{t('errorLoadingProfile')}</div>
+    router.push('/login')
+    return
   }
 
   return (

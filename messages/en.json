@@ -518,7 +518,7 @@
   "back":" Go back",
   "download":" Download file \"User Agreement\"",
   "text":"This User Agreement (hereinafter referred to as the Agreement) governs the relationship between EXPORTERU LLC (hereinafter exporteru.com or Administration) on the one hand and the user of the website on the other. The website exporteru.com is not a mass media outlet.",
-  "secondText":"By using the website, you agree to the terms of this Agreement. <b>If you do not agree with the terms of this Agreement, do not use exporteru.com!</b>",
+  "secondText":"By using the website, you agree to the terms of this Agreement. <br/>If you do not agree with the terms of this Agreement, do not use exporteru.com!<br/>",
   "agreementList":{
     "2":{
       "1-title":"The User has the right to:",
@@ -540,8 +540,5 @@
     }
   }
 }
-
-    
-
 }
 

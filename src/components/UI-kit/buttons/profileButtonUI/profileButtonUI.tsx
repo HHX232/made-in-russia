@@ -111,7 +111,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
         } catch (e) {
           console.error('Failed to refresh token:', e)
           // console.log('сейчас мы удалили токены')
-          // removeFromStorage()
+          removeFromStorage()
         }
       }
     }
