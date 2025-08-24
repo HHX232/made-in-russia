@@ -64,7 +64,7 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
   }
 
   // Определяем страну для телефонного номера (берем первую выбранную)
-  const phoneCountry = selectedCountries.length > 0 ? (selectedCountries[0].value as TNumberStart) : 'Belarus'
+  const phoneCountry = selectedCountries.length > 0 ? (selectedCountries[0].value as TNumberStart) : 'Russia'
 
   return (
     <>

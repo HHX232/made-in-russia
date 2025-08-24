@@ -20,8 +20,10 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
         'x-language': currentLang
       }
     })
-    // console.log('vendorData:', vendorData.data)
-  } catch {}
+    console.log('vendorData after:', vendorData)
+  } catch (e) {
+    console.log('vendorData dy', e)
+  }
 
   const trimPhonePrefix = (phoneNumber: string | undefined): string | undefined => {
     if (!phoneNumber) return phoneNumber
@@ -43,11 +45,12 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
-        'Accept-Language': currentLang
+        'Accept-Language': currentLang,
+        'x-language': currentLang
       }
     })
-    console.log('initialProductsForView', initialProductsForView)
-    console.log('initialProductsForView:', initialProductsForView.data)
+    // console.log('initialProductsForView', initialProductsForView)
+    // console.log('initialProductsForView:', initialProductsForView.data)
   } catch {}
   console.log(
     'vendorData full',

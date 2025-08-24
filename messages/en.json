@@ -188,6 +188,7 @@
 }
 },
 "VendorPage": { 
+  "create": "Create product",
   "belarus": "Belarus",
   "kazakhstan": "Kazakhstan", 
   "china": "China",
@@ -539,6 +540,32 @@
       "1-text":"This Agreement comes into effect upon any use of the website. <br/>The Agreement ceases to be valid when a new version appears. <br/>The Administration reserves the right to unilaterally amend this Agreement at its discretion. <br/>The Administration does not notify users about changes in the Agreement."
     }
   }
-}
+},
+"ResetPasswordPage": {
+      "title": "Password Reset",
+      "confirmationTitle": "Confirmation",
+      "emailPlaceholder": "Enter your email",
+      "emailLabel": "Email",
+      "newPasswordPlaceholder": "Enter new password",
+      "newPasswordLabel": "New password",
+      "confirmButton": "Confirm",
+      "backToLogin": "Back to login",
+      "sending": "Sending...",
+      "emailRequired": "Please enter your email",
+      "emailInvalid": "Please enter a valid email",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "emailCorrect": "Enter a valid email",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "codeSentSuccess": "Verification code sent to your email",
+      "resetError": "Reset Error",
+      "checkDataError": "Please check your entered data",
+      "resetPasswordError": "Password reset error",
+      "congratulations": "Congratulations!",
+      "passwordChangedSuccess": "Password successfully changed!",
+      "confirmationError": "Confirmation Error",
+      "invalidCode": "Invalid verification code",
+      "verificationText": "We sent a verification code to your email",
+      "verificationSubtitle": "Enter the 4-digit code from the email"
+    }
 }
 

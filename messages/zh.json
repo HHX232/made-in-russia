@@ -197,6 +197,7 @@
 }
 },
 "VendorPage": {
+  "create": "创建产品",
   "belarus": "白俄罗斯",
   "kazakhstan": "哈萨克斯坦",
   "china": "中国",
@@ -552,7 +553,34 @@
       "1-text":"本协议自用户使用网站之时起生效。<br/>当出现新版本时，本协议自动失效。<br/>管理方保留单方面修改本协议的权利。<br/>管理方不向用户通知协议的更改。"
     }
   }
-}
+},
+
+  "ResetPasswordPage": {
+    "title": "密码重置",
+    "confirmationTitle": "确认",
+    "emailPlaceholder": "请输入您的邮箱",
+    "emailLabel": "邮箱",
+    "newPasswordPlaceholder": "请输入新密码",
+    "newPasswordLabel": "新密码",
+    "confirmButton": "确认",
+    "backToLogin": "返回登录",
+    "sending": "发送中...",
+    "emailRequired": "请输入邮箱",
+    "emailInvalid": "请输入有效的邮箱",
+    "passwordTooShort": "密码至少需要6个字符",
+    "emailCorrect": "请输入有效的邮箱",
+    "passwordMinLength": "密码至少需要6个字符",
+    "codeSentSuccess": "验证码已发送到您的邮箱",
+    "resetError": "重置错误",
+    "checkDataError": "请检查您输入的数据",
+    "resetPasswordError": "密码重置错误",
+    "congratulations": "恭喜！",
+    "passwordChangedSuccess": "密码修改成功！",
+    "confirmationError": "确认错误",
+    "invalidCode": "验证码错误",
+    "verificationText": "我们已向您的邮箱发送验证码",
+    "verificationSubtitle": "请输入邮件中的4位数字验证码"
+  }
 
 
 }

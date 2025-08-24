@@ -28,7 +28,8 @@ const CategoriesService = {
   async getAll(currentLang: string): Promise<Category[]> {
     const response = await axiosClassic.get<CategoriesResponse>('/all-categories', {
       headers: {
-        'Accept-Language': currentLang || 'en'
+        'Accept-Language': currentLang || 'en',
+        'x-language': currentLang || 'en'
       }
     })
     return response.data.map(cleanCategorySlug)
@@ -37,9 +38,11 @@ const CategoriesService = {
   async getById(id: number | string, currentLang: string): Promise<Category> {
     const {data} = await axiosClassic.get<Category>(`/categories/${id}`, {
       headers: {
-        'Accept-Language': currentLang || 'en'
+        'Accept-Language': currentLang || 'en',
+        'x-language': currentLang || 'en'
       }
     })
+    console.log('data category:', data)
     return cleanCategorySlug(data)
   }
 }

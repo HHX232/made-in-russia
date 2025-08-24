@@ -17,7 +17,13 @@ export default async function CategoryPageSpecialSecond({
   try {
     console.log('Category:', `/companies/l2_${secondCategoryName}`)
     const {data} = await axiosClassic.get<{name: string; inn: string; ageInYears: string}[]>(
-      `/companies/l2_${secondCategoryName}`
+      `/companies/l2_${secondCategoryName}`,
+      {
+        headers: {
+          'Accept-Language': locale || 'en',
+          'x-language': locale || 'en'
+        }
+      }
     )
 
     // console.log('data companyes:', data)

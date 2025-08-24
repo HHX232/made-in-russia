@@ -443,9 +443,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
         text: t('help')
       },
       {
-        linkTo: '/favorites',
-        iconSrc: '/profile/gray_star_for_profile.svg',
-        text: t('favorites')
+        linkTo: '/create-card',
+        iconSrc: '/profile/create.svg',
+        text: t('create')
       },
       {
         linkTo: '#',
@@ -517,7 +517,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
               }}
               className={styles.profile__user__box}
             >
-              <ProfileHeader userData={!!vendorData ? vendorData : userData} />
+              <ProfileHeader isPageForVendor={isPageForVendor} userData={!!vendorData ? vendorData : userData} />
               <QuickActions
                 isForVendor={isPageForVendor}
                 onDevicesClick={handleDevicesClick}
@@ -575,9 +575,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                     onClick={() => handleHelpButtonClick(index)}
                   />
                 ) : isPageForVendor ? (
-                  <Link key={index} href={'/favorites'}>
+                  <Link key={index} href={'/create-card'}>
                     <HelpListButton
-                      extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''}`}
+                      extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''} ${styles.extra__create__button}`}
                       key={index}
                       {...item}
                     />
@@ -677,7 +677,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
               ) : (
                 <h3 className={styles.vendor__products__title}>{t('noMyProducts')}</h3>
               )}
-              <SearchInputUI vendorId={vendorData?.id.toString()} />
+              <SearchInputUI vendorId={vendorData?.id?.toString()} />
             </div>
             <div className={styles.products__list}>
               <Filters />

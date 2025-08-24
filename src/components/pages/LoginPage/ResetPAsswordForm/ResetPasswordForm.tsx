@@ -9,6 +9,7 @@ import InputOtp from '@/components/UI-kit/inputs/inputOTP/inputOTP'
 import {saveTokenStorage} from '@/middleware'
 import {useRouter} from 'next/navigation'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {useTranslations} from 'next-intl'
 
 interface ResetPasswordFormProps {
   onBack: () => void
@@ -21,11 +22,13 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
   const [error, setError] = useState('')
   const [step, setStep] = useState<'email' | 'verify'>('email')
   const router = useRouter()
+  const t = useTranslations('ResetPasswordPage')
+  const currentLang = useCurrentLanguage()
+
   const handleEmailChange = (value: SetStateAction<string>) => {
     setEmail(value)
     setError('')
   }
-  const currentLang = useCurrentLanguage()
 
   const handlePasswordChange = (value: SetStateAction<string>) => {
     setNewPassword(value)
@@ -41,17 +44,17 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
     e.preventDefault()
 
     if (!email) {
-      setError('Пожалуйста, введите email')
+      setError(t('emailRequired'))
       return
     }
 
     if (!isValidEmail(email)) {
-      setError('Пожалуйста, введите корректный email')
+      setError(t('emailInvalid'))
       return
     }
 
     if (newPassword.length < 6) {
-      setError('Пароль должен быть не менее 6 символов')
+      setError(t('passwordTooShort'))
       return
     }
 
@@ -59,7 +62,7 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
     setError('')
 
     try {
-      await axiosClassic.post(
+      axiosClassic.post(
         '/auth/recover-password',
         {
           email: email,
@@ -72,14 +75,14 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
         }
       )
 
-      toast.success('Код подтверждения отправлен на вашу почту')
+      toast.success(t('codeSentSuccess'))
       setStep('verify')
     } catch (error: any) {
       console.error('Reset password error:', error)
       toast.error(
         <div style={{lineHeight: 1.5}}>
-          <strong style={{display: 'block', marginBottom: 4}}>Ошибка восстановления</strong>
-          <span>{error.response?.data?.message || 'Пожалуйста, проверьте введенные данные'}</span>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('resetError')}</strong>
+          <span>{error.response?.data?.message || t('checkDataError')}</span>
         </div>,
         {
           style: {
@@ -87,7 +90,7 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
           }
         }
       )
-      setError(error.response?.data?.message || 'Ошибка восстановления пароля')
+      setError(error.response?.data?.message || t('resetPasswordError'))
     } finally {
       setIsLoading(false)
     }
@@ -116,8 +119,8 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
 
       toast.success(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Поздравляем!</strong>
-          <span>Пароль успешно изменен!</span>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('congratulations')}</strong>
+          <span>{t('passwordChangedSuccess')}</span>
         </div>,
         {
           style: {
@@ -133,8 +136,8 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
       console.error('Verify code error:', error)
       toast.error(
         <div style={{lineHeight: 1.5}}>
-          <strong style={{display: 'block', marginBottom: 4}}>Ошибка подтверждения</strong>
-          <span>{error.response?.data?.message || 'Неверный код подтверждения'}</span>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('confirmationError')}</strong>
+          <span>{error.response?.data?.message || t('invalidCode')}</span>
         </div>,
         {
           style: {
@@ -150,15 +153,17 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
   if (step === 'verify') {
     return (
       <div className={styles.reset__form__box}>
-        <h2 className={styles.reset__title}>Подтверждение</h2>
+        <h2 className={styles.reset__title}>{t('confirmationTitle')}</h2>
         <div className={styles.verify__container}>
-          <p className={styles.verify__text}>Мы отправили код подтверждения на вашу почту {email}</p>
-          <p className={styles.verify__subtitle}>Введите 4-значный код из письма</p>
+          <p className={styles.verify__text}>
+            {t('verificationText')} {email}
+          </p>
+          <p className={styles.verify__subtitle}>{t('verificationSubtitle')}</p>
           <div className={styles.otp__wrapper}>
             <InputOtp length={4} onComplete={handleVerifyCode} disabled={isLoading} />
           </div>
           <button onClick={onBack} className={styles.back__button} disabled={isLoading}>
-            Вернуться к входу
+            {t('backToLogin')}
           </button>
         </div>
       </div>
@@ -167,16 +172,16 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
 
   return (
     <div className={styles.reset__form__box}>
-      <h2 className={styles.reset__title}>Восстановление пароля</h2>
+      <h2 className={styles.reset__title}>{t('title')}</h2>
       <div className={styles.inputs__box}>
         <TextInputUI
           extraClass={`${styles.inputs__text_extra} ${error && !isValidEmail(email) && email.length > 0 && styles.extra__error__class}`}
           isSecret={false}
           onSetValue={handleEmailChange}
           currentValue={email}
-          placeholder='Введите вашу почту'
-          title={<p className={styles.input__title}>Email</p>}
-          errorValue={email.length > 0 && !isValidEmail(email) ? 'Введите корректный email' : ''}
+          placeholder={t('emailPlaceholder')}
+          title={<p className={styles.input__title}>{t('emailLabel')}</p>}
+          errorValue={email.length > 0 && !isValidEmail(email) ? t('emailCorrect') : ''}
         />
 
         <TextInputUI
@@ -184,21 +189,19 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
           isSecret={true}
           onSetValue={handlePasswordChange}
           currentValue={newPassword}
-          errorValue={
-            newPassword.length < 6 && newPassword.length !== 0 ? 'Пароль должен быть не менее 6 символов' : ''
-          }
-          placeholder='Введите новый пароль'
-          title={<p className={styles.input__title}>Новый пароль</p>}
+          errorValue={newPassword.length < 6 && newPassword.length !== 0 ? t('passwordMinLength') : ''}
+          placeholder={t('newPasswordPlaceholder')}
+          title={<p className={styles.input__title}>{t('newPasswordLabel')}</p>}
         />
 
         {error && <p className={styles.error__message}>{error}</p>}
 
         <button onClick={handleSubmitReset} className={styles.form__button} disabled={isLoading}>
-          {isLoading ? 'Отправка...' : 'Подтвердить'}
+          {isLoading ? t('sending') : t('confirmButton')}
         </button>
 
         <button onClick={onBack} className={styles.form__button_back}>
-          Вернуться к входу
+          {t('backToLogin')}
         </button>
       </div>
     </div>

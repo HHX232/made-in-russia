@@ -31,7 +31,7 @@ interface User {
   region: string
   registrationDate: string
   lastModificationDate: string
-  avatar: string
+  avatarUrl: string
 }
 
 interface IProfileProps {
@@ -131,9 +131,10 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
       }
     }
   }, [userData?.login])
+
   const imageSrc = useMemo(() => {
-    return userData?.avatar?.trim() ? userData.avatar : randomAvatar
-  }, [userData?.avatar, randomAvatar])
+    return userData?.avatarUrl?.trim() ? userData.avatarUrl : randomAvatar
+  }, [userData?.avatarUrl, randomAvatar])
 
   return (
     <div
@@ -151,7 +152,15 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
     >
       {userData?.login && (
         <>
-          <Image className={styles.image} src={imageSrc} alt='Profile' width={28} height={28} priority />
+          <Image
+            style={{borderRadius: '50%'}}
+            className={styles.image}
+            src={imageSrc}
+            alt='Profile'
+            width={28}
+            height={28}
+            priority
+          />
           <p className={styles.profile_text}>{userName || 'User'}</p>
         </>
       )}

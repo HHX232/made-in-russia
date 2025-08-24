@@ -1,37 +1,83 @@
 .profile_box {
-   display: flex;
-   gap: 10px;
-   flex-shrink: 0;
-   align-items: center;
-   margin-left: 10px;
-   background-color: #fff;
-   border-radius: 24px;
-   border: 1px solid #181818;
-   font-size: 14px;
-   padding: 4px 20px;
-   cursor: pointer;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  padding: 4px 20px;
+  border: 1px solid #181818;
+  border-radius: 24px;
+  margin-left: 10px;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  gap: 10px;
 
-   &:hover .profile_text {
-      color: #AC2525;
-   }
+  &:hover .profile_text {
+    color: #ac2525;
+  }
 }
 
 .image {
-   // width: 30px;
-   // aspect-ratio: 1/1;
+  // width: 30px;
+  // aspect-ratio: 1/1;
+}
+
+// Дополнительные стили для profileButtonUI.module.scss
+// Добавьте эти стили к существующим
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skeleton_avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  animation: loading 1.5s infinite;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+}
+
+.skeleton_text {
+  width: 60px;
+  height: 16px;
+  border-radius: 4px;
+  animation: loading 1.5s infinite;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Для темной темы
+[data-theme='dark'] {
+  .skeleton_avatar,
+  .skeleton_text {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+  }
 }
 
 .profile_text {
-   transition: all .15s;
-   font-size: 14px;
+  font-size: 14px;
+  transition: all 0.15s;
 }
 
-@media (max-width:620px) {
-   .profile_text {
-      display: none;
-   }
+@media (max-width: 620px) {
+  .profile_text {
+    display: none;
+  }
 
-   // .profile_box {
-   //    padding: 4px 10px;
-   // }
+  // .profile_box {
+  //    padding: 4px 10px;
+  // }
 }

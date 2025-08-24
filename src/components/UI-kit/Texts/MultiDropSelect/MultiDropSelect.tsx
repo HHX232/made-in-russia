@@ -135,7 +135,11 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
   // Проверка, выбран ли элемент
   const isSelected = (option: MultiSelectOption) => {
-    return selectedValues.some((selected) => selected?.value?.toLowerCase() === option?.value?.toLowerCase())
+    return selectedValues.some(
+      (selected) =>
+        selected?.value?.toLowerCase() === option?.value?.toLowerCase() ||
+        selected?.label?.toLowerCase() === option?.label?.toLowerCase()
+    )
   }
 
   // Обработчик выбора элемента

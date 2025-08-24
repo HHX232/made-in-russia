@@ -295,7 +295,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
     if (userData?.vendorDetails?.countries) {
       const countryOptions = userData?.vendorDetails?.countries.map((country) => ({
         id: country.id,
-        label: t(country.name.toLowerCase()) || country.name,
+        label: country.name,
         value: country.name,
         icon:
           country.name.toLowerCase() === 'belarus' ||
@@ -313,7 +313,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
                 : country.name.toLowerCase() === 'kazakhstan' ||
                     country.name.toLowerCase() === '哈萨克斯坦' ||
                     country.name.toLowerCase() === 'казахстан'
-                  ? russiaSvg
+                  ? kazakhstanSvg
                   : ''
       }))
       setSelectedCountries(countryOptions)

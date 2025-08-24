@@ -1,8 +1,8 @@
+import {getAbsoluteLanguage} from '@/api/api.helper'
 import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
 import {notFound} from 'next/navigation'
-import {getAbsoluteLanguage} from '@/api/api.helper'
 
 export default async function CategoryPageSpecial({params}: {params: Promise<{categoryName: string}>}) {
   const {categoryName} = await params
@@ -32,7 +32,6 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
     notFound()
   }
 
-  console.log('final comp', companyes)
   return (
     <CategoryPage
       companyes={companyes || []}

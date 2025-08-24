@@ -105,6 +105,7 @@ function formatDateLocalized(dateString: string, currentLang: TCurrentLang = 'ru
 
 interface ProfileHeaderProps {
   userData?: User
+  isPageForVendor?: boolean
 }
 
 interface QuickActionsProps {
@@ -175,10 +176,10 @@ export const useUserData = () => {
 }
 
 // Компонент заголовка профиля
-export const ProfileHeader: FC<ProfileHeaderProps> = ({userData}) => {
+export const ProfileHeader: FC<ProfileHeaderProps> = ({userData, isPageForVendor = true}) => {
   return (
     <div className={styles.profile__user__box__inner}>
-      <Avatar avatarUrl={userData?.avatarUrl} />
+      <Avatar isOnlyShow={!isPageForVendor} avatarUrl={userData?.avatarUrl} />
       <div className={styles.user__names__box}>
         <p className={styles.user__name}>{userData?.login} </p>
         <p className={styles.user__email}>{userData?.email}</p>

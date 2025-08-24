@@ -12,12 +12,17 @@ import useWindowWidth from '@/hooks/useWindoWidth'
 import {useKeenSlider} from 'keen-slider/react'
 
 const CATEGORYESCONST = [
-  {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: '/category/cat1.jpg'},
-  {title: 'Многолетние культуры', value: 'Perennial_crops', imageSrc: '/category/cat2.jpg'},
-  {title: 'Рассада', value: 'Seedlings', imageSrc: '/category/cat3.jpg'},
-  {title: 'Животноводство', value: 'Livestock_farming', imageSrc: '/category/cat4.jpg'},
-  {title: 'Смешанное сельское хозяйство', value: 'Mixed_farming', imageSrc: '/category/cat5.jpg'}
+  {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: ''},
+  {title: 'Многолетние культуры', value: 'Perennial_crops', imageSrc: ''},
+  {title: 'Рассада', value: 'Seedlings', imageSrc: ''},
+  {title: 'Животноводство', value: 'Livestock_farming', imageSrc: ''},
+  {title: 'Смешанное сельское хозяйство', value: 'Mixed_farming', imageSrc: ''}
 ]
+// /category/cat1.jpg
+// /category/cat2.jpg
+// /category/cat3.jpg
+// /category/cat4.jpg
+// /category/cat5.jpg
 
 const CategoryPage = ({
   categoryName,

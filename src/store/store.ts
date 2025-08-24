@@ -7,6 +7,7 @@ import {registrationSlice} from './registerUser/registerUser.slice'
 import latestViewsSlice from './LatestViews/LatestViews.slice'
 import multilingualDescriptionsSlice from './multilingualDescriptionsInCard/multilingualDescriptions.slice'
 import multiLanguageCardPriceDataSlice from './multilingualDescriptionsInCard/multiLanguageCardPriceData.slice'
+import userSlice from './User/user.slice'
 
 const rootReducer = combineReducers({
   filters: filtersSlice.reducer,
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   registration: registrationSlice.reducer,
   latestViews: latestViewsSlice.reducer,
   multilingualDescriptions: multilingualDescriptionsSlice.reducer,
-  multiLanguageCardPriceData: multiLanguageCardPriceDataSlice.reducer
+  multiLanguageCardPriceData: multiLanguageCardPriceDataSlice.reducer,
+  user: userSlice.reducer
 })
 
 export const store = configureStore({

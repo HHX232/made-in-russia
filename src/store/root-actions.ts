@@ -5,6 +5,7 @@ import latestViewsSlice from './LatestViews/LatestViews.slice'
 import multiLanguageCardPriceDataSlice from './multilingualDescriptionsInCard/multiLanguageCardPriceData.slice'
 import multilingualDescriptionsSlice from './multilingualDescriptionsInCard/multilingualDescriptions.slice'
 import {registrationSlice} from './registerUser/registerUser.slice'
+import userSlice from './User/user.slice'
 
 export const rootActions = {
   ...filtersSlice.actions,
@@ -13,5 +14,6 @@ export const rootActions = {
   ...registrationSlice.actions,
   ...latestViewsSlice.actions,
   ...multilingualDescriptionsSlice.actions,
-  ...multiLanguageCardPriceDataSlice.actions
+  ...multiLanguageCardPriceDataSlice.actions,
+  ...userSlice.actions
 }
