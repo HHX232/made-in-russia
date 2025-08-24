@@ -1,13 +1,12 @@
 'use client'
-import {CSSProperties, FC, useEffect, useState, useMemo} from 'react'
+import {CSSProperties, FC, useEffect, useState, useMemo, useCallback} from 'react'
 import styles from './profileButtonUI.module.scss'
 import Image from 'next/image'
-import {getAccessToken, getRefreshToken, removeFromStorage, saveTokenStorage} from '@/services/auth/auth.helper'
-import instance, {axiosClassic} from '@/api/api.interceptor'
 import {useRouter} from 'next/navigation'
 import {useTranslations} from 'next-intl'
-import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {useNProgress} from '@/hooks/useProgress'
+import {useTypedSelector} from '@/hooks/useTypedSelector' // ваш кастомный хук
+import {useUserQuery} from '@/hooks/useUserApi'
 
 const ava = '/avatars/avatar-v.svg'
 const ava1 = '/avatars/avatar-v-1.svg'
@@ -22,135 +21,84 @@ const ava9 = '/avatars/avatar-v-9.svg'
 const userLogin = '/man_login.svg'
 const avatarsArray = [ava, ava1, ava2, ava3, ava4, ava5, ava6, ava7, ava8, ava9]
 
-interface User {
-  id: number
-  role: string
-  email: string
-  login: string
-  phoneNumber: string
-  region: string
-  registrationDate: string
-  lastModificationDate: string
-  avatarUrl: string
-}
-
 interface IProfileProps {
   extraClass?: string
   extraStyles?: CSSProperties
 }
 
 const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
-  const [userData, setUserData] = useState<User>()
+  // Используем ваш кастомный selector hook
+  const {isAuthenticated, user} = useTypedSelector((state) => state.user)
+
+  // React Query hook для загрузки данных пользователя
+  const {isLoading, error, isError} = useUserQuery()
+
+  // Local state
   const [randomAvatar, setRandomAvatar] = useState<string>(ava)
-  const [userName, setUserName] = useState<null | string>(null)
+
+  // Hooks
   const router = useRouter()
   const t = useTranslations('HomePage')
-  const currentLang = useCurrentLanguage()
   const {start} = useNProgress()
+
+  // Инициализация случайного аватара
   useEffect(() => {
     setRandomAvatar(avatarsArray[0])
   }, [])
 
-  useEffect(() => {
-    const controller = new AbortController()
-    const getData = async () => {
-      const accessToken = getAccessToken()
-      const refreshToken = getRefreshToken()
+  // Мемоизированное имя пользователя с обрезкой
+  const userName = useMemo(() => {
+    if (!user?.login) return null
 
-      if (!refreshToken) {
-        console.log('Нет  рефреш токена')
-        return
-      }
-      if (!accessToken) {
-        console.log('Нет  рефреш токена')
-        return
-      }
-
-      try {
-        // console.log('accessToken', accessToken, 'refreshToken', refreshToken)
-        const response = await instance.get<User>('/me', {
-          headers: {
-            'Accept-Language': currentLang
-          }
-        })
-        setUserData(response.data)
-      } catch (error) {
-        console.error('Failed to fetch user data:', error)
-
-        if (!refreshToken) {
-          removeFromStorage()
-          return
-        }
-
-        try {
-          const {data: tokenData} = await axiosClassic.patch<{
-            accessToken: string
-          }>(
-            '/me/current-session/refresh',
-            {refreshToken},
-            {
-              headers: {
-                'Accept-Language': currentLang
-              }
-            }
-          )
-
-          // console.log('NEW tokenData', tokenData)
-          saveTokenStorage({
-            accessToken: tokenData.accessToken,
-            refreshToken: refreshToken
-          })
-
-          const response = await instance.get<User>('/me', {
-            headers: {
-              'Accept-Language': currentLang
-            }
-          })
-          setUserData(response.data)
-          // console.log('мы сохранили новые токены')
-        } catch (e) {
-          console.error('Failed to refresh token:', e)
-          // console.log('сейчас мы удалили токены')
-          removeFromStorage()
-        }
-      }
+    if (user.login.length > 13) {
+      return user.login.substring(0, 12) + '...'
     }
 
-    getData()
+    return user.login
+  }, [user?.login])
 
-    return () => controller.abort()
-  }, [])
-
-  useEffect(() => {
-    if (!!userData?.login) {
-      if (userData?.login?.length > 13) {
-        const truncatedLogin = userData.login.substring(0, 12) + '...'
-        setUserName(truncatedLogin)
-      } else if (userData?.login) {
-        setUserName(userData.login)
-      }
-    }
-  }, [userData?.login])
-
+  // Мемоизированный источник изображения
   const imageSrc = useMemo(() => {
-    return userData?.avatarUrl?.trim() ? userData.avatarUrl : randomAvatar
-  }, [userData?.avatarUrl, randomAvatar])
+    return user?.avatarUrl?.trim() ? user.avatarUrl : randomAvatar
+  }, [user?.avatarUrl, randomAvatar])
+
+  // Обработчик клика
+  const handleClick = useCallback(() => {
+    start()
+
+    if (!isAuthenticated || !user?.login) {
+      router.push('/login')
+    } else {
+      router.push('/profile')
+    }
+  }, [isAuthenticated, user?.login, router, start])
+
+  // Отображение состояния загрузки (опционально)
+  if (isLoading) {
+    return (
+      <div className={`${styles.profile_box} ${extraClass}`} style={extraStyles}>
+        <div className={styles.loading}>
+          <div className={styles.skeleton_avatar} />
+          <div className={styles.skeleton_text} />
+        </div>
+      </div>
+    )
+  }
+
+  // Отображение ошибки (опционально)
+  if (isError && error) {
+    console.error('User data loading error:', error)
+    // Можно показать fallback UI или залогировать ошибку
+  }
 
   return (
     <div
       id='cy-profile-button'
-      onClick={() => {
-        start()
-        if (!userData?.login) {
-          router.push('/login')
-        } else {
-          router.push('/profile')
-        }
-      }}
-      style={{...extraStyles}}
+      onClick={handleClick}
+      style={extraStyles}
       className={`${styles.profile_box} ${extraClass}`}
     >
-      {userData?.login && (
+      {isAuthenticated && user?.login ? (
         <>
           <Image
             style={{borderRadius: '50%'}}
@@ -163,8 +111,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
           />
           <p className={styles.profile_text}>{userName || 'User'}</p>
         </>
-      )}
-      {!userData?.login && (
+      ) : (
         <>
           <Image className={styles.image} src={userLogin} alt='Please login' width={28} height={28} />
           <p className={styles.profile_text}>{t('login')}</p>

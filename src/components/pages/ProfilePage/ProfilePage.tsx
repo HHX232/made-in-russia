@@ -3,7 +3,7 @@ import {FC, useCallback, useEffect, useState} from 'react'
 import styles from './ProfilePage.module.scss'
 import Header from '@/components/MainComponents/Header/Header'
 import instance from '@/api/api.interceptor'
-import {getAccessToken, removeFromStorage} from '@/services/auth/auth.helper'
+import {getAccessToken} from '@/services/auth/auth.helper'
 import Image from 'next/image'
 import Link from 'next/link'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
@@ -19,6 +19,7 @@ import {toast} from 'sonner'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
+import {useLogout} from '@/hooks/useUserApi'
 
 // Константы
 export const ASSETS_COUNTRIES = {
@@ -581,6 +582,11 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {productInFavorites} = useTypedSelector((state) => state.favorites)
   const router = useRouter()
+  const {mutate: logout, isPending: isLogoutPending} = useLogout()
+  const handleLogout = () => {
+    if (isLogoutPending) return // Предотвращаем повторные клики
+    logout()
+  }
 
   // User custom data
   const [userPhoneNumber, setUserPhoneNumber] = useState(firstUserData?.phoneNumber)
@@ -629,27 +635,6 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
     {imageSrc: ASSETS_COUNTRIES.chinaSvg, title: t('china'), altName: 'China'},
     {imageSrc: ASSETS_COUNTRIES.russiaSvg, title: t('russia'), altName: 'Russia'}
   ]
-
-  const currentLang = useCurrentLanguage()
-  const handleLogout = () => {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const response = instance.post(
-        '/auth/logout',
-        {},
-        {
-          headers: {
-            'Accept-Language': currentLang
-          }
-        }
-      )
-      // console.log(response)
-      removeFromStorage()
-      router.push('/')
-    } catch (e) {
-      console.log(e)
-    }
-  }
 
   if (error) {
     router.push('/login')

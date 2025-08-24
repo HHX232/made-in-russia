@@ -4,6 +4,7 @@ import instance, {axiosClassic} from '@/api/api.interceptor'
 import {getAccessToken, getRefreshToken, removeFromStorage, saveTokenStorage} from '@/services/auth/auth.helper'
 import {useActions} from '@/hooks/useActions'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {useRouter} from 'next/navigation'
 
 // Используем ваш интерфейс User
 interface User {
@@ -95,8 +96,8 @@ export const useUserQuery = () => {
       }
     },
     enabled: !!(getAccessToken() && getRefreshToken()), // Запрос выполняется только если есть токены
-    staleTime: 5 * 60 * 1000, // 5 минут
-    gcTime: 10 * 60 * 1000, // 10 минут (бывший cacheTime)
+    staleTime: 10 * 60 * 1000, // 5 минут
+    gcTime: 15 * 60 * 1000, // 10 минут (бывший cacheTime)
     retry: false, // Не повторяем автоматически, так как у нас есть логика обновления токенов
     refetchOnWindowFocus: false
   })
@@ -106,16 +107,41 @@ export const useUserQuery = () => {
 export const useLogout = () => {
   const queryClient = useQueryClient()
   const {clearUser} = useActions()
+  const router = useRouter()
 
   return useMutation({
     mutationFn: async () => {
-      // Здесь можно добавить API вызов для логаута на сервере
-      removeFromStorage()
+      try {
+        // Отправляем запрос на сервер для логаута
+        await instance.post('/auth/logout', {})
+      } catch (error) {
+        // Даже если запрос на сервер не удался, продолжаем локальный логаут
+        console.error('Server logout failed:', error)
+      } finally {
+        // Всегда очищаем локальные данные
+        removeFromStorage()
+      }
     },
     onSuccess: () => {
+      // Очищаем состояние пользователя
       clearUser()
+
+      // Очищаем кэш React Query
       queryClient.removeQueries({queryKey: USER_QUERY_KEY})
-      queryClient.clear() // Очищаем весь кэш при логауте
+      queryClient.clear()
+
+      // Редирект на главную страницу
+      router.push('/')
+    },
+    onError: (error) => {
+      console.error('Logout error:', error)
+
+      // Даже при ошибке очищаем локальные данные
+      clearUser()
+      removeFromStorage()
+      queryClient.removeQueries({queryKey: USER_QUERY_KEY})
+      queryClient.clear()
+      router.push('/')
     }
   })
 }

@@ -1,5 +1,4 @@
 'use client'
-
 import {useLocale} from 'next-intl'
 
 const translations = {
@@ -7,6 +6,7 @@ const translations = {
     title: 'Произошла ошибка!',
     description: 'К сожалению, что-то пошло не так. Мы уже работаем над решением этой проблемы.',
     button: 'Попробовать снова',
+    back: 'Вернуться назад',
     technical: 'Техническая информация',
     contact: 'Если проблема повторяется, свяжитесь с нами:',
     phone: 'Телефон:',
@@ -16,6 +16,7 @@ const translations = {
     title: 'Something went wrong!',
     description: 'Unfortunately, an error occurred. We are already working on fixing this issue.',
     button: 'Try again',
+    back: 'Go back',
     technical: 'Technical information',
     contact: 'If the problem persists, contact us:',
     phone: 'Phone:',
@@ -25,6 +26,7 @@ const translations = {
     title: '出现错误！',
     description: '很抱歉，出现了问题。我们正在努力解决这个问题。',
     button: '重试',
+    back: '返回',
     technical: '技术信息',
     contact: '如果问题持续存在，请联系我们：',
     phone: '电话：',
@@ -47,6 +49,12 @@ export default function ErrorPage({error, reset}: {error: Error; reset: () => vo
       }
     } catch (err) {
       console.error('Reset failed:', err)
+    }
+  }
+
+  const handleGoBack = () => {
+    if (typeof window !== 'undefined') {
+      window.history.back()
     }
   }
 
@@ -135,7 +143,16 @@ export default function ErrorPage({error, reset}: {error: Error; reset: () => vo
           margin-bottom: 40px;
         }
 
-        .retry-button {
+        .button-group {
+          display: flex;
+          gap: 15px;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin-bottom: 30px;
+        }
+
+        .retry-button,
+        .back-button {
           background: linear-gradient(135deg, #17469d, #ac2525);
           color: white;
           border: none;
@@ -146,15 +163,16 @@ export default function ErrorPage({error, reset}: {error: Error; reset: () => vo
           cursor: pointer;
           transition: all 0.3s ease;
           box-shadow: 0 8px 25px rgba(23, 70, 157, 0.3);
-          margin-bottom: 30px;
         }
 
-        .retry-button:hover {
+        .retry-button:hover,
+        .back-button:hover {
           transform: translateY(-2px);
           box-shadow: 0 12px 35px rgba(23, 70, 157, 0.4);
         }
 
-        .retry-button:active {
+        .retry-button:active,
+        .back-button:active {
           transform: translateY(0);
         }
 
@@ -230,7 +248,12 @@ export default function ErrorPage({error, reset}: {error: Error; reset: () => vo
             font-size: 1.8em;
           }
 
-          .retry-button {
+          .button-group {
+            flex-direction: column;
+          }
+
+          .retry-button,
+          .back-button {
             width: 100%;
           }
         }
@@ -251,9 +274,14 @@ export default function ErrorPage({error, reset}: {error: Error; reset: () => vo
           <h1 className='error-title'>{t.title}</h1>
           <p className='error-description'>{t.description}</p>
 
-          <button className='retry-button' onClick={handleReset}>
-            {t.button}
-          </button>
+          <div className='button-group'>
+            <button className='retry-button' onClick={handleReset}>
+              {t.button}
+            </button>
+            <button className='back-button' onClick={handleGoBack}>
+              {t.back}
+            </button>
+          </div>
 
           <div className='contact-info'>
             <div className='contact-text'>{t.contact}</div>
