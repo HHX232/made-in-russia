@@ -1,5 +1,5 @@
 'use client'
-import {CSSProperties, FC, ReactNode, useEffect, useId, useState} from 'react'
+import {CSSProperties, FC, ReactNode, useEffect, useId, useRef, useState} from 'react'
 import styles from './TextAreaUI.module.scss'
 import Image, {StaticImageData} from 'next/image'
 import cn from 'clsx'
@@ -40,6 +40,9 @@ interface ITextAreaProps {
   maxLength?: number
   minLength?: number
   resize?: 'none' | 'both' | 'horizontal' | 'vertical'
+  autoResize?: boolean // Новый пропс для автоподстройки высоты
+  maxRows?: number // Максимальное количество строк при автоподстройке
+  minRows?: number // Минимальное количество строк при автоподстройке
 }
 
 const TextAreaUI: FC<ITextAreaProps> = ({
@@ -71,16 +74,54 @@ const TextAreaUI: FC<ITextAreaProps> = ({
   cols,
   maxLength,
   minLength,
-  resize = 'none'
+  resize = 'none',
+  autoResize = false,
+  maxRows,
+  minRows = 1
 }) => {
   const [textIsShow, setTextIsShow] = useState(false)
   const [displayValue, setDisplayValue] = useState(isSecret ? currentValue.replace(/./g, '*') : currentValue)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const id = useId()
+
+  // Функция для автоподстройки высоты
+  const adjustHeight = () => {
+    if (!autoResize || !textareaRef.current) return
+
+    const textarea = textareaRef.current
+    const computedStyle = window.getComputedStyle(textarea)
+    const lineHeight = parseFloat(computedStyle.lineHeight) || 20
+    const paddingTop = parseFloat(computedStyle.paddingTop) || 0
+    const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0
+
+    // Сбрасываем высоту для правильного вычисления scrollHeight
+    textarea.style.height = 'auto'
+
+    const scrollHeight = textarea.scrollHeight
+    const minHeight = minRows * lineHeight + paddingTop + paddingBottom
+    const maxHeight = maxRows ? maxRows * lineHeight + paddingTop + paddingBottom : Infinity
+
+    // Вычисляем новую высоту с учетом ограничений
+    const newHeight = Math.max(minHeight, Math.min(scrollHeight, maxHeight))
+
+    textarea.style.height = `${newHeight}px`
+  }
 
   // Обновляем displayValue при изменении currentValue извне
   useEffect(() => {
     setDisplayValue(isSecret && !textIsShow ? currentValue.replace(/./g, '*') : currentValue)
-  }, [currentValue, isSecret, textIsShow])
+    // Подстраиваем высоту при изменении значения
+    if (autoResize) {
+      setTimeout(adjustHeight, 0)
+    }
+  }, [currentValue, isSecret, textIsShow, autoResize])
+
+  // Подстраиваем высоту при первом рендере
+  useEffect(() => {
+    if (autoResize) {
+      adjustHeight()
+    }
+  }, [autoResize])
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value
@@ -98,10 +139,19 @@ const TextAreaUI: FC<ITextAreaProps> = ({
       // Для обычного ввода просто обновляем значение
       onSetValue(value)
     }
+
+    // Подстраиваем высоту после изменения значения
+    if (autoResize) {
+      setTimeout(adjustHeight, 0)
+    }
   }
 
   const toggleTextVisibility = () => {
     setTextIsShow(!textIsShow)
+    // Подстраиваем высоту при смене видимости текста
+    if (autoResize) {
+      setTimeout(adjustHeight, 0)
+    }
   }
 
   return (
@@ -125,6 +175,7 @@ const TextAreaUI: FC<ITextAreaProps> = ({
       </div>
       <div className={`${styles.textarea__inner__box} ${errorValue && styles.error__textarea__inner__box}`}>
         <textarea
+          ref={textareaRef}
           placeholder={placeholder}
           value={isSecret ? (textIsShow ? currentValue : displayValue) : currentValue}
           onChange={handleChange}
@@ -138,14 +189,17 @@ const TextAreaUI: FC<ITextAreaProps> = ({
           disabled={disabled}
           readOnly={readOnly}
           autoFocus={autoFocus}
-          rows={rows}
+          rows={autoResize ? minRows : rows}
           cols={cols}
           maxLength={maxLength}
           minLength={minLength}
           className={cn(styles.textarea, {
             [styles.error__textarea]: errorValue
           })}
-          style={{resize}}
+          style={{
+            resize: autoResize ? 'none' : resize,
+            overflow: autoResize && maxRows ? 'auto' : 'hidden'
+          }}
           id={idForLabel ? idForLabel : id}
         />
         {isSecret &&

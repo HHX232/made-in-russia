@@ -188,6 +188,18 @@
 }
 },
 "VendorPage": { 
+  "invalidPhone": "Phone number must be at least 7 characters long",
+  "invalidEmail": "Email must contain @ and .",
+  "descriptionPlaceholder":"Company description",
+
+  "additionalContacts": "Additional contacts",
+  "phones": "Phones",
+  "phoneInputTitle": "Enter phone number",
+  "emails": "Emails",
+  "emailInputTitle": "Enter email",
+  "sites": "Websites",
+  "siteInputTitle": "Enter website",
+  "save": "Save",
   "create": "Create product",
   "belarus": "Belarus",
   "kazakhstan": "Kazakhstan", 
@@ -566,6 +578,15 @@
       "invalidCode": "Invalid verification code",
       "verificationText": "We sent a verification code to your email",
       "verificationSubtitle": "Enter the 4-digit code from the email"
+    },
+    "VendorPageClient": {
+      "errorLoadingData": "Error loading data",
+      "errorLoadingDataDescription": "An error occurred while loading the vendor page:",
+      "tryAgain": "Try Again",
+      "userNotFound": "User not found",
+      "pleaseLogin": "Please log in",
+      "accessDenied": "Access Denied",
+      "accessDeniedDescription": "Your role is not sufficient to view this page. Your role:"
     }
 }
 

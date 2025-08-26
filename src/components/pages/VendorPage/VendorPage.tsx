@@ -29,6 +29,11 @@ import Link from 'next/link'
 import {useTranslations} from 'next-intl'
 import {toast} from 'sonner'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {VendorAdditionalContacts} from './VendorAdditionalContacts/VendorAdditionalContacts'
+import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useActions} from '@/hooks/useActions'
+import {useUpdateVendorDetails} from '@/api/useVendorApi'
 
 const Arrow = ({isActive, onClick, extraClass}: {isActive: boolean; onClick: () => void; extraClass?: string}) => {
   return (
@@ -117,6 +122,11 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const [isCommentsOpen, setIsCommentsOpen] = useState(true)
   const windowWidth = useWindowWidth()
   const [isQuestOpen, setIsQuestOpen] = useState(false)
+
+  const {user} = useTypedSelector((state) => state.user)
+  const {updateVendorDetails} = useActions()
+  const {mutate: updateVendorDetailsAPI} = useUpdateVendorDetails()
+  const canUpdateVendorDescr = useRef(false)
 
   const t = useTranslations('VendorPage')
   interface RegionType {
@@ -511,9 +521,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
           <span style={{width: '100%', height: '100%', position: 'relative'}}>
             <div
               style={{
-                position: !isPageForVendor ? 'sticky' : 'static',
+                position: !isPageForVendor ? 'static' : 'static',
                 top: !isPageForVendor ? '10px' : '0',
-                maxHeight: !isPageForVendor ? 'fit-content' : '100%'
+                maxHeight: !isPageForVendor ? 'fit-content' : 'fit-content'
               }}
               className={styles.profile__user__box}
             >
@@ -546,6 +556,48 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 />
               )}
             </div>
+            <span className={styles.additional__span__box}>
+              {' '}
+              <VendorAdditionalContacts isOnlyShow={!isPageForVendor} />
+            </span>
+            <span className={`${styles.second__descr__box}`}>
+              {/* TODO здесь размещаем описание компании */}
+              <TextAreaUI
+                autoResize
+                maxRows={25}
+                minRows={5}
+                readOnly={!isPageForVendor}
+                currentValue={user?.vendorDetails?.description || ''}
+                onSetValue={(val) => {
+                  updateVendorDetails({...user?.vendorDetails, description: val})
+                  canUpdateVendorDescr.current = true
+                }}
+                theme='superWhite'
+                placeholder={t('descriptionPlaceholder')}
+              />
+              {canUpdateVendorDescr.current && (
+                <button
+                  className={`${styles.vendor__save__descr__button}`}
+                  onClick={() => {
+                    console.log('user?.vendorDetails', user?.vendorDetails)
+                    updateVendorDetailsAPI({
+                      categories: user?.vendorDetails?.productCategories?.map((cat) => cat.name) || [],
+                      countries: user?.vendorDetails?.countries?.map((country) => country) || [],
+                      description: user?.vendorDetails?.description,
+                      inn: user?.vendorDetails?.inn,
+                      phoneNumber: user?.phoneNumber,
+                      region: user?.region,
+                      phoneNumbers: user?.vendorDetails?.phoneNumbers,
+                      emails: user?.vendorDetails?.emails,
+                      sites: user?.vendorDetails?.sites
+                    })
+                    canUpdateVendorDescr.current = false
+                  }}
+                >
+                  {t('save')}
+                </button>
+              )}
+            </span>
           </span>
 
           <div className={styles.vendor__info__second}>
@@ -587,7 +639,44 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 )
               )}
             </div>
-
+            <span className={`${styles.first__descr__box}`}>
+              {/* TODO здесь размещаем описание компании */}
+              <TextAreaUI
+                autoResize
+                minRows={5}
+                maxRows={25}
+                readOnly={!isPageForVendor}
+                currentValue={user?.vendorDetails?.description || ''}
+                onSetValue={(val) => {
+                  updateVendorDetails({...user?.vendorDetails, description: val})
+                  canUpdateVendorDescr.current = true
+                }}
+                theme='superWhite'
+                placeholder={t('descriptionPlaceholder')}
+              />
+              {canUpdateVendorDescr.current && (
+                <button
+                  className={`${styles.vendor__save__descr__button}`}
+                  onClick={() => {
+                    console.log('user?.vendorDetails', user?.vendorDetails)
+                    updateVendorDetailsAPI({
+                      categories: user?.vendorDetails?.productCategories?.map((cat) => cat.name) || [],
+                      countries: user?.vendorDetails?.countries?.map((country) => country) || [],
+                      description: user?.vendorDetails?.description,
+                      inn: user?.vendorDetails?.inn,
+                      phoneNumber: user?.phoneNumber,
+                      region: user?.region,
+                      phoneNumbers: user?.vendorDetails?.phoneNumbers,
+                      emails: user?.vendorDetails?.emails,
+                      sites: user?.vendorDetails?.sites
+                    })
+                    canUpdateVendorDescr.current = false
+                  }}
+                >
+                  {t('save')}
+                </button>
+              )}
+            </span>
             <div className={`${styles.vendor__mini__blocks__box}`}>
               <div className={styles.vendor__stats}>
                 <div className={styles.vendor__stat}>
@@ -621,7 +710,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
             <div
               style={{
                 height: !isCommentsOpen ? 'fit-content' : '100%',
-                maxHeight: reviews.length === 0 ? 'none' : isPageForVendor ? '644px' : '590px'
+                maxHeight: reviews.length === 0 ? 'none' : isPageForVendor ? '644px' : '590px',
+                position: 'sticky',
+                top: '10px'
               }}
               className={`${styles.list__box}`}
             >

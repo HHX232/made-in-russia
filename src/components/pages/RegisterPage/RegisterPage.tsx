@@ -75,8 +75,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const [selectedCategories, setSelectedCategories] = useState<MultiSelectOption[]>([])
 
   // Redux hooks
-  const {name: nameStore, password: passwordStores, number, region} = useTypedSelector((state) => state.registration)
-  const {setRegion, setPassword, setNumber, setName, setEmail} = useActions()
+  const {setRegion, setPassword, setNumber, setName} = useActions()
 
   // Effects
   useEffect(() => {

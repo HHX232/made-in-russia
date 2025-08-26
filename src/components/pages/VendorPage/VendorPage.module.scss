@@ -79,6 +79,39 @@
   line-height: 38px;
 }
 
+.vendor__save__descr__button {
+  max-width: fit-content;
+  padding: 15px 35px;
+  border-radius: 10px;
+  margin: 0 auto;
+  background-color: #4e5479;
+  color: #fff;
+}
+
+.save__animation {
+  /* Исходное состояние — полностью прозрачна */
+  animation: fadeIn 1s ease-in-out forwards;
+  opacity: 0;
+
+  /* Применяем анимацию */
+}
+
+/* Описание самой анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.vendor__second__help__item__only__vendor__box {
+  display: flex;
+  flex-direction: column;
+}
+
 .vendor__stat__value__second {
   display: flex;
   width: 100%;
@@ -235,7 +268,46 @@
   text-align: center;
 }
 
+.second__descr__box {
+  display: none;
+}
+
+.first__descr__box {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin-top: 20px;
+
+  // justify-content: center;
+  // align-items: center;
+  gap: 25px;
+}
+
+.additional__span__box {
+  position: sticky;
+  top: 10px;
+}
+
 @media (max-width: 1010px) {
+  .additional__span__box {
+    position: static;
+  }
+
+  .second__descr__box {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 20px;
+
+    // align-items: center;
+    gap: 25px;
+  }
+
+  .first__descr__box {
+    display: none !important;
+  }
+
   .vendor__mini__blocks__box {
     display: flex;
     flex-direction: column;

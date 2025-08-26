@@ -1,65 +1,33 @@
-import VendorPageComponent, {IVendorData} from '@/components/pages/VendorPage/VendorPage'
-import instance from '@/api/api.interceptor'
-import {cookies} from 'next/headers'
-import {getAbsoluteLanguage} from '@/api/api.helper'
+// app/vendor/page.tsx
+import VendorPageClient from '@/components/pages/VendorPage/VendorPageClient/VendorPageClient'
+import {getQueryClient} from '@/lib/get-query-client'
+import {fetchUserDataOnServer} from '@/lib/server/userDataFetcher'
+import {HydrationBoundary, dehydrate} from '@tanstack/react-query'
 
 export default async function VendorPage() {
-  let vendorData
-  let numberCode
-  // Правильный способ получения cookies в серверном компоненте
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get('accessToken')?.value || ''
-  const locale = await getAbsoluteLanguage()
-  try {
-    console.log('accessToken:', accessToken)
-    vendorData = await instance.get<IVendorData>('/me', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
-        'Accept-Language': locale,
-        'x-language': locale
-      }
-    })
-    // console.log('vendorData:', vendorData?.data)
-  } catch (e) {
-    console.log('Error fetching vendor data:', e)
+  // Получаем данные пользователя на сервере
+  const {user, phoneNumberCode, error} = await fetchUserDataOnServer()
+
+  // Создаем клиент для предзаполнения кэша
+  const queryClient = getQueryClient()
+
+  // Если есть данные пользователя, предзаполняем кэш
+  if (user) {
+    queryClient.setQueryData(['user'], user)
   }
 
-  const trimPhonePrefix = (phoneNumber: string | undefined): string | undefined => {
-    if (!phoneNumber) return phoneNumber
-
-    const prefixesToTrim = ['+375', '+7', '+86', '+']
-
-    for (const prefix of prefixesToTrim) {
-      if (phoneNumber.startsWith(prefix)) {
-        numberCode = prefix
-        return phoneNumber.substring(prefix.length)
-      }
-    }
-
-    return phoneNumber
+  // Если ошибка или нет данных, можно вернуть страницу с ошибкой или редирект
+  if (error && !user) {
+    // Можно редиректить на страницу логина или показать ошибку
+    console.error('Failed to fetch user data:', error)
   }
 
-  console.log('Full vendor Data', vendorData)
-  const newVendorData: IVendorData = {
-    ...vendorData?.data,
-    phoneNumber: trimPhonePrefix(vendorData?.data.phoneNumber) || '',
-    id: vendorData?.data.id || 0,
-    role: vendorData?.data.role || '',
-    email: vendorData?.data.email || '',
-    login: vendorData?.data.login || '',
-    region: vendorData?.data.region || '',
-    registrationDate: vendorData?.data.registrationDate || '',
-    lastModificationDate: vendorData?.data.lastModificationDate || ''
-  }
-  // console.log('newVendorData', newVendorData)
-  // console.log('newVendorData:', newVendorData, 'vendorDetails', newVendorData.vendorDetails)
-  console.log(
-    'vendorData new',
-    newVendorData,
-    'newVendorData.vendorDetails.countries',
-    newVendorData?.vendorDetails?.countries
+  // Дегидрируем состояние для передачи на клиент
+  const dehydratedState = dehydrate(queryClient)
+
+  return (
+    <HydrationBoundary state={dehydratedState}>
+      <VendorPageClient serverUser={user} phoneNumberCode={phoneNumberCode} serverError={error} />
+    </HydrationBoundary>
   )
-
-  return <VendorPageComponent isPageForVendor={true} vendorData={newVendorData} numberCode={numberCode} />
 }

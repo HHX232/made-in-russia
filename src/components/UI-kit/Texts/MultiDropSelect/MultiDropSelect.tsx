@@ -45,6 +45,18 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
 
+  // useEffect(() => {
+  //   console.log('!=============!')
+  //   console.log('CURRENT options', options)
+  //   console.log('CURRENT selectedValues', selectedValues)
+  //   console.log('!=============!')
+  // }, [options, selectedValues])
+
+  // Функция для создания уникального ключа сравнения
+  const getComparisonKey = (option: MultiSelectOption): string => {
+    return `${option.value?.toLowerCase()}_${option.label?.toLowerCase()}`
+  }
+
   // Функция для поиска категории и получения пути к ней
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const findCategoryPath = (
@@ -133,32 +145,47 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
     }
   }, [searchQuery, isCategories, options])
 
-  // Проверка, выбран ли элемент
+  // Проверка, выбран ли элемент (исправленная версия)
   const isSelected = (option: MultiSelectOption) => {
-    return selectedValues.some(
-      (selected) =>
-        selected?.value?.toLowerCase() === option?.value?.toLowerCase() ||
-        selected?.label?.toLowerCase() === option?.label?.toLowerCase()
-    )
+    const optionKey = getComparisonKey(option)
+    return selectedValues.some((selected) => {
+      const selectedKey = getComparisonKey(selected)
+      return selectedKey === optionKey
+    })
   }
 
-  // Обработчик выбора элемента
+  // Обработчик выбора элемента (исправленная версия)
   const handleSelectOption = (option: MultiSelectOption) => {
     if (isOnlyShow) return
 
-    const newSelected = isSelected(option)
-      ? selectedValues.filter((item) => item.id !== option.id)
+    const optionKey = getComparisonKey(option)
+    const isCurrentlySelected = selectedValues.some((selected) => {
+      const selectedKey = getComparisonKey(selected)
+      return selectedKey === optionKey
+    })
+
+    const newSelected = isCurrentlySelected
+      ? selectedValues.filter((item) => {
+          const itemKey = getComparisonKey(item)
+          return itemKey !== optionKey
+        })
       : [...selectedValues, option]
 
+    console.log('newSelected', newSelected)
     onChange(newSelected)
   }
 
-  // Обработчик удаления выбранного элемента
-  const handleRemoveOption = (optionId: string | number, e: React.MouseEvent) => {
+  // Обработчик удаления выбранного элемента (исправленная версия)
+  const handleRemoveOption = (optionToRemove: MultiSelectOption, e: React.MouseEvent) => {
     if (isOnlyShow) return
-
     e.stopPropagation()
-    const newSelected = selectedValues.filter((item) => item.id !== optionId)
+
+    const removeKey = getComparisonKey(optionToRemove)
+    const newSelected = selectedValues.filter((item) => {
+      const itemKey = getComparisonKey(item)
+      return itemKey !== removeKey
+    })
+
     onChange(newSelected)
   }
 
@@ -272,8 +299,8 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
         <span className={styles.placeholder}>{placeholder}</span>
       ) : (
         <div className={styles.selectedItems}>
-          {selectedValues.map((item) => (
-            <span key={item.id} className={styles.selectedItem}>
+          {selectedValues.map((item, index) => (
+            <span key={`${getComparisonKey(item)}-${index}`} className={styles.selectedItem}>
               {(item.icon || item.imageUrl) && (
                 <img src={item.imageUrl || item.icon} alt='' className={styles.itemIcon} />
               )}
@@ -281,7 +308,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
               {!isOnlyShow && (
                 <button
                   className={styles.removeButton}
-                  onClick={(e) => handleRemoveOption(item.id, e)}
+                  onClick={(e) => handleRemoveOption(item, e)}
                   type='button'
                   aria-label={`Удалить ${item.label}`}
                 >
@@ -343,10 +370,13 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
       ? renderCategories(options)
       : options
           .filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
-          .map((option) => {
+          .map((option, index) => {
             const selected = isSelected(option)
             return (
-              <div key={option.id} className={`${styles.optionItem} ${selected ? styles.optionSelected : ''}`}>
+              <div
+                key={`${getComparisonKey(option)}-${index}`}
+                className={`${styles.optionItem} ${selected ? styles.optionSelected : ''}`}
+              >
                 <div
                   className={styles.optionContent}
                   onClick={(e) => {
@@ -371,8 +401,8 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
                   <div className={styles.radioWrapper}>
                     <RadioButton
                       label=''
-                      name={`multiselect-option-${option.id}`}
-                      value={`option-${option.id}`}
+                      name={`multiselect-option-${option.id}-${index}`}
+                      value={`option-${option.id}-${index}`}
                       checked={selected}
                       onChange={() => handleSelectOption(option)}
                       allowUnchecked={true}

@@ -495,11 +495,15 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
         </li>
       </ul>
       <div className={styles.buttons__box__save__logout}>
-        <button onClick={() => setWantQuite(true)} className={styles.logout__button}>
+        <button
+          onClick={() => setWantQuite(true)}
+          // ${needToSave && !isLoading && styles.logout__button__left}
+          className={`${styles.logout__button} `}
+        >
           {t('logout')}
         </button>
         {needToSave && !isLoading && (
-          <button className={styles.save__button} onClick={onSave}>
+          <button className={`${styles.save__button} ${styles.save__animation} `} onClick={onSave}>
             {t('save')}
           </button>
         )}

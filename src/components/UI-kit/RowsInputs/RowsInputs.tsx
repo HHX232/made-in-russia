@@ -193,7 +193,7 @@ const SortableRow = ({
         key={inputIndex}
         idForLabel={inputId}
         theme='lightBlue'
-        placeholder={titles[inputIndex] || 'Введите значение'}
+        placeholder={titles[inputIndex] || 'Write value...'}
         currentValue={value}
         onSetValue={(newValue) => onUpdateValue(rowIndex, inputIndex, newValue)}
         errorValue={hasError && !value ? ' ' : ''}

@@ -197,6 +197,17 @@
 }
 },
 "VendorPage": {
+  "invalidPhone": "电话号码必须至少有7个字符",
+  "invalidEmail": "电子邮件必须包含 @ 和 .",
+  "descriptionPlaceholder":"公司描述",
+  "additionalContacts": "附加联系方式",
+  "phones": "电话",
+  "phoneInputTitle": "输入电话号码",
+  "emails": "电子邮件",
+  "emailInputTitle": "输入邮箱",
+  "sites": "网站",
+  "siteInputTitle": "输入网站",
+  "save": "保存",
   "create": "创建产品",
   "belarus": "白俄罗斯",
   "kazakhstan": "哈萨克斯坦",
@@ -580,6 +591,15 @@
     "invalidCode": "验证码错误",
     "verificationText": "我们已向您的邮箱发送验证码",
     "verificationSubtitle": "请输入邮件中的4位数字验证码"
+  },
+  "VendorPageClient": {
+    "errorLoadingData": "加载数据错误",
+    "errorLoadingDataDescription": "加载供应商页面时发生错误：",
+    "tryAgain": "重试",
+    "userNotFound": "用户未找到",
+    "pleaseLogin": "请登录",
+    "accessDenied": "访问被拒绝",
+    "accessDeniedDescription": "您的角色权限不足以查看此页面。您的角色："
   }
 
 

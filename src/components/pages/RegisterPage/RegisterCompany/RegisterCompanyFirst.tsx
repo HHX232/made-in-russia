@@ -46,10 +46,10 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
   const t = useTranslations('RegisterUserPage')
   // Опции стран для мультивыбора
   const countryOptions: MultiSelectOption[] = [
-    {id: 'belarus', label: 'Беларусь', value: 'Belarus', icon: belarusSvg},
-    {id: 'kazakhstan', label: 'Казахстан', value: 'Kazakhstan', icon: kazakhstanSvg},
-    {id: 'china', label: 'Китай', value: 'China', icon: chinaSvg},
-    {id: 'russia', label: 'Россия', value: 'Russia', icon: russiaSvg}
+    {id: 'belarus', label: t('Belarus'), value: 'Belarus', icon: belarusSvg},
+    {id: 'kazakhstan', label: t('Kazakhstan'), value: 'Kazakhstan', icon: kazakhstanSvg},
+    {id: 'china', label: t('China'), value: 'China', icon: chinaSvg},
+    {id: 'russia', label: t('Russia'), value: 'Russia', icon: russiaSvg}
   ]
 
   const validateInn = (value: string) => {

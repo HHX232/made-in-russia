@@ -202,6 +202,17 @@
   }
   },
   "VendorPage":{ 
+    "descriptionPlaceholder":"Описание компании",
+    "invalidEmail": "Электронная почта должна содержать символы @ и .",
+    "invalidPhone": "Номер телефона должен содержать не менее 7 символов",
+    "additionalContacts": "Дополнительные контакты",
+    "phones": "Телефоны",
+    "phoneInputTitle": "Введите телефон",
+    "emails": "Электронные почты",
+    "emailInputTitle": "Введите email",
+    "sites": "Сайты",
+    "siteInputTitle": "Введите сайт",
+    "save": "Сохранить",
     "create":"Создать товар",
    "belarus":"Беларусь",
    "kazakhstan":"Казахстан",
@@ -578,5 +589,14 @@
       "invalidCode": "Неверный код подтверждения",
       "verificationText": "Мы отправили код подтверждения на вашу почту",
       "verificationSubtitle": "Введите 4-значный код из письма"
-    }
+    },
+    "VendorPageClient": {
+    "errorLoadingData": "Ошибка загрузки данных",
+    "errorLoadingDataDescription": "Произошла ошибка при загрузке страницы продавца:",
+    "tryAgain": "Попробовать снова",
+    "userNotFound": "Пользователь не найден",
+    "pleaseLogin": "Пожалуйста, войдите в систему",
+    "accessDenied": "Доступ запрещен",
+    "accessDeniedDescription": "Вашей роли недостаточно для просмотра этой страницы. Ваша роль:"
+  }
 }

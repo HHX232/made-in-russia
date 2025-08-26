@@ -2,7 +2,7 @@
 import {FC, useEffect} from 'react'
 import styles from './CardMiddlePage.module.scss'
 import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
-import Image from 'next/image'
+// import Image from 'next/image'
 import Skeleton from 'react-loading-skeleton'
 import ICardFull from '@/services/card/card.types'
 import {useTranslations} from 'next-intl'
@@ -62,7 +62,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
           )}
           {!isLoading ? <ShowMarkdown markValue={cardData.furtherDescription} /> : <></>}
         </div>
-        <div className={`${styles.spec__description__box}`}>
+        {/* <div className={`${styles.spec__description__box}`}>
           {!isLoading ? (
             <h3 className={`${styles.spec__description__title}`}>{t('companyDescription')}</h3>
           ) : (
@@ -115,7 +115,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
           ) : (
             <Skeleton height={20} count={5} />
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   )

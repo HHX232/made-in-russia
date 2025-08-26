@@ -17,6 +17,9 @@ import {IVendorData} from '../../VendorPage/VendorPage'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {useActions} from '@/hooks/useActions'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {shallowEqual} from 'react-redux'
 
 const belarusSvg = '/countries/belarus.svg'
 const kazakhstanSvg = '/countries/kazakhstan.svg'
@@ -152,6 +155,9 @@ const ProfileForm: FC<ProfileFormProps> = ({
   const [error, setError] = useState<string | null>(null)
   const currentLang = useCurrentLanguage()
   const t = useTranslations('ProfilePage.ProfileForm')
+  const {updateVendorDetails: updateVendorDetailsAction} = useActions()
+
+  const vendorDetails = useTypedSelector((s) => s.user.user?.vendorDetails, shallowEqual)
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -188,7 +194,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
     if (!phoneNumber) return 'other'
 
     const cleaned = phoneNumber.replace(/\D/g, '')
-    console.log('detectRegionFromPhone - cleaned number:', cleaned)
+    // console.log('detectRegionFromPhone - cleaned number:', cleaned)
 
     // Проверяем известные коды стран
     if (cleaned.startsWith('375')) return 'Belarus'
@@ -477,15 +483,15 @@ const ProfileForm: FC<ProfileFormProps> = ({
   }, [])
 
   // Для отладки
-  useEffect(() => {
-    console.log('ProfileForm Debug:', {
-      userData_phoneNumber: userData?.phoneNumber,
-      userData_region: userData?.region,
-      detected_region: userData?.phoneNumber ? detectRegionFromPhone(userData.phoneNumber) : 'N/A',
-      selected_region: selectedRegion.altName,
-      regions_available: regions.map((r) => r.altName)
-    })
-  }, [userData, selectedRegion, regions])
+  // useEffect(() => {
+  //   console.log('ProfileForm Debug:', {
+  //     userData_phoneNumber: userData?.phoneNumber,
+  //     userData_region: userData?.region,
+  //     detected_region: userData?.phoneNumber ? detectRegionFromPhone(userData.phoneNumber) : 'N/A',
+  //     selected_region: selectedRegion.altName,
+  //     regions_available: regions.map((r) => r.altName)
+  //   })
+  // }, [userData, selectedRegion, regions])
 
   // Обновленный handleRegionSelect
   const handleRegionSelect = (region: RegionType) => {
@@ -676,10 +682,18 @@ const ProfileForm: FC<ProfileFormProps> = ({
               onChange={(values) => {
                 setSelectedCountries(values)
                 setUserInteracted(true)
+                console.log('countr values', values)
+                updateVendorDetailsAction({
+                  ...vendorDetails,
+                  countries: values.map((el) => {
+                    return {name: el.value, value: el.value}
+                  })
+                })
               }}
               placeholder={t('selectRegions')}
               direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}
             />
+            {/* <p>{vendorDetails?.countries?.map((value) => value?.name).join(', ')}</p> */}
           </span>
         )}
       </div>
@@ -724,6 +738,12 @@ const ProfileForm: FC<ProfileFormProps> = ({
             onChange={(values) => {
               setCategories(values)
               setUserInteracted(true)
+              updateVendorDetailsAction({
+                ...vendorDetails,
+                productCategories: values.map((el) => {
+                  return {id: el?.id.toString(), name: el?.value, icon: el?.icon}
+                })
+              })
             }}
             placeholder={t('selectCategoryes')}
             direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}

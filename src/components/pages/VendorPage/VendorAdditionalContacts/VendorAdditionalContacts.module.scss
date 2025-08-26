@@ -1,0 +1,84 @@
+.vendor__additional__contacts {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+
+  /* ограничение высоты — изначально видно только часть */
+  max-height: 350px;
+  flex-direction: column;
+  padding: 25px 40px;
+  border-radius: 20px;
+  margin-top: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+  transition: max-height 0.5s ease;
+
+  &.expanded {
+    max-height: fit-content; // любое большое значение, чтобы открылось полностью
+  }
+}
+
+.vendor__additional__contacts__title {
+  margin-bottom: 18px;
+  font-size: 20px;
+  line-height: 21px;
+}
+
+.additional__phones__title {
+  margin-top: 10px;
+  font-size: 17px;
+  line-height: 19px;
+}
+
+.additional__emails,
+.additional__phones,
+.additional__sites {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.additional__buttons {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.save__additional {
+  max-width: fit-content;
+  padding: 10px 60px;
+  border-radius: 10px;
+  margin: 0 auto;
+  background-color: #4e5479;
+  color: #fff;
+  font-size: 15px;
+}
+
+/* затемнение + стрелочка для раскрытия */
+.expand__overlay {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  height: 80px;
+  align-items: flex-end;
+  justify-content: center;
+  background: linear-gradient(to top, rgb(244 245 246 / 100%) 40%, rgb(244 245 246 / 0%) 100%);
+  cursor: pointer;
+}
+
+.arrow {
+  margin-bottom: 10px;
+  color: #4e5479;
+  font-size: 24px;
+  transition: transform 0.3s ease;
+}
+
+.expanded .arrow {
+  transform: rotate(180deg);
+}

@@ -28,7 +28,7 @@ interface IProfileProps {
 
 const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   // Используем ваш кастомный selector hook
-  const {isAuthenticated, user} = useTypedSelector((state) => state.user)
+  const {user, isAuthenticated} = useTypedSelector((state) => state.user)
 
   // React Query hook для загрузки данных пользователя
   const {isLoading, error, isError} = useUserQuery()

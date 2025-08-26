@@ -7,6 +7,45 @@
 //    gap: 30px;
 //    margin-top: 40px;
 // }
+.save__animation {
+  // width: 0;
+  position: absolute;
+
+  // margin-left: 30px;
+  top: 0;
+  right: 0;
+
+  /* Исходное состояние — полностью прозрачна */
+  animation: fadeIn 1.5s ease-in-out forwards;
+  opacity: 0;
+  transform: translateX(-30%);
+
+  /* Применяем анимацию */
+}
+
+/* Описание самой анимации */
+@keyframes fadeIn {
+  0% {
+    position: absolute;
+    // opacity: 0;
+    // width: 0px;
+    margin-left: 0;
+  }
+
+  10% {
+    position: relative;
+  }
+
+  100% {
+    // right: 0;
+    position: relative;
+    width: fit-content;
+    margin-left: 30px;
+    opacity: 1;
+
+    /* Конечное состояние — полностью непрозрачна */
+  }
+}
 
 .profile__user__box {
   display: flex;
@@ -445,10 +484,14 @@
 }
 
 .buttons__box__save__logout {
+  position: relative;
   display: flex;
+  width: 100%;
+  min-height: 40px;
   align-items: center;
   margin: auto auto 0;
-  gap: 30px;
+
+  // gap: 30px;
 
   @media (max-width: 600px) {
     flex-wrap: wrap;
@@ -501,7 +544,19 @@
   }
 }
 
+// .save__button__left {
+//   position: absolute;
+//   top: 0;
+//   right: 0;
+//   transform: translateX(-30%);
+// }
+
 .logout__button {
+  // position: absolute;
+  // top: 0;
+  // left: 50%;
+  // transform: translateX(-50%);
+  min-width: 180px;
   max-width: fit-content;
   padding: 10px 60px;
   border-radius: 10px;
@@ -509,6 +564,10 @@
   background-color: #ac2525;
   color: #fff;
   font-size: 15px;
+
+  // &__left {
+  //   transform: translateX(-90%);
+  // }
 }
 
 .save__button {
