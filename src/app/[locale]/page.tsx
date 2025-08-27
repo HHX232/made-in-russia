@@ -1,30 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import {getAbsoluteLanguage} from '@/api/api.helper'
 import {axiosClassic} from '@/api/api.interceptor'
 import HomePage from '@/components/pages/HomePage/HomePage'
 import {Product} from '@/services/products/product.types'
-import {cookies, headers} from 'next/headers'
+// import {cookies, headers} from 'next/headers'
 
-async function getLocale(): Promise<string> {
-  const cookieStore = await cookies()
-  let locale = cookieStore.get('NEXT_LOCALE')?.value
+// async function getLocale(): Promise<string> {
+//   const cookieStore = await cookies()
+//   let locale = cookieStore.get('NEXT_LOCALE')?.value
 
-  if (!locale) {
-    const headersList = await headers()
-    locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
+//   if (!locale) {
+//     const headersList = await headers()
+//     locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
 
-    if (!locale) {
-      const referer = headersList.get('referer')
-      if (referer) {
-        const match = referer.match(/\/([a-z]{2})\//)
-        if (match && ['en', 'ru', 'zh'].includes(match[1])) {
-          locale = match[1]
-        }
-      }
-    }
-  }
+//     if (!locale) {
+//       const referer = headersList.get('referer')
+//       if (referer) {
+//         const match = referer.match(/\/([a-z]{2})\//)
+//         if (match && ['en', 'ru', 'zh'].includes(match[1])) {
+//           locale = match[1]
+//         }
+//       }
+//     }
+//   }
 
-  return locale || 'en'
-}
+//   return locale || 'en'
+// }
 
 export interface IPromoFromServer {
   id: number
@@ -43,45 +44,32 @@ interface IGeneralResponse {
   products: {
     content: Product[]
     last: boolean
-    // остальные поля можно добавить при необходимости
   }
   categories: any[]
   allCategories: any[]
+  advertisements?: IPromoFromServer[]
 }
 
+// теперь только один запрос
 async function getInitialData(locale: string) {
-  // один запрос на продукты и категории
-  const generalPromise = axiosClassic.get<IGeneralResponse>('/general', {
+  const {data} = await axiosClassic.get<IGeneralResponse>('/general', {
     headers: {
       'Accept-Language': locale,
       'x-locale': locale
     }
   })
 
-  // отдельный запрос на рекламу
-  const adsPromise = axiosClassic.get<IPromoFromServer[]>('/advertisements', {
-    headers: {
-      'Accept-Language': locale,
-      'x-locale': locale
-    }
-  })
-
-  const [general, ads] = await Promise.all([generalPromise, adsPromise])
-
-  return {
-    products: general.data.products,
-    categories: general.data.categories,
-    advertisements: ads.data
-  }
+  // console.log('general data', data)
+  return data
 }
 
 export default async function Home() {
-  const locale = await getLocale()
+  const locale = await getAbsoluteLanguage()
   const {products, categories, advertisements} = await getInitialData(locale)
 
   return (
     <HomePage
-      ads={advertisements}
+      ads={advertisements ?? []}
       initialProducts={products.content}
       initialHasMore={!products.last}
       categories={categories}

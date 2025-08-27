@@ -1,9 +1,68 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, {useState, useEffect, useLayoutEffect, useCallback} from 'react'
+import React, {useState, useEffect, useLayoutEffect, useCallback, useRef} from 'react'
 import {useKeenSlider} from 'keen-slider/react'
 // import 'keen-slider/keen-slider.min.css'
 import styles from './CardSlider.module.scss'
 import Skeleton from 'react-loading-skeleton'
+import ModalWindowDefault from '../../modals/ModalWindowDefault/ModalWindowDefault'
+
+// Компонент ZoomImage встроенный в файл
+interface ZoomImageProps {
+  src: string
+  alt?: string
+  zoom?: number
+  lensSize?: number
+  className?: string
+}
+
+const ZoomImage: React.FC<ZoomImageProps> = ({src, alt = 'zoom', zoom = 2, lensSize = 150, className = ''}) => {
+  const imgRef = useRef<HTMLImageElement>(null)
+  const [lensPos, setLensPos] = useState<{x: number; y: number} | null>(null)
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!imgRef.current) return
+
+    const rect = imgRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    // Ограничиваем позицию внутри картинки
+    const posX = Math.max(lensSize / 2, Math.min(x, rect.width - lensSize / 2))
+    const posY = Math.max(lensSize / 2, Math.min(y, rect.height - lensSize / 2))
+
+    setLensPos({x: posX, y: posY})
+  }
+
+  const handleMouseLeave = () => {
+    setLensPos(null)
+  }
+
+  return (
+    <div
+      className={`${styles.zoomImageWrapper} ${className}`}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <img ref={imgRef} src={src} alt={alt} className={styles.zoomImage} />
+
+      {lensPos && (
+        <div
+          className={styles.zoomLens}
+          style={{
+            width: lensSize,
+            height: lensSize,
+            top: lensPos.y - lensSize / 2,
+            left: lensPos.x - lensSize / 2,
+            backgroundImage: `url(${src})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: `${(imgRef.current?.width || 0) * zoom}px ${(imgRef.current?.height || 0) * zoom}px`,
+            backgroundPosition: `-${lensPos.x * zoom - lensSize / 2}px -${lensPos.y * zoom - lensSize / 2}px`
+          }}
+        />
+      )}
+    </div>
+  )
+}
 
 const CustomArrowLeft = ({onClick, disabled}: {onClick: (e: any) => void; disabled: boolean}) => (
   <div
@@ -81,6 +140,10 @@ const SlickCardSlider = ({
   const [mainLoaded, setMainLoaded] = useState(false)
   const [thumbnailLoaded, setThumbnailLoaded] = useState(false)
   const [isClient, setIsClient] = useState(false)
+
+  // Состояния для модального окна
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalImageIndex, setModalImageIndex] = useState(0)
 
   // Вычисляем количество слайдов на основе ширины контейнера
   const slidesToShow = containerWidth
@@ -228,6 +291,17 @@ const SlickCardSlider = ({
     }
   }
 
+  // Обработчик двойного клика для открытия модального окна
+  const handleDoubleClick = (index: number) => {
+    setModalImageIndex(index)
+    setIsModalOpen(true)
+  }
+
+  // Закрытие модального окна
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+  }
+
   const generateImageGalleryStructuredData = () => {
     const baseUrl =
       typeof window !== 'undefined'
@@ -325,6 +399,32 @@ const SlickCardSlider = ({
         }}
       />
 
+      {/* Модальное окно с увеличенным изображением */}
+      <ModalWindowDefault extraClass={styles.imageModalLarge} isOpen={isModalOpen} onClose={handleModalClose}>
+        <div className={styles.modalImageContainer}>
+          {images[modalImageIndex]?.match(/\.(mp4|webm|mov)$/i) ? (
+            <video
+              src={images[modalImageIndex]}
+              autoPlay
+              muted
+              loop
+              playsInline
+              webkit-playsinline='true'
+              controls
+              className={styles.modalVideo}
+            />
+          ) : (
+            <ZoomImage
+              src={images[modalImageIndex]}
+              alt={`${productName} - увеличенное изображение`}
+              zoom={2}
+              lensSize={150}
+              className={styles.modalImage}
+            />
+          )}
+        </div>
+      </ModalWindowDefault>
+
       <div
         className={`spec__slider ${styles.imageSlider} ${extraClass}`}
         itemScope
@@ -346,6 +446,8 @@ const SlickCardSlider = ({
                     className={styles.imageSlider__imageWrapper}
                     itemScope
                     itemType={isVideo ? 'https://schema.org/VideoObject' : 'https://schema.org/ImageObject'}
+                    onDoubleClick={() => handleDoubleClick(index)}
+                    style={{cursor: 'pointer'}}
                   >
                     {isVideo ? (
                       <>
@@ -365,7 +467,8 @@ const SlickCardSlider = ({
                           style={
                             {
                               WebkitMediaControls: 'none',
-                              WebkitPlaybackTargetAvailability: 'none'
+                              WebkitPlaybackTargetAvailability: 'none',
+                              cursor: 'pointer'
                             } as React.CSSProperties
                           }
                         />
@@ -377,7 +480,10 @@ const SlickCardSlider = ({
                     ) : (
                       <>
                         <div
-                          style={{backgroundImage: `url(${image})`}}
+                          style={{
+                            backgroundImage: `url(${image})`,
+                            cursor: 'pointer'
+                          }}
                           className={styles.imageSlider__mainImage}
                           role='img'
                           aria-label={`Изображение товара ${productName} - ${index + 1}`}
@@ -432,6 +538,7 @@ const SlickCardSlider = ({
                     index === activeIndex ? styles.imageSlider__thumbnailActive : ''
                   }`}
                   onClick={() => handleThumbnailClick(index)}
+                  onDoubleClick={() => handleDoubleClick(index)}
                   role='button'
                   tabIndex={0}
                   aria-label={`${isVideo ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
@@ -440,6 +547,7 @@ const SlickCardSlider = ({
                       handleThumbnailClick(index)
                     }
                   }}
+                  style={{cursor: 'pointer'}}
                 >
                   {isVideo ? (
                     <video
@@ -457,13 +565,17 @@ const SlickCardSlider = ({
                       style={
                         {
                           WebkitMediaControls: 'none',
-                          WebkitPlaybackTargetAvailability: 'none'
+                          WebkitPlaybackTargetAvailability: 'none',
+                          cursor: 'pointer'
                         } as React.CSSProperties
                       }
                     />
                   ) : (
                     <div
-                      style={{backgroundImage: `url(${image})`}}
+                      style={{
+                        backgroundImage: `url(${image})`,
+                        cursor: 'pointer'
+                      }}
                       className={styles.imageSlider__thumbnailImage}
                       aria-hidden='true'
                     />

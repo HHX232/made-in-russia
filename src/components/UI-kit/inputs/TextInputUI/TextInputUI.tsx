@@ -37,6 +37,7 @@ interface ITextInputProps {
   autoComplete?: string
   autoFocus?: boolean
   idForLabel?: string
+  refProps?: React.RefObject<HTMLInputElement> | null
 }
 
 const TextInputUI = memo<ITextInputProps>(
@@ -66,7 +67,8 @@ const TextInputUI = memo<ITextInputProps>(
     disabled = false,
     readOnly = false,
     autoComplete,
-    autoFocus = false
+    autoFocus = false,
+    refProps
   }) => {
     const [textIsShow, setTextIsShow] = useState(false)
     const [displayValue, setDisplayValue] = useState(isSecret ? currentValue.replace(/./g, '*') : currentValue)
@@ -141,6 +143,7 @@ const TextInputUI = memo<ITextInputProps>(
         </div>
         <div className={`${styles.input__inner__box} ${errorValue && styles.error__input__inner__box}`}>
           <input
+            ref={refProps}
             placeholder={placeholder}
             type={isSecret && !textIsShow ? 'password' : inputType ? inputType : 'text'}
             value={isSecret ? (textIsShow ? currentValue : displayValue) : currentValue}

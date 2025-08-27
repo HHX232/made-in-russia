@@ -233,6 +233,13 @@
 },
 "CardPage": {
     "CardTopPage": {
+      "innTitle": "Tax ID",
+      "countriesTitle": "Countries of presence", 
+      "description": "Description", 
+      "showTelephone": "Show phone",
+      "showOnEmail": "Write to email",
+      "RequestCallback": "Request callback",
+      "showVendorData": "Seller's Contact Information",
       "company": "Company",
       "title": "Product title here",
       "revues": "reviews",
@@ -276,6 +283,24 @@
     "mainText": "Page not found or deleted. Please check the URL or return to the homepage."
 },
 "createCard": {
+  "mg": "mg",
+    "g": "g",
+    "kg": "kg",
+    "c": "q",
+    "t": "t",
+    "ml": "ml",
+    "l": "l",
+    "hl": "hl",
+    "m3": "m³",
+    "m2": "m²",
+    "cm2": "cm²",
+    "pcs": "pcs",
+    "pack": "pack",
+    "m": "m",
+    "cm": "cm",
+    "pair": "pair",
+    "set": "set",
+    "box": "box",
   "languageForInput":"Language for input",
    "languageForInputSubtitle":"At least 1 language must be filled in",
     "alternativeMainDescr": "Main description",
@@ -587,6 +612,14 @@
       "pleaseLogin": "Please log in",
       "accessDenied": "Access Denied",
       "accessDeniedDescription": "Your role is not sufficient to view this page. Your role:"
-    }
+    },
+    "DeleteButton":{ 
+      "loading": "Loading...",
+      "modalTitle": "Account Deletion Confirmation",
+      "modalDescription": "Enter the confirmation code sent to your email",
+      "checkingCode": "Verifying code...",
+      "errorDelete": "An error occurred while deleting the account",
+      "errorOtp": "Invalid confirmation code"
+  }
 }
 

@@ -20,6 +20,7 @@ import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
 import {useLogout} from '@/hooks/useUserApi'
+import DeleteAccountButton from '@/components/UI-kit/buttons/DeleteAccountButton/DeleteAccountButton'
 
 // Константы
 export const ASSETS_COUNTRIES = {
@@ -363,7 +364,7 @@ export const QuickActions: FC<QuickActionsProps> = ({onDevicesClick, onPaymentCl
 // Компонент действий профиля
 export const ProfileActions: FC<ProfileActionsProps> = ({
   needToSave,
-  onDeleteAccount,
+  // onDeleteAccount,
   onLogout,
   isLoading,
   phoneNumber,
@@ -487,13 +488,14 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
           </button>
         </div>
       </ModalWindowDefault>
-      <ul className={styles.buttons__logouts__box}>
+      {/* <ul className={styles.buttons__logouts__box}>
         <li className={styles.buttons__logouts__box__item}>
           <button className={styles.buttons__logouts__box__button} onClick={onDeleteAccount}>
             {t('deleteAccount')}
           </button>
         </li>
-      </ul>
+      </ul> */}
+      <DeleteAccountButton buttonText={t('deleteAccount')} />
       <div className={styles.buttons__box__save__logout}>
         <button
           onClick={() => setWantQuite(true)}

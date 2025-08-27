@@ -106,13 +106,21 @@ export interface IVendorPageProps {
   vendorData?: IVendorData
   numberCode?: string // Новый пропс для кода страны
   initialProductsForView?: Product[]
+  onlyShowDescr?: string
+  onlyShowPhones?: string[]
+  onlyShowWebsites?: string[]
+  onlyShowEmail?: string[]
 }
 
 const VendorPageComponent: FC<IVendorPageProps> = ({
   isPageForVendor = true,
   vendorData,
   numberCode = '',
-  initialProductsForView
+  initialProductsForView,
+  onlyShowDescr,
+  onlyShowPhones,
+  onlyShowWebsites,
+  onlyShowEmail
 }) => {
   const [needToSave, setNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
@@ -558,7 +566,12 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
             </div>
             <span className={styles.additional__span__box}>
               {' '}
-              <VendorAdditionalContacts isOnlyShow={!isPageForVendor} />
+              <VendorAdditionalContacts
+                onlyShowEmails={onlyShowEmail}
+                onlyShowPhones={onlyShowPhones}
+                onlyShowWebsites={onlyShowWebsites}
+                isOnlyShow={!isPageForVendor}
+              />
             </span>
             <span className={`${styles.second__descr__box}`}>
               {/* TODO здесь размещаем описание компании */}
@@ -567,7 +580,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 maxRows={25}
                 minRows={5}
                 readOnly={!isPageForVendor}
-                currentValue={user?.vendorDetails?.description || ''}
+                currentValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
                 onSetValue={(val) => {
                   updateVendorDetails({...user?.vendorDetails, description: val})
                   canUpdateVendorDescr.current = true
@@ -575,6 +588,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 theme='superWhite'
                 placeholder={t('descriptionPlaceholder')}
               />
+              <p>{onlyShowDescr}</p>
               {canUpdateVendorDescr.current && (
                 <button
                   className={`${styles.vendor__save__descr__button}`}
@@ -635,7 +649,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                     />
                   </Link>
                 ) : (
-                  <p></p>
+                  <p key={92849}></p>
                 )
               )}
             </div>
@@ -646,7 +660,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 minRows={5}
                 maxRows={25}
                 readOnly={!isPageForVendor}
-                currentValue={user?.vendorDetails?.description || ''}
+                // currentValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
+
+                currentValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
                 onSetValue={(val) => {
                   updateVendorDetails({...user?.vendorDetails, description: val})
                   canUpdateVendorDescr.current = true
@@ -654,6 +670,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 theme='superWhite'
                 placeholder={t('descriptionPlaceholder')}
               />
+              <p>{onlyShowDescr}</p>
               {canUpdateVendorDescr.current && (
                 <button
                   className={`${styles.vendor__save__descr__button}`}

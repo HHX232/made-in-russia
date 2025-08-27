@@ -40,10 +40,11 @@ interface RowsInputsProps {
   inputType?: TInputType[]
   controlled?: boolean
   externalValues?: string[][]
-  dropdownOptions?: string[][] // Новый prop для опций dropdown'ов
+  dropdownOptions?: string[][] // Опции для dropdown'ов
+  canCreateNewOption?: boolean[] // Возможность создания новых опций для каждого dropdown'а
 }
 
-// Компонент Dropdown
+// Компонент Dropdown с поддержкой создания новых опций
 interface DropdownProps {
   value: string
   options: string[]
@@ -51,17 +52,23 @@ interface DropdownProps {
   onSelect: (value: string) => void
   hasError?: boolean
   inputId: string
+  canCreateNew?: boolean // Можно ли создавать новые опции
 }
 
-const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId}: DropdownProps) => {
+const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, canCreateNew = false}: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [customValue, setCustomValue] = useState('')
+  const [isCreatingNew, setIsCreatingNew] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const customInputRef = useRef<HTMLInputElement>(null)
 
   // Закрытие при клике вне элемента
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false)
+        setIsCreatingNew(false)
+        setCustomValue('')
       }
     }
 
@@ -70,20 +77,83 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId}: Dr
   }, [])
 
   // Закрытие при скролле страницы
+  // Закрытие при скролле страницы (исправленная версия)
   useEffect(() => {
-    const handleScroll = () => {
-      setIsOpen(false)
+    const handleScroll = (event: Event) => {
+      const target = event.target as Element
+
+      // Проверяем, что скролл не происходит внутри нашего dropdown'а
+      if (dropdownRef.current && (dropdownRef.current === target || dropdownRef.current.contains(target))) {
+        return // Не закрываем, если скролл внутри dropdown'а
+      }
+
+      // Дополнительная проверка - закрываем только при скролле окна или других элементов вне dropdown'а
+      if (
+        target === document.documentElement ||
+        target === document.body ||
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (target as any) === window ||
+        !dropdownRef.current?.contains(target)
+      ) {
+        setIsOpen(false)
+        setIsCreatingNew(false)
+        setCustomValue('')
+      }
     }
 
     if (isOpen) {
+      // Слушаем события скролла на всех элементах
       document.addEventListener('scroll', handleScroll, true)
-      return () => document.removeEventListener('scroll', handleScroll, true)
+      // Также слушаем скролл окна
+      window.addEventListener('scroll', handleScroll)
+
+      return () => {
+        document.removeEventListener('scroll', handleScroll, true)
+        window.removeEventListener('scroll', handleScroll)
+      }
     }
   }, [isOpen])
+
+  // Фокус на инпуте при создании новой опции
+  useEffect(() => {
+    if (isCreatingNew && customInputRef.current) {
+      customInputRef.current.focus()
+    }
+  }, [isCreatingNew])
 
   const handleSelect = (option: string) => {
     onSelect(option)
     setIsOpen(false)
+    setIsCreatingNew(false)
+    setCustomValue('')
+  }
+
+  const handleCreateNew = () => {
+    setIsCreatingNew(true)
+  }
+
+  const handleCustomSubmit = () => {
+    if (customValue.trim()) {
+      onSelect(customValue.trim())
+      setIsOpen(false)
+      setIsCreatingNew(false)
+      setCustomValue('')
+    }
+  }
+
+  const handleCustomKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleCustomSubmit()
+    } else if (e.key === 'Escape') {
+      setIsCreatingNew(false)
+      setCustomValue('')
+    }
+  }
+
+  const handleCustomCancel = () => {
+    setIsCreatingNew(false)
+    setCustomValue('')
   }
 
   return (
@@ -94,7 +164,7 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId}: Dr
         id={inputId}
       >
         <span style={{margin: '0 auto'}} className={value ? styles.dropdown__value : styles.dropdown__placeholder}>
-          {value || placeholder}
+          {value || (placeholder || '')?.trim()?.split(' ')[0]}
         </span>
         {/* <Image
           src={dropdownArrow}
@@ -107,6 +177,71 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId}: Dr
 
       {isOpen && (
         <div className={styles.dropdown__list}>
+          {/* Кастомный инпут для создания новых опций */}
+          {canCreateNew && (
+            <>
+              {isCreatingNew ? (
+                <div className={styles.dropdown__custom__input__wrapper}>
+                  {/* <input
+                    ref={customInputRef}
+                    type='text'
+                    value={customValue}
+                    onChange={(e) => setCustomValue(e.target.value)}
+                    onKeyDown={handleCustomKeyPress}
+                    className={styles.dropdown__custom__input}
+                    placeholder='Введите значение...'
+                  /> */}
+                  <TextInputUI
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    refProps={customInputRef as any}
+                    theme='superWhite'
+                    onKeyDown={handleCustomKeyPress}
+                    placeholder='Enter value...'
+                    currentValue={customValue}
+                    onSetValue={(value) => setCustomValue(value)}
+                  />
+                  <div
+                    style={{
+                      display: 'flex',
+                      width: '100%',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginTop: '5px'
+                    }}
+                    className={styles.dropdown__custom__buttons}
+                  >
+                    <button
+                      style={{margin: '0 auto'}}
+                      type='button'
+                      onClick={handleCustomSubmit}
+                      className={styles.dropdown__custom__button__confirm}
+                      disabled={!customValue.trim()}
+                    >
+                      ✓
+                    </button>
+                    <button
+                      style={{margin: '0 auto'}}
+                      type='button'
+                      onClick={handleCustomCancel}
+                      className={styles.dropdown__custom__button__cancel}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`${styles.dropdown__option} ${styles.dropdown__option__create}`}
+                  onClick={handleCreateNew}
+                >
+                  + create
+                </div>
+              )}
+              {options.length > 0 && <div className={styles.dropdown__separator} />}
+            </>
+          )}
+
+          {/* Существующие опции */}
           {options.map((option, index) => (
             <div
               key={index + inputId}
@@ -139,6 +274,7 @@ interface SortableRowProps {
   hasError?: boolean
   inputType?: TInputType[]
   dropdownOptions?: string[][]
+  canCreateNewOption?: boolean[]
 }
 
 const SortableRow = ({
@@ -156,7 +292,8 @@ const SortableRow = ({
   extraButtonMinusClass,
   hasError,
   inputType,
-  dropdownOptions
+  dropdownOptions,
+  canCreateNewOption
 }: SortableRowProps) => {
   const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id})
 
@@ -174,6 +311,8 @@ const SortableRow = ({
 
     if (currentInputType === 'dropdown') {
       const options = dropdownOptions?.[inputIndex] || []
+      const canCreateNew = canCreateNewOption?.[inputIndex] || false
+
       return (
         <Dropdown
           key={inputIndex + inputId}
@@ -183,6 +322,7 @@ const SortableRow = ({
           onSelect={(newValue) => onUpdateValue(rowIndex, inputIndex, newValue)}
           hasError={hasError && !value}
           inputId={inputId}
+          canCreateNew={canCreateNew}
         />
       )
     }
@@ -255,7 +395,8 @@ const RowsInputs = ({
   controlled = false,
   externalValues,
   idNames,
-  dropdownOptions
+  dropdownOptions,
+  canCreateNewOption
 }: RowsInputsProps) => {
   const [rows, setRows] = useState<string[][]>(() => {
     if (rowsInitialValues && rowsInitialValues.length > 0) {
@@ -453,6 +594,7 @@ const RowsInputs = ({
                   onRemoveRow={removeRow}
                   hasError={rowsWithErrors.includes(rowIndex)}
                   dropdownOptions={dropdownOptions}
+                  canCreateNewOption={canCreateNewOption}
                 />
               ))}
             </div>

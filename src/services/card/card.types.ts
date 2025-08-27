@@ -128,6 +128,20 @@ interface Author {
   region: string
   registrationDate: string
   lastModificationDate: string
+  vendorDetails?: {
+    countries?: {id: string; name: string}[]
+    creationDate?: string
+    description?: string
+    emails?: string[]
+    id?: number
+    inn?: string
+    lastModificationDate?: string
+    phoneNumbers?: string[]
+
+    productCategories?: {id: string; name: string}[]
+    sites?: string[]
+    viewsCount?: number
+  }
 }
 
 interface Review {

@@ -1,0 +1,136 @@
+/* Класс для модального окна с изображениями */
+.imageModalLarge {
+  & > div {
+    overflow: hidden;
+    width: 80vw;
+    max-width: 100%;
+    height: 80vh;
+    max-height: 100%;
+    padding: 15px !important;
+    border-radius: 8px;
+
+    @media (max-width: 700px) {
+      overflow: auto;
+      width: 100vw;
+      height: 100vh;
+      padding: 0 !important;
+      border-radius: 0;
+    }
+
+    &:hover {
+      cursor: zoom-in;
+    }
+  }
+
+  .modal__body {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+
+    @media (max-width: 700px) {
+      overflow: auto;
+      align-items: flex-start;
+    }
+  }
+}
+
+/* Стили для контейнера изображения в модальном окне */
+.modalImageContainer {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-in !important;
+
+  @media (max-width: 700px) {
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+}
+
+/* Стили для изображения в модальном окне */
+.modalImage {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
+  cursor: zoom-in !important;
+  object-fit: contain;
+
+  @media (max-width: 700px) {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    object-fit: cover;
+  }
+}
+
+/* Стили для видео в модальном окне */
+.modalVideo {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
+  cursor: zoom-in !important;
+  object-fit: contain;
+
+  @media (max-width: 700px) {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    object-fit: cover;
+  }
+}
+
+/* Стили для зум-эффекта */
+.zoomImageWrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  cursor: zoom-in;
+
+  .zoomImage {
+    display: block;
+    width: 950%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0 auto;
+    cursor: zoom-in;
+    object-fit: contain;
+
+    @media (max-width: 700px) {
+      width: 100%;
+      max-width: none;
+      height: 100%;
+      max-height: none;
+      object-fit: cover;
+    }
+  }
+
+  .zoomLens {
+    position: absolute;
+    z-index: 10;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    background-repeat: no-repeat;
+    box-shadow: 0 0 10px rgb(0 0 0 / 50%);
+    pointer-events: none;
+
+    // Скрываем лупу на мобильных устройствах
+    @media (max-width: 700px) {
+      display: none;
+    }
+  }
+}

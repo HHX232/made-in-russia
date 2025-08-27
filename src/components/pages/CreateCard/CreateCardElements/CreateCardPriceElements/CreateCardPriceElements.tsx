@@ -27,11 +27,22 @@ interface CreateCardPriceElementsProps {
   pricesError?: string
   inputType?: TInputType[]
   currentLanguage: Language
-  dropdownPricesOptions?: string[]
+  // Изменяем тип для поддержки массива массивов
+  dropdownPricesOptions?: string[][]
+  // Добавляем новый пропс для управления возможностью создания новых опций
+  canCreateNewOption?: boolean[]
 }
 
 const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
-  ({pricesArray, onSetPricesArray, pricesError = '', inputType, currentLanguage, dropdownPricesOptions = []}) => {
+  ({
+    pricesArray,
+    onSetPricesArray,
+    pricesError = '',
+    inputType,
+    currentLanguage,
+    dropdownPricesOptions = [],
+    canCreateNewOption = []
+  }) => {
     // RTK actions
     const {
       updateCharacteristic,
@@ -66,6 +77,56 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     const [packagingKey, setPackagingKey] = useState(0)
 
     const t = useTranslations('CreateCardPriceElementsText')
+
+    // Функция для преобразования dropdownPricesOptions в нужный формат для RowsInputs
+    const prepareDropdownOptions = () => {
+      if (!inputType || dropdownPricesOptions.length === 0) {
+        return []
+      }
+
+      const result: string[][] = []
+      let dropdownIndex = 0
+
+      inputType.forEach((type, index) => {
+        if (type === 'dropdown') {
+          if (dropdownIndex < dropdownPricesOptions.length) {
+            result[index] = dropdownPricesOptions[dropdownIndex]
+            dropdownIndex++
+          } else {
+            result[index] = []
+          }
+        } else {
+          result[index] = []
+        }
+      })
+
+      return result
+    }
+
+    // Функция для подготовки массива canCreateNewOption в нужном формате
+    const prepareCanCreateNewOption = () => {
+      if (!inputType || canCreateNewOption.length === 0) {
+        return []
+      }
+
+      const result: boolean[] = []
+      let dropdownIndex = 0
+
+      inputType.forEach((type, index) => {
+        if (type === 'dropdown') {
+          if (dropdownIndex < canCreateNewOption.length) {
+            result[index] = canCreateNewOption[dropdownIndex]
+            dropdownIndex++
+          } else {
+            result[index] = false
+          }
+        } else {
+          result[index] = false
+        }
+      })
+
+      return result
+    }
 
     // Устанавливаем текущий язык в store при изменении пропса
     useEffect(() => {
@@ -275,6 +336,10 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       console.log('currentData', currentData)
     }, [currentData])
 
+    // Подготавливаем данные для dropdown опций
+    const preparedDropdownOptions = prepareDropdownOptions()
+    const preparedCanCreateNewOption = prepareCanCreateNewOption()
+
     return (
       <div className={styles.create__prices__box}>
         {/* Left */}
@@ -315,7 +380,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             <RowsInputs
               inputsInRowCount={5}
               maxRows={5}
-              dropdownOptions={[[], [], [], dropdownPricesOptions]}
+              dropdownOptions={preparedDropdownOptions}
+              canCreateNewOption={preparedCanCreateNewOption}
               inputType={inputType}
               initialRowsCount={1}
               idNames={['elementCount', 'originalPrice', 'priceWithDiscount', 'currency', 'unit']}

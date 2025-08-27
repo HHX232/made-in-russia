@@ -241,6 +241,13 @@
 },
 "CardPage": {
     "CardTopPage": {
+      "innTitle": "税号",
+      "countriesTitle": "业务所在国家",
+      "description": "描述",
+      "showTelephone": "显示电话号码",
+      "showOnEmail": "发送电子邮件",
+      "RequestCallback": "请求回电",
+      "showVendorData": "卖家联系方式",
       "company": "公司",
       "title": "商品标题",
       "revues": "评论",
@@ -284,6 +291,24 @@
     "mainText": "页面未找到或已被删除。请检查网址或返回首页。"
 },
 "createCard": {
+  "mg": "毫克",
+  "g": "克",
+  "kg": "千克",
+  "c": "公担",
+  "t": "吨",
+  "ml": "毫升",
+  "l": "升",
+  "hl": "百升",
+  "m3": "立方米",
+  "m2": "平方米",
+  "cm2": "平方厘米",
+  "pcs": "个",
+  "pack": "包",
+  "m": "米",
+  "cm": "厘米",
+  "pair": "双",
+  "set": "套",
+  "box": "盒",
   "languageForInput":"商品输入语言",
   "languageForInputSubtitle":"至少需要填写一种语言",
     "alternativeMainDescr": "主要描述",
@@ -600,6 +625,14 @@
     "pleaseLogin": "请登录",
     "accessDenied": "访问被拒绝",
     "accessDeniedDescription": "您的角色权限不足以查看此页面。您的角色："
+  },
+  "DeleteButton":{ 
+    "loading": "加载中...",
+    "modalTitle": "确认删除账户",
+    "modalDescription": "请输入发送到您邮箱的验证码",
+    "checkingCode": "正在验证验证码...",
+    "errorDelete": "删除账户时发生错误",
+    "errorOtp": "验证码无效"
   }
 
 

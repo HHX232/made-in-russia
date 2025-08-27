@@ -547,7 +547,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             />
             {/* CreateCardPriceElements */}
             <CreateCardPriceElements
-              inputType={['text', 'number', 'number', 'dropdown', 'text']}
+              inputType={['text', 'number', 'number', 'dropdown', 'dropdown']}
               pricesArray={pricesArray.map((item) => [
                 item.quantity,
                 item.priceWithoutDiscount,
@@ -555,7 +555,30 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 item.currency,
                 item.unit
               ])}
-              dropdownPricesOptions={['RUB', 'USD', 'CNY']}
+              dropdownPricesOptions={[
+                ['RUB', 'USD', 'CNY'],
+                [
+                  t('mg'),
+                  t('g'),
+                  t('kg'),
+                  t('c'),
+                  t('t'),
+                  t('ml'),
+                  t('l'),
+                  t('hl'),
+                  t('m3'),
+                  t('m2'),
+                  t('cm2'),
+                  t('pcs'),
+                  t('pack'),
+                  t('m'),
+                  t('cm'),
+                  t('pair'),
+                  t('set'),
+                  t('box')
+                ]
+              ]}
+              canCreateNewOption={[false, true]}
               currentLanguage={currentLangState}
               onSetPricesArray={handlePricesArrayChange}
               pricesError={errors.pricesArray}

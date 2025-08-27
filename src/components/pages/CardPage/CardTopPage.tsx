@@ -14,6 +14,8 @@ import {ReactNode, useEffect, useLayoutEffect, useRef, useState} from 'react'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import ICardFull from '@/services/card/card.types'
 import {useTranslations} from 'next-intl'
+import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
+import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 
 interface IPriceItem {
   title: string | ReactNode
@@ -182,7 +184,14 @@ const ShopProfile = ({
   return (
     <Link href={`/data-vendor/${vendorId}`} className={`${styles.shop__profile}`}>
       {!isLoading ? (
-        <Image className={`${styles.profile__image}`} src={imageSrc} alt='mini__comment' width={60} height={60} />
+        <Image
+          style={{borderRadius: '25%'}}
+          className={`${styles.profile__image}`}
+          src={imageSrc}
+          alt='mini__comment'
+          width={60}
+          height={60}
+        />
       ) : (
         <Skeleton style={{width: 100000, maxWidth: '60px'}} height={60} width={60} />
       )}
@@ -358,8 +367,9 @@ const ImagesSlider = ({
 export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData: ICardFull | null}) => {
   const [cardMiniData, setCardMiniData] = useState<ICardFull | null>(cardData)
   const [isMounted, setIsMounted] = useState(false)
+  const [vendorModalOpen, setVendorModalOpen] = useState(false)
   const windowWidth = useWindowWidth()
-
+  const [showPhone, setShowPhone] = useState(false)
   useEffect(() => {
     console.log('cardData', cardData)
   }, [cardData])
@@ -409,7 +419,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
       <ShopProfile
         isLoading={isReallyLoading}
         name={cardMiniData?.user.login || ''}
-        imageSrc={im4}
+        imageSrc={cardData?.user.avatarUrl || im4}
         vendorId={cardMiniData?.user.id.toString() || ''}
       />
 
@@ -482,6 +492,72 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
     return (
       <div className={`${styles.card__state}`}>
+        <ModalWindowDefault
+          extraClass={styles.vendor__modal__extra}
+          isOpen={vendorModalOpen}
+          onClose={() => setVendorModalOpen(false)}
+        >
+          <div className={`${styles.modal__vendor__box__first}`}>
+            <h2 className={styles.vendor__modal__title}>{cardData?.user.login}</h2>
+            <div className={`${styles.modal__vendor__content}`}>
+              <Image
+                style={{borderRadius: '20px'}}
+                src={cardData?.user.avatarUrl || ''}
+                alt={cardData?.user.login || ''}
+                width={200}
+                height={200}
+              />
+              <div className={`${styles.texts__box}`}>
+                <div className={`${styles.inn__box}`}>
+                  <span>
+                    {' '}
+                    <b className={styles.mini__title__vendor}> {t('innTitle')}</b>
+                  </span>{' '}
+                  {cardData?.user.vendorDetails?.inn}
+                </div>
+                <div className={`${styles.inn__box}`}>
+                  <span>
+                    {' '}
+                    <b className={styles.mini__title__vendor}> {t('countriesTitle')}</b>{' '}
+                  </span>{' '}
+                  <ul className={`${styles.countries__list}`}>
+                    {cardData?.user.vendorDetails?.countries?.map((el, i) => (
+                      <li key={i + el?.id}>{el?.name}</li>
+                    ))}
+                  </ul>
+                </div>
+                {cardData?.user.vendorDetails?.description?.length !== 0 && (
+                  <TextAreaUI
+                    currentValue={cardData?.user.vendorDetails?.description || ''}
+                    onSetValue={() => {}}
+                    readOnly
+                    maxRows={10}
+                    theme='superWhite'
+                    minRows={2}
+                    autoResize
+                    placeholder={t('description')}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+          <div className={styles.buttons__box}>
+            <button
+              className={`${styles.telephone__button} ${!showPhone ? styles.telephone__button__hidden : styles.telephone__button__show} `}
+              onClick={() => setShowPhone(true)}
+            >
+              {showPhone
+                ? cardData?.user?.phoneNumber || cardData?.user.vendorDetails?.phoneNumbers?.[0] || 'Without phone'
+                : t('showTelephone')}
+            </button>
+            <button className={styles.button__vendor__bottom} onClick={() => {}}>
+              {t('showOnEmail')}
+            </button>
+            <button className={styles.button__vendor__bottom} onClick={() => {}}>
+              {t('RequestCallback ')}
+            </button>
+          </div>
+        </ModalWindowDefault>
         <div className={`${styles.card__state__big}`}>
           <ul className={`${styles.prices__list}`}>
             {cardData?.prices.map((el, i) => {
@@ -561,7 +637,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             )}
           </div>
 
-          <div className='styles.buttons__box'>
+          <div className={`${styles.buttons__box}`}>
             {!isReallyLoading ? (
               <Link
                 href={`/data-vendor/${cardData?.user.id}`}
@@ -572,6 +648,21 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
               >
                 {t('byNow')}
               </Link>
+            ) : (
+              <Skeleton height={48} width={150} />
+            )}
+          </div>
+          <div className={`${styles.buttons__box}`}>
+            {!isReallyLoading ? (
+              <div
+                onClick={(event) => {
+                  event.preventDefault()
+                  setVendorModalOpen(true)
+                }}
+                className={`${styles.by__now__button} ${styles.by__now__button__vendor}`}
+              >
+                {t('showVendorData')}
+              </div>
             ) : (
               <Skeleton height={48} width={150} />
             )}
