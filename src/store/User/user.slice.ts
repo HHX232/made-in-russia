@@ -15,6 +15,7 @@ export interface VendorDetails {
 }
 
 export interface User {
+  isEnabled?: boolean
   id: number
   role: string
   email: string

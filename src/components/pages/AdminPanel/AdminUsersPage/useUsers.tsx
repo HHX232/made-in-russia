@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {useState, useCallback, useEffect, useRef} from 'react'
-import {User} from '@/services/users.types'
+import {User} from '@/store/User/user.slice'
+import {useState, useCallback} from 'react'
+import {useInfiniteQuery, useQuery, useQueryClient} from '@tanstack/react-query'
 
 // Типы для фильтров и параметров запроса
 export interface UsersFilters {
@@ -38,10 +39,11 @@ export interface UseUsersReturn {
   totalPages: number
   currentPage: number
   hasNextPage: boolean
+  isFetchingNextPage: boolean
 
   // Методы для управления
-  loadUsers: () => Promise<void>
-  loadMoreUsers: () => Promise<void>
+  loadUsers: () => void
+  loadMoreUsers: () => void
   setFilters: (filters: Partial<UsersFilters>) => void
   clearFilters: () => void
   setSort: (sort: UsersParams['sort'], direction?: UsersParams['direction']) => void
@@ -49,238 +51,208 @@ export interface UseUsersReturn {
   refreshUsers: () => Promise<void>
 }
 
-// Функция для удаления дубликатов пользователей по ID
-const removeDuplicateUsers = (existingUsers: User[], newUsers: User[]): User[] => {
-  // Создаем Set с ID существующих пользователей для быстрого поиска
-  const existingIds = new Set(existingUsers.map((user) => user.id))
+// Функция для создания ключа запроса
+const createUsersQueryKey = (params: UsersParams, filters: UsersFilters) => [
+  'users',
+  {
+    ...params,
+    ...filters
+  }
+]
 
-  // Фильтруем новых пользователей, оставляя только тех, которых еще нет
-  const uniqueNewUsers = newUsers.filter((user) => !existingIds.has(user.id))
+// Функция для выполнения запроса к API
+const fetchUsers = async (instance: any, params: UsersParams, filters: UsersFilters): Promise<UsersResponse> => {
+  // Формируем объект запроса только с заполненными полями
+  const requestData: any = {
+    page: params.page,
+    size: params.size,
+    sort: params.sort,
+    direction: params.direction
+  }
 
-  console.log(
-    `Добавляется ${uniqueNewUsers.length} новых пользователей из ${newUsers.length} (${newUsers.length - uniqueNewUsers.length} дубликатов отфильтровано)`
-  )
+  // Добавляем фильтры только если они заданы
+  Object.entries({...params, ...filters}).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '' && !['page', 'size', 'sort', 'direction'].includes(key)) {
+      requestData[key] = value
+    }
+  })
 
-  return [...existingUsers, ...uniqueNewUsers]
+  console.log('Запрос пользователей с параметрами:', requestData)
+
+  const response = await instance.get('/user', {
+    params: requestData
+  })
+
+  return response.data
 }
 
-const useUsers = (
-  instance: any, // Ваш axios instance
-  initialSize: number = 10
-): UseUsersReturn => {
-  // Состояния
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [totalElements, setTotalElements] = useState(0)
-  const [totalPages, setTotalPages] = useState(0)
-  const [currentPage, setCurrentPage] = useState(0)
+// Основной хук
+const useUsers = (instance: any, initialSize: number = 10): UseUsersReturn => {
+  const queryClient = useQueryClient()
 
-  // Параметры запроса
-  const [params, setParams] = useState<UsersParams>({
+  // Состояния для параметров запроса
+  const [params, setParams] = useState<Omit<UsersParams, keyof UsersFilters>>({
     page: 0,
     size: initialSize,
     sort: 'registrationDate',
     direction: 'asc'
   })
 
-  // Фильтры отдельно для удобства
   const [filters, setFiltersState] = useState<UsersFilters>({})
 
-  // Ref для отслеживания активного запроса
-  const activeRequestRef = useRef<AbortController | null>(null)
-  const isInitializedRef = useRef(false)
+  // Состояние для отслеживания режима работы
+  const [useInfiniteMode, setUseInfiniteMode] = useState(false)
 
-  // Функция выполнения запроса
-  const fetchUsers = useCallback(
-    async (requestParams: UsersParams, append: boolean = false) => {
-      try {
-        // Отменяем предыдущий запрос если он есть
-        if (activeRequestRef.current) {
-          activeRequestRef.current.abort()
-        }
+  // Основной запрос с пагинацией (только для обычного режима)
+  const {data, error, isLoading, refetch} = useQuery({
+    queryKey: createUsersQueryKey({...params, ...filters}, {}),
+    queryFn: () => fetchUsers(instance, {...params, ...filters}, {}),
+    staleTime: 5 * 60 * 1000, // 5 минут
+    gcTime: 10 * 60 * 1000, // 10 минут (ранее cacheTime)
+    enabled: !useInfiniteMode // Отключаем когда используется infinite режим
+  })
 
-        // Создаем новый AbortController
-        const abortController = new AbortController()
-        activeRequestRef.current = abortController
-
-        setLoading(true)
-        setError(null)
-
-        // Формируем объект запроса только с заполненными полями
-        const requestData: any = {
-          page: requestParams.page,
-          size: requestParams.size,
-          sort: requestParams.sort,
-          direction: requestParams.direction
-        }
-
-        // Добавляем фильтры только если они заданы
-        Object.entries(requestParams).forEach(([key, value]) => {
-          if (
-            value !== undefined &&
-            value !== null &&
-            value !== '' &&
-            !['page', 'size', 'sort', 'direction'].includes(key)
-          ) {
-            requestData[key] = value
-          }
-        })
-
-        console.log('Запрос пользователей с параметрами:', requestData)
-
-        const response = await instance.get('/user', {
-          params: requestData,
-          signal: abortController.signal
-        })
-
-        // Проверяем, что запрос не был отменен
-        if (abortController.signal.aborted) {
-          return
-        }
-
-        const data: UsersResponse = response.data
-
-        setUsers((prev) => {
-          if (append) {
-            // При добавлении - используем функцию удаления дубликатов
-            return removeDuplicateUsers(prev, data.content)
-          } else {
-            // При замене - просто заменяем весь список
-            return data.content
-          }
-        })
-
-        setTotalElements(data.totalElements)
-        setTotalPages(data.totalPages)
-        setCurrentPage(data.number)
-
-        console.log(
-          `Загружено ${data.content.length} пользователей (страница ${data.number + 1} из ${data.totalPages})`
-        )
-      } catch (err: any) {
-        // Игнорируем ошибки отмененных запросов
-        if (err.name === 'AbortError' || err.code === 'ERR_CANCELED') {
-          console.log('Запрос был отменен')
-          return
-        }
-
-        console.error('Ошибка загрузки пользователей:', err)
-        setError(err?.response?.data?.message || err?.message || 'Ошибка загрузки пользователей')
-      } finally {
-        setLoading(false)
-        activeRequestRef.current = null
-      }
+  // Infinite query для loadMore функциональности
+  const {
+    data: infiniteData,
+    fetchNextPage,
+    hasNextPage: hasInfiniteNextPage,
+    isFetchingNextPage,
+    isLoading: isInfiniteLoading,
+    error: infiniteError,
+    refetch: refetchInfinite
+  } = useInfiniteQuery({
+    queryKey: ['users-infinite', {...params, ...filters}],
+    queryFn: ({pageParam = 0}) => fetchUsers(instance, {...params, ...filters, page: pageParam}, {}),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      return lastPage.number + 1 < lastPage.totalPages ? lastPage.number + 1 : undefined
     },
-    [instance]
-  )
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    enabled: useInfiniteMode // Включаем только в infinite режиме
+  })
 
-  // Загрузка пользователей (заменяет текущий список)
-  const loadUsers = useCallback(async () => {
-    const requestParams = {...params, ...filters}
-    await fetchUsers(requestParams, false)
-  }, [params, filters, fetchUsers])
+  // Получаем данные в зависимости от режима
+  const users = useInfiniteMode ? infiniteData?.pages.flatMap((page) => page.content) || [] : data?.content || []
 
-  // Загрузка дополнительных пользователей (добавляет к текущему списку)
-  const loadMoreUsers = useCallback(async () => {
-    if (currentPage + 1 >= totalPages || loading) {
-      console.log('Больше страниц нет или уже идет загрузка')
+  const totalElements = useInfiniteMode ? infiniteData?.pages[0]?.totalElements || 0 : data?.totalElements || 0
+
+  const totalPages = useInfiniteMode ? infiniteData?.pages[0]?.totalPages || 0 : data?.totalPages || 0
+
+  const currentPage = useInfiniteMode ? (infiniteData?.pages.length || 1) - 1 : data?.number || 0
+
+  // Методы управления
+  const loadUsers = useCallback(() => {
+    // Переключаемся в обычный режим и перезагружаем
+    setUseInfiniteMode(false)
+    queryClient.resetQueries({queryKey: ['users-infinite']})
+  }, [queryClient])
+
+  const loadMoreUsers = useCallback(() => {
+    if (!useInfiniteMode) {
+      // Первый вызов - переключаемся в infinite режим
+      setUseInfiniteMode(true)
       return
     }
 
-    const nextPageParams = {
-      ...params,
-      ...filters,
-      page: currentPage + 1
+    if (hasInfiniteNextPage && !isFetchingNextPage) {
+      console.log('Загружаем следующую страницу через infinite query')
+      fetchNextPage()
     }
+  }, [useInfiniteMode, fetchNextPage, hasInfiniteNextPage, isFetchingNextPage])
 
-    console.log(`Загрузка дополнительной страницы: ${nextPageParams.page} (текущая: ${currentPage})`)
-    await fetchUsers(nextPageParams, true)
-  }, [params, filters, currentPage, totalPages, fetchUsers, loading])
+  const setFilters = useCallback(
+    (newFilters: Partial<UsersFilters>) => {
+      setFiltersState((prev) => ({
+        ...prev,
+        ...newFilters
+      }))
 
-  // Установка фильтров
-  const setFilters = useCallback((newFilters: Partial<UsersFilters>) => {
-    setFiltersState((prev) => ({
-      ...prev,
-      ...newFilters
-    }))
+      // Сбрасываем на первую страницу и переключаемся в обычный режим
+      setParams((prev) => ({
+        ...prev,
+        page: 0
+      }))
 
-    // Сбрасываем на первую страницу при изменении фильтров
-    setParams((prev) => ({
-      ...prev,
-      page: 0
-    }))
-  }, [])
+      setUseInfiniteMode(false)
 
-  // Очистка фильтров
+      // Инвалидируем все связанные запросы
+      queryClient.invalidateQueries({queryKey: ['users']})
+      queryClient.invalidateQueries({queryKey: ['users-infinite']})
+    },
+    [queryClient]
+  )
+
   const clearFilters = useCallback(() => {
     setFiltersState({})
     setParams((prev) => ({
       ...prev,
       page: 0
     }))
-  }, [])
 
-  // Установка сортировки
-  const setSort = useCallback((sort: UsersParams['sort'], direction: UsersParams['direction'] = 'asc') => {
-    setParams((prev) => ({
-      ...prev,
-      sort,
-      direction,
-      page: 0 // Сбрасываем на первую страницу
-    }))
-  }, [])
+    setUseInfiniteMode(false)
 
-  // Установка страницы
+    // Инвалидируем запросы
+    queryClient.invalidateQueries({queryKey: ['users']})
+    queryClient.invalidateQueries({queryKey: ['users-infinite']})
+  }, [queryClient])
+
+  const setSort = useCallback(
+    (sort: UsersParams['sort'], direction: UsersParams['direction'] = 'asc') => {
+      setParams((prev) => ({
+        ...prev,
+        sort,
+        direction,
+        page: 0
+      }))
+
+      setUseInfiniteMode(false)
+
+      // Инвалидируем запросы
+      queryClient.invalidateQueries({queryKey: ['users']})
+      queryClient.invalidateQueries({queryKey: ['users-infinite']})
+    },
+    [queryClient]
+  )
+
   const setPage = useCallback((page: number) => {
     setParams((prev) => ({
       ...prev,
       page
     }))
+
+    // При смене страницы переключаемся в обычный режим
+    setUseInfiniteMode(false)
   }, [])
 
-  // Обновление пользователей (перезагрузка текущей страницы)
   const refreshUsers = useCallback(async () => {
-    await loadUsers()
-  }, [loadUsers])
-
-  // Автоматическая загрузка при изменении параметров - ИСПРАВЛЕНО
-  useEffect(() => {
-    // Загружаем только при инициализации или изменении фильтров/сортировки
-    if (!isInitializedRef.current) {
-      isInitializedRef.current = true
-      loadUsers()
+    if (useInfiniteMode) {
+      await refetchInfinite()
+    } else {
+      await refetch()
     }
-  }, [])
+  }, [useInfiniteMode, refetch, refetchInfinite])
 
-  useEffect(() => {
-    if (isInitializedRef.current) {
-      setCurrentPage(0)
-      loadUsers()
-    }
-  }, [params.sort, params.direction, filters])
-
-  // Cleanup при размонтировании
-  useEffect(() => {
-    return () => {
-      if (activeRequestRef.current) {
-        activeRequestRef.current.abort()
-      }
-    }
-  }, [])
-
-  // Вычисляемые значения
-  const hasNextPage = currentPage + 1 < totalPages
+  // Обработка ошибок
+  const errorMessage = useInfiniteMode
+    ? (infiniteError as any)?.response?.data?.message ||
+      (infiniteError as any)?.message ||
+      (infiniteError ? 'Ошибка загрузки пользователей' : null)
+    : (error as any)?.response?.data?.message ||
+      (error as any)?.message ||
+      (error ? 'Ошибка загрузки пользователей' : null)
 
   return {
     users,
-    loading,
-    error,
+    loading: useInfiniteMode ? isInfiniteLoading : isLoading,
+    error: errorMessage,
     filters,
     totalElements,
     totalPages,
     currentPage,
-    hasNextPage,
+    hasNextPage: useInfiniteMode ? hasInfiniteNextPage : currentPage + 1 < totalPages,
+    isFetchingNextPage,
 
     loadUsers,
     loadMoreUsers,

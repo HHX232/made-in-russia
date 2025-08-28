@@ -10,7 +10,7 @@ import Link from 'next/link'
 import Head from 'next/head'
 import styles from './CardPage.module.scss'
 import Image from 'next/image'
-import {ReactNode, useEffect, useLayoutEffect, useRef, useState} from 'react'
+import {ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import ICardFull from '@/services/card/card.types'
 import {useTranslations} from 'next-intl'
@@ -490,6 +490,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
       }
     }, [cardData])
 
+    const urlForLogo = useMemo(() => cardData?.user.avatarUrl || '', [])
     return (
       <div className={`${styles.card__state}`}>
         <ModalWindowDefault
@@ -502,7 +503,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             <div className={`${styles.modal__vendor__content}`}>
               <Image
                 style={{borderRadius: '20px'}}
-                src={cardData?.user.avatarUrl || ''}
+                src={urlForLogo}
                 alt={cardData?.user.login || ''}
                 width={200}
                 height={200}
@@ -554,7 +555,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
               {t('showOnEmail')}
             </button>
             <button className={styles.button__vendor__bottom} onClick={() => {}}>
-              {t('RequestCallback ')}
+              {t('RequestCallback')}
             </button>
           </div>
         </ModalWindowDefault>

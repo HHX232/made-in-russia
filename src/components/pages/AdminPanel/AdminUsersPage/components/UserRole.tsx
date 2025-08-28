@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
-import {User} from '@/services/users.types'
+// import {User} from '@/services/users.types'
 import {FC, useState, useEffect} from 'react'
 import styles from '../AdminUsersPage.module.scss'
 import Image from 'next/image'
@@ -8,6 +8,8 @@ import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/Mo
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import CategoriesService from '@/services/categoryes/categoryes.service'
+import {User} from '@/store/User/user.slice'
+import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 
 const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'Kazakhstan']
 const trashImage = '/admin/trash.svg'
@@ -22,8 +24,12 @@ type UserEditData = {
   role: User['role']
   // Дополнительные поля для вендора
   inn?: string
+  description?: string
   countries?: string[]
   productCategories?: string[]
+  sites?: string[]
+  phoneNumbers?: string[]
+  emails?: string[]
 }
 
 export interface Category {
@@ -57,14 +63,19 @@ const UserRow: FC<{
     region: '',
     role: 'User',
     inn: '',
+    description: '',
     countries: [],
-    productCategories: []
+    productCategories: [],
+    sites: [],
+    phoneNumbers: [],
+    emails: []
   })
-  const [activeImages, setActiveImages] = useState<string[]>([])
+  const [activeImages, setActiveImages] = useState<string[]>([user?.avatarUrl])
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCountries, setSelectedCountries] = useState<string[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
+  console.log(user)
   // Загрузка категорий при открытии редактирования вендора
   useEffect(() => {
     const fetchCategories = async () => {
@@ -83,7 +94,10 @@ const UserRow: FC<{
 
   const handleCountryChange = (newCountry: string) => {
     setActiveCountry(newCountry)
-    onUpdateUser?.(user.id, {...user, region: newCountry})
+    onUpdateUser?.(user.id, {
+      ...user,
+      ...(editData.role !== 'vendor' ? {region: newCountry} : {})
+    })
   }
 
   const handleRoleChange = (newRole: string) => {
@@ -127,6 +141,9 @@ const UserRow: FC<{
         const vendorDetails = userData.vendorDetails || {}
         const countries = vendorDetails.countries || []
         const productCategories = vendorDetails.productCategories || []
+        const sites = vendorDetails.sites || []
+        const phoneNumbers = vendorDetails.phoneNumbers || []
+        const emails = vendorDetails.emails || []
 
         setEditData({
           login: userData.login || '',
@@ -135,8 +152,12 @@ const UserRow: FC<{
           region: '',
           role: 'Vendor',
           inn: vendorDetails.inn || '',
+          description: vendorDetails.description || '',
           countries: countries.map((country: any) => country.name),
-          productCategories: productCategories.map((category: any) => category.id.toString())
+          productCategories: productCategories.map((category: any) => category.id.toString()),
+          sites: sites || [],
+          phoneNumbers: phoneNumbers || [],
+          emails: emails || []
         })
 
         // Устанавливаем выбранные страны и категории
@@ -154,8 +175,12 @@ const UserRow: FC<{
           region: userData.region || '',
           role: userData.role || 'User',
           inn: '',
+          description: '',
           countries: [],
-          productCategories: []
+          productCategories: [],
+          sites: [],
+          phoneNumbers: [],
+          emails: []
         })
 
         setSelectedCountries([])
@@ -185,7 +210,12 @@ const UserRow: FC<{
           phoneNumber: editData.phoneNumber,
           inn: editData.inn,
           countries: selectedCountries,
-          productCategories: selectedCategories.map((id) => parseInt(id)) // Преобразуем в числа
+          productCategories: selectedCategories.map((id) => parseInt(id)), // Преобразуем в числа
+          // Закомментированы новые поля для отправки позже
+          description: editData.description,
+          sites: editData.sites,
+          phoneNumbers: editData.phoneNumbers,
+          emails: editData.emails
         })
       } else {
         // Обновление обычного пользователя
@@ -202,7 +232,7 @@ const UserRow: FC<{
         login: editData.login,
         email: editData.email,
         phoneNumber: editData.phoneNumber,
-        region: editData.region,
+        ...(editData.role !== 'vendor' ? {region: editData.region} : {}),
         role: editData.role
       }
 
@@ -250,6 +280,65 @@ const UserRow: FC<{
     )
   }
 
+  const handleAvatarUpload = async (files: File[]) => {
+    if (!instance || files.length === 0) {
+      try {
+        instance.delete(`/user/${user.id}/avatar`)
+      } catch (e) {
+        console.error('Ошибка при удалении аватара:', e)
+      }
+      return
+    }
+
+    const file = files[0]
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      setIsLoading(true)
+      const response = await instance.put(`/user/${user.id}/avatar`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      console.log('Аватар загружен:', response.data)
+      // Обновляем URL аватара в пользователе
+      const updatedUser: User = {
+        ...user,
+        avatarUrl: response.data.avatarUrl || response.data.url
+      }
+      onUpdateUser?.(user.id, updatedUser)
+    } catch (error) {
+      console.error('Ошибка при загрузке аватара:', error)
+      alert('Произошла ошибка при загрузке аватара')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Функции для управления массивами строк (сайты, телефоны, емейлы)
+  const addArrayItem = (field: 'sites' | 'phoneNumbers' | 'emails') => {
+    setEditData((prev) => ({
+      ...prev,
+      [field]: [...(prev[field] || []), '']
+    }))
+  }
+
+  const updateArrayItem = (field: 'sites' | 'phoneNumbers' | 'emails', index: number, value: string) => {
+    setEditData((prev) => ({
+      ...prev,
+      [field]: (prev[field] || []).map((item, i) => (i === index ? value : item))
+    }))
+  }
+
+  const removeArrayItem = (field: 'sites' | 'phoneNumbers' | 'emails', index: number) => {
+    setEditData((prev) => ({
+      ...prev,
+      [field]: (prev[field] || []).filter((_, i) => i !== index)
+    }))
+  }
+
   const isBanned = !user.isEnabled
 
   return (
@@ -263,10 +352,7 @@ const UserRow: FC<{
 
         <div className={styles.modal__avatar__section}>
           <CreateImagesInput
-            onFilesChange={(files) => {
-              // Обработка загрузки аватара
-              console.log('Загружены файлы:', files)
-            }}
+            onFilesChange={handleAvatarUpload}
             maxFiles={1}
             inputIdPrefix={`user-${user.id}`}
             activeImages={activeImages}
@@ -307,9 +393,9 @@ const UserRow: FC<{
               safeAreaEnabled
               positionIsAbsolute={true}
               title={editData.region || 'Выберите регион'}
-              extraClass={styles.modal__dropdown}
+              extraClass={`${styles.modal__dropdown} ${styles.extra__countries__list}`}
               items={REGION_OPTIONS.map((region) => (
-                <p onClick={() => setEditData((prev) => ({...prev, region}))} key={region}>
+                <p onClick={() => setEditData((prev) => ({...prev, region: region}))} key={region}>
                   {region}
                 </p>
               ))}
@@ -326,6 +412,109 @@ const UserRow: FC<{
                 theme='superWhite'
                 extraClass={styles.form__input}
               />
+
+              <TextAreaUI
+                placeholder='Описание компании'
+                currentValue={editData.description || ''}
+                onSetValue={(value) => setEditData((prev) => ({...prev, description: value}))}
+                autoResize
+                maxRows={20}
+                minRows={2}
+                theme='superWhite'
+              />
+
+              {/* Сайты */}
+              <div className={styles.array__field__section}>
+                <h4>Сайты компании:</h4>
+                {(editData.sites || []).map((site, index) => (
+                  <div
+                    style={{display: 'flex', alignItems: 'center', gap: '10px'}}
+                    key={index}
+                    className={styles.array__item}
+                  >
+                    <TextInputUI
+                      placeholder={`Сайт ${index + 1}`}
+                      currentValue={site}
+                      onSetValue={(value) => updateArrayItem('sites', index, value)}
+                      theme='superWhite'
+                      extraClass={styles.form__input}
+                    />
+                    <button
+                      style={{color: '#b02a36', fontSize: '22px'}}
+                      type='button'
+                      className={styles.remove__item__button}
+                      onClick={() => removeArrayItem('sites', index)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button type='button' className={styles.add__item__button} onClick={() => addArrayItem('sites')}>
+                  + Добавить сайт
+                </button>
+              </div>
+
+              {/* Дополнительные телефоны */}
+              <div className={styles.array__field__section}>
+                <h4>Дополнительные телефоны:</h4>
+                {(editData.phoneNumbers || []).map((phone, index) => (
+                  <div
+                    style={{display: 'flex', alignItems: 'center', gap: '10px'}}
+                    key={index}
+                    className={styles.array__item}
+                  >
+                    <TextInputUI
+                      placeholder={`Телефон ${index + 1}`}
+                      currentValue={phone}
+                      onSetValue={(value) => updateArrayItem('phoneNumbers', index, value)}
+                      theme='superWhite'
+                      extraClass={styles.form__input}
+                    />
+                    <button
+                      style={{color: '#b02a36', fontSize: '22px'}}
+                      type='button'
+                      className={styles.remove__item__button}
+                      onClick={() => removeArrayItem('phoneNumbers', index)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button type='button' className={styles.add__item__button} onClick={() => addArrayItem('phoneNumbers')}>
+                  + Добавить телефон
+                </button>
+              </div>
+
+              {/* Дополнительные email'ы */}
+              <div className={styles.array__field__section}>
+                <h4>Дополнительные Email&apos;ы:</h4>
+                {(editData.emails || []).map((email, index) => (
+                  <div
+                    style={{display: 'flex', alignItems: 'center', gap: '10px'}}
+                    key={index}
+                    className={styles.array__item}
+                  >
+                    <TextInputUI
+                      placeholder={`Email ${index + 1}`}
+                      currentValue={email}
+                      onSetValue={(value) => updateArrayItem('emails', index, value)}
+                      theme='superWhite'
+                      extraClass={styles.form__input}
+                    />
+                    <button
+                      style={{color: '#b02a36', fontSize: '22px'}}
+                      type='button'
+                      className={styles.remove__item__button}
+                      onClick={() => removeArrayItem('emails', index)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button type='button' className={styles.add__item__button} onClick={() => addArrayItem('emails')}>
+                  + Добавить Email
+                </button>
+              </div>
 
               {/* Выбор стран */}
               <div className={styles.multi__select__section}>
@@ -381,7 +570,7 @@ const UserRow: FC<{
                       ? '#ECC414'
                       : '#C8313E'
               }}
-              extraClass={styles.modal__dropdown}
+              extraClass={`${styles.modal__dropdown} ${styles.extra__role__list}`}
               items={[
                 <p onClick={() => setEditData((prev) => ({...prev, role: 'User'}))} key={1}>
                   User

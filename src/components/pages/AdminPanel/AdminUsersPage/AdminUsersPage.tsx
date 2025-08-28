@@ -2,7 +2,6 @@
 import {FC, useState, useRef, useEffect} from 'react'
 import styles from './AdminUsersPage.module.scss'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
-import {User} from '@/services/users.types'
 import Skeleton from 'react-loading-skeleton'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import instance from '@/api/api.interceptor'
@@ -11,6 +10,7 @@ import UserRow from './components/UserRole'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import CategoriesService from '@/services/categoryes/categoryes.service'
+import {User} from '@/store/User/user.slice'
 
 const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'Kazakhstan']
 
@@ -209,7 +209,7 @@ const AdminUsersPage: FC = () => {
   // Обработка дозагрузки пользователей
   const handleLoadMore = async () => {
     try {
-      await loadMoreUsers()
+      loadMoreUsers()
     } catch (err) {
       console.error('Ошибка дозагрузки пользователей:', err)
     }
