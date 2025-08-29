@@ -1,15 +1,16 @@
+// path: src/components/AdminUsersPage/UserRow.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
-// import {User} from '@/services/users.types'
-import {FC, useState, useEffect} from 'react'
+import {FC, useEffect, useMemo, useState} from 'react'
 import styles from '../AdminUsersPage.module.scss'
 import Image from 'next/image'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
-import CategoriesService from '@/services/categoryes/categoryes.service'
+import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 import {User} from '@/store/User/user.slice'
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
+import MultiDropSelect from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 
 const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'Kazakhstan']
 const trashImage = '/admin/trash.svg'
@@ -22,7 +23,6 @@ type UserEditData = {
   phoneNumber: string
   region: string
   role: User['role']
-  // Дополнительные поля для вендора
   inn?: string
   description?: string
   countries?: string[]
@@ -32,14 +32,52 @@ type UserEditData = {
   emails?: string[]
 }
 
-export interface Category {
-  id: number
-  slug: string
-  name: string
+// ---- helpers (типо‑гвард, нормализация) ----
+function notNull<T>(v: T | null | undefined): v is T {
+  return v != null
+}
+
+// MultiSelectOption по структуре MultiDropSelect
+export type MultiSelectOption = {
+  id?: number | string
+  value: string
+  label: string
   imageUrl?: string
-  children: Category[]
-  creationDate: string
-  lastModificationDate: string
+  children?: MultiSelectOption[]
+}
+
+function buildOptionsFromCategories(categories: Category[]): MultiSelectOption[] {
+  const recur = (nodes: Category[]): MultiSelectOption[] =>
+    nodes.map((c) => ({
+      id: c.id,
+      value: c.name, // работаем по name
+      label: c.name,
+      imageUrl: c.imageUrl,
+      children: c.children ? recur(c.children) : undefined
+    }))
+  return recur(categories)
+}
+
+function flattenOptions(options: MultiSelectOption[]): MultiSelectOption[] {
+  const out: MultiSelectOption[] = []
+  const walk = (nodes: MultiSelectOption[]) => {
+    nodes.forEach((n) => {
+      out.push(n)
+      if (n.children?.length) walk(n.children)
+    })
+  }
+  walk(options)
+  return out
+}
+
+function dedupe(arr: string[]): string[] {
+  return Array.from(new Set(arr))
+}
+
+// если внезапно в selectedCategories пришли строки‑числа (старые данные),
+// попробуем сопоставить их с id→name из справочника категорий
+function normalizeByDictionary(values: string[], idToName: Map<string, string>): string[] {
+  return values.map((v) => idToName.get(v) ?? v)
 }
 
 const UserRow: FC<{
@@ -49,10 +87,11 @@ const UserRow: FC<{
   onDeleteUser?: (userId: number) => void
   onBanUser?: (userId: number) => void
   onUnbanUser?: (userId: number) => void
-
-  instance?: any // API instance для запросов
+  instance?: any
 }> = ({user, onUpdateUser, onUpdateRole, onDeleteUser, onBanUser, onUnbanUser, instance}) => {
-  const [activeCountry, setActiveCountry] = useState(user.region)
+  const [activeCountry, setActiveCountry] = useState(
+    user.region || user.vendorDetails?.countries?.[0]?.name || user.vendorDetails?.countries?.[0]?.value || ''
+  )
   const [activeRole, setActiveRole] = useState(user.role)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -73,9 +112,31 @@ const UserRow: FC<{
   const [activeImages, setActiveImages] = useState<string[]>([user?.avatarUrl])
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCountries, setSelectedCountries] = useState<string[]>([])
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  // ВАЖНО: здесь всегда имена категорий
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    user.vendorDetails?.productCategories?.map((cat) => String(cat.name)).filter(Boolean) || []
+  )
 
-  console.log(user)
+  // ---- derive options + быстрый поиск ----
+  const options = useMemo(() => buildOptionsFromCategories(categories), [categories])
+  const flatOptions = useMemo(() => flattenOptions(options), [options])
+  const idToName = useMemo(() => {
+    const m = new Map<string, string>()
+    flatOptions.forEach((o) => {
+      if (o.id != null) m.set(String(o.id), o.label)
+    })
+    return m
+  }, [flatOptions])
+
+  // нормализуем старые значения, если вдруг там id‑строки
+  useEffect(() => {
+    if (!selectedCategories.length || idToName.size === 0) return
+    const withNames = normalizeByDictionary(selectedCategories, idToName)
+    if (withNames.some((v, i) => v !== selectedCategories[i])) {
+      setSelectedCategories(dedupe(withNames.filter(Boolean)))
+    }
+  }, [idToName])
+
   // Загрузка категорий при открытии редактирования вендора
   useEffect(() => {
     const fetchCategories = async () => {
@@ -88,7 +149,6 @@ const UserRow: FC<{
         }
       }
     }
-
     fetchCategories()
   }, [editData.role, categories.length])
 
@@ -96,22 +156,19 @@ const UserRow: FC<{
     setActiveCountry(newCountry)
     onUpdateUser?.(user.id, {
       ...user,
-      ...(editData.role !== 'vendor' ? {region: newCountry} : {})
+      ...(editData.role !== 'Vendor' ? {region: newCountry} : {}) // фикс: сравнение по правильному регистру
     })
   }
 
   const handleRoleChange = (newRole: string) => {
-    setActiveRole(newRole)
-    console.log('новая роль', newRole)
+    setActiveRole(newRole as User['role'])
     onUpdateRole?.(user.id, newRole as User['role'])
   }
 
   const handleDeleteUser = async () => {
     if (!instance) return
-
     const confirmDelete = window.confirm('Вы уверены, что хотите удалить этого пользователя?')
     if (!confirmDelete) return
-
     try {
       setIsLoading(true)
       await instance.delete(`/user/${user.id}`)
@@ -126,24 +183,29 @@ const UserRow: FC<{
 
   const handleEditUser = async () => {
     if (!instance) return
-
     try {
       setIsLoading(true)
-
       let userData
-
-      // Для вендора делаем запрос на специальный эндпоинт
       if (user.role === 'Vendor') {
         const response = await instance.get(`/vendor/${user.id}`)
         userData = response.data
+        const vendorDetails: {
+          id: number
+          inn: string
+          description: string
+          creationDate: string
+          lastModificationDate: string
+          viewsCount: number
+          countries: Array<{id: number; name: string}>
+          emails: string[]
+          phoneNumbers: string[]
+          sites: string[]
+          productCategories: Array<{id: number; name: string}>
+          faq: any[]
+        } = userData.vendorDetails || ({} as any)
 
-        // Парсим данные вендора
-        const vendorDetails = userData.vendorDetails || {}
         const countries = vendorDetails.countries || []
         const productCategories = vendorDetails.productCategories || []
-        const sites = vendorDetails.sites || []
-        const phoneNumbers = vendorDetails.phoneNumbers || []
-        const emails = vendorDetails.emails || []
 
         setEditData({
           login: userData.login || '',
@@ -153,21 +215,19 @@ const UserRow: FC<{
           role: 'Vendor',
           inn: vendorDetails.inn || '',
           description: vendorDetails.description || '',
-          countries: countries.map((country: any) => country.name),
-          productCategories: productCategories.map((category: any) => category.id.toString()),
-          sites: sites || [],
-          phoneNumbers: phoneNumbers || [],
-          emails: emails || []
+          countries: countries.map((c) => c.name).filter(Boolean),
+          productCategories: productCategories.map((c) => c.name).filter(Boolean),
+          sites: vendorDetails.sites || [],
+          phoneNumbers: vendorDetails.phoneNumbers || [],
+          emails: vendorDetails.emails || []
         })
 
-        // Устанавливаем выбранные страны и категории
-        setSelectedCountries(countries.map((country: any) => country.name))
-        setSelectedCategories(productCategories.map((category: any) => category.id.toString()))
+        // ключевой момент: храним только name
+        setSelectedCountries(countries.map((c) => c.name).filter(Boolean))
+        setSelectedCategories(productCategories.map((c) => c.name).filter(Boolean))
       } else {
-        // Для обычного пользователя
         const response = await instance.get(`/user/${user.id}`)
         userData = response.data
-
         setEditData({
           login: userData.login || '',
           email: userData.email || '',
@@ -182,11 +242,9 @@ const UserRow: FC<{
           phoneNumbers: [],
           emails: []
         })
-
         setSelectedCountries([])
         setSelectedCategories([])
       }
-
       setIsEditModalOpen(true)
     } catch (error) {
       console.error('Ошибка при получении данных пользователя:', error)
@@ -198,27 +256,22 @@ const UserRow: FC<{
 
   const handleSaveChanges = async () => {
     if (!instance) return
-
     try {
       setIsLoading(true)
-
       if (editData.role === 'Vendor') {
-        // Обновление вендора - отправляем ID категорий как числа
         await instance.put(`/vendor/${user.id}`, {
           email: editData.email,
           login: editData.login,
           phoneNumber: editData.phoneNumber,
           inn: editData.inn,
-          countries: selectedCountries,
-          productCategories: selectedCategories.map((id) => parseInt(id)), // Преобразуем в числа
-          // Закомментированы новые поля для отправки позже
+          countries: selectedCountries, // массив имён стран
+          productCategories: selectedCategories, // массив имён категорий
           description: editData.description,
           sites: editData.sites,
           phoneNumbers: editData.phoneNumbers,
           emails: editData.emails
         })
       } else {
-        // Обновление обычного пользователя
         await instance.put(`/user/${user.id}`, {
           email: editData.email,
           region: editData.region,
@@ -232,7 +285,7 @@ const UserRow: FC<{
         login: editData.login,
         email: editData.email,
         phoneNumber: editData.phoneNumber,
-        ...(editData.role !== 'vendor' ? {region: editData.region} : {}),
+        ...(editData.role !== 'Vendor' ? {region: editData.region} : {}),
         role: editData.role
       }
 
@@ -250,11 +303,9 @@ const UserRow: FC<{
 
   const handleBanToggle = async () => {
     if (!instance) return
-
     try {
       setIsLoading(true)
-      const isBanned = user.role === 'Banned' // предполагаем что забаненные имеют статус 'Banned'
-
+      const isBanned = user.role === 'Banned'
       if (isBanned) {
         await instance.patch(`/user/${user.id}/unban`)
         onUnbanUser?.(user.id)
@@ -274,40 +325,24 @@ const UserRow: FC<{
     setSelectedCountries((prev) => (prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]))
   }
 
-  const toggleCategorySelection = (categoryId: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(categoryId) ? prev.filter((c) => c !== categoryId) : [...prev, categoryId]
-    )
-  }
-
   const handleAvatarUpload = async (files: File[]) => {
     if (!instance || files.length === 0) {
       try {
-        instance.delete(`/user/${user.id}/avatar`)
+        instance?.delete?.(`/user/${user.id}/avatar`)
       } catch (e) {
         console.error('Ошибка при удалении аватара:', e)
       }
       return
     }
-
     const file = files[0]
     const formData = new FormData()
     formData.append('file', file)
-
     try {
       setIsLoading(true)
       const response = await instance.put(`/user/${user.id}/avatar`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: {'Content-Type': 'multipart/form-data'}
       })
-
-      console.log('Аватар загружен:', response.data)
-      // Обновляем URL аватара в пользователе
-      const updatedUser: User = {
-        ...user,
-        avatarUrl: response.data.avatarUrl || response.data.url
-      }
+      const updatedUser: User = {...user, avatarUrl: response.data.avatarUrl || response.data.url}
       onUpdateUser?.(user.id, updatedUser)
     } catch (error) {
       console.error('Ошибка при загрузке аватара:', error)
@@ -317,27 +352,12 @@ const UserRow: FC<{
     }
   }
 
-  // Функции для управления массивами строк (сайты, телефоны, емейлы)
-  const addArrayItem = (field: 'sites' | 'phoneNumbers' | 'emails') => {
-    setEditData((prev) => ({
-      ...prev,
-      [field]: [...(prev[field] || []), '']
-    }))
-  }
-
-  const updateArrayItem = (field: 'sites' | 'phoneNumbers' | 'emails', index: number, value: string) => {
-    setEditData((prev) => ({
-      ...prev,
-      [field]: (prev[field] || []).map((item, i) => (i === index ? value : item))
-    }))
-  }
-
-  const removeArrayItem = (field: 'sites' | 'phoneNumbers' | 'emails', index: number) => {
-    setEditData((prev) => ({
-      ...prev,
-      [field]: (prev[field] || []).filter((_, i) => i !== index)
-    }))
-  }
+  // ---- ВЫЧИСЛЯЕМ selectedValues для MultiDropSelect ИСКЛЮЧИТЕЛЬНО ИЗ name ----
+  const selectedOptions: MultiSelectOption[] = useMemo(() => {
+    return selectedCategories
+      .map((name) => flatOptions.find((o) => o.label === name || o.value === name) || null)
+      .filter(notNull)
+  }, [selectedCategories, flatOptions])
 
   const isBanned = !user.isEnabled
 
@@ -385,7 +405,6 @@ const UserRow: FC<{
             extraClass={styles.form__input}
           />
 
-          {/* Поля для обычных пользователей */}
           {editData.role !== 'Vendor' && (
             <DropList
               direction='right'
@@ -402,7 +421,6 @@ const UserRow: FC<{
             />
           )}
 
-          {/* Дополнительные поля для вендора */}
           {editData.role === 'Vendor' && (
             <>
               <TextInputUI
@@ -435,7 +453,12 @@ const UserRow: FC<{
                     <TextInputUI
                       placeholder={`Сайт ${index + 1}`}
                       currentValue={site}
-                      onSetValue={(value) => updateArrayItem('sites', index, value)}
+                      onSetValue={(value) =>
+                        setEditData((prev) => ({
+                          ...prev,
+                          sites: (prev.sites || []).map((s, i) => (i === index ? value : s))
+                        }))
+                      }
                       theme='superWhite'
                       extraClass={styles.form__input}
                     />
@@ -443,18 +466,24 @@ const UserRow: FC<{
                       style={{color: '#b02a36', fontSize: '22px'}}
                       type='button'
                       className={styles.remove__item__button}
-                      onClick={() => removeArrayItem('sites', index)}
+                      onClick={() =>
+                        setEditData((prev) => ({...prev, sites: (prev.sites || []).filter((_, i) => i !== index)}))
+                      }
                     >
                       ×
                     </button>
                   </div>
                 ))}
-                <button type='button' className={styles.add__item__button} onClick={() => addArrayItem('sites')}>
+                <button
+                  type='button'
+                  className={styles.add__item__button}
+                  onClick={() => setEditData((p) => ({...p, sites: [...(p.sites || []), '']}))}
+                >
                   + Добавить сайт
                 </button>
               </div>
 
-              {/* Дополнительные телефоны */}
+              {/* Телефоны */}
               <div className={styles.array__field__section}>
                 <h4>Дополнительные телефоны:</h4>
                 {(editData.phoneNumbers || []).map((phone, index) => (
@@ -466,7 +495,12 @@ const UserRow: FC<{
                     <TextInputUI
                       placeholder={`Телефон ${index + 1}`}
                       currentValue={phone}
-                      onSetValue={(value) => updateArrayItem('phoneNumbers', index, value)}
+                      onSetValue={(value) =>
+                        setEditData((prev) => ({
+                          ...prev,
+                          phoneNumbers: (prev.phoneNumbers || []).map((s, i) => (i === index ? value : s))
+                        }))
+                      }
                       theme='superWhite'
                       extraClass={styles.form__input}
                     />
@@ -474,18 +508,27 @@ const UserRow: FC<{
                       style={{color: '#b02a36', fontSize: '22px'}}
                       type='button'
                       className={styles.remove__item__button}
-                      onClick={() => removeArrayItem('phoneNumbers', index)}
+                      onClick={() =>
+                        setEditData((prev) => ({
+                          ...prev,
+                          phoneNumbers: (prev.phoneNumbers || []).filter((_, i) => i !== index)
+                        }))
+                      }
                     >
                       ×
                     </button>
                   </div>
                 ))}
-                <button type='button' className={styles.add__item__button} onClick={() => addArrayItem('phoneNumbers')}>
+                <button
+                  type='button'
+                  className={styles.add__item__button}
+                  onClick={() => setEditData((p) => ({...p, phoneNumbers: [...(p.phoneNumbers || []), '']}))}
+                >
                   + Добавить телефон
                 </button>
               </div>
 
-              {/* Дополнительные email'ы */}
+              {/* Emails */}
               <div className={styles.array__field__section}>
                 <h4>Дополнительные Email&apos;ы:</h4>
                 {(editData.emails || []).map((email, index) => (
@@ -497,7 +540,12 @@ const UserRow: FC<{
                     <TextInputUI
                       placeholder={`Email ${index + 1}`}
                       currentValue={email}
-                      onSetValue={(value) => updateArrayItem('emails', index, value)}
+                      onSetValue={(value) =>
+                        setEditData((prev) => ({
+                          ...prev,
+                          emails: (prev.emails || []).map((s, i) => (i === index ? value : s))
+                        }))
+                      }
                       theme='superWhite'
                       extraClass={styles.form__input}
                     />
@@ -505,18 +553,24 @@ const UserRow: FC<{
                       style={{color: '#b02a36', fontSize: '22px'}}
                       type='button'
                       className={styles.remove__item__button}
-                      onClick={() => removeArrayItem('emails', index)}
+                      onClick={() =>
+                        setEditData((prev) => ({...prev, emails: (prev.emails || []).filter((_, i) => i !== index)}))
+                      }
                     >
                       ×
                     </button>
                   </div>
                 ))}
-                <button type='button' className={styles.add__item__button} onClick={() => addArrayItem('emails')}>
+                <button
+                  type='button'
+                  className={styles.add__item__button}
+                  onClick={() => setEditData((p) => ({...p, emails: [...(p.emails || []), '']}))}
+                >
                   + Добавить Email
                 </button>
               </div>
 
-              {/* Выбор стран */}
+              {/* Страны */}
               <div className={styles.multi__select__section}>
                 <h4>Страны работы:</h4>
                 <div className={styles.multi__select__grid}>
@@ -533,22 +587,25 @@ const UserRow: FC<{
                 </div>
               </div>
 
-              {/* Выбор категорий */}
+              {/* Категории по name */}
               {categories.length > 0 && (
-                <div className={styles.multi__select__section}>
+                <div style={{zIndex: '100000'}} className={styles.multi__select__section}>
                   <h4>Категории товаров:</h4>
-                  <div className={styles.multi__select__grid}>
-                    {categories.map((category) => (
-                      <label key={category.id} className={styles.checkbox__item}>
-                        <input
-                          type='checkbox'
-                          checked={selectedCategories.includes(category.id.toString())}
-                          onChange={() => toggleCategorySelection(category.id.toString())}
-                        />
-                        <span>{category.name}</span>
-                      </label>
-                    ))}
-                  </div>
+                  <MultiDropSelect
+                    extraDropListClass={styles.extra_extraDropListClass}
+                    showSearchInput
+                    isOnlyShow={false}
+                    extraClass={styles.profile__region__dropdown__extra}
+                    options={options as any}
+                    isCategories={true}
+                    selectedValues={selectedOptions as any}
+                    onChange={(values: MultiSelectOption[]) => {
+                      const names = dedupe(values.map((v) => v.label || v.value).filter(Boolean))
+                      setSelectedCategories(names)
+                    }}
+                    placeholder={'Выберите категории товаров'}
+                    direction={'bottom'}
+                  />
                 </div>
               )}
             </>
@@ -641,6 +698,7 @@ const UserRow: FC<{
           </p>
         ))}
       />
+
       <DropList
         direction='bottom'
         trigger='hover'
@@ -671,6 +729,7 @@ const UserRow: FC<{
           </p>
         ]}
       />
+
       <div className={styles.user__edits}>
         <div className={`${styles.deleat__button} ${isLoading ? styles.loading : ''}`} onClick={handleDeleteUser}>
           <Image src={trashImage} alt='trash' width={15} height={17} />

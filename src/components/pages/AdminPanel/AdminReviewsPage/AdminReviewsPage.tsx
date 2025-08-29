@@ -12,6 +12,7 @@ interface User {
   login: string
   phoneNumber: string
   region: string
+  avatarUrl?: string
   registrationDate: string
   lastModificationDate: string
 }
@@ -90,6 +91,9 @@ const AdminReviewsPage: FC = () => {
   const [editRating, setEditRating] = useState(5)
   const [editLoading, setEditLoading] = useState(false)
 
+  useEffect(() => {
+    console.log('reviews', reviews)
+  }, [reviews])
   const pageSize = 10
   const productId = 1 // В реальном приложении нужно получать из контекста или пропсов
 
