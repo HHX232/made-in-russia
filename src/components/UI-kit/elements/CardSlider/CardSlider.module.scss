@@ -9,12 +9,11 @@
     padding: 15px !important;
     border-radius: 8px;
 
-    @media (max-width: 700px) {
+    @media (max-width: 1000px) {
       overflow: auto;
-      width: 100vw;
-      height: 100vh;
-      padding: 0 !important;
-      border-radius: 0;
+      width: 96vw !important;
+      height: 96vh !important;
+      padding: 10px !important;
     }
 
     &:hover {
@@ -102,7 +101,7 @@
 
   .zoomImage {
     display: block;
-    width: auto;
+    width: 100%;
     max-width: 100%;
     height: auto;
     max-height: 100%;
