@@ -2,7 +2,7 @@
 import {FC, useState, useEffect, useRef} from 'react'
 import styles from './CategoryesMenuDesktop.module.scss'
 import {Category} from '@/services/categoryes/categoryes.service'
-import Link from 'next/link'
+import {Link} from '@/i18n/navigation'
 import {useTranslations} from 'next-intl'
 
 interface ICategoryesMenuDesktopProps {

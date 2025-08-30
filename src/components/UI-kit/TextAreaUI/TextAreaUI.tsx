@@ -3,7 +3,7 @@ import {CSSProperties, FC, ReactNode, useEffect, useId, useRef, useState} from '
 import styles from './TextAreaUI.module.scss'
 import Image, {StaticImageData} from 'next/image'
 import cn from 'clsx'
-import Link from 'next/link'
+import {Link} from '@/i18n/navigation'
 import {Url} from 'next/dist/shared/lib/router/router'
 
 const hideIcon = '/hide__text.svg'

@@ -2,7 +2,7 @@
 import {FC, useRef, ChangeEvent, useCallback, useState, useEffect, useId} from 'react'
 import styles from './SearchInputUI.module.scss'
 import Image from 'next/image'
-import Link from 'next/link'
+import {Link} from '@/i18n/navigation'
 import {useActions} from '@/hooks/useActions'
 import {useDebounce} from '@/utils/debounce'
 import {useTranslations} from 'next-intl'

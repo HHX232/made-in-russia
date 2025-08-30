@@ -1,6 +1,6 @@
 'use client'
 import {FC} from 'react'
-import Link from 'next/link'
+import {Link} from '@/i18n/navigation'
 import styles from './StarButtonUI.module.scss'
 
 interface StarButtonUIProps {

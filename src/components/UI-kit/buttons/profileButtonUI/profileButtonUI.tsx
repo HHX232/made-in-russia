@@ -2,7 +2,7 @@
 import {CSSProperties, FC, useEffect, useState, useMemo, useCallback} from 'react'
 import styles from './profileButtonUI.module.scss'
 import Image from 'next/image'
-import {useRouter} from 'next/navigation'
+import {useRouter} from '@/i18n/navigation'
 import {useTranslations} from 'next-intl'
 import {useNProgress} from '@/hooks/useProgress'
 import {useTypedSelector} from '@/hooks/useTypedSelector' // ваш кастомный хук

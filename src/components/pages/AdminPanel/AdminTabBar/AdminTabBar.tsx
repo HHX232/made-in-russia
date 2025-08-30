@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import styles from './AdminTabBar.module.scss'
-import Link from 'next/link'
+import {Link} from '@/i18n/navigation'
 
 const IMAGES__ASSESTS = {
   users: '/admin/user.svg',

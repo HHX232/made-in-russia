@@ -7,9 +7,10 @@ import {axiosClassic} from '@/api/api.interceptor'
 import {toast} from 'sonner'
 import InputOtp from '@/components/UI-kit/inputs/inputOTP/inputOTP'
 import {saveTokenStorage} from '@/middleware'
-import {useRouter} from 'next/navigation'
+// import {useRouter} from '@/i18n/navigation'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {useTranslations} from 'next-intl'
+import {useRouter} from '@/i18n/navigation'
 
 interface ResetPasswordFormProps {
   onBack: () => void

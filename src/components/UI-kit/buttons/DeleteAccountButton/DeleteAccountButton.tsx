@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, {useState} from 'react'
-import {useRouter} from 'next/navigation'
+import {useRouter} from '@/i18n/navigation'
 import instance from '@/api/api.interceptor'
 import InputOtp from '../../inputs/inputOTP/inputOTP'
 import ModalWindowDefault from '../../modals/ModalWindowDefault/ModalWindowDefault'
