@@ -126,7 +126,7 @@ const AdminCategoriesPage: FC = () => {
     try {
       setLoading(true)
 
-      const token = await getAccessToken()
+      const token = getAccessToken()
       if (!token) {
         alert('Ошибка авторизации, пожалуйста, войдите снова')
         setLoading(false)

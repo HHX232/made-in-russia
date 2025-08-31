@@ -12,6 +12,12 @@ export interface VendorDetails {
   productCategories?: {id: string; name: string; icon?: string}[]
   phoneNumbers?: string[]
   emails?: string[]
+  media?: {
+    id?: number
+    mediaType?: string
+    mimeType?: string
+    url?: string
+  }[]
 }
 
 export interface User {

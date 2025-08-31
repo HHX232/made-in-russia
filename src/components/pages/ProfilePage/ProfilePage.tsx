@@ -505,7 +505,8 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
           {t('logout')}
         </button>
         {needToSave && !isLoading && (
-          <button className={`${styles.save__button} ${styles.save__animation} `} onClick={onSave}>
+          // ${styles.save__animation}
+          <button className={`${styles.save__button}  `} onClick={onSave}>
             {t('save')}
           </button>
         )}

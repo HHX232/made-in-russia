@@ -34,6 +34,8 @@ import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useActions} from '@/hooks/useActions'
 import {useUpdateVendorDetails} from '@/api/useVendorApi'
+import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
+import {useSaveVendorMedia} from '@/utils/saveVendorDescriptionWithMedia'
 
 const Arrow = ({isActive, onClick, extraClass}: {isActive: boolean; onClick: () => void; extraClass?: string}) => {
   return (
@@ -99,12 +101,19 @@ export interface IVendorData {
     lastModificationDate: string
     viewsCount?: number | string
     faq?: {question: string; answer: string; id: string}[]
+    media?: {
+      id?: number
+      mediaType?: string
+      mimeType?: string
+      url?: string
+    }[]
   }
 }
+
 export interface IVendorPageProps {
   isPageForVendor?: boolean
   vendorData?: IVendorData
-  numberCode?: string // Новый пропс для кода страны
+  numberCode?: string
   initialProductsForView?: Product[]
   onlyShowDescr?: string
   onlyShowPhones?: string[]
@@ -123,6 +132,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   onlyShowEmail
 }) => {
   const [needToSave, setNeedToSave] = useState(false)
+  const [debouncedNeedToSave, setDebouncedNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const [startAnimation, setStartAnimation] = useState(false)
   const {userData, loading, error} = useUserData()
@@ -134,14 +144,49 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const {user} = useTypedSelector((state) => state.user)
   const {updateVendorDetails} = useActions()
   const {mutate: updateVendorDetailsAPI} = useUpdateVendorDetails()
-  const canUpdateVendorDescr = useRef(false)
+
+  useEffect(() => {
+    console.log('user from slice', user)
+    console.log('vendorData from props', vendorData)
+  }, [user, vendorData])
+
+  // Состояния для медиа-файлов
+  const canUpdateVendorMedia = useRef(false)
+  const [isSavingMedia, setIsSavingMedia] = useState(false)
+  const {saveMedia} = useSaveVendorMedia()
+
+  const [descriptionImages, setDescriptionImages] = useState<string[]>(
+    vendorData?.vendorDetails?.media?.map((el) => el?.url || '') || []
+  )
+
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+
+  useEffect(() => {
+    console.log('initial vendor data in use effect', vendorData?.vendorDetails?.media)
+    console.log('descriptionImages in useEffect', descriptionImages)
+    console.log('uploadedFiles in useEffect', uploadedFiles)
+  }, [descriptionImages, uploadedFiles, vendorData?.vendorDetails?.media])
+
+  const handleActiveImagesChange = useCallback((remainingUrls: string[]) => {
+    setDescriptionImages(remainingUrls)
+    canUpdateVendorMedia.current = true
+  }, [])
+
+  const handleUploadedFilesChange = useCallback((files: File[]) => {
+    setTimeout(() => {
+      setUploadedFiles(files)
+      canUpdateVendorMedia.current = true
+    }, 0)
+  }, [])
 
   const t = useTranslations('VendorPage')
+
   interface RegionType {
     imageSrc: string
     title: string
     altName: string
   }
+
   const REGIONS: RegionType[] = [
     {imageSrc: ASSETS_COUNTRIES.belarusSvg, title: t('belarus'), altName: 'Belarus'},
     {imageSrc: ASSETS_COUNTRIES.kazakhstanSvg, title: t('kazakhstan'), altName: 'Kazakhstan'},
@@ -159,6 +204,14 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   )
   const [userInn, setUserInn] = useState(vendorData?.vendorDetails?.inn)
   const [activeFaq, setActiveFaq] = useState(vendorData?.vendorDetails?.faq)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedNeedToSave(needToSave)
+    }, 200)
+
+    return () => clearTimeout(timer)
+  }, [needToSave])
 
   useEffect(() => {
     console.log('vendorData', vendorData)
@@ -223,16 +276,16 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   )
 
   // Детальное логирование параметров
-  useEffect(() => {
-    console.log('=== VENDOR PAGE DEBUG ===')
-    console.log('isPageForVendor:', isPageForVendor)
-    console.log('vendorData:', vendorData)
-    console.log('vendorData?.id:', vendorData?.id)
-    console.log('reviewsParams:', reviewsParams)
-    console.log('specialRoute condition:', !isPageForVendor && vendorData?.id)
-    console.log('Calculated specialRoute:', !isPageForVendor && vendorData?.id ? `vendor/${vendorData.id}` : 'none')
-    console.log('========================')
-  }, [isPageForVendor, vendorData, reviewsParams])
+  // useEffect(() => {
+  //   console.log('=== VENDOR PAGE DEBUG ===')
+  //   console.log('isPageForVendor:', isPageForVendor)
+  //   console.log('vendorData:', vendorData)
+  //   console.log('vendorData?.id:', vendorData?.id)
+  //   console.log('reviewsParams:', reviewsParams)
+  //   console.log('specialRoute condition:', !isPageForVendor && vendorData?.id)
+  //   console.log('Calculated specialRoute:', !isPageForVendor && vendorData?.id ? `vendor/${vendorData.id}` : 'none')
+  //   console.log('========================')
+  // }, [isPageForVendor, vendorData, reviewsParams])
 
   const {reviews, isLoading: reviewsLoading, hasMore, loadMoreReviews, totalElements} = useProductReviews(reviewsParams)
 
@@ -278,17 +331,14 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
   // Эффект для создания/обновления IntersectionObserver
   useEffect(() => {
-    // Очищаем предыдущий observer
     if (observerRef.current) {
       observerRef.current.disconnect()
     }
 
-    // Проверяем все необходимые условия
     if (!scrollContainerRef.current || !observerTargetRef.current || !hasMore || reviewsLoading) {
       return
     }
 
-    // Создаем новый observer
     observerRef.current = new IntersectionObserver(
       (entries) => {
         const [entry] = entries
@@ -303,10 +353,8 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
       }
     )
 
-    // Начинаем наблюдение
     observerRef.current.observe(observerTargetRef.current)
 
-    // Cleanup функция
     return () => {
       if (observerRef.current) {
         observerRef.current.disconnect()
@@ -322,7 +370,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
     const handleScroll = () => {
       const isNearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 100
 
-      // Если близко к концу и можно загрузить еще - загружаем
       if (isNearBottom && hasMore && !reviewsLoading) {
         loadMoreReviews()
       }
@@ -352,6 +399,45 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   }, [])
 
   const currentLang = useCurrentLanguage()
+
+  // Обработчик сохранения медиа-файлов
+  const handleSaveMediaFiles = useCallback(async () => {
+    if (!user?.vendorDetails) return
+
+    setIsSavingMedia(true)
+
+    try {
+      // console.log('vendor media before save', vendorData?.vendorDetails?.media)
+      const result = await saveMedia({
+        newFiles: uploadedFiles,
+        existingImages: descriptionImages,
+        allExistingMedia: vendorData?.vendorDetails?.media || [],
+        currentLanguage: currentLang,
+        t
+      })
+
+      if (result.success) {
+        // Сброс состояний после успешного сохранения
+        canUpdateVendorMedia.current = false
+        setUploadedFiles([])
+
+        // Обновляем описание через updateVendorDetailsAPI
+      }
+    } catch (error) {
+      console.error('Failed to save media:', error)
+    } finally {
+      setIsSavingMedia(false)
+    }
+  }, [
+    user?.vendorDetails,
+    user?.phoneNumber,
+    user?.region,
+    uploadedFiles,
+    descriptionImages,
+    currentLang,
+    t,
+    saveMedia
+  ])
 
   const handleCreateNewQuestion = useCallback(() => {
     try {
@@ -425,32 +511,16 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
     (phoneNumber?: string) => {
       if (!phoneNumber) return phoneNumber
 
-      // Удаляем все нецифровые символы из номера
       const cleanNumber = phoneNumber.replace(/\D/g, '')
-
-      // Если номер уже начинается с кода страны (без +), возвращаем как есть
       const codeWithoutPlus = numberCode.replace('+', '')
       if (cleanNumber.startsWith(codeWithoutPlus)) {
         return '+' + cleanNumber
       }
 
-      // Добавляем код страны к номеру
       return numberCode + cleanNumber
     },
     [numberCode]
   )
-
-  // Детальное логирование состояния комментариев
-  // useEffect(() => {
-  //   console.log('=== COMMENTS STATE DEBUG ===')
-  //   console.log('reviews:', reviews)
-  //   console.log('reviews.length:', reviews.length)
-  //   console.log('totalElements:', totalElements)
-  //   console.log('reviewsLoading:', reviewsLoading)
-  //   console.log('hasMore:', hasMore)
-  //   console.log('isCommentsOpen:', isCommentsOpen)
-  //   console.log('===========================')
-  // }, [reviews, totalElements, reviewsLoading, hasMore, isCommentsOpen])
 
   // Мемоизируем данные для кнопок помощи
   const helpListButtonData = useMemo(
@@ -524,9 +594,10 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   return (
     <>
       <Header />
+
       <div className='container'>
         <div className={`${styles.vendor__inner} ${styles.profile__inner}`}>
-          <span style={{width: '100%', height: '100%', position: 'relative'}}>
+          <div style={{width: '100%', height: '100%', position: 'relative'}}>
             <div
               style={{
                 position: !isPageForVendor ? 'static' : 'static',
@@ -558,7 +629,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                   phoneNumber={formattedPhoneNumber}
                   isForVendor={isPageForVendor}
                   isLoading={loading}
-                  needToSave={needToSave}
+                  needToSave={debouncedNeedToSave}
                   onDeleteAccount={handleDeleteAccount}
                   onLogout={handleLogout}
                 />
@@ -577,9 +648,25 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 />
               </span>
             )}
-
             <span className={`${styles.second__descr__box}`}>
-              {/* TODO здесь размещаем описание компании */}
+              {windowWidth && windowWidth <= 1010 && (
+                <div style={{width: '100%'}} className=''>
+                  <CreateImagesInput
+                    showBigFirstItem={false}
+                    activeImages={descriptionImages}
+                    onFilesChange={handleUploadedFilesChange}
+                    onActiveImagesChange={handleActiveImagesChange}
+                    extraClass={styles.extra__images__input}
+                    maxFiles={10}
+                    minFiles={0}
+                    inputIdPrefix='vendorImages'
+                    maxFileSize={20 * 1024 * 1024}
+                    allowMultipleFiles={true}
+                    allowedTypes={['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']}
+                    isOnlyShow={!isPageForVendor}
+                  />
+                </div>
+              )}
               <TextAreaUI
                 autoResize
                 maxRows={25}
@@ -588,17 +675,16 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 currentValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
                 onSetValue={(val) => {
                   updateVendorDetails({...user?.vendorDetails, description: val})
-                  canUpdateVendorDescr.current = true
+                  canUpdateVendorMedia.current = true
                 }}
                 theme='superWhite'
                 placeholder={t('descriptionPlaceholder')}
               />
-              <p>{onlyShowDescr}</p>
-              {canUpdateVendorDescr.current && (
+              {canUpdateVendorMedia.current && (
                 <button
                   className={`${styles.vendor__save__descr__button}`}
                   onClick={() => {
-                    console.log('user?.vendorDetails', user?.vendorDetails)
+                    handleSaveMediaFiles()
                     updateVendorDetailsAPI({
                       categories: user?.vendorDetails?.productCategories?.map((cat) => cat.name) || [],
                       countries: user?.vendorDetails?.countries?.map((country) => country) || [],
@@ -610,14 +696,14 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                       emails: user?.vendorDetails?.emails,
                       sites: user?.vendorDetails?.sites
                     })
-                    canUpdateVendorDescr.current = false
                   }}
+                  disabled={isSavingMedia}
                 >
-                  {t('save')}
+                  {isSavingMedia ? t('saving') : t('save')}
                 </button>
               )}
             </span>
-          </span>
+          </div>
 
           <div className={styles.vendor__info__second}>
             <div className={styles.vendor__stats}>
@@ -658,29 +744,42 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 )
               )}
             </div>
-            <span className={`${styles.first__descr__box}`}>
-              {/* TODO здесь размещаем описание компании */}
+            <div className={`${styles.first__descr__box}`}>
+              <div style={{width: '100%', position: 'relative'}} className=''>
+                <CreateImagesInput
+                  extraClass={styles.extra__images__input}
+                  showBigFirstItem={false}
+                  activeImages={descriptionImages}
+                  onFilesChange={handleUploadedFilesChange}
+                  onActiveImagesChange={handleActiveImagesChange}
+                  maxFiles={10}
+                  minFiles={0}
+                  inputIdPrefix='vendorImages'
+                  maxFileSize={20 * 1024 * 1024}
+                  allowMultipleFiles={true}
+                  allowedTypes={['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']}
+                  isOnlyShow={!isPageForVendor}
+                />
+              </div>
               <TextAreaUI
                 autoResize
                 minRows={5}
                 maxRows={25}
                 readOnly={!isPageForVendor}
-                // currentValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
-
                 currentValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
                 onSetValue={(val) => {
                   updateVendorDetails({...user?.vendorDetails, description: val})
-                  canUpdateVendorDescr.current = true
+                  canUpdateVendorMedia.current = true
                 }}
                 theme='superWhite'
                 placeholder={t('descriptionPlaceholder')}
               />
-              <p>{onlyShowDescr}</p>
-              {canUpdateVendorDescr.current && (
+
+              {canUpdateVendorMedia.current && (
                 <button
                   className={`${styles.vendor__save__descr__button}`}
                   onClick={() => {
-                    console.log('user?.vendorDetails', user?.vendorDetails)
+                    handleSaveMediaFiles()
                     updateVendorDetailsAPI({
                       categories: user?.vendorDetails?.productCategories?.map((cat) => cat.name) || [],
                       countries: user?.vendorDetails?.countries?.map((country) => country) || [],
@@ -692,13 +791,13 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                       emails: user?.vendorDetails?.emails,
                       sites: user?.vendorDetails?.sites
                     })
-                    canUpdateVendorDescr.current = false
                   }}
+                  disabled={isSavingMedia}
                 >
-                  {t('save')}
+                  {isSavingMedia ? t('saving') : t('save')}
                 </button>
               )}
-            </span>
+            </div>
             <div className={`${styles.vendor__mini__blocks__box}`}>
               <div className={styles.vendor__stats}>
                 <div className={styles.vendor__stat}>
@@ -804,7 +903,8 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
           </div>
         </div>
       </div>
-      {/* CREATE */}
+
+      {/* CREATE QUEST MODAL */}
       <ModalWindowDefault
         extraClass={`${styles.modalExtra}`}
         isOpen={isQuestOpen}

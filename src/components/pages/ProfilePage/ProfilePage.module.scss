@@ -27,6 +27,7 @@
 @keyframes fadeIn {
   0% {
     position: absolute;
+
     // opacity: 0;
     // width: 0px;
     margin-left: 0;
@@ -575,9 +576,14 @@
   padding: 10px 45px;
   border-radius: 10px;
   margin: auto auto 0;
+  margin-left: 10px;
   background-color: #2a2e46;
   color: #fff;
   font-size: 15px;
+
+  @media (max-width: 450px) {
+    margin: 10px auto 0 !important;
+  }
 }
 
 .profile__data__favourite,

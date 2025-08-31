@@ -690,9 +690,9 @@ const RowsInputs = ({
             <div className={styles.rows__inputs__container}>
               {currentRows.map((row, rowIndex) => (
                 <SortableRow
+                  key={rowIds[rowIndex] + titles[rowIndex]}
                   inputsTheme={inputsTheme}
                   extraButtonMinusClass={extraButtonMinusClass}
-                  key={rowIds[rowIndex]}
                   inputType={inputType}
                   id={rowIds[rowIndex]}
                   rowIndex={rowIndex}

@@ -36,6 +36,12 @@ export default function VendorPageClient({serverUser, phoneNumberCode, serverErr
   const currentUser = user || queryUser || serverUser
   const currentError = queryError || serverError
 
+  console.log(
+    'currentUser in VendorPageClient media',
+    currentUser?.vendorDetails?.media,
+    'current server user media',
+    serverUser?.vendorDetails?.media
+  )
   // Обработка состояний загрузки и ошибок
   if (isLoading && !currentUser) {
     return <VendorPageSkeleton />

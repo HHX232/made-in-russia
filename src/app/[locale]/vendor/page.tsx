@@ -25,6 +25,7 @@ export default async function VendorPage() {
   // Дегидрируем состояние для передачи на клиент
   const dehydratedState = dehydrate(queryClient)
 
+  console.log('full vendor user on server', user)
   return (
     <HydrationBoundary state={dehydratedState}>
       <VendorPageClient serverUser={user} phoneNumberCode={phoneNumberCode} serverError={error} />

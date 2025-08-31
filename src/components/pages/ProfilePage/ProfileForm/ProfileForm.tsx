@@ -87,25 +87,25 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
 
 // Функция для безопасного преобразования altName в TNumberStart
 const getSafeNumberStart = (regionAltName: string): TNumberStart => {
-  console.log('getSafeNumberStart called with:', regionAltName)
+  // console.log('getSafeNumberStart called with:', regionAltName)
 
   const validTypes: TNumberStart[] = ['China', 'Belarus', 'Russia', 'Kazakhstan', 'other']
 
   // Проверяем точное соответствие
   if (validTypes.includes(regionAltName as TNumberStart)) {
-    console.log('Found exact match:', regionAltName)
+    // console.log('Found exact match:', regionAltName)
     return regionAltName as TNumberStart
   }
 
   // Проверяем с учетом регистра
   const normalizedAltName = regionAltName.charAt(0).toUpperCase() + regionAltName.slice(1).toLowerCase()
   if (validTypes.includes(normalizedAltName as TNumberStart)) {
-    console.log('Found normalized match:', normalizedAltName)
+    // console.log('Found normalized match:', normalizedAltName)
     return normalizedAltName as TNumberStart
   }
 
   // Если altName не соответствует TNumberStart, возвращаем 'other'
-  console.log('No match found, returning other')
+  // console.log('No match found, returning other')
   return 'other'
 }
 
@@ -200,7 +200,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
     if (cleaned.startsWith('375')) return 'Belarus'
     if (cleaned.startsWith('86')) return 'China'
     if (cleaned.startsWith('7')) {
-      console.log('Detected Russia/Kazakhstan from phone starting with 7')
+      // console.log('Detected Russia/Kazakhstan from phone starting with 7')
       return 'Russia' // или Kazakhstan
     }
 

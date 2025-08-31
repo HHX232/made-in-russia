@@ -15,7 +15,7 @@ interface ZoomImageProps {
   className?: string
 }
 
-const ZoomImage: React.FC<ZoomImageProps> = ({src, alt = 'zoom', zoom = 2, lensSize = 150, className = ''}) => {
+export const ZoomImage: React.FC<ZoomImageProps> = ({src, alt = 'zoom', zoom = 2, lensSize = 150, className = ''}) => {
   const imgRef = useRef<HTMLImageElement>(null)
   const [lensPos, setLensPos] = useState<{x: number; y: number} | null>(null)
 

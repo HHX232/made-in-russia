@@ -131,12 +131,12 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
 
   // Обновляем значение при изменении currentValue извне (после инициализации)
   useEffect(() => {
-    console.log('currentValue useEffect:', {
-      currentValue,
-      inputValue,
-      isInitialized,
-      numberStartWith
-    })
+    // console.log('currentValue useEffect:', {
+    //   currentValue,
+    //   inputValue,
+    //   isInitialized,
+    //   numberStartWith
+    // })
 
     if (currentValue !== inputValue) {
       // console.log('Updating from currentValue:', currentValue)
