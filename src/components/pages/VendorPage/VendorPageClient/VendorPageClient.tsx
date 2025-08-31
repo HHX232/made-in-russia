@@ -38,7 +38,7 @@ export default function VendorPageClient({serverUser, phoneNumberCode, serverErr
 
   console.log(
     'currentUser in VendorPageClient media',
-    currentUser?.vendorDetails?.media,
+    (currentUser as User)?.vendorDetails?.media,
     'current server user media',
     serverUser?.vendorDetails?.media
   )

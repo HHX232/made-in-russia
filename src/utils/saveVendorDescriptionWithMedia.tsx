@@ -156,8 +156,6 @@ export const saveVendorMedia = async ({
       for (const [key, value] of formData.entries()) {
         if (value instanceof File) {
           console.log(`- ${key}:`, {name: value.name, size: value.size, type: value.type})
-        } else if (value instanceof Blob) {
-          console.log(`- ${key}:`, 'Blob содержимое:', await value.text())
         } else {
           console.log(`- ${key}:`, value)
         }
