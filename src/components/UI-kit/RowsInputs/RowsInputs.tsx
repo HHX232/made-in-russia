@@ -15,13 +15,23 @@ import {useSortable} from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
 import TextInputUI from '../inputs/TextInputUI/TextInputUI'
 import styles from './RowsInputs.module.scss'
+import TextAreaUI from '../TextAreaUI/TextAreaUI'
 
 const plusCircle = '/create-card/plus-circle.svg'
 const minusCircle = '/create-card/minusCircle.svg'
 const dragHandle = '/create-card/drag-handle.svg'
-// const dropdownArrow = '/create-card/dropdown-arrow.svg' // Добавьте иконку стрелки
 
-type TInputType = 'text' | 'number' | 'password' | 'dropdown'
+// Добавляем 'textarea' в тип
+type TInputType = 'text' | 'number' | 'password' | 'dropdown' | 'textarea'
+
+// Добавляем новые типы для размеров кнопок
+type ButtonSize = 'small' | 'medium' | 'large'
+
+interface ButtonSizes {
+  plus?: {width: number; height: number}
+  minus?: {width: number; height: number}
+  drag?: {width: number; height: number}
+}
 
 interface RowsInputsProps {
   titles: string[]
@@ -40,8 +50,49 @@ interface RowsInputsProps {
   inputType?: TInputType[]
   controlled?: boolean
   externalValues?: string[][]
-  dropdownOptions?: string[][] // Опции для dropdown'ов
-  canCreateNewOption?: boolean[] // Возможность создания новых опций для каждого dropdown'а
+  dropdownOptions?: string[][]
+  canCreateNewOption?: boolean[]
+  inputsTheme?: 'dark' | 'light' | 'superWhite' | 'lightBlue'
+  // Новые пропсы для настройки textarea
+  textAreaProps?: {
+    minRows?: number
+    maxRows?: number
+    autoResize?: boolean
+  }
+  // Новые пропсы для размеров кнопок
+  buttonsSizes?: ButtonSize
+  customButtonSizes?: ButtonSizes
+  showDnDButton?: boolean
+  // Новые пропсы для событий инпутов
+  onBlur?: (rowIndex: number, inputIndex: number, value: string) => void
+  onClick?: (rowIndex: number, inputIndex: number, value: string) => void
+  onFocus?: (rowIndex: number, inputIndex: number, value: string) => void
+  onKeyUp?: (rowIndex: number, inputIndex: number, value: string, event: React.KeyboardEvent) => void
+}
+
+// Функция для получения размеров кнопок по умолчанию
+const getDefaultButtonSizes = (size: ButtonSize): ButtonSizes => {
+  switch (size) {
+    case 'small':
+      return {
+        plus: {width: 28, height: 28},
+        minus: {width: 28, height: 28},
+        drag: {width: 8, height: 12}
+      }
+    case 'medium':
+      return {
+        plus: {width: 34, height: 34},
+        minus: {width: 34, height: 34},
+        drag: {width: 10, height: 15}
+      }
+    case 'large':
+    default:
+      return {
+        plus: {width: 39, height: 39},
+        minus: {width: 39, height: 39},
+        drag: {width: 12, height: 18}
+      }
+  }
 }
 
 // Компонент Dropdown с поддержкой создания новых опций
@@ -52,7 +103,7 @@ interface DropdownProps {
   onSelect: (value: string) => void
   hasError?: boolean
   inputId: string
-  canCreateNew?: boolean // Можно ли создавать новые опции
+  canCreateNew?: boolean
 }
 
 const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, canCreateNew = false}: DropdownProps) => {
@@ -77,7 +128,6 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
   }, [])
 
   // Закрытие при скролле страницы
-  // Закрытие при скролле страницы (исправленная версия)
   useEffect(() => {
     const handleScroll = (event: Event) => {
       const target = event.target as Element
@@ -166,13 +216,6 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
         <span style={{margin: '0 auto'}} className={value ? styles.dropdown__value : styles.dropdown__placeholder}>
           {value || (placeholder || '')?.trim()?.split(' ')[0]}
         </span>
-        {/* <Image
-          src={dropdownArrow}
-          alt='dropdown arrow'
-          width={12}
-          height={8}
-          className={`${styles.dropdown__arrow} ${isOpen ? styles.dropdown__arrow__open : ''}`}
-        /> */}
       </div>
 
       {isOpen && (
@@ -182,15 +225,6 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
             <>
               {isCreatingNew ? (
                 <div className={styles.dropdown__custom__input__wrapper}>
-                  {/* <input
-                    ref={customInputRef}
-                    type='text'
-                    value={customValue}
-                    onChange={(e) => setCustomValue(e.target.value)}
-                    onKeyDown={handleCustomKeyPress}
-                    className={styles.dropdown__custom__input}
-                    placeholder='Введите значение...'
-                  /> */}
                   <TextInputUI
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     refProps={customInputRef as any}
@@ -275,6 +309,19 @@ interface SortableRowProps {
   inputType?: TInputType[]
   dropdownOptions?: string[][]
   canCreateNewOption?: boolean[]
+  inputsTheme?: 'dark' | 'light' | 'superWhite' | 'lightBlue'
+  textAreaProps?: {
+    minRows?: number
+    maxRows?: number
+    autoResize?: boolean
+  }
+  buttonSizes: ButtonSizes
+  showDnDButton: boolean
+  // Новые пропсы для событий инпутов
+  onBlur?: (rowIndex: number, inputIndex: number, value: string) => void
+  onClick?: (rowIndex: number, inputIndex: number, value: string) => void
+  onFocus?: (rowIndex: number, inputIndex: number, value: string) => void
+  onKeyUp?: (rowIndex: number, inputIndex: number, value: string, event: React.KeyboardEvent) => void
 }
 
 const SortableRow = ({
@@ -293,7 +340,15 @@ const SortableRow = ({
   hasError,
   inputType,
   dropdownOptions,
-  canCreateNewOption
+  canCreateNewOption,
+  inputsTheme,
+  textAreaProps,
+  buttonSizes,
+  showDnDButton,
+  onBlur,
+  onClick,
+  onFocus,
+  onKeyUp
 }: SortableRowProps) => {
   const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id})
 
@@ -327,16 +382,42 @@ const SortableRow = ({
       )
     }
 
+    // Добавляем поддержку textarea
+    if (currentInputType === 'textarea') {
+      return (
+        <TextAreaUI
+          key={inputIndex}
+          extraClass={styles.area__extra__min__height}
+          theme={inputsTheme ? inputsTheme : 'lightBlue'}
+          placeholder={titles[inputIndex] || 'value...'}
+          currentValue={value}
+          onSetValue={(newValue) => onUpdateValue(rowIndex, inputIndex, newValue)}
+          errorValue={hasError && !value ? ' ' : ''}
+          autoResize={textAreaProps?.autoResize ?? true}
+          minRows={textAreaProps?.minRows ?? 2}
+          maxRows={textAreaProps?.maxRows ?? 5}
+          onBlur={onBlur ? () => onBlur(rowIndex, inputIndex, value) : undefined}
+          onClick={onClick ? () => onClick(rowIndex, inputIndex, value) : undefined}
+          onFocus={onFocus ? () => onFocus(rowIndex, inputIndex, value) : undefined}
+          onKeyUp={onKeyUp ? (event) => onKeyUp(rowIndex, inputIndex, value, event) : undefined}
+        />
+      )
+    }
+
     return (
       <TextInputUI
         inputType={currentInputType}
         key={inputIndex}
         idForLabel={inputId}
-        theme='lightBlue'
-        placeholder={titles[inputIndex] || 'Write value...'}
+        theme={inputsTheme ? inputsTheme : 'lightBlue'}
+        placeholder={titles[inputIndex] || 'value...'}
         currentValue={value}
         onSetValue={(newValue) => onUpdateValue(rowIndex, inputIndex, newValue)}
         errorValue={hasError && !value ? ' ' : ''}
+        onBlur={onBlur ? () => onBlur(rowIndex, inputIndex, value) : undefined}
+        onClick={onClick ? () => onClick(rowIndex, inputIndex, value) : undefined}
+        onFocus={onFocus ? () => onFocus(rowIndex, inputIndex, value) : undefined}
+        onKeyUp={onKeyUp ? (event) => onKeyUp(rowIndex, inputIndex, value, event) : undefined}
       />
     )
   }
@@ -344,18 +425,25 @@ const SortableRow = ({
   return (
     <div id={`cy-row-${idNames?.[0]}-${rowIndex}`} ref={setNodeRef} style={style}>
       <div
-        className={`${styles.rows__inputs__box} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''}`}
+        className={`${styles.rows__inputs__box} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''} ${!showDnDButton ? styles.no__drag : ''}`}
       >
         {/* Ручка для перетаскивания */}
-        <button
-          className={styles.rows__inputs__drag}
-          {...attributes}
-          {...listeners}
-          type='button'
-          aria-label='Перетащить строку'
-        >
-          <Image src={dragHandle} alt='drag' width={12} height={18} />
-        </button>
+        {showDnDButton && (
+          <button
+            className={styles.rows__inputs__drag}
+            {...attributes}
+            {...listeners}
+            type='button'
+            aria-label='Перетащить строку'
+          >
+            <Image
+              src={dragHandle}
+              alt='drag'
+              width={buttonSizes.drag?.width || 12}
+              height={buttonSizes.drag?.height || 18}
+            />
+          </button>
+        )}
 
         <div className={styles.rows__inputs__row} style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}>
           {row.map((value, inputIndex) => renderInput(value, inputIndex))}
@@ -370,7 +458,12 @@ const SortableRow = ({
           disabled={!canRemove}
           style={{opacity: canRemove ? 1 : 0.3}}
         >
-          <Image src={minusCircle} alt='minus' width={39} height={39} />
+          <Image
+            src={minusCircle}
+            alt='minus'
+            width={buttonSizes.minus?.width || 39}
+            height={buttonSizes.minus?.height || 39}
+          />
         </button>
       </div>
       {!isLastRow && <div className={styles.gray__bottom__line}></div>}
@@ -396,7 +489,20 @@ const RowsInputs = ({
   externalValues,
   idNames,
   dropdownOptions,
-  canCreateNewOption
+  canCreateNewOption,
+  inputsTheme,
+  textAreaProps = {
+    minRows: 2,
+    maxRows: 5,
+    autoResize: true
+  },
+  buttonsSizes = 'large',
+  customButtonSizes,
+  showDnDButton = true,
+  onBlur,
+  onClick,
+  onFocus,
+  onKeyUp
 }: RowsInputsProps) => {
   const [rows, setRows] = useState<string[][]>(() => {
     if (rowsInitialValues && rowsInitialValues.length > 0) {
@@ -410,6 +516,9 @@ const RowsInputs = ({
   })
 
   const [rowIds, setRowIds] = useState<string[]>(() => rows.map((_, index) => `row-${index}-${Date.now()}`))
+
+  // Определяем размеры кнопок
+  const buttonSizes = customButtonSizes || getDefaultButtonSizes(buttonsSizes)
 
   useEffect(() => {
     if (controlled && externalValues) {
@@ -564,7 +673,10 @@ const RowsInputs = ({
     <div className={`${styles.rows__inputs__wrapper} ${errorMessage ? styles.has__error : ''}`}>
       <div className={styles.rows__inputs}>
         {/* Заголовки */}
-        <div className={styles.rows__inputs__titles} style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}>
+        <div
+          className={`${styles.rows__inputs__titles} ${!showDnDButton ? styles.no__drag : ''}`}
+          style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}
+        >
           {titles.map((title, index) => (
             <p key={index} className={styles.rows__inputs__title}>
               {title}
@@ -578,6 +690,7 @@ const RowsInputs = ({
             <div className={styles.rows__inputs__container}>
               {currentRows.map((row, rowIndex) => (
                 <SortableRow
+                  inputsTheme={inputsTheme}
                   extraButtonMinusClass={extraButtonMinusClass}
                   key={rowIds[rowIndex]}
                   inputType={inputType}
@@ -595,6 +708,13 @@ const RowsInputs = ({
                   hasError={rowsWithErrors.includes(rowIndex)}
                   dropdownOptions={dropdownOptions}
                   canCreateNewOption={canCreateNewOption}
+                  textAreaProps={textAreaProps}
+                  buttonSizes={buttonSizes}
+                  showDnDButton={showDnDButton}
+                  onBlur={onBlur}
+                  onClick={onClick}
+                  onFocus={onFocus}
+                  onKeyUp={onKeyUp}
                 />
               ))}
             </div>
@@ -610,7 +730,12 @@ const RowsInputs = ({
             type='button'
             aria-label='Добавить строку'
           >
-            <Image src={plusCircle} alt='plus' width={39} height={39} />
+            <Image
+              src={plusCircle}
+              alt='plus'
+              width={buttonSizes.plus?.width || 39}
+              height={buttonSizes.plus?.height || 39}
+            />
           </button>
         )}
       </div>

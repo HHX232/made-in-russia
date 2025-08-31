@@ -726,10 +726,16 @@ const ProfileForm: FC<ProfileFormProps> = ({
                 value: child.name,
                 imageUrl: child.imageUrl,
                 children: child.children?.map((grandChild) => ({
-                  id: grandChild.id,
-                  label: grandChild.name,
-                  value: grandChild.name,
-                  imageUrl: grandChild.imageUrl
+                  id: grandChild?.id,
+                  label: grandChild?.name,
+                  value: grandChild?.name,
+                  imageUrl: grandChild?.imageUrl,
+                  children: grandChild?.children?.map((greatGrandChild) => ({
+                    id: greatGrandChild?.id,
+                    label: greatGrandChild?.name,
+                    value: greatGrandChild?.name,
+                    imageUrl: greatGrandChild?.imageUrl
+                  }))
                 }))
               }))
             }))}

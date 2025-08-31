@@ -299,14 +299,14 @@
   "ml": "毫升",
   "l": "升",
   "hl": "百升",
-  "m3": "立方米",
-  "m2": "平方米",
-  "cm2": "平方厘米",
-  "pcs": "个",
+  "m3": "米³",
+  "m2": "米²",
+  "cm2": "厘米²",
+  "pcs": "件",
   "pack": "包",
   "m": "米",
   "cm": "厘米",
-  "pair": "双",
+  "pair": "对",
   "set": "套",
   "box": "盒",
   "languageForInput":"商品输入语言",
@@ -378,7 +378,14 @@
     "emptyCategory": "未选择分类",  
     "removeCategory": "删除分类",  
     "categoryNotFound": "未找到分类",  
-    "foundCategoryProcessing": "正在搜索分类..."  
+    "foundCategoryProcessing": "正在搜索分类...",
+    "notFoundCategories": "未找到类别",
+    "notFoundItems": "未找到项目",
+    "tryChangeSearch": "请尝试更改搜索",
+    "searchCategories": "搜索类别...",
+    "searchItems": "搜索项目...",
+    "clearAll": "清除所有",
+    "ready": "完成"
 },
 "CreateCompanyDescription":{
     "infoAboutCompany":"公司信息",
@@ -633,7 +640,16 @@
     "checkingCode": "正在验证验证码...",
     "errorDelete": "删除账户时发生错误",
     "errorOtp": "验证码无效"
-  }
+  },
+  "multiDrop": {
+      "notFoundCategories": "未找到类别",
+      "notFoundItems": "未找到项目",
+      "tryChangeSearch": "请尝试更改搜索",
+      "searchCategories": "搜索类别...",
+      "searchItems": "搜索项目...",
+      "clearAll": "清除所有",
+      "ready": "完成"
+    }
 
 
 }

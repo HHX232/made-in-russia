@@ -4,6 +4,12 @@
   font-size: 16px;
 }
 
+.area__extra__min__height {
+  & > div:last-child > textarea {
+    min-height: 18px !important;
+  }
+}
+
 .rows__inputs {
   width: 100%;
 
@@ -15,6 +21,11 @@
     padding-left: 30px;
     margin-bottom: 20px;
     gap: 20px;
+
+    // Стили для случая без кнопки drag
+    &.no__drag {
+      padding-left: 0;
+    }
   }
 
   &__title {
@@ -36,6 +47,13 @@
     display: flex;
     align-items: center;
     gap: 20px;
+
+    // Стили для случая без кнопки drag
+    &.no__drag {
+      .rows__inputs__row {
+        margin-left: 0;
+      }
+    }
   }
 
   &__row {
@@ -84,15 +102,46 @@
     // Ширина линии должна совпадать с шириной блока инпутов (без кнопки)
     margin-right: 59px; // 39px (ширина кнопки) + 20px (gap)
     background-color: #969696;
+
+    // Для случая без drag кнопки
+    .rows__inputs__box.no__drag + & {
+      margin-left: 0;
+    }
+  }
+
+  // Стили для ручки перетаскивания
+  &__drag {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: none;
+    background: none;
+    cursor: grab;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
   }
 
   // Адаптив для планшетов
   @media (max-width: 768px) {
     &__titles {
-      padding-right: 49px; // 34px (уменьшенная кнопка) + 15px (gap)
+      padding-right: 49px; // Для средних размеров кнопок
       padding-left: 20px;
       font-size: 12px;
       gap: 15px;
+
+      &.no__drag {
+        padding-left: 0;
+      }
     }
 
     &__container {
@@ -107,24 +156,16 @@
       gap: 15px;
     }
 
-    &__remove {
-      img {
-        width: 34px;
-        height: 34px;
-      }
-    }
-
-    &__add {
-      padding: 15px;
-
-      img {
-        width: 34px;
-        height: 34px;
-      }
+    &__drag {
+      padding: 6px;
     }
 
     .gray__bottom__line {
-      margin-right: 49px; // 34px + 15px (gap)
+      margin-right: 49px; // Для средних размеров кнопок
+
+      .rows__inputs__box.no__drag + & {
+        margin-left: 0;
+      }
     }
   }
 
@@ -156,6 +197,10 @@
       margin-top: 5px;
     }
 
+    &__drag {
+      padding: 4px;
+    }
+
     .gray__bottom__line {
       margin-right: 0; // На мобильных линия на всю ширину
       margin-bottom: 5px;
@@ -163,8 +208,7 @@
   }
 }
 
-// Добавьте эти стили в ваш RowsInputs.module.scss
-
+// Dropdown стили
 .dropdown {
   position: relative;
   width: 100%;
@@ -271,6 +315,71 @@
         background-color: #d9dffb;
       }
     }
+
+    &__create {
+      color: #4f46e5;
+      font-style: italic;
+      font-weight: 500;
+    }
+  }
+
+  &__separator {
+    height: 1px;
+    margin: 4px 0;
+    background-color: #e5e7eb;
+  }
+
+  &__custom {
+    &__input__wrapper {
+      padding: 12px 21px;
+    }
+
+    &__buttons {
+      display: flex;
+      margin-top: 8px;
+      gap: 8px;
+    }
+
+    &__button__confirm,
+    &__button__cancel {
+      display: flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+
+    &__button__confirm {
+      border-color: #10b981;
+      color: #10b981;
+
+      &:hover:not(:disabled) {
+        background-color: #10b981;
+        color: white;
+      }
+    }
+
+    &__button__cancel {
+      border-color: #ef4444;
+      color: #ef4444;
+
+      &:hover {
+        background-color: #ef4444;
+        color: white;
+      }
+    }
   }
 }
 
@@ -281,28 +390,6 @@
   .dropdown__placeholder {
     color: #d61414;
     font-weight: 500;
-  }
-}
-
-// Стили для ручки перетаскивания
-.rows__inputs__drag {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-  border: none;
-  background: none;
-  cursor: grab;
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
-
-  &:hover {
-    opacity: 1;
-  }
-
-  &:active {
-    cursor: grabbing;
   }
 }
 
@@ -327,14 +414,18 @@
     &__list {
       max-height: 150px;
     }
-  }
 
-  .rows__inputs__drag {
-    padding: 6px;
+    &__custom {
+      &__input__wrapper {
+        padding: 10px 18px;
+      }
 
-    img {
-      width: 10px;
-      height: 15px;
+      &__button__confirm,
+      &__button__cancel {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+      }
     }
   }
 }
@@ -358,6 +449,19 @@
 
     &__list {
       max-height: 120px;
+    }
+
+    &__custom {
+      &__input__wrapper {
+        padding: 8px 15px;
+      }
+
+      &__button__confirm,
+      &__button__cancel {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+      }
     }
   }
 }

@@ -2,7 +2,7 @@
 import {FC, useEffect, useRef, useState} from 'react'
 import style from './LanguageButtonUI.module.scss'
 import Image from 'next/image'
-import {useRouter} from '@/i18n/navigation'
+import {useRouter} from 'next/navigation'
 
 const whiteArrow = '/arrow-white.svg'
 enum Languages {

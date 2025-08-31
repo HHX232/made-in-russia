@@ -184,6 +184,40 @@
     text-align: center;
   }
 
+  // Стили для блока "Не найдено"
+  &__notFound {
+    padding: 30px 20px;
+    border-radius: 8px;
+    margin: 8px;
+    background-color: #f8f9fa;
+    text-align: center;
+  }
+
+  &__notFoundContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__notFoundIcon {
+    font-size: 32px;
+    opacity: 0.6;
+  }
+
+  &__notFoundText {
+    margin: 0;
+    color: #495057;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  &__notFoundSubtext {
+    margin: 0;
+    color: #6c757d;
+    font-size: 13px;
+  }
+
   &__dropdownList {
     padding: 4px;
   }
@@ -364,6 +398,22 @@
     &__expandIcon {
       min-width: 10px;
       font-size: 8px;
+    }
+
+    &__notFound {
+      padding: 20px 15px;
+    }
+
+    &__notFoundIcon {
+      font-size: 28px;
+    }
+
+    &__notFoundText {
+      font-size: 14px;
+    }
+
+    &__notFoundSubtext {
+      font-size: 12px;
     }
   }
 }

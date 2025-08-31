@@ -1,13 +1,13 @@
 import {memo, useState, useCallback, useEffect} from 'react'
 import styles from './VendorAdditionalContacts.module.scss'
 import {useTranslations} from 'next-intl'
-import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import Image from 'next/image'
 import {useUpdateVendorDetails} from '@/api/useVendorApi'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {shallowEqual} from 'react-redux'
 import {toast} from 'sonner'
+import RowsInputs from '@/components/UI-kit/RowsInputs/RowsInputs'
 
 const arrowDark = '/arrow-dark.svg'
 
@@ -31,74 +31,75 @@ export const VendorAdditionalContacts = memo(
     const vendorDetails = useTypedSelector((s) => s.user.user?.vendorDetails, shallowEqual)
     const user = useTypedSelector((s) => s.user.user, shallowEqual)
 
-    const [phoneNumbers, setPhoneNumbers] = useState<string[]>(['', '', ''])
-    const [emails, setEmails] = useState<string[]>(['', '', ''])
-    const [sites, setSites] = useState<string[]>(['', '', ''])
+    const [phoneRows, setPhoneRows] = useState<string[][]>([])
+    const [emailRows, setEmailRows] = useState<string[][]>([])
+    const [siteRows, setSiteRows] = useState<string[][]>([])
 
-    // Функция для обеспечения массива из 3 элементов
-    const ensureThreeElements = (arr?: string[]): string[] => {
-      const result = arr ? [...arr] : []
-      while (result.length < 3) {
-        result.push('')
+    // Функция для преобразования массива строк в массив массивов для RowsInputs
+    const convertToRows = (arr?: string[]): string[][] => {
+      if (!arr || arr.length === 0) {
+        return [['']] // Показываем 1 пустую строку если массив пустой
       }
-      return result.slice(0, 3) // Берем только первые 3 элемента
+
+      // Фильтруем только непустые значения
+      const nonEmptyValues = arr.filter((value) => value && value.trim() !== '')
+
+      if (nonEmptyValues.length === 0) {
+        return [['']] // Если все значения пустые, показываем 1 пустую строку
+      }
+
+      // Возвращаем только непустые значения
+      return nonEmptyValues.map((value) => [value])
+    }
+
+    // Функция для преобразования массива массивов обратно в массив строк
+    const convertFromRows = (rows: string[][]): string[] => {
+      return rows.map((row) => row[0] || '').filter((value) => value.trim() !== '')
     }
 
     useEffect(() => {
       if (isOnlyShow) {
         // Если режим только просмотра, используем переданные пропсы
-        setPhoneNumbers(ensureThreeElements(onlyShowPhones))
-        setEmails(ensureThreeElements(onlyShowEmails))
-        setSites(ensureThreeElements(onlyShowWebsites))
+        setPhoneRows(convertToRows(onlyShowPhones))
+        setEmailRows(convertToRows(onlyShowEmails))
+        setSiteRows(convertToRows(onlyShowWebsites))
       } else if (vendorDetails) {
         // Если обычный режим, используем данные из Redux
-        setPhoneNumbers(ensureThreeElements(vendorDetails.phoneNumbers))
-        setEmails(ensureThreeElements(vendorDetails.emails))
-        setSites(ensureThreeElements(vendorDetails.sites))
+        setPhoneRows(convertToRows(vendorDetails.phoneNumbers))
+        setEmailRows(convertToRows(vendorDetails.emails))
+        setSiteRows(convertToRows(vendorDetails.sites))
       }
     }, [vendorDetails, isOnlyShow, onlyShowPhones, onlyShowEmails, onlyShowWebsites])
 
-    const handlePhoneChange = useCallback(
-      (index: number, value: string) => {
-        if (isOnlyShow) return // Не позволяем изменения в режиме просмотра
-
-        setPhoneNumbers((prev) => {
-          const newPhoneNumbers = [...prev]
-          newPhoneNumbers[index] = value
-          return newPhoneNumbers
-        })
+    const handlePhoneRowsChange = useCallback(
+      (newRows: string[][]) => {
+        if (isOnlyShow) return
+        setPhoneRows(newRows)
       },
       [isOnlyShow]
     )
 
-    const handleEmailChange = useCallback(
-      (index: number, value: string) => {
-        if (isOnlyShow) return // Не позволяем изменения в режиме просмотра
-
-        setEmails((prev) => {
-          const newEmails = [...prev]
-          newEmails[index] = value
-          return newEmails
-        })
+    const handleEmailRowsChange = useCallback(
+      (newRows: string[][]) => {
+        if (isOnlyShow) return
+        setEmailRows(newRows)
       },
       [isOnlyShow]
     )
 
-    const handleSiteChange = useCallback(
-      (index: number, value: string) => {
-        if (isOnlyShow) return // Не позволяем изменения в режиме просмотра
-
-        setSites((prev) => {
-          const newSites = [...prev]
-          newSites[index] = value
-          return newSites
-        })
+    const handleSiteRowsChange = useCallback(
+      (newRows: string[][]) => {
+        if (isOnlyShow) return
+        setSiteRows(newRows)
       },
       [isOnlyShow]
     )
 
     const validateInputs = () => {
-      for (const phone of phoneNumbers) {
+      const phones = convertFromRows(phoneRows)
+      const emails = convertFromRows(emailRows)
+
+      for (const phone of phones) {
         if (phone.trim() !== '' && phone.trim().length < 7) {
           toast.error(t('invalidPhone') || 'Phone number must be at least 7 characters long')
           return false
@@ -116,13 +117,13 @@ export const VendorAdditionalContacts = memo(
     }
 
     const handleSave = useCallback(() => {
-      if (isOnlyShow) return // Не позволяем сохранение в режиме просмотра
+      if (isOnlyShow) return
 
       if (!validateInputs()) return
 
-      const filteredPhoneNumbers = phoneNumbers.filter((phone) => phone.trim() !== '')
-      const filteredEmails = emails.filter((email) => email.trim() !== '')
-      const filteredSites = sites.filter((site) => site.trim() !== '')
+      const filteredPhoneNumbers = convertFromRows(phoneRows)
+      const filteredEmails = convertFromRows(emailRows)
+      const filteredSites = convertFromRows(siteRows)
 
       updateVendorDetailsAction({
         ...vendorDetails,
@@ -144,75 +145,114 @@ export const VendorAdditionalContacts = memo(
         emails: filteredEmails,
         sites: filteredSites
       })
-    }, [phoneNumbers, emails, sites, vendorDetails, user, updateVendorDetails, updateVendorDetailsAction, isOnlyShow])
+    }, [
+      phoneRows,
+      emailRows,
+      siteRows,
+      vendorDetails,
+      user,
+      updateVendorDetails,
+      updateVendorDetailsAction,
+      isOnlyShow
+    ])
 
     const handleOnBlur = useCallback(
       (type: 'phones' | 'emails' | 'sites') => {
-        if (isOnlyShow) return // Не выполняем onBlur в режиме просмотра
+        if (isOnlyShow) return
 
         switch (type) {
           case 'phones':
-            updateVendorDetailsAction({...vendorDetails, phoneNumbers: phoneNumbers})
+            updateVendorDetailsAction({...vendorDetails, phoneNumbers: convertFromRows(phoneRows)})
             break
           case 'emails':
-            updateVendorDetailsAction({...vendorDetails, emails: emails})
+            updateVendorDetailsAction({...vendorDetails, emails: convertFromRows(emailRows)})
             break
           case 'sites':
-            updateVendorDetailsAction({...vendorDetails, sites: sites})
+            updateVendorDetailsAction({...vendorDetails, sites: convertFromRows(siteRows)})
             break
         }
       },
-      [vendorDetails, phoneNumbers, emails, sites, updateVendorDetailsAction, isOnlyShow]
+      [vendorDetails, phoneRows, emailRows, siteRows, updateVendorDetailsAction, isOnlyShow]
     )
 
     return (
       <div className={`${styles.vendor__additional__contacts} ${expanded ? styles.expanded : ''}`}>
         <h3 className={styles.vendor__additional__contacts__title}>{t('additionalContacts')}</h3>
-
+        {/* <p>Phones: {vendorDetails?.phoneNumbers?.join(', ')}</p>
+        <p>Emails: {vendorDetails?.emails?.join(', ')}</p>
+        <p>Sites: {vendorDetails?.sites?.join(', ')}</p> */}
         <div className={styles.additional__inner}>
           <div className={styles.additional__phones}>
             <h4 className={styles.additional__phones__title}>{t('phones')}</h4>
-            {[0, 1, 2].map((index) => (
-              <TextInputUI
-                readOnly={isOnlyShow}
-                onBlur={() => handleOnBlur('phones')}
-                key={`phone-${index}`}
-                placeholder={t('phoneInputTitle')}
-                currentValue={phoneNumbers[index]}
-                onSetValue={(value) => handlePhoneChange(index, value)}
-                theme='superWhite'
-              />
-            ))}
+            <RowsInputs
+              onBlur={() => handleOnBlur('phones')}
+              controlled={true}
+              externalValues={phoneRows}
+              onSetValue={(rowIndex, inputIndex, value) => {
+                if (isOnlyShow) return
+                const newRows = [...phoneRows]
+                newRows[rowIndex][inputIndex] = value
+                setPhoneRows(newRows)
+              }}
+              onRowsChange={handlePhoneRowsChange}
+              inputsTheme='superWhite'
+              maxRows={3}
+              initialRowsCount={1}
+              titles={['']}
+              inputsInRowCount={1}
+              buttonsSizes='small'
+              showDnDButton={false}
+              inputType={['text']}
+            />
           </div>
 
           <div className={styles.additional__emails}>
             <h4 className={styles.additional__phones__title}>{t('emails')}</h4>
-            {[0, 1, 2].map((index) => (
-              <TextInputUI
-                readOnly={isOnlyShow}
-                key={`email-${index}`}
-                onBlur={() => handleOnBlur('emails')}
-                placeholder={t('emailInputTitle')}
-                currentValue={emails[index]}
-                onSetValue={(value) => handleEmailChange(index, value)}
-                theme='superWhite'
-              />
-            ))}
+            <RowsInputs
+              onBlur={() => handleOnBlur('emails')}
+              controlled={true}
+              externalValues={emailRows}
+              onSetValue={(rowIndex, inputIndex, value) => {
+                if (isOnlyShow) return
+                const newRows = [...emailRows]
+                newRows[rowIndex][inputIndex] = value
+                setEmailRows(newRows)
+              }}
+              onRowsChange={handleEmailRowsChange}
+              inputsTheme='superWhite'
+              maxRows={3}
+              initialRowsCount={1}
+              titles={['']}
+              inputsInRowCount={1}
+              buttonsSizes='small'
+              showDnDButton={false}
+              inputType={['text']}
+            />
           </div>
 
           <div className={styles.additional__sites}>
             <h4 className={styles.additional__phones__title}>{t('sites')}</h4>
-            {[0, 1, 2].map((index) => (
-              <TextInputUI
-                readOnly={isOnlyShow}
-                onBlur={() => handleOnBlur('sites')}
-                key={`site-${index}`}
-                placeholder={t('siteInputTitle')}
-                currentValue={sites[index]}
-                onSetValue={(value) => handleSiteChange(index, value)}
-                theme='superWhite'
-              />
-            ))}
+            <RowsInputs
+              onBlur={() => handleOnBlur('sites')}
+              controlled={true}
+              externalValues={siteRows}
+              onSetValue={(rowIndex, inputIndex, value) => {
+                if (isOnlyShow) return
+                const newRows = [...siteRows]
+                newRows[rowIndex][inputIndex] = value
+
+                setSiteRows(newRows)
+              }}
+              onRowsChange={handleSiteRowsChange}
+              inputsTheme='superWhite'
+              maxRows={3}
+              initialRowsCount={1}
+              titles={['']}
+              inputsInRowCount={1}
+              buttonsSizes='small'
+              showDnDButton={false}
+              inputType={['text']}
+            />
           </div>
 
           {!isOnlyShow && (

@@ -564,15 +564,20 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 />
               )}
             </div>
-            <span className={styles.additional__span__box}>
-              {' '}
-              <VendorAdditionalContacts
-                onlyShowEmails={onlyShowEmail}
-                onlyShowPhones={onlyShowPhones}
-                onlyShowWebsites={onlyShowWebsites}
-                isOnlyShow={!isPageForVendor}
-              />
-            </span>
+            {(isPageForVendor ||
+              [onlyShowEmail, onlyShowPhones, onlyShowWebsites].some(
+                (arr) => (arr?.filter((item) => item.trim() !== '')?.length ?? 0) > 0
+              )) && (
+              <span className={styles.additional__span__box}>
+                <VendorAdditionalContacts
+                  onlyShowEmails={onlyShowEmail}
+                  onlyShowPhones={onlyShowPhones}
+                  onlyShowWebsites={onlyShowWebsites}
+                  isOnlyShow={!isPageForVendor}
+                />
+              </span>
+            )}
+
             <span className={`${styles.second__descr__box}`}>
               {/* TODO здесь размещаем описание компании */}
               <TextAreaUI

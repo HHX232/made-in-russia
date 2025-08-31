@@ -64,6 +64,84 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     }
   }, [isDropdownOpen])
 
+  // Улучшенная функция для проверки, содержит ли категория или её дети искомый текст
+  const categoryContainsSearch = (category: Category, searchTerm: string): boolean => {
+    if (!searchTerm) return true
+
+    const lowerSearchTerm = searchTerm.toLowerCase()
+
+    // Проверяем саму категорию
+    if (category.name.toLowerCase().includes(lowerSearchTerm)) {
+      return true
+    }
+
+    // Рекурсивно проверяем всех детей
+    if (category.children && category.children.length > 0) {
+      return category.children.some((child) => categoryContainsSearch(child, searchTerm))
+    }
+
+    return false
+  }
+
+  // Функция для получения всех путей к категориям, содержащим поисковый запрос
+  const getAllMatchingPaths = (categories: Category[], searchTerm: string, currentPath: string[] = []): string[][] => {
+    const paths: string[][] = []
+
+    for (const category of categories) {
+      const newPath = [...currentPath, category.id.toString()]
+
+      // Если текущая категория или её дети содержат поисковый запрос
+      if (categoryContainsSearch(category, searchTerm)) {
+        // Добавляем путь к текущей категории
+        paths.push(newPath)
+
+        // Если есть дети, ищем в них рекурсивно
+        if (category.children && category.children.length > 0) {
+          const childPaths = getAllMatchingPaths(category.children, searchTerm, newPath)
+          paths.push(...childPaths)
+        }
+      }
+    }
+    return paths
+  }
+
+  // Функция для определения, должна ли категория быть видимой
+  const shouldShowCategory = (category: Category, searchTerm: string): boolean => {
+    if (!searchTerm) return true
+    return categoryContainsSearch(category, searchTerm)
+  }
+
+  // Функция для подсчета видимых категорий (для определения наличия результатов)
+  const countVisibleCategories = (categories: Category[], searchTerm: string): number => {
+    if (!searchTerm) return categories.length
+
+    let count = 0
+    for (const category of categories) {
+      if (shouldShowCategory(category, searchTerm)) {
+        count++
+      }
+    }
+    return count
+  }
+
+  // Эффект для автоматического раскрытия категорий при поиске
+  useEffect(() => {
+    if (searchQuery) {
+      const allPaths = getAllMatchingPaths(allCategories, searchQuery)
+      const categoriesToExpand = new Set<string>()
+
+      // Для каждого найденного пути добавляем все категории для раскрытия
+      allPaths.forEach((path) => {
+        // Добавляем все элементы пути для раскрытия (включая родительские)
+        path.forEach((categoryId) => {
+          categoriesToExpand.add(categoryId)
+        })
+      })
+
+      setExpandedCategories(categoriesToExpand)
+    }
+  }, [searchQuery, allCategories])
+
   const toggleCategoryExpanded = (categoryId: string) => {
     const newExpanded = new Set(expandedCategories)
     if (newExpanded.has(categoryId)) {
@@ -93,10 +171,10 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     setSelectedCategory(null)
   }
 
-  // Рекурсивная функция для рендеринга категорий
+  // Рекурсивная функция для рендеринга категорий с поддержкой глубокого поиска
   const renderCategories = (categories: Category[], level = 0): JSX.Element[] => {
     return categories
-      .filter((category) => category.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      .filter((category) => shouldShowCategory(category, searchQuery))
       .map((category) => {
         const isExpanded = expandedCategories.has(category.id.toString())
         const hasChildren = category.children && category.children.length > 0
@@ -135,6 +213,17 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
         )
       })
   }
+
+  // Функция для рендеринга сообщения "Не найдено"
+  const renderNotFound = () => (
+    <div className={styles.cat__notFound}>
+      <div className={styles.cat__notFoundContent}>
+        <span className={styles.cat__notFoundIcon}>🔍</span>
+        <span className={styles.cat__notFoundText}>{t('notFoundCategories')}</span>
+        <span className={styles.cat__notFoundSubtext}>{t('tryChangeSearch')}</span>
+      </div>
+    </div>
+  )
 
   if (isLoading) {
     return (
@@ -198,6 +287,8 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
               <div ref={dropdownRef} id='cy-create-card-product-category-dropdown' className={styles.cat__dropdown}>
                 {allCategories.length === 0 ? (
                   <div className={styles.cat__noResults}>{t('categoryNotFound')}</div>
+                ) : searchQuery && countVisibleCategories(allCategories, searchQuery) === 0 ? (
+                  renderNotFound()
                 ) : (
                   <div className={styles.cat__dropdownList}>{renderCategories(allCategories)}</div>
                 )}

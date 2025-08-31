@@ -25,11 +25,12 @@ import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useFormValidation} from '@/hooks/useFormValidation'
 import {useCreateCardForm} from '@/hooks/useCreateCardForm'
 import {Language} from '@/store/multilingualDescriptionsInCard/multiLanguageCardPriceDataSlice.types'
-import {Link, usePathname, useRouter} from '@/i18n/navigation'
+import {usePathname} from 'next/navigation'
 import {useActions} from '@/hooks/useActions'
 import {setInitialStorageValue} from '@/hooks/createCardHelpers'
 import {submitFormCardData} from '@/utils/createCardHelpers'
 import {toast} from 'sonner'
+import {useRouter} from '@/i18n/navigation'
 
 const vopros = '/vopros.svg'
 // Конфигурация изображений для подсказок

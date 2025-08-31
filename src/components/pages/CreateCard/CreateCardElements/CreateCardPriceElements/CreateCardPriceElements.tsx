@@ -419,6 +419,12 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               key={`characteristics-${characteristicsKey}`}
               inputsInRowCount={2}
               maxRows={20}
+              inputType={['text', 'textarea']}
+              textAreaProps={{
+                minRows: 1,
+                maxRows: 5,
+                autoResize: true
+              }}
               extraClasses={[
                 styles.rows__inputs__box__inner__description__extra,
                 styles.rows__inputs__box__inner__description__extra,

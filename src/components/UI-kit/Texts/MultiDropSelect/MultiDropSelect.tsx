@@ -2,6 +2,7 @@ import React, {JSX, useState, useEffect} from 'react'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI'
 import styles from './MultiDropSelect.module.scss'
+import {useTranslations} from 'next-intl'
 
 export interface MultiSelectOption {
   id: string | number
@@ -41,49 +42,40 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   isCategories = false,
   extraDropListClass
 }) => {
+  const t = useTranslations('multiDrop')
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
 
   // useEffect(() => {
-  //   console.log('!=============!')
-  //   console.log('CURRENT options', options)
-  //   console.log('CURRENT selectedValues', selectedValues)
-  //   console.log('!=============!')
-  // }, [options, selectedValues])
+  //   console.log('optionsss', options)
+  // }, [options])
 
   // Функция для создания уникального ключа сравнения
   const getComparisonKey = (option: MultiSelectOption): string => {
     return `${option.value?.toLowerCase()}_${option.label?.toLowerCase()}`
   }
 
-  // Функция для поиска категории и получения пути к ней
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const findCategoryPath = (
-    categories: MultiSelectOption[],
-    searchTerm: string,
-    currentPath: string[] = []
-  ): string[] => {
-    for (const category of categories) {
-      const newPath = [...currentPath, category.id.toString()]
+  // Улучшенная функция для проверки, содержит ли категория или её дети искомый текст
+  const categoryContainsSearch = (category: MultiSelectOption, searchTerm: string): boolean => {
+    if (!searchTerm) return true
 
-      // Если текущая категория соответствует поиску
-      if (category.label.toLowerCase().includes(searchTerm.toLowerCase())) {
-        return newPath
-      }
+    const lowerSearchTerm = searchTerm.toLowerCase()
 
-      // Если есть дети, ищем в них
-      if (category.children && category.children.length > 0) {
-        const childPath = findCategoryPath(category.children, searchTerm, newPath)
-        if (childPath.length > 0) {
-          return childPath
-        }
-      }
+    // Проверяем саму категорию
+    if (category.label.toLowerCase().includes(lowerSearchTerm)) {
+      return true
     }
-    return []
+
+    // Рекурсивно проверяем всех детей
+    if (category.children && category.children.length > 0) {
+      return category.children.some((child) => categoryContainsSearch(child, searchTerm))
+    }
+
+    return false
   }
 
-  // Функция для получения всех путей к найденным категориям
+  // Функция для получения всех путей к категориям, содержащим поисковый запрос
   const getAllMatchingPaths = (
     categories: MultiSelectOption[],
     searchTerm: string,
@@ -94,37 +86,40 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
     for (const category of categories) {
       const newPath = [...currentPath, category.id.toString()]
 
-      // Если текущая категория соответствует поиску
-      if (category.label.toLowerCase().includes(searchTerm.toLowerCase())) {
+      // Если текущая категория или её дети содержат поисковый запрос
+      if (categoryContainsSearch(category, searchTerm)) {
+        // Добавляем путь к текущей категории
         paths.push(newPath)
-      }
 
-      // Если есть дети, ищем в них
-      if (category.children && category.children.length > 0) {
-        const childPaths = getAllMatchingPaths(category.children, searchTerm, newPath)
-        paths.push(...childPaths)
+        // Если есть дети, ищем в них рекурсивно
+        if (category.children && category.children.length > 0) {
+          const childPaths = getAllMatchingPaths(category.children, searchTerm, newPath)
+          paths.push(...childPaths)
+        }
       }
     }
     return paths
   }
 
-  // Функция для проверки, должна ли категория быть видимой при поиске
-  const shouldShowCategory = (category: MultiSelectOption, searchTerm: string, currentPath: string[] = []): boolean => {
+  // Улучшенная функция для определения, должна ли категория быть видимой
+  const shouldShowCategory = (category: MultiSelectOption, searchTerm: string): boolean => {
     if (!searchTerm) return true
 
-    const newPath = [...currentPath, category.id.toString()]
+    // Используем улучшенную функцию проверки
+    return categoryContainsSearch(category, searchTerm)
+  }
 
-    // Если сама категория подходит под поиск
-    if (category.label.toLowerCase().includes(searchTerm.toLowerCase())) {
-      return true
+  // Функция для подсчета видимых категорий (для определения наличия результатов)
+  const countVisibleCategories = (categories: MultiSelectOption[], searchTerm: string): number => {
+    if (!searchTerm) return categories.length
+
+    let count = 0
+    for (const category of categories) {
+      if (shouldShowCategory(category, searchTerm)) {
+        count++
+      }
     }
-
-    // Если в детях есть подходящие категории
-    if (category.children && category.children.length > 0) {
-      return category.children.some((child) => shouldShowCategory(child, searchTerm, newPath))
-    }
-
-    return false
+    return count
   }
 
   // Эффект для автоматического раскрытия категорий при поиске
@@ -133,19 +128,19 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
       const allPaths = getAllMatchingPaths(options, searchQuery)
       const categoriesToExpand = new Set<string>()
 
-      // Для каждого найденного пути добавляем все родительские категории для раскрытия
+      // Для каждого найденного пути добавляем все категории для раскрытия
       allPaths.forEach((path) => {
-        // Исключаем последний элемент пути (саму найденную категорию)
-        for (let i = 0; i < path.length - 1; i++) {
-          categoriesToExpand.add(path[i])
-        }
+        // Добавляем все элементы пути для раскрытия (включая родительские)
+        path.forEach((categoryId) => {
+          categoriesToExpand.add(categoryId)
+        })
       })
 
       setExpandedCategories(categoriesToExpand)
     }
   }, [searchQuery, isCategories, options])
 
-  // Проверка, выбран ли элемент (исправленная версия)
+  // Проверка, выбран ли элемент
   const isSelected = (option: MultiSelectOption) => {
     const optionKey = getComparisonKey(option)
     return selectedValues.some((selected) => {
@@ -154,7 +149,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
     })
   }
 
-  // Обработчик выбора элемента (исправленная версия)
+  // Обработчик выбора элемента
   const handleSelectOption = (option: MultiSelectOption) => {
     if (isOnlyShow) return
 
@@ -175,7 +170,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
     onChange(newSelected)
   }
 
-  // Обработчик удаления выбранного элемента (исправленная версия)
+  // Обработчик удаления выбранного элемента
   const handleRemoveOption = (optionToRemove: MultiSelectOption, e: React.MouseEvent) => {
     if (isOnlyShow) return
     e.stopPropagation()
@@ -206,7 +201,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
     const target = e.target as HTMLElement
 
-    // Если клик был по чекбоксу, не обрабатываем здесь (обработает сам чекбокс)
+    // Если клик был по чекбоксу, не обрабатываем здесь
     if (target.closest(`.${styles.radioWrapper}`)) {
       return
     }
@@ -348,6 +343,17 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
     </div>
   )
 
+  // Функция для рендеринга сообщения "Не найдено"
+  const renderNotFound = () => (
+    <div key='not-found' className={styles.notFound}>
+      <div className={styles.notFoundContent}>
+        <span className={styles.notFoundIcon}>🔍</span>
+        <span className={styles.notFoundText}>{isCategories ? t('notFoundCategories') : t('notFoundItems')}</span>
+        <span className={styles.notFoundSubtext}>{t('tryChangeSearch')}</span>
+      </div>
+    </div>
+  )
+
   // Создаем массив элементов для DropList
   const dropListItems = [
     // Поле поиска
@@ -355,7 +361,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
       <input
         key='search-input'
         type='text'
-        placeholder={isCategories ? 'Поиск категории...' : 'Поиск...'}
+        placeholder={isCategories ? t('searchCategories') : t('searchItems')}
         value={searchQuery}
         onChange={(e) => {
           setSearchQuery(e.target.value)
@@ -367,10 +373,23 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
     // Рендерим либо категории, либо обычные опции
     ...(isCategories
-      ? renderCategories(options)
-      : options
-          .filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
-          .map((option, index) => {
+      ? (() => {
+          const visibleCount = countVisibleCategories(options, searchQuery)
+          if (searchQuery && visibleCount === 0) {
+            return [renderNotFound()]
+          }
+          return renderCategories(options)
+        })()
+      : (() => {
+          const filteredOptions = options.filter((option) =>
+            option.label.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+
+          if (searchQuery && filteredOptions.length === 0) {
+            return [renderNotFound()]
+          }
+
+          return filteredOptions.map((option, index) => {
             const selected = isSelected(option)
             return (
               <div
@@ -382,7 +401,6 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
                   onClick={(e) => {
                     if (isOnlyShow) return
                     const target = e.target as HTMLElement
-                    // Если клик был по чекбоксу, не обрабатываем здесь
                     if (target.closest(`.${styles.radioWrapper}`)) {
                       return
                     }
@@ -411,14 +429,17 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
                 )}
               </div>
             )
-          })),
+          })
+        })()),
 
-    // Разделитель (только если не в режиме просмотра)
-    ...(!isOnlyShow ? [<div style={{pointerEvents: 'none'}} key='divider' className={styles.divider} />] : []),
-
-    // Кнопки действий (только если не в режиме просмотра)
-    ...(!isOnlyShow
+    // Разделитель и кнопки (только если не в режиме просмотра и есть результаты)
+    ...(!isOnlyShow &&
+    (isCategories
+      ? countVisibleCategories(options, searchQuery) > 0 || !searchQuery
+      : options.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase())).length > 0 ||
+        !searchQuery)
       ? [
+          <div style={{pointerEvents: 'none'}} key='divider' className={styles.divider} />,
           <div key='actions' className={styles.actions}>
             <button
               type='button'
@@ -432,7 +453,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
               }}
               disabled={selectedValues.length === 0}
             >
-              Очистить все
+              {t('clearAll')}
             </button>
             <button
               type='button'
@@ -442,7 +463,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
                 setIsOpen(false)
               }}
             >
-              Готово ({selectedValues.length})
+              {t('ready')} ({selectedValues.length})
             </button>
           </div>
         ]

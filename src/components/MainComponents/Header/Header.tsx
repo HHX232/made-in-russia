@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import {FC, useEffect, useId, useRef, useState} from 'react'
 import styles from './Header.module.scss'
-import {Link, usePathname, useRouter} from '@/i18n/navigation'
+import {Link} from '@/i18n/navigation'
 import createTelText from '@/utils/createTelText'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
@@ -13,11 +13,12 @@ import BurgerMenu from '../BurgerMenu/BurgerMenu'
 import Head from 'next/head'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 import CategoryesMenuDesktop from '@/components/UI-kit/elements/CategoryesMenuDesktop/CategoryesMenuDesktop'
-// import {Link, usePathname, useRouter} from '@/i18n/navigation'
+// import {Link, useRouter} from '@/i18n/navigation'
 import {useTranslations} from 'next-intl'
 import createNewLangUrl from '@/utils/createNewLangUrl'
 import {TLocale} from '../MinimalHeader/MinimalHeader'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {usePathname, useRouter} from 'next/navigation'
 
 const setCookieLocale = (locale: string) => {
   document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
