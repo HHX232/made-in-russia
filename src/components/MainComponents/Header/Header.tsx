@@ -132,8 +132,10 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
 
   const router = useRouter()
   const currentLang = useCurrentLanguage()
+
   useEffect(() => {
     async function rrrr() {
+      // TODO:  заменить на кэшированную версию
       const res = await CategoriesService.getAll(currentLang)
       setCategoriesList(res)
     }

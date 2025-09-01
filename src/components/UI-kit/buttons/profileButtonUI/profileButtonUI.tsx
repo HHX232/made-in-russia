@@ -6,7 +6,8 @@ import {useRouter} from '@/i18n/navigation'
 import {useTranslations} from 'next-intl'
 import {useNProgress} from '@/hooks/useProgress'
 import {useTypedSelector} from '@/hooks/useTypedSelector' // ваш кастомный хук
-import {useUserQuery} from '@/hooks/useUserApi'
+import {useUserCache, useUserQuery} from '@/hooks/useUserApi'
+import {getAccessToken} from '@/services/auth/auth.helper'
 
 const ava = '/avatars/avatar-v.svg'
 const ava1 = '/avatars/avatar-v-1.svg'
@@ -29,7 +30,8 @@ interface IProfileProps {
 const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   // Используем ваш кастомный selector hook
   const {user, isAuthenticated} = useTypedSelector((state) => state.user)
-
+  const {removeUserFromCache} = useUserCache()
+  const accessToken = getAccessToken()
   // React Query hook для загрузки данных пользователя
   const {isLoading, error, isError} = useUserQuery()
 
@@ -44,7 +46,10 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   // Инициализация случайного аватара
   useEffect(() => {
     setRandomAvatar(avatarsArray[0])
-  }, [])
+    if (!accessToken) {
+      removeUserFromCache()
+    }
+  }, [accessToken, removeUserFromCache])
 
   // Мемоизированное имя пользователя с обрезкой
   const userName = useMemo(() => {

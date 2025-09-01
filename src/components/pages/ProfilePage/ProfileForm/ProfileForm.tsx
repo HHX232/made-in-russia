@@ -207,17 +207,35 @@ const ProfileForm: FC<ProfileFormProps> = ({
     // Если номер не начинается с известного кода - это "other"
     return 'other'
   }
+  const getOtherRegion = (regions: RegionType[]): RegionType => {
+    return (
+      regions.find((r) => r.altName === 'other') || {
+        imageSrc: '',
+        title: 'other',
+        altName: 'other'
+      }
+    )
+  }
 
   const [selectedRegion, setSelectedRegion] = useState<RegionType>(() => {
-    // Для вендора пытаемся взять первую страну из vendorDetails
-    if (isVendor && userData?.vendorDetails && userData?.vendorDetails?.countries?.length > 0) {
-      const firstCountryName = userData.vendorDetails.countries[0].name
-      const vendorRegion = regions.find(
-        (region) => region.altName === firstCountryName || region.title === firstCountryName
-      )
-      if (vendorRegion) {
-        console.log('Found vendor region from countries:', vendorRegion.altName)
-        return vendorRegion
+    // Для вендора проверяем количество стран
+    if (isVendor && userData?.vendorDetails?.countries) {
+      const countries = userData.vendorDetails.countries
+
+      // Если стран больше одной - используем 'other'
+      if (countries.length > 1) {
+        return getOtherRegion(regions)
+      }
+
+      // Если одна страна - ищем соответствующий регион
+      if (countries.length === 1) {
+        const firstCountryName = countries[0].name
+        const vendorRegion = regions.find(
+          (region) => region.altName === firstCountryName || region.title === firstCountryName
+        )
+        if (vendorRegion) {
+          return vendorRegion
+        }
       }
     }
 
@@ -239,14 +257,8 @@ const ProfileForm: FC<ProfileFormProps> = ({
       }
     }
 
-    // Приоритет 3: Ищем регион "other" как значение по умолчанию
-    const otherRegion = regions.find((r) => r.altName === 'other')
-    if (otherRegion) {
-      return otherRegion
-    }
-
-    // Последний вариант: берем первый из списка
-    return regions[0]
+    // Приоритет 3: Используем 'other' как значение по умолчанию
+    return getOtherRegion(regions)
   })
 
   const [listIsOpen, setListIsOpen] = useState(false)
@@ -623,6 +635,39 @@ const ProfileForm: FC<ProfileFormProps> = ({
     {id: 'russia', label: t('russia'), value: 'Russia', icon: russiaSvg}
   ]
 
+  const determineSelectedRegion = (selectedCountries: MultiSelectOption[], regions: RegionType[]): RegionType => {
+    // Если стран больше одной или нет - используем 'other'
+    if (selectedCountries.length !== 1) {
+      return getOtherRegion(regions)
+    }
+
+    // Если одна страна - находим соответствующий регион
+    const countryValue = selectedCountries[0].value
+    const region = regions.find(
+      (r) =>
+        r.altName.toLowerCase() === countryValue.toLowerCase() || r.title.toLowerCase() === countryValue.toLowerCase()
+    )
+
+    return region || getOtherRegion(regions)
+  }
+  useEffect(() => {
+    if (isVendor && userInteracted) {
+      const newSelectedRegion = determineSelectedRegion(selectedCountries, regions)
+
+      // Обновляем selectedRegion только если он изменился
+      if (newSelectedRegion.altName !== selectedRegion.altName) {
+        setSelectedRegion(newSelectedRegion)
+
+        // Проверяем валидность текущего номера для нового региона
+        if (telText) {
+          const cleanedNumber = telText.replace(/\D/g, '')
+          const isValid = validatePhoneLength(cleanedNumber, getSafeNumberStart(newSelectedRegion.altName))
+          setIsValidNumber(isValid)
+        }
+      }
+    }
+  }, [selectedCountries, isVendor, userInteracted, regions, selectedRegion.altName, telText])
+
   return (
     <div className={styles.create__box}>
       <ModalWindowDefault isOpen={modalIsOpen} onClose={closeModal}>
@@ -675,13 +720,16 @@ const ProfileForm: FC<ProfileFormProps> = ({
               onChange={(values) => {
                 setSelectedCountries(values)
                 setUserInteracted(true)
-                console.log('countr values', values)
+                console.log('country values', values)
+
                 updateVendorDetailsAction({
                   ...vendorDetails,
                   countries: values.map((el) => {
                     return {name: el.value, value: el.value}
                   })
                 })
+
+                // selectedRegion будет обновлен через useEffect выше
               }}
               placeholder={t('selectRegions')}
               direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}
