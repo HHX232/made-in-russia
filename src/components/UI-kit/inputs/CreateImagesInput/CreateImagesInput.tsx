@@ -492,6 +492,58 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
   )
 
   // Мемоизируем callback для удаления
+  // const handleRemove = useCallback(
+  //   (index: number) => {
+  //     if (isOnlyShow) return
+
+  //     // Очищаем URL только если это был загруженный файл
+  //     if (previewUrls[index] && localFiles[index]) {
+  //       URL.revokeObjectURL(previewUrls[index]!)
+  //     }
+
+  //     setLocalFiles((prev) => {
+  //       const newFiles = [...prev]
+  //       newFiles[index] = null
+  //       return newFiles
+  //     })
+
+  //     setPreviewUrls((prev) => {
+  //       const newUrls = [...prev]
+  //       newUrls[index] = null
+  //       return newUrls
+  //     })
+
+  //     // Если это было начальное изображение, добавляем в список удаленных
+  //     if (activeImages[index] && !localFiles[index]) {
+  //       setRemovedInitialImages((prev) => {
+  //         const newSet = new Set(prev).add(index)
+
+  //         // Уведомляем родителя об удалении
+  //         if (onActiveImagesChange) {
+  //           const remainingUrls = activeImages.filter((_, i) => {
+  //             return i !== index && !newSet.has(i)
+  //           })
+  //           onActiveImagesChange(remainingUrls)
+  //         }
+
+  //         return newSet
+  //       })
+  //     }
+
+  //     setLoadError((prev) => ({...prev, [index]: false}))
+
+  //     // Обновляем файлы в родителе
+  //     setLocalFiles((currentFiles) => {
+  //       const updatedFiles = [...currentFiles]
+  //       updatedFiles[index] = null
+  //       onFilesChange(updatedFiles.filter((f) => f !== null) as File[])
+  //       return updatedFiles
+  //     })
+  //   },
+  //   [previewUrls, localFiles, activeImages, onActiveImagesChange, onFilesChange, isOnlyShow]
+  // )
+
+  // Исправленный handleRemove в CreateImagesInput
   const handleRemove = useCallback(
     (index: number) => {
       if (isOnlyShow) return
@@ -518,16 +570,23 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         setRemovedInitialImages((prev) => {
           const newSet = new Set(prev).add(index)
 
-          // Уведомляем родителя об удалении
+          // ✅ ИСПРАВЛЕНИЕ: правильная фильтрация
           if (onActiveImagesChange) {
             const remainingUrls = activeImages.filter((_, i) => {
-              return i !== index && !newSet.has(i)
+              return i !== index && !prev.has(i) // Используем prev вместо newSet
             })
             onActiveImagesChange(remainingUrls)
           }
 
           return newSet
         })
+      } else {
+        // ✅ ДОБАВЛЕНИЕ: если удаляем локально загруженный файл
+        if (onActiveImagesChange) {
+          // Просто передаем текущие activeImages без изменений,
+          // так как локальные файлы не влияют на activeImages
+          onActiveImagesChange([...activeImages])
+        }
       }
 
       setLoadError((prev) => ({...prev, [index]: false}))
@@ -542,6 +601,30 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     },
     [previewUrls, localFiles, activeImages, onActiveImagesChange, onFilesChange, isOnlyShow]
   )
+
+  // В CreateImagesInput добавить:
+  useEffect(() => {
+    if (activeImages.length > 0) {
+      setPreviewUrls(() => {
+        const newUrls = new Array(maxFiles).fill(null)
+
+        activeImages.forEach((url, index) => {
+          if (index < maxFiles && !removedInitialImages.has(index)) {
+            newUrls[index] = url
+          }
+        })
+
+        // Сохраняем локально загруженные файлы
+        localFiles.forEach((file, index) => {
+          if (file && newUrls[index] === null) {
+            newUrls[index] = URL.createObjectURL(file)
+          }
+        })
+
+        return newUrls
+      })
+    }
+  }, [activeImages, removedInitialImages, localFiles, maxFiles])
 
   // Мемоизируем callback для ошибок изображений
   const handleImageError = useCallback((index: number) => {

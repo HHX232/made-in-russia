@@ -155,8 +155,8 @@ const ProfileForm: FC<ProfileFormProps> = ({
   const [error, setError] = useState<string | null>(null)
   const currentLang = useCurrentLanguage()
   const t = useTranslations('ProfilePage.ProfileForm')
-  const {updateVendorDetails: updateVendorDetailsAction} = useActions()
-
+  const {updateVendorDetails: updateVendorDetailsAction, updateUserProfile} = useActions()
+  const user = useTypedSelector((s) => s.user.user)
   const vendorDetails = useTypedSelector((s) => s.user.user?.vendorDetails, shallowEqual)
   useEffect(() => {
     const fetchCategories = async () => {
@@ -519,6 +519,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
     // Валидация должна происходить на очищенном номере БЕЗ форматирования
     const isValid = validatePhoneLength(cleanedNumber, countryForValidation)
 
+    updateUserProfile({phoneNumber: cleanedNumber})
     setTelText(cleanedNumber) // Сохраняем только цифры
     setIsValidNumber(isValid)
 

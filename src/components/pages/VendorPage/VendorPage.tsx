@@ -168,9 +168,14 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   }, [descriptionImages, uploadedFiles, vendorData?.vendorDetails?.media])
 
   const handleActiveImagesChange = useCallback((remainingUrls: string[]) => {
+    console.log('Images updated:', remainingUrls) // для отладки
     setDescriptionImages(remainingUrls)
     canUpdateVendorMedia.current = true
   }, [])
+
+  useEffect(() => {
+    console.log('VendorPage - descriptionImages changed:', descriptionImages)
+  }, [descriptionImages])
 
   const handleUploadedFilesChange = useCallback((files: File[]) => {
     setTimeout(() => {
@@ -699,7 +704,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                   }}
                   disabled={isSavingMedia}
                 >
-                  {isSavingMedia ? t('saving') : t('save')}
+                  {isSavingMedia ? t('save') : t('save')}
                 </button>
               )}
             </span>
@@ -794,7 +799,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                   }}
                   disabled={isSavingMedia}
                 >
-                  {isSavingMedia ? t('saving') : t('save')}
+                  {isSavingMedia ? t('save') : t('save')}
                 </button>
               )}
             </div>
