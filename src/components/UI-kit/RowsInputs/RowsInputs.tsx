@@ -16,15 +16,13 @@ import {CSS} from '@dnd-kit/utilities'
 import TextInputUI from '../inputs/TextInputUI/TextInputUI'
 import styles from './RowsInputs.module.scss'
 import TextAreaUI from '../TextAreaUI/TextAreaUI'
+import {useCurrentLanguageWithCookie} from '@/hooks/useCurrentLanguage'
 
 const plusCircle = '/create-card/plus-circle.svg'
 const minusCircle = '/create-card/minusCircle.svg'
 const dragHandle = '/create-card/drag-handle.svg'
 
-// Добавляем 'textarea' в тип
 type TInputType = 'text' | 'number' | 'password' | 'dropdown' | 'textarea'
-
-// Добавляем новые типы для размеров кнопок
 type ButtonSize = 'small' | 'medium' | 'large'
 
 interface ButtonSizes {
@@ -53,24 +51,20 @@ interface RowsInputsProps {
   dropdownOptions?: string[][]
   canCreateNewOption?: boolean[]
   inputsTheme?: 'dark' | 'light' | 'superWhite' | 'lightBlue'
-  // Новые пропсы для настройки textarea
   textAreaProps?: {
     minRows?: number
     maxRows?: number
     autoResize?: boolean
   }
-  // Новые пропсы для размеров кнопок
   buttonsSizes?: ButtonSize
   customButtonSizes?: ButtonSizes
   showDnDButton?: boolean
-  // Новые пропсы для событий инпутов
   onBlur?: (rowIndex: number, inputIndex: number, value: string) => void
   onClick?: (rowIndex: number, inputIndex: number, value: string) => void
   onFocus?: (rowIndex: number, inputIndex: number, value: string) => void
   onKeyUp?: (rowIndex: number, inputIndex: number, value: string, event: React.KeyboardEvent) => void
 }
 
-// Функция для получения размеров кнопок по умолчанию
 const getDefaultButtonSizes = (size: ButtonSize): ButtonSizes => {
   switch (size) {
     case 'small':
@@ -95,7 +89,6 @@ const getDefaultButtonSizes = (size: ButtonSize): ButtonSizes => {
   }
 }
 
-// Компонент Dropdown с поддержкой создания новых опций
 interface DropdownProps {
   value: string
   options: string[]
@@ -112,8 +105,13 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
   const [isCreatingNew, setIsCreatingNew] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const customInputRef = useRef<HTMLInputElement>(null)
+  const currentLang = useCurrentLanguageWithCookie()
+  const miniTranslates = {
+    ru: 'Создать',
+    en: 'Create',
+    zh: '创建'
+  }
 
-  // Закрытие при клике вне элемента
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -127,17 +125,14 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Закрытие при скролле страницы
   useEffect(() => {
     const handleScroll = (event: Event) => {
       const target = event.target as Element
 
-      // Проверяем, что скролл не происходит внутри нашего dropdown'а
       if (dropdownRef.current && (dropdownRef.current === target || dropdownRef.current.contains(target))) {
-        return // Не закрываем, если скролл внутри dropdown'а
+        return
       }
 
-      // Дополнительная проверка - закрываем только при скролле окна или других элементов вне dropdown'а
       if (
         target === document.documentElement ||
         target === document.body ||
@@ -152,9 +147,7 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
     }
 
     if (isOpen) {
-      // Слушаем события скролла на всех элементах
       document.addEventListener('scroll', handleScroll, true)
-      // Также слушаем скролл окна
       window.addEventListener('scroll', handleScroll)
 
       return () => {
@@ -164,7 +157,6 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
     }
   }, [isOpen])
 
-  // Фокус на инпуте при создании новой опции
   useEffect(() => {
     if (isCreatingNew && customInputRef.current) {
       customInputRef.current.focus()
@@ -220,7 +212,6 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
 
       {isOpen && (
         <div className={styles.dropdown__list}>
-          {/* Кастомный инпут для создания новых опций */}
           {canCreateNew && (
             <>
               {isCreatingNew ? (
@@ -268,14 +259,12 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
                   className={`${styles.dropdown__option} ${styles.dropdown__option__create}`}
                   onClick={handleCreateNew}
                 >
-                  + create
+                  + {miniTranslates?.[currentLang as keyof typeof miniTranslates] || 'en'}
                 </div>
               )}
               {options.length > 0 && <div className={styles.dropdown__separator} />}
             </>
           )}
-
-          {/* Существующие опции */}
           {options.map((option, index) => (
             <div
               key={index + inputId}
@@ -291,7 +280,6 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
   )
 }
 
-// Компонент для сортируемой строки
 interface SortableRowProps {
   id: string
   rowIndex: number
@@ -317,7 +305,6 @@ interface SortableRowProps {
   }
   buttonSizes: ButtonSizes
   showDnDButton: boolean
-  // Новые пропсы для событий инпутов
   onBlur?: (rowIndex: number, inputIndex: number, value: string) => void
   onClick?: (rowIndex: number, inputIndex: number, value: string) => void
   onFocus?: (rowIndex: number, inputIndex: number, value: string) => void
@@ -382,7 +369,6 @@ const SortableRow = ({
       )
     }
 
-    // Добавляем поддержку textarea
     if (currentInputType === 'textarea') {
       return (
         <TextAreaUI
@@ -427,7 +413,6 @@ const SortableRow = ({
       <div
         className={`${styles.rows__inputs__box} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''} ${!showDnDButton ? styles.no__drag : ''}`}
       >
-        {/* Ручка для перетаскивания */}
         {showDnDButton && (
           <button
             className={styles.rows__inputs__drag}
@@ -504,7 +489,11 @@ const RowsInputs = ({
   onFocus,
   onKeyUp
 }: RowsInputsProps) => {
+  // Инициализация состояния с учетом controlled режима
   const [rows, setRows] = useState<string[][]>(() => {
+    if (controlled && externalValues && externalValues.length > 0) {
+      return externalValues
+    }
     if (rowsInitialValues && rowsInitialValues.length > 0) {
       return rowsInitialValues
     }
@@ -515,25 +504,68 @@ const RowsInputs = ({
     return initialRows
   })
 
-  const [rowIds, setRowIds] = useState<string[]>(() => rows.map((_, index) => `row-${index}-${Date.now()}`))
+  // Инициализация rowIds с уникальными значениями
+  const [rowIds, setRowIds] = useState<string[]>(() => {
+    const initialRows =
+      controlled && externalValues
+        ? externalValues
+        : rowsInitialValues && rowsInitialValues.length > 0
+          ? rowsInitialValues
+          : Array(initialRowsCount)
+              .fill(0)
+              .map(() => new Array(inputsInRowCount).fill(''))
 
-  // Определяем размеры кнопок
+    return initialRows.map((_, index) => `row-${index}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`)
+  })
+
   const buttonSizes = customButtonSizes || getDefaultButtonSizes(buttonsSizes)
 
+  // Синхронизация с externalValues в контролируемом режиме
   useEffect(() => {
     if (controlled && externalValues) {
-      if (JSON.stringify(externalValues) !== JSON.stringify(rows)) {
+      const currentDataString = JSON.stringify(rows)
+      const externalDataString = JSON.stringify(externalValues)
+
+      if (currentDataString !== externalDataString) {
+        console.log('🔄 Синхронизация RowsInputs:', {
+          external: externalValues,
+          current: rows,
+          rowIdsLength: rowIds.length
+        })
+
         setRows(externalValues)
 
+        // ВАЖНО: Пересоздаем rowIds ТОЛЬКО при изменении количества строк
         if (externalValues.length !== rowIds.length) {
-          const newRowIds = externalValues.map((_, index) =>
-            index < rowIds.length ? rowIds[index] : `row-${index}-${Date.now()}`
+          const newRowIds = externalValues.map(
+            (_, index) =>
+              index < rowIds.length
+                ? rowIds[index] // Сохраняем существующий ID
+                : `row-${index}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // Создаем новый только для новых строк
           )
           setRowIds(newRowIds)
         }
       }
     }
-  }, [controlled, externalValues, rowsInitialValues])
+  }, [controlled, externalValues])
+
+  // Дебаг информация
+  useEffect(() => {
+    const duplicates = rowIds.filter((id, index) => rowIds.indexOf(id) !== index)
+    if (duplicates.length > 0) {
+      console.warn('🚨 Дублирующиеся rowIds найдены:', duplicates)
+    }
+
+    console.log('📊 RowsInputs Debug:', {
+      controlled,
+      externalValuesLength: externalValues?.length || 0,
+      rowsLength: rows.length,
+      rowIdsLength: rowIds.length,
+      currentRowsLength: currentRows.length,
+      duplicatesFound: duplicates.length > 0,
+      rowIds: rowIds.slice(0, 3) // Показываем только первые 3 для краткости
+    })
+  }, [controlled, externalValues, rows, rowIds])
 
   const currentRows = controlled && externalValues ? externalValues : rows
 
@@ -575,18 +607,6 @@ const RowsInputs = ({
 
   const rowsWithErrors = getRowsWithErrors()
 
-  useEffect(() => {
-    if (currentRows.length > rowIds.length) {
-      const newIds = [...rowIds]
-      for (let i = rowIds.length; i < currentRows.length; i++) {
-        newIds.push(`row-${i}-${Date.now()}`)
-      }
-      setRowIds(newIds)
-    } else if (currentRows.length < rowIds.length) {
-      setRowIds(rowIds.slice(0, currentRows.length))
-    }
-  }, [currentRows.length])
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -603,8 +623,9 @@ const RowsInputs = ({
       const newRows = [...currentRows, new Array(inputsInRowCount).fill('')]
 
       if (!controlled) {
+        const newRowId = `row-${currentRows.length}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         setRows(newRows)
-        setRowIds([...rowIds, `row-${currentRows.length}-${Date.now()}`])
+        setRowIds([...rowIds, newRowId])
       }
 
       if (onRowsChange) {
@@ -615,10 +636,11 @@ const RowsInputs = ({
 
   const removeRow = (rowIndex: number) => {
     if (currentRows.length === 1) return
+
     const newRows = currentRows.filter((_, index) => index !== rowIndex)
-    const newRowIds = rowIds.filter((_, index) => index !== rowIndex)
 
     if (!controlled) {
+      const newRowIds = rowIds.filter((_, index) => index !== rowIndex)
       setRows(newRows)
       setRowIds(newRowIds)
     }
@@ -630,6 +652,13 @@ const RowsInputs = ({
 
   const updateValue = (rowIndex: number, inputIndex: number, value: string) => {
     const newRows = [...currentRows]
+
+    // Проверяем существование строки
+    if (!newRows[rowIndex]) {
+      console.warn('❌ Попытка обновить несуществующую строку:', rowIndex, 'в массиве длиной:', newRows.length)
+      return
+    }
+
     newRows[rowIndex][inputIndex] = value
 
     if (!controlled) {
@@ -638,7 +667,9 @@ const RowsInputs = ({
 
     onSetValue(rowIndex, inputIndex, value)
 
-    if (onRowsChange) {
+    // В контролируемом режиме НЕ вызываем onRowsChange при обновлении значения
+    // Родительский компонент сам решает, когда обновлять состояние
+    if (onRowsChange && !controlled) {
       onRowsChange(newRows)
     }
   }
@@ -650,10 +681,21 @@ const RowsInputs = ({
       const oldIndex = rowIds.indexOf(active.id as string)
       const newIndex = rowIds.indexOf(over.id as string)
 
+      if (oldIndex === -1 || newIndex === -1) {
+        console.warn('❌ Не найден индекс для перетаскивания:', {
+          activeId: active.id,
+          overId: over.id,
+          rowIds: rowIds,
+          oldIndex,
+          newIndex
+        })
+        return
+      }
+
       const newRows = arrayMove(currentRows, oldIndex, newIndex)
-      const newRowIds = arrayMove(rowIds, oldIndex, newIndex)
 
       if (!controlled) {
+        const newRowIds = arrayMove(rowIds, oldIndex, newIndex)
         setRows(newRows)
         setRowIds(newRowIds)
       }
@@ -661,18 +703,21 @@ const RowsInputs = ({
       if (onRowsChange) {
         onRowsChange(newRows)
       }
-
-      if (extraClasses.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const newExtraClasses = arrayMove([...extraClasses], oldIndex, newIndex)
-      }
     }
+  }
+
+  // Проверяем корректность состояния
+  if (currentRows.length !== rowIds.length) {
+    console.warn('⚠️ Несоответствие длины массивов:', {
+      rowsLength: currentRows.length,
+      rowIdsLength: rowIds.length,
+      controlled
+    })
   }
 
   return (
     <div className={`${styles.rows__inputs__wrapper} ${errorMessage ? styles.has__error : ''}`}>
       <div className={styles.rows__inputs}>
-        {/* Заголовки */}
         <div
           className={`${styles.rows__inputs__titles} ${!showDnDButton ? styles.no__drag : ''}`}
           style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}
@@ -684,44 +729,50 @@ const RowsInputs = ({
           ))}
         </div>
 
-        {/* Строки с инпутами */}
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
             <div className={styles.rows__inputs__container}>
-              {currentRows.map((row, rowIndex) => (
-                <SortableRow
-                  key={rowIds[rowIndex] + titles[rowIndex]}
-                  inputsTheme={inputsTheme}
-                  extraButtonMinusClass={extraButtonMinusClass}
-                  inputType={inputType}
-                  id={rowIds[rowIndex]}
-                  rowIndex={rowIndex}
-                  idNames={idNames}
-                  row={row}
-                  titles={titles}
-                  inputsInRowCount={inputsInRowCount}
-                  extraClass={extraClasses[rowIndex]}
-                  isLastRow={rowIndex === currentRows.length - 1}
-                  canRemove={currentRows.length > 1}
-                  onUpdateValue={updateValue}
-                  onRemoveRow={removeRow}
-                  hasError={rowsWithErrors.includes(rowIndex)}
-                  dropdownOptions={dropdownOptions}
-                  canCreateNewOption={canCreateNewOption}
-                  textAreaProps={textAreaProps}
-                  buttonSizes={buttonSizes}
-                  showDnDButton={showDnDButton}
-                  onBlur={onBlur}
-                  onClick={onClick}
-                  onFocus={onFocus}
-                  onKeyUp={onKeyUp}
-                />
-              ))}
+              {currentRows.map((row, rowIndex) => {
+                const rowId = rowIds[rowIndex]
+                if (!rowId) {
+                  console.warn('❌ Отсутствует rowId для индекса:', rowIndex)
+                  return null
+                }
+
+                return (
+                  <SortableRow
+                    key={rowId}
+                    inputsTheme={inputsTheme}
+                    extraButtonMinusClass={extraButtonMinusClass}
+                    inputType={inputType}
+                    id={rowId}
+                    rowIndex={rowIndex}
+                    idNames={idNames}
+                    row={row}
+                    titles={titles}
+                    inputsInRowCount={inputsInRowCount}
+                    extraClass={extraClasses[rowIndex]}
+                    isLastRow={rowIndex === currentRows.length - 1}
+                    canRemove={currentRows.length > 1}
+                    onUpdateValue={updateValue}
+                    onRemoveRow={removeRow}
+                    hasError={rowsWithErrors.includes(rowIndex)}
+                    dropdownOptions={dropdownOptions}
+                    canCreateNewOption={canCreateNewOption}
+                    textAreaProps={textAreaProps}
+                    buttonSizes={buttonSizes}
+                    showDnDButton={showDnDButton}
+                    onBlur={onBlur}
+                    onClick={onClick}
+                    onFocus={onFocus}
+                    onKeyUp={onKeyUp}
+                  />
+                )
+              })}
             </div>
           </SortableContext>
         </DndContext>
 
-        {/* Кнопка добавления новой строки */}
         {currentRows.length < maxRows && (
           <button
             id={`cy-create-card-row-plus-button-${idNames?.[0] || 'default'}`}
@@ -740,7 +791,6 @@ const RowsInputs = ({
         )}
       </div>
 
-      {/* Блок с ошибкой и счетчиком */}
       {(errorMessage || minFilledRows > 0) && (
         <div className={styles.info__block}>
           {errorMessage && <p className={styles.error__message}>{errorMessage}</p>}

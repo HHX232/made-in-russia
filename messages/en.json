@@ -636,6 +636,18 @@
     "searchItems": "Search items...",
     "clearAll": "Clear all",
     "ready": "Done"
+  },
+  "HelpPage": {
+    "title": "Contact Us",
+    "namePlaceholder": "Your Name",
+    "emailPlaceholder": "Your Email",
+    "subjectPlaceholder": "Subject",
+    "messagePlaceholder": "Your Message",
+    "send": "Send",
+    "sending": "Sending...",
+    "successMessage": "Message sent successfully!",
+    "errorMessage": "Error sending message. Please try again.",
+    "contactInfo": "If you encounter any issues on our website, please contact us through various social networks and other communication methods. Thank you for being with us!"
   }
 }
 

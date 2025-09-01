@@ -168,7 +168,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   }, [descriptionImages, uploadedFiles, vendorData?.vendorDetails?.media])
 
   const handleActiveImagesChange = useCallback((remainingUrls: string[]) => {
-    console.log('Images updated:', remainingUrls) // для отладки
     setDescriptionImages(remainingUrls)
     canUpdateVendorMedia.current = true
   }, [])
@@ -406,16 +405,52 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const currentLang = useCurrentLanguage()
 
   // Обработчик сохранения медиа-файлов
+  // const handleSaveMediaFiles = useCallback(async () => {
+  //   if (!user?.vendorDetails) return
+
+  //   setIsSavingMedia(true)
+
+  //   try {
+  //     // console.log('vendor media before save', vendorData?.vendorDetails?.media)
+  //     const result = await saveMedia({
+  //       newFiles: uploadedFiles,
+  //       existingImages: descriptionImages,
+  //       allExistingMedia: vendorData?.vendorDetails?.media || [],
+  //       currentLanguage: currentLang,
+  //       t
+  //     })
+
+  //     if (result.success) {
+  //       // Сброс состояний после успешного сохранения
+  //       canUpdateVendorMedia.current = false
+  //       setUploadedFiles([])
+
+  //       // Обновляем описание через updateVendorDetailsAPI
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to save media:', error)
+  //   } finally {
+  //     setIsSavingMedia(false)
+  //   }
+  // }, [
+  //   user?.vendorDetails,
+  //   user?.phoneNumber,
+  //   user?.region,
+  //   uploadedFiles,
+  //   descriptionImages,
+  //   currentLang,
+  //   t,
+  //   saveMedia
+  // ])
   const handleSaveMediaFiles = useCallback(async () => {
     if (!user?.vendorDetails) return
 
     setIsSavingMedia(true)
 
     try {
-      // console.log('vendor media before save', vendorData?.vendorDetails?.media)
       const result = await saveMedia({
         newFiles: uploadedFiles,
-        existingImages: descriptionImages,
+        existingImages: descriptionImages, // Передаем массив как есть
         allExistingMedia: vendorData?.vendorDetails?.media || [],
         currentLanguage: currentLang,
         t
@@ -425,8 +460,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
         // Сброс состояний после успешного сохранения
         canUpdateVendorMedia.current = false
         setUploadedFiles([])
-
-        // Обновляем описание через updateVendorDetailsAPI
       }
     } catch (error) {
       console.error('Failed to save media:', error)
@@ -435,15 +468,13 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
     }
   }, [
     user?.vendorDetails,
-    user?.phoneNumber,
-    user?.region,
     uploadedFiles,
-    descriptionImages,
+    descriptionImages, // Убираем getActiveImageUrls
+    vendorData?.vendorDetails?.media,
     currentLang,
     t,
     saveMedia
   ])
-
   const handleCreateNewQuestion = useCallback(() => {
     try {
       const response = instance.post(
@@ -658,9 +689,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 <div style={{width: '100%'}} className=''>
                   <CreateImagesInput
                     showBigFirstItem={false}
-                    activeImages={descriptionImages}
+                    activeImages={descriptionImages} // Передаем массив как есть
                     onFilesChange={handleUploadedFilesChange}
-                    onActiveImagesChange={handleActiveImagesChange}
+                    onActiveImagesChange={handleActiveImagesChange} // Используем простую сигнатуру
                     extraClass={styles.extra__images__input}
                     maxFiles={10}
                     minFiles={0}
@@ -752,11 +783,11 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
             <div className={`${styles.first__descr__box}`}>
               <div style={{width: '100%', position: 'relative'}} className=''>
                 <CreateImagesInput
-                  extraClass={styles.extra__images__input}
                   showBigFirstItem={false}
                   activeImages={descriptionImages}
                   onFilesChange={handleUploadedFilesChange}
                   onActiveImagesChange={handleActiveImagesChange}
+                  extraClass={styles.extra__images__input}
                   maxFiles={10}
                   minFiles={0}
                   inputIdPrefix='vendorImages'

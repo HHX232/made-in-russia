@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // hooks/api/useVendorApi.ts
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 import {useActions} from '@/hooks/useActions'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import instance from '@/api/api.interceptor'
 import {User} from '@/store/User/user.slice'
+import {toast} from 'sonner'
 
 const USER_QUERY_KEY = ['user'] as const
 
@@ -20,16 +22,43 @@ interface VendorUpdatePayload {
   emails?: string[]
 }
 
-// Hook для обновления vendor данных
 export const useUpdateVendorDetails = () => {
   const queryClient = useQueryClient()
   const {updateVendorDetails} = useActions()
   const currentLang = useCurrentLanguage()
 
+  const translates = {
+    ru: {
+      loading: 'Обновляем данные поставщика...',
+      successTitle: 'Поздравляем!',
+      successBody: 'Данные успешно обновлены',
+      errorTitle: 'Ошибка при обновлении данных',
+      errorPrefix: 'Ошибка – '
+    },
+    en: {
+      loading: 'Updating vendor details...',
+      successTitle: 'Success!',
+      successBody: 'Vendor details updated successfully',
+      errorTitle: 'Failed to update vendor details',
+      errorPrefix: 'Error – '
+    },
+    zh: {
+      loading: '正在更新供应商数据...',
+      successTitle: '成功！',
+      successBody: '供应商数据更新成功',
+      errorTitle: '更新供应商数据失败',
+      errorPrefix: '错误 – '
+    }
+  } as const
+
+  const t = translates[currentLang as keyof typeof translates] ?? translates.ru
+
+  // keep id to close loading toast on any outcome
+  let loadingId: string | number | undefined
+
   return useMutation({
     mutationFn: async (payload: VendorUpdatePayload): Promise<User> => {
-      console.log('payload', payload)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      loadingId = toast.loading(t.loading)
       const {region, ...rest} = payload
       const response = await instance.patch<User>(
         '/me',
@@ -40,19 +69,15 @@ export const useUpdateVendorDetails = () => {
           }
         }
       )
+      toast.dismiss()
       return response.data
     },
     onMutate: async (newVendorData) => {
-      // Отменяем исходящие запросы для пользователя
       await queryClient.cancelQueries({queryKey: USER_QUERY_KEY})
-
-      // Получаем предыдущие данные для rollback
       const previousUser = queryClient.getQueryData<User>(USER_QUERY_KEY)
 
-      // Optimistically обновляем кэш
       queryClient.setQueryData<User>(USER_QUERY_KEY, (oldUser) => {
         if (!oldUser) return oldUser
-
         return {
           ...oldUser,
           vendorDetails: {
@@ -62,24 +87,53 @@ export const useUpdateVendorDetails = () => {
         }
       })
 
-      // Также обновляем Redux store
       updateVendorDetails(newVendorData)
-
       return {previousUser}
     },
-    onError: (error, variables, context) => {
-      // Откатываем изменения при ошибке
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any, _variables, context) => {
+      toast.dismiss()
+      if (loadingId !== undefined) toast.dismiss(loadingId)
+
+      // do not translate server message
+      const serverMessage = error?.response?.data?.errors?.message || error?.response?.data?.message
+
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t.errorTitle}</strong>
+          <span>
+            {t.errorPrefix}
+            {serverMessage || (error as Error).message}
+          </span>
+        </div>,
+        {
+          style: {background: '#AC2525'}
+        }
+      )
+
       if (context?.previousUser) {
         queryClient.setQueryData(USER_QUERY_KEY, context.previousUser)
-
-        // Откатываем Redux store
         if (context.previousUser.vendorDetails) {
           updateVendorDetails(context.previousUser.vendorDetails)
         }
       }
     },
+    onSuccess: () => {
+      toast.dismiss()
+      if (loadingId !== undefined) toast.dismiss(loadingId)
+
+      toast.success(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t.successTitle}</strong>
+          <span>{t.successBody}</span>
+        </div>,
+        {
+          style: {background: '#2E7D32'}
+        }
+      )
+    },
     onSettled: () => {
-      // Перезагружаем данные пользователя для синхронизации
+      if (loadingId !== undefined) toast.dismiss(loadingId)
       queryClient.invalidateQueries({queryKey: USER_QUERY_KEY})
     }
   })

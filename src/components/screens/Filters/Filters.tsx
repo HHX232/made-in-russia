@@ -10,7 +10,7 @@ import FiltersService from '@/services/filters/Filters.service'
 import Skeleton from 'react-loading-skeleton'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-import CheckBoxInputUI from '@/components/UI-kit/inputs/CheckBoxInputUI/CheckBoxInputUI'
+import CategoriesService, {useCategories} from '@/services/categoryes/categoryes.service'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
@@ -62,21 +62,15 @@ const Filters: FC = () => {
     setFiltersIsOpen((prev) => !prev)
   }
 
-  const {data, isLoading} = useQuery({
-    queryKey: ['filters'],
-    queryFn: () => FiltersService.getAll({currentLang})
-  })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const {data, isLoading} = useCategories(currentLang as any)
 
   // const {data: dataDel, isLoading: isDelLoading} = useQuery({
   //   queryKey: ['deliveris'],
   //   queryFn: () => FiltersService.getDeliveryMethodIds({currentLang})
   // })
 
-  const {clearFilters, clearDelivery, toggleDelivery, setSearchTitle} = useActions()
-
-  const handleDeliveryChange = (isChecked: boolean, title: string) => {
-    toggleDelivery(title)
-  }
+  const {clearFilters, clearDelivery, setSearchTitle} = useActions()
 
   useEffect(() => {
     queryClient.invalidateQueries({queryKey: ['products']})

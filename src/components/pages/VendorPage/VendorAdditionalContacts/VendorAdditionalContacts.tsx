@@ -35,6 +35,11 @@ export const VendorAdditionalContacts = memo(
     const [emailRows, setEmailRows] = useState<string[][]>([])
     const [siteRows, setSiteRows] = useState<string[][]>([])
 
+    useEffect(() => {
+      console.log('phoneRows', phoneRows)
+      console.log('emailRows', emailRows)
+      console.log('siteRows', siteRows)
+    }, [phoneRows, emailRows, siteRows])
     // Функция для преобразования массива строк в массив массивов для RowsInputs
     const convertToRows = (arr?: string[]): string[][] => {
       if (!arr || arr.length === 0) {
@@ -185,8 +190,8 @@ export const VendorAdditionalContacts = memo(
           <div className={styles.additional__phones}>
             <h4 className={styles.additional__phones__title}>{t('phones')}</h4>
             <RowsInputs
-              onBlur={() => handleOnBlur('phones')}
               controlled={true}
+              onBlur={() => handleOnBlur('phones')}
               externalValues={phoneRows}
               onSetValue={(rowIndex, inputIndex, value) => {
                 if (isOnlyShow) return
@@ -196,6 +201,7 @@ export const VendorAdditionalContacts = memo(
               }}
               onRowsChange={handlePhoneRowsChange}
               inputsTheme='superWhite'
+              idNames={['phone']}
               maxRows={3}
               initialRowsCount={1}
               titles={['']}
@@ -212,6 +218,7 @@ export const VendorAdditionalContacts = memo(
               onBlur={() => handleOnBlur('emails')}
               controlled={true}
               externalValues={emailRows}
+              idNames={['emails']}
               onSetValue={(rowIndex, inputIndex, value) => {
                 if (isOnlyShow) return
                 const newRows = [...emailRows]
@@ -236,6 +243,7 @@ export const VendorAdditionalContacts = memo(
               onBlur={() => handleOnBlur('sites')}
               controlled={true}
               externalValues={siteRows}
+              idNames={['sites']}
               onSetValue={(rowIndex, inputIndex, value) => {
                 if (isOnlyShow) return
                 const newRows = [...siteRows]

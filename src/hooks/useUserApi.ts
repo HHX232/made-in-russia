@@ -31,7 +31,7 @@ export const useUserQuery = () => {
   const currentLang = useCurrentLanguage()
 
   return useQuery({
-    queryKey: USER_QUERY_KEY,
+    queryKey: [USER_QUERY_KEY, currentLang],
     queryFn: async (): Promise<User> => {
       const accessToken = getAccessToken()
       const refreshToken = getRefreshToken()

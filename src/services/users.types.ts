@@ -2,6 +2,7 @@
 export interface Country {
   id: number
   name: string
+  value: string
   creationDate: string
   lastModificationDate: string
 }

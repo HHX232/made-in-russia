@@ -64,9 +64,17 @@ export const ZoomImage: React.FC<ZoomImageProps> = ({src, alt = 'zoom', zoom = 2
   )
 }
 
-const CustomArrowLeft = ({onClick, disabled}: {onClick: (e: any) => void; disabled: boolean}) => (
+const CustomArrowLeft = ({
+  onClick,
+  disabled,
+  extraClass
+}: {
+  onClick: (e: any) => void
+  disabled: boolean
+  extraClass?: string
+}) => (
   <div
-    className={`${styles.customArrow} ${styles.customArrowLeft} ${disabled ? styles.customArrowDisabled : ''}`}
+    className={`${styles.customArrow} ${styles.customArrowLeft} ${disabled ? styles.customArrowDisabled : ''} ${extraClass}`}
     onClick={onClick}
   >
     <svg
@@ -85,9 +93,17 @@ const CustomArrowLeft = ({onClick, disabled}: {onClick: (e: any) => void; disabl
   </div>
 )
 
-const CustomArrowRight = ({onClick, disabled}: {onClick: (e: any) => void; disabled: boolean}) => (
+const CustomArrowRight = ({
+  onClick,
+  disabled,
+  extraClass
+}: {
+  onClick: (e: any) => void
+  disabled: boolean
+  extraClass?: string
+}) => (
   <div
-    className={`${styles.customArrow} ${styles.customArrowRight} ${disabled ? styles.customArrowDisabled : ''}`}
+    className={`${styles.customArrow} ${styles.customArrowRight} ${disabled ? styles.customArrowDisabled : ''} ${extraClass}`}
     onClick={onClick}
   >
     <svg width='15' height='11' viewBox='0 0 15 11' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -402,6 +418,15 @@ const SlickCardSlider = ({
       {/* Модальное окно с увеличенным изображением */}
       <ModalWindowDefault extraClass={styles.imageModalLarge} isOpen={isModalOpen} onClose={handleModalClose}>
         <div className={styles.modalImageContainer}>
+          {/* Кнопка "влево" */}
+
+          <CustomArrowLeft
+            extraClass={styles.customArrowStyles}
+            disabled={false}
+            onClick={() => setModalImageIndex((prev) => (prev - 1 + images.length) % images.length)}
+          />
+
+          {/* Основной контент */}
           {images[modalImageIndex]?.match(/\.(mp4|webm|mov)$/i) ? (
             <video
               src={images[modalImageIndex]}
@@ -422,6 +447,13 @@ const SlickCardSlider = ({
               className={styles.modalImage}
             />
           )}
+
+          {/* Кнопка "вправо" */}
+          <CustomArrowRight
+            extraClass={styles.customArrowStyles}
+            disabled={false}
+            onClick={() => setModalImageIndex((prev) => (prev + 1) % images.length)}
+          />
         </div>
       </ModalWindowDefault>
 

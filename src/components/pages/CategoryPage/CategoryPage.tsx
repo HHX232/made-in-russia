@@ -435,6 +435,8 @@ const CategoryPage = ({
             </ul>
           )}
 
+          <Catalog isShowFilters={false} initialProducts={[]} initialHasMore={false} />
+
           {/* Секция компаний с keen-slider */}
           {companyes && companyes.length > 0 && windowWidth && (
             <div className={styles.companies__section}>
@@ -463,7 +465,6 @@ const CategoryPage = ({
               </div>
             </div>
           )}
-          <Catalog isShowFilters={false} initialProducts={[]} initialHasMore={false} />
         </div>
       </div>
 

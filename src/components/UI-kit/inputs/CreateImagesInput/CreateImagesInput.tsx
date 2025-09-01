@@ -544,6 +544,8 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
   // )
 
   // Исправленный handleRemove в CreateImagesInput
+  // В CreateImagesInput замените handleRemove на эту версию:
+
   const handleRemove = useCallback(
     (index: number) => {
       if (isOnlyShow) return
@@ -570,21 +572,26 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         setRemovedInitialImages((prev) => {
           const newSet = new Set(prev).add(index)
 
-          // ✅ ИСПРАВЛЕНИЕ: правильная фильтрация
+          // ✅ КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: НЕ делаем фильтрацию с изменением позиций
           if (onActiveImagesChange) {
-            const remainingUrls = activeImages.filter((_, i) => {
-              return i !== index && !prev.has(i) // Используем prev вместо newSet
-            })
-            onActiveImagesChange(remainingUrls)
+            // Создаем новый массив с сохранением позиций
+            const updatedImages = [...activeImages]
+            updatedImages[index] = '' // Заменяем на пустую строку вместо удаления
+
+            // Убираем все пустые строки только в конце массива для экономии места
+            while (updatedImages.length > 0 && updatedImages[updatedImages.length - 1] === '') {
+              updatedImages.pop()
+            }
+
+            onActiveImagesChange(updatedImages)
           }
 
           return newSet
         })
       } else {
-        // ✅ ДОБАВЛЕНИЕ: если удаляем локально загруженный файл
+        // Если удаляем локально загруженный файл
         if (onActiveImagesChange) {
-          // Просто передаем текущие activeImages без изменений,
-          // так как локальные файлы не влияют на activeImages
+          // Просто передаем текущие activeImages без изменений
           onActiveImagesChange([...activeImages])
         }
       }
@@ -601,6 +608,32 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     },
     [previewUrls, localFiles, activeImages, onActiveImagesChange, onFilesChange, isOnlyShow]
   )
+
+  useEffect(() => {
+    if (activeImages.length > 0) {
+      setPreviewUrls((prev) => {
+        const newUrls = isOnlyShow
+          ? activeImages.map((url) => url || null) // Сохраняем позиции
+          : [...prev]
+
+        if (!isOnlyShow) {
+          let hasChanges = false
+          activeImages.forEach((url, index) => {
+            if (index < maxFiles && !localFiles[index] && !removedInitialImages.has(index)) {
+              if (newUrls[index] !== url && url !== '') {
+                // Игнорируем пустые строки
+                newUrls[index] = url
+                hasChanges = true
+              }
+            }
+          })
+          return hasChanges ? newUrls : prev
+        }
+
+        return newUrls
+      })
+    }
+  }, [activeImages, maxFiles, localFiles, removedInitialImages, isOnlyShow])
 
   // В CreateImagesInput добавить:
   useEffect(() => {

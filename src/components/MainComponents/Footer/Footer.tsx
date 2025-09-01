@@ -87,7 +87,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
           <Link className={`${styles.footer__link}`} href={'/privacy'}>
             <li>{t('privacy')}</li>
           </Link>
-          <Link className={`${styles.footer__link}`} href={'/'}>
+          <Link className={`${styles.footer__link}`} href={'/help'}>
             <li>{t('contact')}</li>
           </Link>
         </ul>

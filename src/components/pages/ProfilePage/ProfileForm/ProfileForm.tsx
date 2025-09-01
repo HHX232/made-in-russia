@@ -302,23 +302,15 @@ const ProfileForm: FC<ProfileFormProps> = ({
       const countryOptions = userData?.vendorDetails?.countries.map((country) => ({
         id: country.id,
         label: country.name,
-        value: country.name,
+        value: country.value,
         icon:
-          country.name.toLowerCase() === 'belarus' ||
-          country.name.toLowerCase() === 'беларусь' ||
-          country.name.toLowerCase() === '白俄罗斯'
+          country.value.toLowerCase() === 'belarus'
             ? belarusSvg
-            : country.name.toLowerCase() === 'china' ||
-                country.name.toLowerCase() === '中国' ||
-                country.name.toLowerCase() === 'китай'
+            : country.value.toLowerCase() === 'china'
               ? chinaSvg
-              : country.name.toLowerCase() === 'russia' ||
-                  country.name.toLowerCase() === '俄罗斯' ||
-                  country.name.toLowerCase() === 'россия'
+              : country.value.toLowerCase() === 'russia'
                 ? russiaSvg
-                : country.name.toLowerCase() === 'kazakhstan' ||
-                    country.name.toLowerCase() === '哈萨克斯坦' ||
-                    country.name.toLowerCase() === 'казахстан'
+                : country.value.toLowerCase() === 'kazakhstan'
                   ? kazakhstanSvg
                   : ''
       }))
@@ -703,6 +695,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
         telText={telText}
         isShowForVendor={isShowForOwner}
         isValidNumber={isValidNumber}
+        //если передано несколько стран то – {imageSrc: '', title: 'other', altName: 'other'}
         selectedRegion={selectedRegion}
         onChangeTelNumber={onChangeTelNumber}
       />

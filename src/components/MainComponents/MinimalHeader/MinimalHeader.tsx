@@ -180,7 +180,7 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                 key={i}
                 className={`${styles.header__list__item}`}
               >
-                <Link href={`${el}`}>{t(el)}</Link>
+                {i === 0 ? <div>{t(el)}</div> : <Link href={`${el}`}>{t(el)}</Link>}
               </li>
             )
           })}
@@ -305,7 +305,7 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                     key={i}
                     className={`${styles.header__list__item}`}
                   >
-                    <Link href={'#'}>{t(el)}</Link>
+                    {i === 0 ? <div>{t(el)}</div> : <Link href={'#'}>{t(el)}</Link>}
                   </li>
                 )
               })}
