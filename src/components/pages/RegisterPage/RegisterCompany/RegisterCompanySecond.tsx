@@ -5,7 +5,7 @@ import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI
 import MultiDropSelect, {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
-import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
+import {Category, useCategories} from '@/services/categoryes/categoryes.service'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 interface RegisterCompanySecondProps {
@@ -39,20 +39,12 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
   const windowWidth = useWindowWidth()
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const currentLang = useCurrentLanguage()
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const categories = useCategories(currentLang as any)
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const categories = await CategoriesService.getAll(currentLang)
-        setAllCategories(categories)
-        // setCategoriesMultiSelect(
-        //   categories.map((category) => ({
-        //     id: category.id,
-        //     label: category.name,
-        //     value: category.name,
-        //     icon: belarusSvg
-        //   }))
-        // )
+        setAllCategories(categories?.data as Category[])
       } catch (err) {
         console.error('Error fetching categories:', err)
       }

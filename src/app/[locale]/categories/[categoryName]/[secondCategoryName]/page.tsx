@@ -44,13 +44,7 @@ export default async function CategoryPageSpecialSecond({
     <CategoryPage
       companyes={companyes || []}
       idOfFilter={categories.id}
-      categories={
-        categories.children
-        // .filter((category) => category.slug.toLocaleLowerCase() === categoryName.toLocaleLowerCase())[0]
-        // .children.filter(
-        //   (category) => category.slug.toLocaleLowerCase() === secondCategoryName.toLocaleLowerCase()
-        // )[0].children
-      }
+      categories={categories.children}
       categoryName={secondCategoryName}
       categoryTitleName={categories.name}
       level={2}

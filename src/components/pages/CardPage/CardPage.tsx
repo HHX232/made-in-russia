@@ -11,6 +11,7 @@ import CommentsSection from './CommentSection/CommentSection'
 import CardBottomPage from './CardBottomPage/CardBottomPage'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {getAbsoluteLanguage} from '@/api/api.helper'
+import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
 // import SEOHeader from '@/components/MainComponents/SEOHeader/SEOHeader'
 
 async function CardContent({id}: {id: string}) {
@@ -30,6 +31,14 @@ async function CardContent({id}: {id: string}) {
 
   return (
     <>
+      <BreadCrumbs
+        customItems={[
+          {title: 'home', link: '/'},
+          {title: 'card', link: `/`},
+          {title: cardData.category.name, link: `/categories/${cardData.category.slug}`},
+          {title: cardData.title, link: `/`}
+        ]}
+      />
       <div className={`${styles.card__inner} ${styles.card__inner__main}`}>
         <CardTopPage isLoading={false} cardData={cardData} />
       </div>
@@ -44,6 +53,7 @@ export default async function CardPage({params}: {params: Promise<{id: string}>}
   return (
     <div className={`${styles.card__box}`}>
       <Header />
+
       <div className='container'>
         <CardContent id={id} />
         <Suspense

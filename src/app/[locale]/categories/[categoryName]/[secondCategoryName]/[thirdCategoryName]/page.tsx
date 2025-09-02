@@ -34,10 +34,10 @@ export default async function CategoryPageSpecialSecond({
 
   try {
     categories = await CategoriesService.getById('l3_' + (thirdCategoryName || thirdCAtegoryName), locale || 'en')
+    console.log('categories third by slug:', categories)
   } catch {
     notFound()
   }
-  // console.log('categories third by slug:', categories)
 
   return (
     <CategoryPage

@@ -39,7 +39,7 @@ const localeToLanguage = {
   en: Languages.ENGLISH,
   zh: Languages.CHINA
 }
-const insta = '/insta.svg'
+const insta = '/email.svg'
 const telephone = '/phone.svg'
 const telegram = '/telegram.svg'
 
@@ -489,6 +489,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                           itemProp='sameAs'
                         >
                           <Image
+                            style={{marginRight: '5px'}}
                             className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
                             width={24}
                             height={24}
@@ -586,6 +587,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                               itemProp='sameAs'
                             >
                               <Image
+                                style={{marginRight: '5px'}}
                                 className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
                                 width={24}
                                 height={24}

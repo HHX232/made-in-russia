@@ -156,7 +156,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
   const currentLang = useCurrentLanguage()
   const t = useTranslations('ProfilePage.ProfileForm')
   const {updateVendorDetails: updateVendorDetailsAction, updateUserProfile} = useActions()
-  const user = useTypedSelector((s) => s.user.user)
+  // const user = useTypedSelector((s) => s.user.user)
   const vendorDetails = useTypedSelector((s) => s.user.user?.vendorDetails, shallowEqual)
   useEffect(() => {
     const fetchCategories = async () => {
@@ -743,7 +743,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
         telText={telText}
         isShowForVendor={isShowForOwner}
         isValidNumber={isValidNumber}
-        //если передано несколько стран то – {imageSrc: '', title: 'other', altName: 'other'}
         selectedRegion={selectedRegion}
         onChangeTelNumber={onChangeTelNumber}
       />
@@ -808,6 +807,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
             onSetValue={(value) => {
               setInn(value)
               setUserInteracted(true)
+              updateVendorDetailsAction({...vendorDetails, inn: value})
             }}
             title={t('inn')}
             placeholder={t('innPlaceholder')}

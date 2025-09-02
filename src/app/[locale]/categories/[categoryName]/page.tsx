@@ -8,9 +8,6 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
   const {categoryName} = await params
   let categories
 
-  // Получаем локаль из куки или заголовков
-  // let locale = cookieStore.get('NEXT_LOCALE')?.value
-
   const locale = await getAbsoluteLanguage()
 
   let companyes: {name: string; inn: string; ageInYears: string}[]

@@ -648,6 +648,22 @@
     "successMessage": "Message sent successfully!",
     "errorMessage": "Error sending message. Please try again.",
     "contactInfo": "If you encounter any issues on our website, please contact us through various social networks and other communication methods. Thank you for being with us!"
-  }
+  },
+  "breadCrumbs": {
+  "home": "Home",
+  "card": "Item",
+  "category": "Categories",
+  "categories":"Categories",
+  "products": "Products",
+  "electronics": "Electronics",
+  "smartphones": "Smartphones",
+  "catalog": "Catalog",
+  "about": "About Us",
+  "contacts": "Contacts",
+  "blog": "Blog",
+  "news": "News",
+  "services": "Services"
+}
+
 }
 

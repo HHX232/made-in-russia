@@ -661,7 +661,24 @@
     "successMessage": "消息发送成功！",
     "errorMessage": "发送消息时出错。请重试。",
     "contactInfo": "如果您在我们的网站上遇到任何问题，请通过各种社交网络和其他联系方式与我们联系。 感谢您与我们同行！"
-  }
+  },
+ "breadCrumbs": {
+  "home": "主页",
+  "card": "商品",
+  "category": "类别",
+  "categories":"类别",
+  "products": "商品",
+  "electronics": "电子产品",
+  "smartphones": "智能手机",
+  "catalog": "目录",
+  "about": "关于我们",
+  "contacts": "联系方式",
+  "blog": "博客",
+  "news": "新闻",
+  "services": "服务"
+}
+
+
 
 
 }
