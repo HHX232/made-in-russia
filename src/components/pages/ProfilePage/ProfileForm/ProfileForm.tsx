@@ -718,14 +718,15 @@ const ProfileForm: FC<ProfileFormProps> = ({
               options={countryOptions}
               selectedValues={selectedCountries}
               onChange={(values) => {
+                console.log('selected countries before change', selectedCountries)
                 setSelectedCountries(values)
                 setUserInteracted(true)
                 console.log('country values', values)
-
+                console.log('selected countries after change', selectedCountries)
                 updateVendorDetailsAction({
                   ...vendorDetails,
                   countries: values.map((el) => {
-                    return {name: el.value, value: el.value}
+                    return {name: el.label, value: el.value}
                   })
                 })
 
