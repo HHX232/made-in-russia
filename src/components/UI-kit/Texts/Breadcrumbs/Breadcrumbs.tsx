@@ -129,7 +129,7 @@ const BreadCrumbs: React.FC<BreadCrumbsProps> = ({customItems, className = ''}) 
                 </span>
               </>
             ) : (
-              <span className={styles.breadcrumbsCurrent} aria-current='page'>
+              <span style={{color: '#6b7280'}} className={styles.breadcrumbsCurrent} aria-current='page'>
                 {crumb.title}
               </span>
             )}
