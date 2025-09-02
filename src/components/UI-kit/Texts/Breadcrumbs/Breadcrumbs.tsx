@@ -4,7 +4,7 @@
 import {usePathname} from 'next/navigation'
 import {useTranslations} from 'next-intl'
 import Link from 'next/link'
-import styles from './breadCrumbs.module.scss'
+import styles from './Breadcrumbs.module.scss'
 
 interface BreadCrumb {
   title: string
