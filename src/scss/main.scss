@@ -30,7 +30,6 @@ html {
 }
 
 // Глобальные стили для keen-slider
-// Добавить в main.scss
 
 // Базовые стили keen-slider
 .keen-slider {
@@ -81,6 +80,10 @@ html {
   min-height: 0;
   border-radius: 20px;
   transform: translate3d(var(--keen-slider-slide-x, 0), var(--keen-slider-slide-y, 0), 0) rotateZ(0deg);
+
+  // @media (min-width: 800px) {
+  //   min-width: 450px !important;
+  // }
 }
 
 // Добавьте в глобальные стили или в отдельный файл стилей:

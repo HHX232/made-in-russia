@@ -11,13 +11,12 @@ import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profile
 import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
 import BurgerMenu from '../BurgerMenu/BurgerMenu'
 import Head from 'next/head'
-import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
+import {Category, useCategories} from '@/services/categoryes/categoryes.service'
 import CategoryesMenuDesktop from '@/components/UI-kit/elements/CategoryesMenuDesktop/CategoryesMenuDesktop'
 // import {Link, useRouter} from '@/i18n/navigation'
-import {useTranslations} from 'next-intl'
+import {useLocale, useTranslations} from 'next-intl'
 import createNewLangUrl from '@/utils/createNewLangUrl'
 import {TLocale} from '../MinimalHeader/MinimalHeader'
-import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {usePathname, useRouter} from 'next/navigation'
 
 const setCookieLocale = (locale: string) => {
@@ -124,6 +123,9 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const fullHeaderRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
   const id = useId()
+  const locale = useLocale()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const categoriesFromHook = useCategories(locale as any)
   // ! Language
   const [activeLanguage, setActiveLanguage] = useState<Languages>(
     localeToLanguage[pathname.split('/')[1] as keyof typeof localeToLanguage]
@@ -131,16 +133,10 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const t = useTranslations('HomePage')
 
   const router = useRouter()
-  const currentLang = useCurrentLanguage()
 
   useEffect(() => {
-    async function rrrr() {
-      // TODO:  заменить на кэшированную версию
-      const res = await CategoriesService.getAll(currentLang)
-      setCategoriesList(res)
-    }
-    rrrr()
-  }, [])
+    setCategoriesList(categoriesFromHook?.data || [])
+  }, [categoriesFromHook?.data])
 
   const handleLanguageChange = (language: Languages) => {
     setActiveLanguage(language)

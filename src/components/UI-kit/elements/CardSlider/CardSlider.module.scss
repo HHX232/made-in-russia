@@ -154,12 +154,19 @@
     // KeenSlider основные стили
     .keen-slider {
       position: relative;
-    }
 
-    // .keen-slider__slide {
-    // padding: 0;
-    // outline: none;
-    // }
+      // &>.keen-slider__slide {
+      //   @media (min-width: 800px) {
+      //     min-height: 450px !important;
+      //   }
+      // }
+    }
+  }
+
+  &__main > div > div {
+    @media (min-width: 800px) {
+      min-width: 450px !important;
+    }
   }
 
   &__slide {

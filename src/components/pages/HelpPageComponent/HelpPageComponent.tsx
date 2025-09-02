@@ -46,17 +46,25 @@ const HelpPageComponent: FC = () => {
 
     try {
       const submitData = new FormData()
-      submitData.append('name', formData.name)
-      submitData.append('email', formData.email)
-      submitData.append('subject', formData.subject)
-      submitData.append('message', formData.message)
 
-      // Добавляем изображения
-      formData.images.forEach((image, index) => {
-        submitData.append(`image_${index}`, image)
+      // JSON-данные
+      const data = {
+        username: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        body: formData.message
+      }
+      submitData.append('data', new Blob([JSON.stringify(data)], {type: 'application/json'}))
+
+      // Картинки
+      formData.images.forEach((image) => {
+        // Если image это File — просто добавляем
+        if (image instanceof File) {
+          submitData.append('media', image, image.name)
+        }
       })
 
-      const response = await fetch('/api/contact', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/support`, {
         method: 'POST',
         body: submitData
       })
@@ -71,12 +79,31 @@ const HelpPageComponent: FC = () => {
           images: []
         })
         setActiveImages([])
+
+        // toast.success(
+        //   <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+        //     <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successMessage')}</strong>
+        //   </div>,
+        //   {style: {background: '#2E7D32'}}
+        // )
       } else {
         setSubmitStatus('error')
+        // toast.error(
+        //   <div style={{lineHeight: 1.5}}>
+        //     <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
+        //   </div>,
+        //   {style: {background: '#AC2525'}}
+        // )
       }
     } catch (error) {
       console.error('Error submitting form:', error)
       setSubmitStatus('error')
+      // toast.error(
+      //   <div style={{lineHeight: 1.5}}>
+      //     <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
+      //   </div>,
+      //   {style: {background: '#AC2525'}}
+      // )
     } finally {
       setIsSubmitting(false)
     }

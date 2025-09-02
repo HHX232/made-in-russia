@@ -191,6 +191,7 @@ export const VendorAdditionalContacts = memo(
             <h4 className={styles.additional__phones__title}>{t('phones')}</h4>
             <RowsInputs
               controlled={true}
+              isOnlyShow={isOnlyShow}
               onBlur={() => handleOnBlur('phones')}
               externalValues={phoneRows}
               onSetValue={(rowIndex, inputIndex, value) => {
@@ -215,6 +216,7 @@ export const VendorAdditionalContacts = memo(
           <div className={styles.additional__emails}>
             <h4 className={styles.additional__phones__title}>{t('emails')}</h4>
             <RowsInputs
+              isOnlyShow={isOnlyShow}
               onBlur={() => handleOnBlur('emails')}
               controlled={true}
               externalValues={emailRows}
@@ -240,6 +242,7 @@ export const VendorAdditionalContacts = memo(
           <div className={styles.additional__sites}>
             <h4 className={styles.additional__phones__title}>{t('sites')}</h4>
             <RowsInputs
+              isOnlyShow={isOnlyShow}
               onBlur={() => handleOnBlur('sites')}
               controlled={true}
               externalValues={siteRows}

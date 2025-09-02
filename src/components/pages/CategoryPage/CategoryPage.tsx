@@ -30,7 +30,8 @@ const CategoryPage = ({
   categories = [],
   idOfFilter,
   categoryTitleName,
-  companyes
+  companyes,
+  breadcrumbs
 }: {
   categoryName: string
   categoryTitleName?: string
@@ -38,6 +39,7 @@ const CategoryPage = ({
   parentCategory?: string
   categories?: Category[]
   idOfFilter?: number
+  breadcrumbs?: {title: string; link: string}[]
   companyes?: {name: string; inn: string; ageInYears: string}[]
 }) => {
   const [sortedCategories, setSortedCategories] = useState<Category[]>(categories)
@@ -259,63 +261,12 @@ const CategoryPage = ({
   const slidesForCategory = groupCategoriesIntoSlides(categoriesToDisplay)
   const shouldUseSlider = slidesForCategory.length > 1
 
-  // Добавьте эту функцию в ваш CategoryPage компонент:
-  // Альтернативный вариант если нужно передать дополнительные данные
-  const buildFullBreadcrumbs = (
-    parentCategories?: Category[], // массив всех родительских категорий
-    currentCategory?: Category // текущая категория
-  ) => {
-    const pathSegments = pathname.split('/').filter(Boolean)
-    const cleanSegments = pathSegments.filter((segment) => !['ru', 'en', 'uk', 'de', 'fr', 'es'].includes(segment))
-
-    const breadcrumbs = [{title: 'home', link: '/'}]
-
-    let currentPath = ''
-
-    cleanSegments.forEach((segment, index) => {
-      currentPath += `/${segment}`
-
-      let title = segment
-
-      if (segment === 'categories') {
-        title = 'categories'
-      } else if (index === cleanSegments.length - 1 && currentCategory) {
-        // Для последнего сегмента используем текущую категорию
-        title = currentCategory.name
-      } else if (parentCategories) {
-        // Для промежуточных сегментов ищем в родительских категориях
-        const findCategoryBySlug = (categories: Category[], slug: string): Category | null => {
-          for (const cat of categories) {
-            if (cat.slug.toLowerCase() === slug.toLowerCase()) {
-              return cat
-            }
-            const found = findCategoryBySlug(cat.children, slug)
-            if (found) return found
-          }
-          return null
-        }
-
-        const foundCategory = findCategoryBySlug(parentCategories, segment)
-        if (foundCategory) {
-          title = foundCategory.name
-        }
-      }
-
-      breadcrumbs.push({
-        title,
-        link: currentPath
-      })
-    })
-
-    return breadcrumbs
-  }
-
   return (
     <div style={{overflowX: 'hidden'}}>
       <Header />
 
       <div className='container'>
-        <BreadCrumbs customItems={buildFullBreadcrumbs(sortedCategories)} />
+        <BreadCrumbs customItems={breadcrumbs} />
 
         <div className={styles.category__inner}>
           {level < 4 && (

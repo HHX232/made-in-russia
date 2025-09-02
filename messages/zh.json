@@ -676,7 +676,16 @@
   "blog": "博客",
   "news": "新闻",
   "services": "服务"
-}
+},
+"modal":{
+ "previous": "上一张图片",
+    "next": "下一张图片",
+    "image": "图片 {number}",
+    "video": "视频 {number}",
+    "thumbnail": "缩略图 {number}",
+    "close": "关闭图库",
+    "clickImage": "点击图片放大"
+  }
 
 
 

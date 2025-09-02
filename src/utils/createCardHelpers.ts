@@ -54,7 +54,7 @@ export const validateField = (
     case 'uploadedFiles':
       const totalImages = (uploadedFiles?.length || 0) + (remainingInitialImages?.length || 0)
       const filesError =
-        totalImages < 3 ? translations('minimumImages') + `, ${translations('now')} ${totalImages}/3` : ''
+        totalImages < 1 ? translations('minimumImages') + `, ${translations('now')} ${totalImages}/1` : ''
       // console.log(`Files validation result: "${filesError}", total: ${totalImages}`)
       return filesError
 

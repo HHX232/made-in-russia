@@ -2,6 +2,7 @@ import {getAbsoluteLanguage} from '@/api/api.helper'
 import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
+import {findCategoryBySlug, buildBreadcrumbs} from '@/utils/findCategoryPath'
 import {notFound} from 'next/navigation'
 
 export default async function CategoryPageSpecialSecond({
@@ -11,6 +12,8 @@ export default async function CategoryPageSpecialSecond({
 }) {
   const {secondCategoryName} = await params
   let categories
+  let allCategories
+  let breadcrumbs: {title: string; link: string}[] = []
   const locale = await getAbsoluteLanguage()
 
   let companyes: {name: string; inn: string; ageInYears: string}[]
@@ -34,7 +37,14 @@ export default async function CategoryPageSpecialSecond({
   // console.log('companyes:', companyes)
 
   try {
-    categories = await CategoriesService.getById('l2_' + secondCategoryName, locale)
+    allCategories = await CategoriesService.getAll(locale || 'en')
+
+    const slugToFind = secondCategoryName
+    const foundCategory = findCategoryBySlug(allCategories, slugToFind)
+
+    categories = foundCategory || (await CategoriesService.getById('l2_' + slugToFind, locale || 'en'))
+
+    breadcrumbs = buildBreadcrumbs(allCategories, slugToFind)
   } catch {
     notFound()
   }
@@ -43,6 +53,7 @@ export default async function CategoryPageSpecialSecond({
   return (
     <CategoryPage
       companyes={companyes || []}
+      breadcrumbs={breadcrumbs}
       idOfFilter={categories.id}
       categories={categories.children}
       categoryName={secondCategoryName}

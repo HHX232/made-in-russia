@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {useQuery} from '@tanstack/react-query'
+import {useQuery, useQueryClient} from '@tanstack/react-query'
 import ProductService from '@/services/products/product.service'
 import {useCurrentLanguage} from './useCurrentLanguage'
 import {useState, useEffect, useRef} from 'react'
@@ -17,47 +17,46 @@ export interface ProductQueryParams {
   sort?: string
   order?: 'asc' | 'desc'
   search?: string
-  // Поддержка для других произвольных параметров
   [key: string]: any
 }
+
+// 🔑 Общий ключ для всех запросов продуктов
+export const PRODUCTS_QUERY_KEY = 'products'
 
 export const useProducts = (params: ProductQueryParams = {}, specialRoute?: string | undefined) => {
   const currentLang = useCurrentLanguage()
   const [resData, setResData] = useState<Product[]>([])
   const prevParamsRef = useRef<string>('')
+  const queryClient = useQueryClient()
 
   // Создаем ключ для отслеживания изменений параметров (исключая page)
   const paramsWithoutPage = {...params}
   delete paramsWithoutPage.page
   const currentParamsKey = JSON.stringify([paramsWithoutPage, specialRoute])
 
-  // Проверяем, изменились ли параметры (исключая page)
   useEffect(() => {
     if (prevParamsRef.current !== currentParamsKey) {
-      // Параметры изменились - очищаем накопленные данные
       setResData([])
       prevParamsRef.current = currentParamsKey
     }
   }, [currentParamsKey])
 
+  const queryKey = [PRODUCTS_QUERY_KEY, params, specialRoute]
+
   const queryResult = useQuery({
-    queryKey: ['products', params, specialRoute],
+    queryKey,
     queryFn: async () => {
       const res = await ProductService.getAll(params, specialRoute, currentLang)
 
       setResData((prev) => {
-        // Если это первая страница (page === 0 или undefined) - заменяем данные
         if (!params.page || params.page === 0) {
-          console.log('Заменяем данные для первой страницы')
           return res.content
         }
 
-        // Иначе добавляем только уникальные товары
         const newUniqueProducts = res.content.filter(
           (newProduct) => !prev.some((prevProduct) => prevProduct.id === newProduct.id)
         )
 
-        console.log('Добавляем новые товары для страницы:', params.page)
         return [...prev, ...newUniqueProducts]
       })
 
@@ -69,13 +68,19 @@ export const useProducts = (params: ProductQueryParams = {}, specialRoute?: stri
     refetchOnMount: true
   })
 
-  // Логируем resData после обновления
-  useEffect(() => {
-    console.log('resData в хуке useProducts', resData)
-  }, [resData])
+  const forceRefetch = async () => {
+    setResData([])
+    await queryClient.invalidateQueries({queryKey: [PRODUCTS_QUERY_KEY]})
+    queryResult.refetch()
+  }
 
   return {
     ...queryResult,
-    resData
+    resData,
+    forceRefetch
   }
+}
+
+export const invalidateProductsCache = async (queryClient: ReturnType<typeof useQueryClient>) => {
+  await queryClient.invalidateQueries({queryKey: [PRODUCTS_QUERY_KEY]})
 }

@@ -2,6 +2,7 @@ import {FC, useState, ChangeEvent, useEffect, useCallback, useMemo, memo} from '
 import styles from './CreateImagesInput.module.scss'
 import Image from 'next/image'
 import {toast} from 'sonner'
+import SliderForCreateImages from './SliderForCreateImages/SliderForCreateImages'
 
 const plusIcon = '/create-card/plus.svg'
 
@@ -30,15 +31,32 @@ const ImagePreview = memo<{
   index: number
   onError: (index: number) => void
   loadError: boolean
-}>(({url, file, index, onError, loadError}) => {
+  isOnlyShow?: boolean
+  onImageClick?: (index: number) => void
+}>(({url, file, index, onError, loadError, isOnlyShow, onImageClick}) => {
   const handleError = useCallback(() => {
     onError(index)
   }, [index, onError])
+  const handleClick = useCallback(() => {
+    if (isOnlyShow && onImageClick) {
+      onImageClick(index)
+    }
+  }, [isOnlyShow, onImageClick, index])
 
   if (!url) return null
 
   if (file && file.type.startsWith('video/')) {
-    return <video src={url} className={styles.preview} muted loop autoPlay />
+    return (
+      <video
+        src={url}
+        className={`${styles.preview} ${isOnlyShow ? styles.clickable : ''}`}
+        muted
+        loop
+        autoPlay
+        onClick={handleClick}
+        style={{cursor: isOnlyShow ? 'pointer' : 'default'}}
+      />
+    )
   }
 
   if (loadError) {
@@ -53,7 +71,16 @@ const ImagePreview = memo<{
   const isExternalUrl = url.startsWith('http://') || url.startsWith('https://')
 
   if (isExternalUrl) {
-    return <img src={url} alt={`Preview ${index}`} className={styles.preview} onError={handleError} />
+    return (
+      <img
+        src={url}
+        alt={`Preview ${index}`}
+        className={`${styles.preview} ${isOnlyShow ? styles.clickable : ''}`}
+        onError={handleError}
+        onClick={handleClick}
+        style={{cursor: isOnlyShow ? 'pointer' : 'default'}}
+      />
+    )
   }
 
   return (
@@ -62,8 +89,10 @@ const ImagePreview = memo<{
       height={200}
       src={url}
       alt={`Preview ${index}`}
-      className={styles.preview}
+      className={`${styles.preview} ${isOnlyShow ? styles.clickable : ''}`}
       onError={handleError}
+      onClick={handleClick}
+      style={{cursor: isOnlyShow ? 'pointer' : 'default'}}
     />
   )
 })
@@ -88,6 +117,7 @@ const ImageUploadItem = memo<{
   onMultipleFilesChange: (index: number, files: FileList) => void
   onRemove: (index: number) => void
   onImageError: (index: number) => void
+  onImageClick?: (index: number) => void
 }>(
   ({
     index,
@@ -104,7 +134,8 @@ const ImageUploadItem = memo<{
     onFileChange,
     onMultipleFilesChange,
     onRemove,
-    onImageError
+    onImageError,
+    onImageClick
   }) => {
     const [isHovered, setIsHovered] = useState(false)
 
@@ -238,6 +269,7 @@ const ImageUploadItem = memo<{
         if (isOnlyShow) return // Блокируем удаление в режиме только просмотра
 
         e.preventDefault()
+        e.stopPropagation() // Предотвращаем всплытие события
         onRemove(index)
       },
       [index, onRemove, isOnlyShow]
@@ -248,6 +280,16 @@ const ImageUploadItem = memo<{
     }, [isOnlyShow])
 
     const handleMouseLeave = useCallback(() => setIsHovered(false), [])
+
+    const handleLabelClick = useCallback(
+      (e: React.MouseEvent) => {
+        if (isOnlyShow && previewUrl && onImageClick) {
+          e.preventDefault()
+          onImageClick(index)
+        }
+      },
+      [isOnlyShow, previewUrl, onImageClick, index]
+    )
 
     const hasContent = previewUrl !== null
     const isBig = index === 0 && showBigFirstItem
@@ -262,7 +304,8 @@ const ImageUploadItem = memo<{
         id={`label-${inputId}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        style={{cursor: isOnlyShow ? 'default' : 'pointer'}}
+        onClick={handleLabelClick}
+        style={{cursor: isOnlyShow && hasContent ? 'pointer' : isOnlyShow ? 'default' : 'pointer'}}
       >
         {hasContent && (
           <>
@@ -272,6 +315,8 @@ const ImageUploadItem = memo<{
               index={index}
               onError={onImageError}
               loadError={loadError}
+              isOnlyShow={isOnlyShow}
+              onImageClick={onImageClick}
             />
             {isHovered && !isOnlyShow && (
               <div className={styles.remove__overlay} onClick={handleRemove}>
@@ -330,6 +375,8 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
   showBigFirstItem = true
 }) => {
   const [localFiles, setLocalFiles] = useState<(File | null)[]>(() => new Array(maxFiles).fill(null))
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalImages, setModalImages] = useState<string[]>([])
 
   const [previewUrls, setPreviewUrls] = useState<(string | null)[]>(() => {
     const urls = new Array(maxFiles).fill(null)
@@ -363,6 +410,45 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     }
     return maxFiles
   }, [isOnlyShow, activeImages.length, maxFiles])
+
+  // Функция для переупорядочивания массива изображений
+  const reorderImages = useCallback((clickedIndex: number, images: string[]) => {
+    if (clickedIndex === 0) return images // Если нажали на первое, порядок не меняется
+
+    const reordered = [...images]
+    const clickedItem = reordered[clickedIndex]
+
+    // Перемещаем выбранный элемент в начало
+    reordered.splice(clickedIndex, 1)
+    reordered.unshift(clickedItem)
+
+    return reordered
+  }, [])
+
+  // Обработчик клика по изображению в режиме просмотра
+  const handleImageClick = useCallback(
+    (clickedIndex: number) => {
+      if (!isOnlyShow) return
+
+      // Фильтруем только существующие изображения
+      const validImages = activeImages.filter((img) => img && img.trim() !== '')
+
+      if (validImages.length === 0) return
+
+      // Переупорядочиваем массив так, чтобы выбранное изображение было первым
+      const reorderedImages = reorderImages(clickedIndex, validImages)
+
+      setModalImages(reorderedImages)
+      setIsModalOpen(true)
+    },
+    [isOnlyShow, activeImages, reorderImages]
+  )
+
+  // Закрытие модального окна
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false)
+    setModalImages([])
+  }, [])
 
   // Мемоизируем функцию подсчета изображений
   const totalImagesCount = useMemo(() => {
@@ -490,61 +576,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     },
     [localFiles, previewUrls, loadError, maxFiles, onFilesChange, isOnlyShow]
   )
-
-  // Мемоизируем callback для удаления
-  // const handleRemove = useCallback(
-  //   (index: number) => {
-  //     if (isOnlyShow) return
-
-  //     // Очищаем URL только если это был загруженный файл
-  //     if (previewUrls[index] && localFiles[index]) {
-  //       URL.revokeObjectURL(previewUrls[index]!)
-  //     }
-
-  //     setLocalFiles((prev) => {
-  //       const newFiles = [...prev]
-  //       newFiles[index] = null
-  //       return newFiles
-  //     })
-
-  //     setPreviewUrls((prev) => {
-  //       const newUrls = [...prev]
-  //       newUrls[index] = null
-  //       return newUrls
-  //     })
-
-  //     // Если это было начальное изображение, добавляем в список удаленных
-  //     if (activeImages[index] && !localFiles[index]) {
-  //       setRemovedInitialImages((prev) => {
-  //         const newSet = new Set(prev).add(index)
-
-  //         // Уведомляем родителя об удалении
-  //         if (onActiveImagesChange) {
-  //           const remainingUrls = activeImages.filter((_, i) => {
-  //             return i !== index && !newSet.has(i)
-  //           })
-  //           onActiveImagesChange(remainingUrls)
-  //         }
-
-  //         return newSet
-  //       })
-  //     }
-
-  //     setLoadError((prev) => ({...prev, [index]: false}))
-
-  //     // Обновляем файлы в родителе
-  //     setLocalFiles((currentFiles) => {
-  //       const updatedFiles = [...currentFiles]
-  //       updatedFiles[index] = null
-  //       onFilesChange(updatedFiles.filter((f) => f !== null) as File[])
-  //       return updatedFiles
-  //     })
-  //   },
-  //   [previewUrls, localFiles, activeImages, onActiveImagesChange, onFilesChange, isOnlyShow]
-  // )
-
-  // Исправленный handleRemove в CreateImagesInput
-  // В CreateImagesInput замените handleRemove на эту версию:
 
   const handleRemove = useCallback(
     (index: number) => {
@@ -718,6 +749,7 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         onMultipleFilesChange={handleMultipleFilesChange}
         onRemove={handleRemove}
         onImageError={handleImageError}
+        onImageClick={isOnlyShow ? handleImageClick : undefined}
       />
     ))
   }, [
@@ -736,7 +768,8 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     handleFileChange,
     handleMultipleFilesChange,
     handleRemove,
-    handleImageError
+    handleImageError,
+    handleImageClick
   ])
 
   return (
@@ -748,6 +781,16 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
       </div>
       {!isOnlyShow && (
         <div className={styles.info__block}>{errorValue && <p className={styles.error__message}>{errorValue}</p>}</div>
+      )}
+
+      {/* Модальное окно для просмотра изображений */}
+      {isOnlyShow && isModalOpen && (
+        <SliderForCreateImages
+          isModalOpen={isModalOpen}
+          images={modalImages}
+          initialIndex={0}
+          onClose={handleCloseModal}
+        />
       )}
     </div>
   )

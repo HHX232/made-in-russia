@@ -151,6 +151,9 @@ const SlickCardSlider = ({
   ]
   const images = imagesCustom ?? imagesDefault
 
+  // Проверяем количество изображений
+  const isSingleImage = images.length === 1
+
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [mainLoaded, setMainLoaded] = useState(false)
@@ -167,7 +170,7 @@ const SlickCardSlider = ({
     : Math.min(images.length, 4)
 
   // Добавляем отладочную информацию
-  console.log('Current state:', {containerWidth, slidesToShow, imagesLength: images.length})
+  console.log('Current state:', {containerWidth, slidesToShow, imagesLength: images.length, isSingleImage})
 
   // Устанавливаем флаг клиентского рендера
   useEffect(() => {
@@ -228,7 +231,7 @@ const SlickCardSlider = ({
 
   const [mainSliderRef, mainInstanceRef] = useKeenSlider<HTMLDivElement>({
     initial: 0,
-    loop: true,
+    loop: !isSingleImage, // Отключаем loop для одного изображения
     slides: {
       perView: 1,
       spacing: 0
@@ -257,6 +260,7 @@ const SlickCardSlider = ({
   // Принудительное обновление слайдеров при изменении slidesToShow
   useEffect(() => {
     if (!thumbnailInstanceRef.current || !mainInstanceRef.current) return
+    if (isSingleImage) return // Не обновляем для одного изображения
 
     const timer = setTimeout(() => {
       try {
@@ -277,11 +281,11 @@ const SlickCardSlider = ({
     }, 50)
 
     return () => clearTimeout(timer)
-  }, [slidesToShow, containerWidth, thumbnailLoaded, mainLoaded])
+  }, [slidesToShow, containerWidth, thumbnailLoaded, mainLoaded, isSingleImage])
 
   // Синхронизация миниатюр с активным слайдом
   useEffect(() => {
-    if (!thumbnailInstanceRef.current || activeIndex === undefined || !thumbnailLoaded) return
+    if (!thumbnailInstanceRef.current || activeIndex === undefined || !thumbnailLoaded || isSingleImage) return
 
     try {
       const thumbnailSlider = thumbnailInstanceRef.current
@@ -294,9 +298,11 @@ const SlickCardSlider = ({
     } catch (error) {
       console.warn('Thumbnail sync failed:', error)
     }
-  }, [activeIndex, slidesToShow, thumbnailLoaded])
+  }, [activeIndex, slidesToShow, thumbnailLoaded, isSingleImage])
 
   const handleThumbnailClick = (index: number) => {
+    if (isSingleImage) return // Не обрабатываем клики для одного изображения
+
     setActiveIndex(index)
     if (mainInstanceRef.current) {
       try {
@@ -390,18 +396,20 @@ const SlickCardSlider = ({
     )
   }
 
-  // Показываем скелетон пока не получили размеры контейнера
-  if (!isClient || containerWidth === null) {
+  // Показываем скелетон пока не получили размеры контейнера (только если не одно изображение)
+  if (!isClient || (!isSingleImage && containerWidth === null)) {
     return (
       <div className={`spec__slider ${styles.imageSlider} ${extraClass}`}>
         <div className={styles.imageSlider__main}>
           <Skeleton width={500} height={500} />
         </div>
-        <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
-          {Array.from({length: 4}).map((_, index) => (
-            <Skeleton key={index} width={100} height={100} style={{margin: '0 5px'}} />
-          ))}
-        </div>
+        {!isSingleImage && (
+          <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
+            {Array.from({length: 4}).map((_, index) => (
+              <Skeleton key={index} width={100} height={100} style={{margin: '0 5px'}} />
+            ))}
+          </div>
+        )}
       </div>
     )
   }
@@ -418,13 +426,16 @@ const SlickCardSlider = ({
       {/* Модальное окно с увеличенным изображением */}
       <ModalWindowDefault extraClass={styles.imageModalLarge} isOpen={isModalOpen} onClose={handleModalClose}>
         <div className={styles.modalImageContainer}>
-          {/* Кнопка "влево" */}
-
-          <CustomArrowLeft
-            extraClass={styles.customArrowStyles}
-            disabled={false}
-            onClick={() => setModalImageIndex((prev) => (prev - 1 + images.length) % images.length)}
-          />
+          {/* Кнопки навигации только если больше одного изображения */}
+          {!isSingleImage && (
+            <>
+              <CustomArrowLeft
+                extraClass={styles.customArrowStyles}
+                disabled={false}
+                onClick={() => setModalImageIndex((prev) => (prev - 1 + images.length) % images.length)}
+              />
+            </>
+          )}
 
           {/* Основной контент */}
           {images[modalImageIndex]?.match(/\.(mp4|webm|mov)$/i) ? (
@@ -448,12 +459,14 @@ const SlickCardSlider = ({
             />
           )}
 
-          {/* Кнопка "вправо" */}
-          <CustomArrowRight
-            extraClass={styles.customArrowStyles}
-            disabled={false}
-            onClick={() => setModalImageIndex((prev) => (prev + 1) % images.length)}
-          />
+          {/* Кнопка "вправо" только если больше одного изображения */}
+          {!isSingleImage && (
+            <CustomArrowRight
+              extraClass={styles.customArrowStyles}
+              disabled={false}
+              onClick={() => setModalImageIndex((prev) => (prev + 1) % images.length)}
+            />
+          )}
         </div>
       </ModalWindowDefault>
 
@@ -536,8 +549,8 @@ const SlickCardSlider = ({
             })}
           </div>
 
-          {/* Стрелки для главного слайдера */}
-          {mainLoaded && mainInstanceRef.current && (
+          {/* Стрелки для главного слайдера - только если больше одного изображения */}
+          {!isSingleImage && mainLoaded && mainInstanceRef.current && (
             <>
               <CustomArrowLeft
                 onClick={(e: any) => {
@@ -557,66 +570,68 @@ const SlickCardSlider = ({
           )}
         </div>
 
-        {/* Слайдер с миниатюрами */}
-        <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
-          <div ref={thumbnailSliderRef} className='keen-slider'>
-            {images.map((image, index) => {
-              const isVideo = image.match(/\.(mp4|webm|mov)$/i)
+        {/* Слайдер с миниатюрами - только если больше одного изображения */}
+        {!isSingleImage && (
+          <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
+            <div ref={thumbnailSliderRef} className='keen-slider'>
+              {images.map((image, index) => {
+                const isVideo = image.match(/\.(mp4|webm|mov)$/i)
 
-              return (
-                <div
-                  key={index}
-                  className={`keen-slider__slide ${styles.imageSlider__thumbnail} ${
-                    index === activeIndex ? styles.imageSlider__thumbnailActive : ''
-                  }`}
-                  onClick={() => handleThumbnailClick(index)}
-                  onDoubleClick={() => handleDoubleClick(index)}
-                  role='button'
-                  tabIndex={0}
-                  aria-label={`${isVideo ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      handleThumbnailClick(index)
-                    }
-                  }}
-                  style={{cursor: 'pointer'}}
-                >
-                  {isVideo ? (
-                    <video
-                      src={image}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      webkit-playsinline='true'
-                      controls={false}
-                      disablePictureInPicture
-                      controlsList='nodownload nofullscreen noremoteplaybook'
-                      className={styles.imageSlider__thumbnailVideo}
-                      aria-hidden='true'
-                      style={
-                        {
-                          WebkitMediaControls: 'none',
-                          WebkitPlaybackTargetAvailability: 'none',
-                          cursor: 'pointer'
-                        } as React.CSSProperties
+                return (
+                  <div
+                    key={index}
+                    className={`keen-slider__slide ${styles.imageSlider__thumbnail} ${
+                      index === activeIndex ? styles.imageSlider__thumbnailActive : ''
+                    }`}
+                    onClick={() => handleThumbnailClick(index)}
+                    onDoubleClick={() => handleDoubleClick(index)}
+                    role='button'
+                    tabIndex={0}
+                    aria-label={`${isVideo ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        handleThumbnailClick(index)
                       }
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        backgroundImage: `url(${image})`,
-                        cursor: 'pointer'
-                      }}
-                      className={styles.imageSlider__thumbnailImage}
-                      aria-hidden='true'
-                    />
-                  )}
-                </div>
-              )
-            })}
+                    }}
+                    style={{cursor: 'pointer'}}
+                  >
+                    {isVideo ? (
+                      <video
+                        src={image}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        webkit-playsinline='true'
+                        controls={false}
+                        disablePictureInPicture
+                        controlsList='nodownload nofullscreen noremoteplaybook'
+                        className={styles.imageSlider__thumbnailVideo}
+                        aria-hidden='true'
+                        style={
+                          {
+                            WebkitMediaControls: 'none',
+                            WebkitPlaybackTargetAvailability: 'none',
+                            cursor: 'pointer'
+                          } as React.CSSProperties
+                        }
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          backgroundImage: `url(${image})`,
+                          cursor: 'pointer'
+                        }}
+                        className={styles.imageSlider__thumbnailImage}
+                        aria-hidden='true'
+                      />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         <div itemScope itemType='https://schema.org/Product' style={{display: 'none'}}>
           <meta itemProp='name' content={productName} />

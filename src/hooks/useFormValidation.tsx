@@ -54,11 +54,11 @@ export const useFormValidation = (
       switch (fieldName) {
         case 'cardTitle':
           return current.currentTitle !== currentTitle
-        case 'uploadedFiles':
-          return (
-            current.uploadedFilesLength !== (formState.uploadedFiles?.length || 0) ||
-            current.remainingImagesLength !== (formState.remainingInitialImages?.length || 0)
-          )
+        // case 'uploadedFiles':
+        //   return (
+        //     current.uploadedFilesLength !== (formState.uploadedFiles?.length || 0) ||
+        //     current.remainingImagesLength !== (formState.remainingInitialImages?.length || 0)
+        //   )
         case 'pricesArray':
           return current.pricesArrayLength !== (formState.pricesArray?.length || 0)
         case 'description':

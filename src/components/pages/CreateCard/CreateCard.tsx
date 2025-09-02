@@ -31,6 +31,8 @@ import {setInitialStorageValue} from '@/hooks/createCardHelpers'
 import {submitFormCardData} from '@/utils/createCardHelpers'
 import {toast} from 'sonner'
 import {useRouter} from '@/i18n/navigation'
+// import {useQueryClient} from '@tanstack/react-query'
+// import {invalidateProductsCache} from '@/hooks/useProducts'
 
 const vopros = '/vopros.svg'
 // Конфигурация изображений для подсказок
@@ -112,6 +114,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     },
     [currentLangState, currentLang, cardObjectForOthers]
   )
+  // const queryClient = useQueryClient()
 
   // Используем универсальный хук для модального окна
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
@@ -223,7 +226,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       setTimeout(() => {
         setUploadedFiles(files)
         // Валидируем только поле изображений при его изменении
-        if (errors.uploadedFiles && files.length + remainingInitialImages.length >= 3) {
+        if (errors.uploadedFiles && files.length + remainingInitialImages.length >= 1) {
           setErrors((prev) => ({...prev, uploadedFiles: ''}))
         }
       }, 0)
@@ -338,6 +341,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             }
           }
         )
+        // invalidateProductsCache(queryClient)
         router.push(`/vendor`)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
@@ -512,7 +516,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 onActiveImagesChange={handleActiveImagesChange}
                 activeImages={remainingInitialImages}
                 maxFiles={9}
-                minFiles={3}
+                minFiles={1}
                 allowMultipleFiles
                 errorValue={errors.uploadedFiles}
                 setErrorValue={(value: string) => setErrors((prev) => ({...prev, uploadedFiles: value}))}

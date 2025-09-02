@@ -663,7 +663,16 @@
   "blog": "Blog",
   "news": "News",
   "services": "Services"
-}
+},
+"modal":{
+  "previous": "Previous image",
+  "next": "Next image",
+  "image": "Image {number}",
+  "video": "Video {number}",
+  "thumbnail": "Thumbnail {number}",
+  "close": "Close gallery",
+  "clickImage": "Click the image to zoom"
+  }
 
 }
 

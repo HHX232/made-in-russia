@@ -689,9 +689,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 <div style={{width: '100%'}} className=''>
                   <CreateImagesInput
                     showBigFirstItem={false}
-                    activeImages={descriptionImages} // Передаем массив как есть
+                    activeImages={descriptionImages}
                     onFilesChange={handleUploadedFilesChange}
-                    onActiveImagesChange={handleActiveImagesChange} // Используем простую сигнатуру
+                    onActiveImagesChange={handleActiveImagesChange}
                     extraClass={styles.extra__images__input}
                     maxFiles={10}
                     minFiles={0}

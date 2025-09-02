@@ -59,6 +59,7 @@ interface RowsInputsProps {
   buttonsSizes?: ButtonSize
   customButtonSizes?: ButtonSizes
   showDnDButton?: boolean
+  isOnlyShow?: boolean
   onBlur?: (rowIndex: number, inputIndex: number, value: string) => void
   onClick?: (rowIndex: number, inputIndex: number, value: string) => void
   onFocus?: (rowIndex: number, inputIndex: number, value: string) => void
@@ -97,9 +98,19 @@ interface DropdownProps {
   hasError?: boolean
   inputId: string
   canCreateNew?: boolean
+  readOnly?: boolean
 }
 
-const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, canCreateNew = false}: DropdownProps) => {
+const Dropdown = ({
+  value,
+  options,
+  placeholder,
+  onSelect,
+  hasError,
+  inputId,
+  canCreateNew = false,
+  readOnly = false
+}: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [customValue, setCustomValue] = useState('')
   const [isCreatingNew, setIsCreatingNew] = useState(false)
@@ -164,6 +175,7 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
   }, [isCreatingNew])
 
   const handleSelect = (option: string) => {
+    if (readOnly) return
     onSelect(option)
     setIsOpen(false)
     setIsCreatingNew(false)
@@ -171,10 +183,12 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
   }
 
   const handleCreateNew = () => {
+    if (readOnly) return
     setIsCreatingNew(true)
   }
 
   const handleCustomSubmit = () => {
+    if (readOnly) return
     if (customValue.trim()) {
       onSelect(customValue.trim())
       setIsOpen(false)
@@ -184,6 +198,7 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
   }
 
   const handleCustomKeyPress = (e: React.KeyboardEvent) => {
+    if (readOnly) return
     if (e.key === 'Enter') {
       e.preventDefault()
       handleCustomSubmit()
@@ -201,16 +216,17 @@ const Dropdown = ({value, options, placeholder, onSelect, hasError, inputId, can
   return (
     <div key={inputId} className={styles.dropdown} ref={dropdownRef}>
       <div
-        className={`${styles.dropdown__trigger} ${hasError ? styles.error__dropdown : ''}`}
-        onClick={() => setIsOpen(!isOpen)}
+        className={`${styles.dropdown__trigger} ${hasError ? styles.error__dropdown : ''} ${readOnly ? styles.dropdown__readonly : ''}`}
+        onClick={() => !readOnly && setIsOpen(!isOpen)}
         id={inputId}
+        style={{cursor: readOnly ? 'default' : 'pointer'}}
       >
         <span style={{margin: '0 auto'}} className={value ? styles.dropdown__value : styles.dropdown__placeholder}>
           {value || (placeholder || '')?.trim()?.split(' ')[0]}
         </span>
       </div>
 
-      {isOpen && (
+      {isOpen && !readOnly && (
         <div className={styles.dropdown__list}>
           {canCreateNew && (
             <>
@@ -305,6 +321,7 @@ interface SortableRowProps {
   }
   buttonSizes: ButtonSizes
   showDnDButton: boolean
+  isOnlyShow?: boolean
   onBlur?: (rowIndex: number, inputIndex: number, value: string) => void
   onClick?: (rowIndex: number, inputIndex: number, value: string) => void
   onFocus?: (rowIndex: number, inputIndex: number, value: string) => void
@@ -332,6 +349,7 @@ const SortableRow = ({
   textAreaProps,
   buttonSizes,
   showDnDButton,
+  isOnlyShow = false,
   onBlur,
   onClick,
   onFocus,
@@ -361,10 +379,11 @@ const SortableRow = ({
           value={value}
           options={options}
           placeholder={titles[inputIndex] || 'Выберите значение'}
-          onSelect={(newValue) => onUpdateValue(rowIndex, inputIndex, newValue)}
+          onSelect={(newValue) => !isOnlyShow && onUpdateValue(rowIndex, inputIndex, newValue)}
           hasError={hasError && !value}
           inputId={inputId}
           canCreateNew={canCreateNew}
+          readOnly={isOnlyShow}
         />
       )
     }
@@ -377,15 +396,16 @@ const SortableRow = ({
           theme={inputsTheme ? inputsTheme : 'lightBlue'}
           placeholder={titles[inputIndex] || 'value...'}
           currentValue={value}
-          onSetValue={(newValue) => onUpdateValue(rowIndex, inputIndex, newValue)}
+          onSetValue={(newValue) => !isOnlyShow && onUpdateValue(rowIndex, inputIndex, newValue)}
           errorValue={hasError && !value ? ' ' : ''}
           autoResize={textAreaProps?.autoResize ?? true}
           minRows={textAreaProps?.minRows ?? 2}
           maxRows={textAreaProps?.maxRows ?? 5}
-          onBlur={onBlur ? () => onBlur(rowIndex, inputIndex, value) : undefined}
-          onClick={onClick ? () => onClick(rowIndex, inputIndex, value) : undefined}
-          onFocus={onFocus ? () => onFocus(rowIndex, inputIndex, value) : undefined}
-          onKeyUp={onKeyUp ? (event) => onKeyUp(rowIndex, inputIndex, value, event) : undefined}
+          readOnly={isOnlyShow}
+          onBlur={onBlur && !isOnlyShow ? () => onBlur(rowIndex, inputIndex, value) : undefined}
+          onClick={onClick && !isOnlyShow ? () => onClick(rowIndex, inputIndex, value) : undefined}
+          onFocus={onFocus && !isOnlyShow ? () => onFocus(rowIndex, inputIndex, value) : undefined}
+          onKeyUp={onKeyUp && !isOnlyShow ? (event) => onKeyUp(rowIndex, inputIndex, value, event) : undefined}
         />
       )
     }
@@ -398,12 +418,13 @@ const SortableRow = ({
         theme={inputsTheme ? inputsTheme : 'lightBlue'}
         placeholder={titles[inputIndex] || 'value...'}
         currentValue={value}
-        onSetValue={(newValue) => onUpdateValue(rowIndex, inputIndex, newValue)}
+        onSetValue={(newValue) => !isOnlyShow && onUpdateValue(rowIndex, inputIndex, newValue)}
         errorValue={hasError && !value ? ' ' : ''}
-        onBlur={onBlur ? () => onBlur(rowIndex, inputIndex, value) : undefined}
-        onClick={onClick ? () => onClick(rowIndex, inputIndex, value) : undefined}
-        onFocus={onFocus ? () => onFocus(rowIndex, inputIndex, value) : undefined}
-        onKeyUp={onKeyUp ? (event) => onKeyUp(rowIndex, inputIndex, value, event) : undefined}
+        readOnly={isOnlyShow}
+        onBlur={onBlur && !isOnlyShow ? () => onBlur(rowIndex, inputIndex, value) : undefined}
+        onClick={onClick && !isOnlyShow ? () => onClick(rowIndex, inputIndex, value) : undefined}
+        onFocus={onFocus && !isOnlyShow ? () => onFocus(rowIndex, inputIndex, value) : undefined}
+        onKeyUp={onKeyUp && !isOnlyShow ? (event) => onKeyUp(rowIndex, inputIndex, value, event) : undefined}
       />
     )
   }
@@ -411,9 +432,9 @@ const SortableRow = ({
   return (
     <div id={`cy-row-${idNames?.[0]}-${rowIndex}`} ref={setNodeRef} style={style}>
       <div
-        className={`${styles.rows__inputs__box} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''} ${!showDnDButton ? styles.no__drag : ''}`}
+        className={`${styles.rows__inputs__box} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''} ${!showDnDButton || isOnlyShow ? styles.no__drag : ''}`}
       >
-        {showDnDButton && (
+        {showDnDButton && !isOnlyShow && (
           <button
             className={styles.rows__inputs__drag}
             {...attributes}
@@ -434,22 +455,24 @@ const SortableRow = ({
           {row.map((value, inputIndex) => renderInput(value, inputIndex))}
         </div>
 
-        <button
-          className={`${styles.rows__inputs__remove} ${extraButtonMinusClass}`}
-          onClick={() => onRemoveRow(rowIndex)}
-          id={`cy-create-card-row-remove-${rowIndex}`}
-          type='button'
-          aria-label='Удалить строку'
-          disabled={!canRemove}
-          style={{opacity: canRemove ? 1 : 0.3}}
-        >
-          <Image
-            src={minusCircle}
-            alt='minus'
-            width={buttonSizes.minus?.width || 39}
-            height={buttonSizes.minus?.height || 39}
-          />
-        </button>
+        {!isOnlyShow && (
+          <button
+            className={`${styles.rows__inputs__remove} ${extraButtonMinusClass}`}
+            onClick={() => onRemoveRow(rowIndex)}
+            id={`cy-create-card-row-remove-${rowIndex}`}
+            type='button'
+            aria-label='Удалить строку'
+            disabled={!canRemove}
+            style={{opacity: canRemove ? 1 : 0.3}}
+          >
+            <Image
+              src={minusCircle}
+              alt='minus'
+              width={buttonSizes.minus?.width || 39}
+              height={buttonSizes.minus?.height || 39}
+            />
+          </button>
+        )}
       </div>
       {!isLastRow && <div className={styles.gray__bottom__line}></div>}
     </div>
@@ -484,6 +507,7 @@ const RowsInputs = ({
   buttonsSizes = 'large',
   customButtonSizes,
   showDnDButton = true,
+  isOnlyShow = false,
   onBlur,
   onClick,
   onFocus,
@@ -583,7 +607,7 @@ const RowsInputs = ({
   }
 
   const getRowsWithErrors = () => {
-    if (!errorMessage || minFilledRows === 0) return []
+    if (!errorMessage || minFilledRows === 0 || isOnlyShow) return []
 
     const filledCount = getFilledRowsCount()
     const errorRows: number[] = []
@@ -619,23 +643,23 @@ const RowsInputs = ({
   )
 
   const addRow = () => {
-    if (currentRows.length < maxRows) {
-      const newRows = [...currentRows, new Array(inputsInRowCount).fill('')]
+    if (isOnlyShow || currentRows.length >= maxRows) return
 
-      if (!controlled) {
-        const newRowId = `row-${currentRows.length}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        setRows(newRows)
-        setRowIds([...rowIds, newRowId])
-      }
+    const newRows = [...currentRows, new Array(inputsInRowCount).fill('')]
 
-      if (onRowsChange) {
-        onRowsChange(newRows)
-      }
+    if (!controlled) {
+      const newRowId = `row-${currentRows.length}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      setRows(newRows)
+      setRowIds([...rowIds, newRowId])
+    }
+
+    if (onRowsChange) {
+      onRowsChange(newRows)
     }
   }
 
   const removeRow = (rowIndex: number) => {
-    if (currentRows.length === 1) return
+    if (isOnlyShow || currentRows.length === 1) return
 
     const newRows = currentRows.filter((_, index) => index !== rowIndex)
 
@@ -651,6 +675,8 @@ const RowsInputs = ({
   }
 
   const updateValue = (rowIndex: number, inputIndex: number, value: string) => {
+    if (isOnlyShow) return
+
     const newRows = [...currentRows]
 
     // Проверяем существование строки
@@ -675,6 +701,8 @@ const RowsInputs = ({
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
+    if (isOnlyShow) return
+
     const {active, over} = event
 
     if (over && active.id !== over.id) {
@@ -716,10 +744,10 @@ const RowsInputs = ({
   }
 
   return (
-    <div className={`${styles.rows__inputs__wrapper} ${errorMessage ? styles.has__error : ''}`}>
+    <div className={`${styles.rows__inputs__wrapper} ${errorMessage && !isOnlyShow ? styles.has__error : ''}`}>
       <div className={styles.rows__inputs}>
         <div
-          className={`${styles.rows__inputs__titles} ${!showDnDButton ? styles.no__drag : ''}`}
+          className={`${styles.rows__inputs__titles} ${!showDnDButton || isOnlyShow ? styles.no__drag : ''}`}
           style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}
         >
           {titles.map((title, index) => (
@@ -729,7 +757,7 @@ const RowsInputs = ({
           ))}
         </div>
 
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext sensors={isOnlyShow ? [] : sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
             <div className={styles.rows__inputs__container}>
               {currentRows.map((row, rowIndex) => {
@@ -762,6 +790,7 @@ const RowsInputs = ({
                     textAreaProps={textAreaProps}
                     buttonSizes={buttonSizes}
                     showDnDButton={showDnDButton}
+                    isOnlyShow={isOnlyShow}
                     onBlur={onBlur}
                     onClick={onClick}
                     onFocus={onFocus}
@@ -773,7 +802,7 @@ const RowsInputs = ({
           </SortableContext>
         </DndContext>
 
-        {currentRows.length < maxRows && (
+        {currentRows.length < maxRows && !isOnlyShow && (
           <button
             id={`cy-create-card-row-plus-button-${idNames?.[0] || 'default'}`}
             className={`${styles.rows__inputs__add} ${extraButtonPlusClass}`}
@@ -791,7 +820,7 @@ const RowsInputs = ({
         )}
       </div>
 
-      {(errorMessage || minFilledRows > 0) && (
+      {(errorMessage || minFilledRows > 0) && !isOnlyShow && (
         <div className={styles.info__block}>
           {errorMessage && <p className={styles.error__message}>{errorMessage}</p>}
         </div>

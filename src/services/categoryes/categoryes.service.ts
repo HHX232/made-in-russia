@@ -178,8 +178,8 @@ export const useCategories = (lang: SupportedLanguage) => {
   return useQuery({
     queryKey: categoriesKeys.list(lang),
     queryFn: () => CategoriesAPI.getAll(lang),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000 // 10 minutes
+    staleTime: 25 * 60 * 1000, // 5 minutes
+    gcTime: 35 * 60 * 1000 // 10 minutes
   })
 }
 

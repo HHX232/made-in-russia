@@ -2,11 +2,14 @@ import {getAbsoluteLanguage} from '@/api/api.helper'
 import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
+import {findCategoryBySlug, buildBreadcrumbs} from '@/utils/findCategoryPath'
 import {notFound} from 'next/navigation'
 
 export default async function CategoryPageSpecial({params}: {params: Promise<{categoryName: string}>}) {
   const {categoryName} = await params
   let categories
+  let allCategories
+  let breadcrumbs: {title: string; link: string}[] = []
 
   const locale = await getAbsoluteLanguage()
 
@@ -24,7 +27,14 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
   }
   // console.log('companyes:', companyes)
   try {
-    categories = await CategoriesService.getById('l1_' + categoryName, locale || 'en')
+    allCategories = await CategoriesService.getAll(locale || 'en')
+
+    const slugToFind = categoryName
+    const foundCategory = findCategoryBySlug(allCategories, slugToFind)
+
+    categories = foundCategory || (await CategoriesService.getById('l1_' + slugToFind, locale || 'en'))
+
+    breadcrumbs = buildBreadcrumbs(allCategories, slugToFind)
   } catch {
     notFound()
   }
@@ -33,6 +43,7 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
     <CategoryPage
       companyes={companyes || []}
       idOfFilter={categories.id}
+      breadcrumbs={breadcrumbs}
       categories={categories.children}
       categoryName={categoryName}
       categoryTitleName={categories.name}

@@ -696,16 +696,3 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
 }
 
 export default ProfilePage
-
-// Дополнительные стили для empty message (добавить в ProfilePage.module.scss)
-// .empty__message {
-//   font-size: 35px;
-//   color: #818181;
-//   text-align: center;
-//   margin-top: 20px;
-//   margin-bottom: 20px;
-//   font-weight: 500;
-//   max-width: 100%;
-//   width: 100%;
-//   min-width: 100%;
-// }
