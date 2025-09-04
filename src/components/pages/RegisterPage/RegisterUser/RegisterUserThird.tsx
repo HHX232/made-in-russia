@@ -62,7 +62,7 @@ const RegisterUserThird: React.FC<RegisterUserThirdProps> = ({
         </button>
       </span>
 
-      <Link href={'#'} className={styles.problem__link}>
+      <Link href={'/help'} className={styles.problem__link}>
         {t('haveProblemWithCode')}
       </Link>
     </>

@@ -13,9 +13,14 @@ import Image from 'next/image'
 import {ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import ICardFull from '@/services/card/card.types'
-import {useTranslations} from 'next-intl'
+import {useLocale, useTranslations} from 'next-intl'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
+import BreadForCard from './breadForCard/breadForCard'
+// import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
+// import {useCachedNode} from '@dnd-kit/core/dist/hooks/utilities'
+// import {useCategories} from '@/services/categoryes/categoryes.service'
+// import {buildBreadcrumbsForCard} from '@/utils/findCategoryPath'
 
 interface IPriceItem {
   title: string | ReactNode
@@ -370,9 +375,13 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   const [vendorModalOpen, setVendorModalOpen] = useState(false)
   const windowWidth = useWindowWidth()
   const [showPhone, setShowPhone] = useState(false)
-  useEffect(() => {
-    console.log('cardData', cardData)
-  }, [cardData])
+  const currentLang = useLocale()
+
+  // const categories = useCategories(currentLang as any)
+  // const normalizedSlug = cardData?.category?.slug?.replace(/^l\d+_/, '') || ''
+
+  // const bread = buildBreadcrumbsForCard(categories?.data || [], normalizedSlug, cardData?.title || 'йцу')
+
   useEffect(() => {
     setIsMounted(true)
   }, [])
@@ -731,6 +740,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
   return (
     <>
+      <BreadForCard cardData={cardData} currentLang={currentLang} />
       {/* Микроразметка Schema.org */}
       <ProductSchema
         cardData={cardMiniData}

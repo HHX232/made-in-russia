@@ -38,7 +38,7 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `7${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [linksItems, setLinksItems] = useState(['category', 'reviews', 'about-us', 'help'])
+  const [linksItems, setLinksItems] = useState(['category', 'about-us', 'help'])
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [categoryListIsOpen, setCategoryListIsOpen] = useState<boolean>(false)
   const fullHeaderRef = useRef<HTMLDivElement>(null)
@@ -305,7 +305,7 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                     key={i}
                     className={`${styles.header__list__item}`}
                   >
-                    {i === 0 ? <div>{t(el)}</div> : <Link href={'#'}>{t(el)}</Link>}
+                    {i === 0 ? <div>{t(el)}</div> : <Link href={`/${el}`}>{t(el)}</Link>}
                   </li>
                 )
               })}

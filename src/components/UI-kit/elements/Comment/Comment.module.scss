@@ -15,6 +15,88 @@
   margin-bottom: 10px;
 }
 
+.status__box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: auto;
+  background-color: #f9f9f9;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  gap: 12px;
+}
+
+.status__buttons__box {
+  display: flex;
+  gap: 8px;
+}
+
+.status__buttons__box__button__approve,
+.status__buttons__box__button__reject {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
+}
+
+/* approve button */
+.status__buttons__box__button__approve {
+  background-color: #e6f7ed;
+}
+
+.status__buttons__box__button__approve svg path {
+  stroke: #28a745;
+}
+
+.status__buttons__box__button__approve:hover {
+  background-color: #d4f3e3;
+  transform: scale(1.05);
+}
+
+/* reject button */
+.status__buttons__box__button__reject {
+  background-color: #fdeaea;
+}
+
+.status__buttons__box__button__reject svg path {
+  stroke: #dc3545;
+}
+
+.status__buttons__box__button__reject:hover {
+  background-color: #f9d7d7;
+  transform: scale(1.05);
+}
+
+/* Цвет текста статуса */
+.status__box.approved {
+  color: #28a745;
+
+  /* зеленый */
+}
+
+.status__box.pending {
+  color: #e0a800;
+
+  /* желтовато-оранжевый */
+}
+
+.status__box.rejected {
+  color: #dc3545;
+
+  /* красный */
+}
+
 .user__image {
   width: 28px;
   height: 28px;

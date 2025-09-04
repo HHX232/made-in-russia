@@ -153,9 +153,14 @@
 }
 
 .card__inner__main {
+  position: relative;
   display: flex;
   width: 100%;
-  margin-top: 42px;
+  margin-top: 100px;
+
+  @media (max-width: 700px) {
+    margin-top: 120px;
+  }
 }
 
 .card__slider__box {

@@ -146,6 +146,7 @@ interface Author {
 
 interface Review {
   id: number
+  approveStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
   media?: {
     id: number
     url: string

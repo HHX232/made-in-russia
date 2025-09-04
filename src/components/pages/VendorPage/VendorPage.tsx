@@ -562,7 +562,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const helpListButtonData = useMemo(
     () => [
       {
-        linkTo: '#',
+        linkTo: '/help',
         iconSrc: '/profile/help_chat_svg.svg',
         text: t('help')
       },

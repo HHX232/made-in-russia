@@ -82,7 +82,9 @@ const AdminReviewsPage: FC = () => {
   const [maxRatingFilter, setMaxRatingFilter] = useState<number | null>(null)
 
   const [ratingFilter, setRatingFilter] = useState('Все рейтинги')
+  const [approveStatusFilter, setApproveStatusFilter] = useState('Все статусы')
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [approveStatusDropdownOpen, setApproveStatusDropdownOpen] = useState(false)
 
   // Модалка редактирования
   const [editModalOpen, setEditModalOpen] = useState(false)
@@ -116,6 +118,9 @@ const AdminReviewsPage: FC = () => {
       }
       if (maxRatingFilter !== null) {
         params.append('maxRating', maxRatingFilter.toString())
+      }
+      if (approveStatusFilter !== 'Все статусы') {
+        params.append('approveStatuses', approveStatusFilter)
       }
 
       const response = await instance.get(`/product-reviews?${params.toString()}`)
@@ -263,12 +268,24 @@ const AdminReviewsPage: FC = () => {
     }
   }
 
+  const handleApproveStatusFilter = (status: string) => {
+    setApproveStatusFilter(status)
+    setApproveStatusDropdownOpen(false)
+  }
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      loadReviews(0, false)
+    }, 300)
+    return () => clearTimeout(timeoutId)
+  }, [commentTextFilter, minRatingFilter, maxRatingFilter, approveStatusFilter])
+
   // Сброс фильтров
   const clearFilters = () => {
     setCommentTextFilter('')
     setRatingFilter('Все рейтинги')
     setMinRatingFilter(null)
     setMaxRatingFilter(null)
+    setApproveStatusFilter('Все статусы')
   }
 
   // Компонент триггера для бесконечной прокрутки
@@ -382,6 +399,41 @@ const AdminReviewsPage: FC = () => {
               </div>
             )}
           </div>
+          <div className={styles['filter-dropdown']}>
+            <div
+              tabIndex={0}
+              className={styles['dropdown-trigger']}
+              role='button'
+              aria-haspopup='listbox'
+              aria-expanded={approveStatusDropdownOpen}
+              onClick={() => setApproveStatusDropdownOpen((v) => !v)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') setApproveStatusDropdownOpen((v) => !v)
+              }}
+            >
+              {approveStatusFilter}
+              <span aria-hidden='true'>▼</span>
+            </div>
+            {approveStatusDropdownOpen && (
+              <div className={styles['dropdown-content']} role='listbox' tabIndex={-1}>
+                {['Все статусы', 'APPROVED', 'PENDING', 'REJECTED'].map((item) => (
+                  <div
+                    key={item}
+                    role='option'
+                    aria-selected={approveStatusFilter === item}
+                    tabIndex={0}
+                    className={`${styles['dropdown-item']} ${approveStatusFilter === item ? styles.active : ''}`}
+                    onClick={() => handleApproveStatusFilter(item)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') handleApproveStatusFilter(item)
+                    }}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className={styles['reviews-count']} aria-live='polite' aria-atomic='true'>
             Всего отзывов: {totalElements}
@@ -399,7 +451,7 @@ const AdminReviewsPage: FC = () => {
 
           {reviews.map((review) => (
             <div key={review.id} className={styles['review-wrapper']}>
-              <Comment {...review} />
+              <Comment {...review} isForAdmin />
               <div className={styles['review-buttons']}>
                 <button
                   onClick={() => handleEditReview(review.id)}

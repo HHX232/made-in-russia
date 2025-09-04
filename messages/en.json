@@ -260,7 +260,7 @@
 },
 "CardBottomPage": {
   "success": "Success!",
-  "successPublished": "Review published",
+  "successPublished": "Review has been submitted for moderation",
   "errorPublished": "Error publishing review",
   "errorPublishedText": "Before publishing, you must contact the seller and your account must be at least 7 days old",
   "revues": "Reviews",
@@ -672,6 +672,13 @@
   "thumbnail": "Thumbnail {number}",
   "close": "Close gallery",
   "clickImage": "Click the image to zoom"
+  },
+  "mainCategory":{
+    "title": "Categories",
+  "subtitle": "Choose the category you are interested in",
+  "loading": "Loading categories...",
+  "empty": "No categories found",
+  "subcategoriesCount": "{count} subcategories"
   }
 
 }

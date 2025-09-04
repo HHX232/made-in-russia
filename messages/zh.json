@@ -268,7 +268,7 @@
 },
 "CardBottomPage": {
   "success": "成功！",
-  "successPublished": "评论已发布",
+  "successPublished": "评论已提交审核",
   "errorPublished": "发布评论时出错",
   "errorPublishedText": "发布前需先联系卖家, 且账户年龄不得少于7天",
   "revues": "评价",
@@ -685,6 +685,13 @@
     "thumbnail": "缩略图 {number}",
     "close": "关闭图库",
     "clickImage": "点击图片放大"
+  },
+  "mainCategory":{
+    "title": "类别",
+    "subtitle": "请选择您感兴趣的类别",
+    "loading": "正在加载类别...",
+    "empty": "未找到类别",
+    "subcategoriesCount": "{count} 个子类别"
   }
 
 

@@ -460,11 +460,11 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     {t('category')}
                   </button>
                 </div>
-                <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
+                {/* <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
                   <Link href='/reviews' itemProp='url'>
                     <span itemProp='name'>{t('reviews')}</span>
                   </Link>
-                </li>
+                </li> */}
                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
                   <DropList
                     key={'id5 contacts'}
@@ -551,9 +551,9 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     positionIsAbsolute={false}
                     title={t('more')}
                     items={[
-                      <div key={'id1 comments'} className={`${styles.bottom__list_item}`}>
-                        <Link href='/reviews'>{t('reviews')}</Link>
-                      </div>,
+                      // <div key={'id1 comments'} className={`${styles.bottom__list_item}`}>
+                      //   <Link href='/reviews'>{t('reviews')}</Link>
+                      // </div>,
                       <div key={'id2 delivery'} className={`${styles.bottom__list_item}`}>
                         <Link href='/delivery'>{t('delivery')}</Link>
                       </div>,

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import Skeleton from 'react-loading-skeleton'
 import styles from './CardBottomPage.module.scss'
@@ -150,6 +152,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
   const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES]
   const t = useTranslations('CardPage.CardBottomPage')
   const currentLang = useCurrentLanguage()
+  const [error, setError] = useState('')
 
   // Мемоизируем функцию удаления файла
   const removeFile = useCallback((fileId: string) => {
@@ -311,8 +314,9 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
       })
 
       if (!response.ok) {
-        const errorData = await response.text()
-        throw new Error(`HTTP error! message: ${errorData}`)
+        const errorData = await response.json()
+        console.log('Error data from server:', errorData) // для отладки
+        throw new Error(JSON.stringify(errorData)) // передаем полные данные об ошибке
       }
 
       const result = await response.json()
@@ -336,14 +340,31 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
       setCommentValue('')
       setUploadedFiles([])
       setStarsCountSet(4)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
-      console.log(e)
+      console.log('Error caught:', e)
       toast.dismiss(loadingToast)
+
+      // Парсим ошибку из сервера
+      let errorMessage = t('errorPublishedText') // дефолтное сообщение
+
+      try {
+        // Пытаемся распарсить JSON из сообщения об ошибке
+        const parsedError = JSON.parse(e.message)
+        if (parsedError && parsedError.message) {
+          errorMessage = parsedError.message
+          setError(parsedError) // сохраняем полную ошибку в state для других целей
+        }
+      } catch (parseError) {
+        // Если не удалось распарсить, проверяем другие возможные форматы
+        if (e.message && e.message !== 'Failed to fetch') {
+          errorMessage = e.message
+        }
+      }
+
       toast.error(
         <div style={{lineHeight: 1.5}}>
           <strong style={{display: 'block', marginBottom: 4}}>{t('errorPublished')}</strong>
-          <span>{e.message || t('errorPublishedText')}</span>
+          <span>{errorMessage}</span>
         </div>,
         {
           style: {

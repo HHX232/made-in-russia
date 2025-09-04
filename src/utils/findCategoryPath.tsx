@@ -48,3 +48,29 @@ export function buildBreadcrumbs(allCategories: any[], slug: string) {
 
   return breadcrumbs
 }
+export function buildBreadcrumbsForCard(allCategories: any[], slug: string, cardTitle: string) {
+  const path = findCategoryPath(allCategories, slug)
+
+  if (!path) return []
+
+  // Собираем полный путь до последней категории
+  let accumulatedPath = '/categories'
+  for (const cat of path) {
+    accumulatedPath += `/${cat.slug}`
+  }
+
+  const breadcrumbs = [
+    {title: 'home', link: '/'},
+    {title: 'categories', link: '/categories'},
+    {
+      title: path[path.length - 1].name,
+      link: accumulatedPath
+    },
+    {
+      title: cardTitle,
+      link: '' // название товара — обычно без ссылки
+    }
+  ]
+
+  return breadcrumbs
+}
