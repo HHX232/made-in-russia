@@ -13,6 +13,11 @@ import CategoriesService from '@/services/categoryes/categoryes.service'
 import {User} from '@/store/User/user.slice'
 
 const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'Kazakhstan']
+const TIME_FILTER_OPTIONS = [
+  {label: 'Без фильтров', value: undefined},
+  {label: 'Сначала новые', value: 'desc'},
+  {label: 'Сначала старые', value: 'asc'}
+]
 
 type CreateUserData = {
   login: string
@@ -106,6 +111,7 @@ const AdminUsersPage: FC = () => {
     hasNextPage,
     loadMoreUsers,
     setFilters,
+    setSort,
     clearFilters,
     refreshUsers
   } = useUsers(instance, 10)
@@ -113,6 +119,7 @@ const AdminUsersPage: FC = () => {
   // Локальные состояния для поиска и фильтров
   const [searchValue, setSearchValue] = useState('')
   const [selectedRoleFilter, setSelectedRoleFilter] = useState('Без фильтров')
+  const [selectedTimeFilter, setSelectedTimeFilter] = useState('Без фильтров')
 
   // Состояния для создания пользователя
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -132,6 +139,8 @@ const AdminUsersPage: FC = () => {
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCountries, setSelectedCountries] = useState<string[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [timeFilter, setTimeFilter] = useState<'asc' | 'desc' | undefined>(undefined)
 
   // Загрузка категорий при открытии модалки для вендора
   useEffect(() => {
@@ -176,6 +185,24 @@ const AdminUsersPage: FC = () => {
       default:
         setFilters({role: undefined})
         break
+    }
+  }
+
+  // Обработка фильтра по времени
+  const handleTimeFilter = (filterValue: string) => {
+    setSelectedTimeFilter(filterValue)
+
+    const selectedOption = TIME_FILTER_OPTIONS.find((option) => option.label === filterValue)
+    const direction = selectedOption?.value
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setTimeFilter(direction as any)
+
+    if (direction) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setSort('registrationDate', direction as any)
+    } else {
+      setSort('registrationDate', undefined)
     }
   }
 
@@ -509,10 +536,23 @@ const AdminUsersPage: FC = () => {
             </p>
           ))}
         />
+
+        {/* Новый дроплист для фильтра по времени */}
+        <DropList
+          direction='bottom'
+          extraListClass={styles.extra__list__style}
+          extraClass={styles.drop__list__extra}
+          positionIsAbsolute
+          title={selectedTimeFilter}
+          items={TIME_FILTER_OPTIONS.map((option) => (
+            <p onClick={() => handleTimeFilter(option.label)} key={option.label}>
+              {option.label}
+            </p>
+          ))}
+        />
         <div className={styles.users__actions__create} onClick={() => setIsCreateModalOpen(true)}>
           Создать
         </div>
-
         {/* Информация о количестве пользователей */}
         <div className={styles.users__count}>Найдено: {totalElements} пользователей</div>
       </div>

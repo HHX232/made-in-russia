@@ -66,6 +66,12 @@ interface ReviewsResponse {
   empty: boolean
 }
 
+const TIME_FILTER_OPTIONS = [
+  {label: 'Без фильтров', value: undefined},
+  {label: 'Сначала новые', value: 'desc'},
+  {label: 'Сначала старые', value: 'asc'}
+]
+
 // Главный компонент страницы управления отзывами
 const AdminReviewsPage: FC = () => {
   const [reviews, setReviews] = useState<Review[]>([])
@@ -83,8 +89,12 @@ const AdminReviewsPage: FC = () => {
 
   const [ratingFilter, setRatingFilter] = useState('Все рейтинги')
   const [approveStatusFilter, setApproveStatusFilter] = useState('Все статусы')
+  const [selectedTimeFilter, setSelectedTimeFilter] = useState('Без фильтров')
+  const [timeFilterDirection, setTimeFilterDirection] = useState<'asc' | 'desc' | undefined>(undefined)
+
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [approveStatusDropdownOpen, setApproveStatusDropdownOpen] = useState(false)
+  const [timeFilterDropdownOpen, setTimeFilterDropdownOpen] = useState(false)
 
   // Модалка редактирования
   const [editModalOpen, setEditModalOpen] = useState(false)
@@ -121,6 +131,10 @@ const AdminReviewsPage: FC = () => {
       }
       if (approveStatusFilter !== 'Все статусы') {
         params.append('approveStatuses', approveStatusFilter)
+      }
+      if (timeFilterDirection) {
+        params.append('sort', 'creationDate')
+        params.append('direction', timeFilterDirection)
       }
 
       const response = await instance.get(`/product-reviews?${params.toString()}`)
@@ -193,6 +207,18 @@ const AdminReviewsPage: FC = () => {
         setMaxRatingFilter(null)
         break
     }
+  }
+
+  // Обработка фильтра по времени
+  const handleTimeFilter = (filterValue: string) => {
+    setSelectedTimeFilter(filterValue)
+    setTimeFilterDropdownOpen(false)
+
+    const selectedOption = TIME_FILTER_OPTIONS.find((option) => option.label === filterValue)
+    const direction = selectedOption?.value
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setTimeFilterDirection(direction as any)
   }
 
   // Обработка поиска
@@ -272,12 +298,13 @@ const AdminReviewsPage: FC = () => {
     setApproveStatusFilter(status)
     setApproveStatusDropdownOpen(false)
   }
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       loadReviews(0, false)
     }, 300)
     return () => clearTimeout(timeoutId)
-  }, [commentTextFilter, minRatingFilter, maxRatingFilter, approveStatusFilter])
+  }, [commentTextFilter, minRatingFilter, maxRatingFilter, approveStatusFilter, timeFilterDirection])
 
   // Сброс фильтров
   const clearFilters = () => {
@@ -286,6 +313,8 @@ const AdminReviewsPage: FC = () => {
     setMinRatingFilter(null)
     setMaxRatingFilter(null)
     setApproveStatusFilter('Все статусы')
+    setSelectedTimeFilter('Без фильтров')
+    setTimeFilterDirection(undefined)
   }
 
   // Компонент триггера для бесконечной прокрутки
@@ -399,6 +428,7 @@ const AdminReviewsPage: FC = () => {
               </div>
             )}
           </div>
+
           <div className={styles['filter-dropdown']}>
             <div
               tabIndex={0}
@@ -429,6 +459,43 @@ const AdminReviewsPage: FC = () => {
                     }}
                   >
                     {item}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Новый дроплист для фильтра по времени */}
+          <div className={styles['filter-dropdown']}>
+            <div
+              tabIndex={0}
+              className={styles['dropdown-trigger']}
+              role='button'
+              aria-haspopup='listbox'
+              aria-expanded={timeFilterDropdownOpen}
+              onClick={() => setTimeFilterDropdownOpen((v) => !v)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') setTimeFilterDropdownOpen((v) => !v)
+              }}
+            >
+              {selectedTimeFilter}
+              <span aria-hidden='true'>▼</span>
+            </div>
+            {timeFilterDropdownOpen && (
+              <div className={styles['dropdown-content']} role='listbox' tabIndex={-1}>
+                {TIME_FILTER_OPTIONS.map((option) => (
+                  <div
+                    key={option.label}
+                    role='option'
+                    aria-selected={selectedTimeFilter === option.label}
+                    tabIndex={0}
+                    className={`${styles['dropdown-item']} ${selectedTimeFilter === option.label ? styles.active : ''}`}
+                    onClick={() => handleTimeFilter(option.label)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') handleTimeFilter(option.label)
+                    }}
+                  >
+                    {option.label}
                   </div>
                 ))}
               </div>
