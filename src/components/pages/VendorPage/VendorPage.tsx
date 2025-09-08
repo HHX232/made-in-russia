@@ -4,7 +4,7 @@
 import Header from '@/components/MainComponents/Header/Header'
 import {FC, useCallback, useEffect, useState, useRef, useMemo} from 'react'
 import ProfileForm from '../ProfilePage/ProfileForm/ProfileForm'
-import {ProfileHeader, QuickActions, ProfileActions, useUserData, ASSETS_COUNTRIES} from '../ProfilePage/ProfilePage'
+import {ProfileHeader, QuickActions, ProfileActions, ASSETS_COUNTRIES} from '../ProfilePage/ProfilePage'
 import styles from './VendorPage.module.scss'
 import instance from '@/api/api.interceptor'
 import Image from 'next/image'
@@ -36,6 +36,8 @@ import {useActions} from '@/hooks/useActions'
 import {useUpdateVendorDetails} from '@/api/useVendorApi'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import {useSaveVendorMedia} from '@/utils/saveVendorDescriptionWithMedia'
+import {useUserQuery} from '@/hooks/useUserApi'
+// import {useUserQuery} from '@/api/useUserApi'
 
 const Arrow = ({isActive, onClick, extraClass}: {isActive: boolean; onClick: () => void; extraClass?: string}) => {
   return (
@@ -135,7 +137,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const [debouncedNeedToSave, setDebouncedNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const [startAnimation, setStartAnimation] = useState(false)
-  const {userData, loading, error} = useUserData()
+  // const {userData, loading, error} = useUserData()
+  const {data: userData, isLoading: loading, error: userError} = useUserQuery()
+
   const router = useRouter()
   const [isCommentsOpen, setIsCommentsOpen] = useState(true)
   const windowWidth = useWindowWidth()
@@ -642,7 +646,10 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
               }}
               className={styles.profile__user__box}
             >
-              <ProfileHeader isPageForVendor={isPageForVendor} userData={!!vendorData ? vendorData : userData} />
+              <ProfileHeader
+                isPageForVendor={isPageForVendor}
+                userData={!!vendorData ? vendorData : (userData as any)}
+              />
               <QuickActions
                 isForVendor={isPageForVendor}
                 onDevicesClick={handleDevicesClick}
@@ -654,7 +661,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 onVendorDataChange={handleVendorDataChange}
                 setNeedToSave={safeSetNeedToSave}
                 isLoading={loading}
-                userData={!!vendorData ? vendorData : userData}
+                userData={!!vendorData ? vendorData : (userData as any)}
                 regions={REGIONS}
               />
               {isPageForVendor && (

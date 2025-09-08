@@ -18,6 +18,10 @@
   }
 }
 
+.pending {
+  border: 2px solid #fcc54a;
+}
+
 .deleate__button {
   height: 100%;
   border-radius: 10px;
@@ -125,6 +129,32 @@
   margin-left: auto;
   content: '';
   cursor: pointer;
+}
+
+.approveStatus__text,
+.approveStatus__drop {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-left: auto;
+  background-color: #fcc54a;
+  color: #fff;
+  content: '';
+  cursor: pointer;
+}
+
+.approve__text {
+  background-color: #43a047 !important;
+}
+
+.reject__text {
+  background-color: #ac2525 !important;
+}
+
+.pending__text {
+  background-color: #fcc54a !important;
 }
 
 .skeleton__image {

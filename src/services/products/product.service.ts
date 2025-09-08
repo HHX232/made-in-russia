@@ -15,7 +15,8 @@ const ProductService = {
   async getAll(
     params: ProductQueryParams = {},
     specialRoute?: string | undefined,
-    currentLang?: string
+    currentLang?: string,
+    accessToken?: string
   ): Promise<ProductPageResponse> {
     // Устанавливаем значения по умолчанию
     const defaultParams = {
@@ -32,7 +33,9 @@ const ProductService = {
         method: 'GET',
         params: defaultParams,
         headers: {
-          'Accept-Language': currentLang
+          'Accept-Language': currentLang,
+          'x-language': currentLang,
+          Authorization: `Bearer ${accessToken || ''}`
         }
       })
       data = response.data
@@ -42,7 +45,9 @@ const ProductService = {
         method: 'GET',
         params: defaultParams,
         headers: {
-          'Accept-Language': currentLang
+          'Accept-Language': currentLang,
+          'x-language': currentLang,
+          Authorization: `Bearer ${accessToken || ''}`
         }
       })
       data = response.data

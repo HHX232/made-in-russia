@@ -574,11 +574,12 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
               return (
                 <li className={`${styles.prices__list_item}`} key={i}>
                   {!isReallyLoading ? (
-                    <p className={`${styles.price__list__title}`}>
-                      {el.to == 999999
-                        ? el.from + ' ' + el.unit + '+'
-                        : el.from + '\u00AD-\u00AD' + el.to + ' ' + el.unit}
-                    </p>
+                    <div className={`${styles.price__list__title}`}>
+                      <span className={`${styles.price__range}`}>
+                        {el.to == 999999 ? el.from + '+' : el.from + '\u00AD-\u00AD' + el.to}
+                      </span>
+                      <span className={`${styles.price__unit}`}>{el.unit}</span>
+                    </div>
                   ) : (
                     <Skeleton style={{width: 100000, maxWidth: '45px'}} height={30} />
                   )}
@@ -760,7 +761,10 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
       <div className={`${styles.card__slider__box}`}>
         <CardSlider
-          imagesCustom={cardMiniData?.media?.map((el) => el.url)}
+          imagesCustom={cardMiniData?.media?.map((el) => {
+            // console.log('el url', el.url)
+            return el.url
+          })}
           isLoading={isReallyLoading}
           extraClass={styles.card__slider__box__extra}
         />

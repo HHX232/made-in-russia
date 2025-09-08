@@ -59,6 +59,7 @@ interface DiscountPriceRange {
   unit: string // Единица измерения (в данном случае кубометры)
 }
 interface ICardFull {
+  approveStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
   packagingOptions?: {
     name: string
     price: number | string

@@ -12,6 +12,7 @@ import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useActions} from '@/hooks/useActions'
 import {Link} from '@/i18n/navigation'
 import {useTranslations} from 'next-intl'
+import {getAccessToken} from '@/services/auth/auth.helper'
 
 interface CardsCatalogProps {
   initialProducts?: Product[]
@@ -20,6 +21,7 @@ interface CardsCatalogProps {
   canCreateNewProduct?: boolean
   onPreventCardClick?: (item: Product) => void
   extraButtonsBoxClass?: string
+  isForAdmin?: boolean
 }
 interface PageParams {
   page: number
@@ -37,7 +39,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   specialRoute = undefined,
   canCreateNewProduct = false,
   onPreventCardClick,
-  extraButtonsBoxClass
+  extraButtonsBoxClass,
+  isForAdmin = false
 }) => {
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
@@ -50,7 +53,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const lastProductRef = useRef<HTMLDivElement | null>(null)
   const [numericFilters, setNumericFilters] = useState<number[]>([])
   const {addToLatestViews} = useActions()
-
+  const accessToken = getAccessToken()
   const [pageParams, setPageParams] = useState<PageParams>({
     page: 0, // Всегда начинаем с 0
     size: 10,
@@ -139,7 +142,13 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     })
   }, [numericFilters, priceRange, delivery])
 
-  const {data: pageResponse, isLoading, isError, isFetching, resData} = useProducts(pageParams, specialRoute)
+  const {
+    data: pageResponse,
+    isLoading,
+    isError,
+    isFetching,
+    resData
+  } = useProducts(pageParams, specialRoute, accessToken || '')
 
   const showSkeleton = (isLoading || (isFetching && isFiltersChanged)) && (resData || initialProducts).length === 0
 
@@ -186,7 +195,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   )
 
   if (isError) {
-    return <div style={{marginBottom: '50px'}}>Еще не опубликовали первый товар</div>
+    return <div style={{marginBottom: '50px'}}>Not found</div>
   }
 
   return (
@@ -210,6 +219,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
             return (
               <div style={{height: '100%', width: '100%'}} key={uniqueKey} ref={lastElementRef}>
                 <Card
+                  isForAdmin={isForAdmin}
+                  approveStatus={product?.approveStatus}
                   extraButtonsBoxClass={extraButtonsBoxClass}
                   onPreventCardClick={onPreventCardClick}
                   canUpdateProduct={canCreateNewProduct}
@@ -231,6 +242,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
           } else {
             return (
               <Card
+                isForAdmin={isForAdmin}
+                approveStatus={product?.approveStatus}
                 extraButtonsBoxClass={extraButtonsBoxClass}
                 onPreventCardClick={onPreventCardClick}
                 canUpdateProduct={canCreateNewProduct}

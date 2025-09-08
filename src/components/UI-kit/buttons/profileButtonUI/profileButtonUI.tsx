@@ -8,6 +8,7 @@ import {useNProgress} from '@/hooks/useProgress'
 import {useTypedSelector} from '@/hooks/useTypedSelector' // ваш кастомный хук
 import {useUserCache, useUserQuery} from '@/hooks/useUserApi'
 import {getAccessToken} from '@/services/auth/auth.helper'
+import {useActions} from '@/hooks/useActions'
 
 const ava = '/avatars/avatar-v.svg'
 const ava1 = '/avatars/avatar-v-1.svg'
@@ -30,6 +31,7 @@ interface IProfileProps {
 const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   // Используем ваш кастомный selector hook
   const {user, isAuthenticated} = useTypedSelector((state) => state.user)
+  const {clearUser} = useActions()
   const {removeUserFromCache} = useUserCache()
   const accessToken = getAccessToken()
   // React Query hook для загрузки данных пользователя
@@ -48,6 +50,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
     setRandomAvatar(avatarsArray[0])
     if (!accessToken) {
       removeUserFromCache()
+      clearUser()
     }
   }, [accessToken, removeUserFromCache])
 

@@ -37,6 +37,7 @@ export interface ProductPageResponse extends PageResponse<Product> {
 
 // Старый интерфейс (остается без изменений)
 export interface Product {
+  approveStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
   id: number
   deliveryMethod: DeliveryMethod
   deliveryMethods: DeliveryMethod[]

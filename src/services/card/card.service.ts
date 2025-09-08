@@ -1,14 +1,19 @@
 import {axiosClassic} from '@/api/api.interceptor'
 import ICardFull, {PaginatedResponse, Review} from './card.types'
 import {Product} from '../products/product.types'
+import {getAccessTokenServer} from '../auth/auth.helper'
 const cardService = {
   async getCardById(id: number | string, currentLang?: string, hasTranslations?: boolean) {
+    const accessToken = await getAccessTokenServer()
+    console.log('accessToken on server', accessToken)
+
     try {
       const res = await axiosClassic.get<Product>(
         `/products-summary/${id}${hasTranslations ? '?hasTranslations=true' : ''}`,
         {
           headers: {
-            'Accept-Language': currentLang || 'en'
+            'Accept-Language': currentLang || 'en',
+            Authorization: `Bearer ${accessToken}`
           }
         }
       )
@@ -28,13 +33,16 @@ const cardService = {
     }
   },
   async getFullCardById(id: string | number, currentLang?: string, hasTranslations?: boolean) {
+    const accessToken = await getAccessTokenServer()
+    console.log('accessToken on server', accessToken)
     try {
       const res = await axiosClassic.get<ICardFull>(
         `/products/${id}${hasTranslations ? '?hasTranslations=true' : ''}`,
         {
           headers: {
             'Accept-Language': currentLang || 'en',
-            'x-locale': currentLang || 'en'
+            'x-locale': currentLang || 'en',
+            Authorization: `Bearer ${accessToken}`
           }
         }
       )
@@ -54,12 +62,15 @@ const cardService = {
     }
   },
   async getCommentsByCardId(id: string | number, page: number = 1, size: number = 10, currentLang?: string) {
+    const accessToken = await getAccessTokenServer()
+    console.log('accessToken on server', accessToken)
     try {
       const res = await axiosClassic.get<PaginatedResponse<Review>>(
         `/products/${id}/reviews?page=${page}&size=${size}`,
         {
           headers: {
-            'Accept-Language': currentLang || 'en'
+            'Accept-Language': currentLang || 'en',
+            Authorization: `Bearer ${accessToken}`
           }
         }
       )

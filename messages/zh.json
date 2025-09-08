@@ -95,7 +95,11 @@
   "delivery": "配送",
   "about-us": "关于我们",
   "help": "帮助", 
-  "contacts": "联系方式"
+  "contacts": "联系方式",
+  "success":"成功！",
+  "successDel":"商品已成功删除",
+  "error":"错误！",
+  "errorDel":"删除商品时出错"
   },
   "AboutUsPage": {
     "title": "关于我们",
@@ -416,7 +420,16 @@
     "defaultTitle": "优惠商品",
     "cardImageAlt": "商品图片",
     "saw": "查看", 
-    "edit": "编辑"
+    "edit": "编辑",
+    "success": "成功！",
+    "successDel": "商品已成功删除",
+    "error": "错误！",
+    "errorDel": "删除商品时出错",
+     "successUpdateStatus":"产品状态已更新为",
+   "errorUpdateStatus":"更新状态时出错",
+   "PENDING": "审核中",
+   "APPROVED": "已批准",
+   "REJECTED": "已拒绝"
 },
 "Admin": {
     "Ads": {

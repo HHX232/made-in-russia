@@ -23,7 +23,11 @@ export interface ProductQueryParams {
 // 🔑 Общий ключ для всех запросов продуктов
 export const PRODUCTS_QUERY_KEY = 'products'
 
-export const useProducts = (params: ProductQueryParams = {}, specialRoute?: string | undefined) => {
+export const useProducts = (
+  params: ProductQueryParams = {},
+  specialRoute?: string | undefined,
+  accessToken?: string
+) => {
   const currentLang = useCurrentLanguage()
   const [resData, setResData] = useState<Product[]>([])
   const prevParamsRef = useRef<string>('')
@@ -41,12 +45,13 @@ export const useProducts = (params: ProductQueryParams = {}, specialRoute?: stri
     }
   }, [currentParamsKey])
 
-  const queryKey = [PRODUCTS_QUERY_KEY, params, specialRoute]
+  // ! обновил ключ с params -> currentParamsKey
+  const queryKey = [PRODUCTS_QUERY_KEY, currentParamsKey, specialRoute]
 
   const queryResult = useQuery({
     queryKey,
     queryFn: async () => {
-      const res = await ProductService.getAll(params, specialRoute, currentLang)
+      const res = await ProductService.getAll(params, specialRoute, currentLang, accessToken)
 
       setResData((prev) => {
         if (!params.page || params.page === 0) {

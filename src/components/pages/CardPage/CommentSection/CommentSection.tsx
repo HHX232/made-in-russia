@@ -46,7 +46,7 @@ export default function CommentsSection({cardId}: CommentsSectionProps) {
         setCardDataNew(data as ICardFull)
 
         if (!cardDataNew) {
-          console.log('not found card data')
+          // console.log('not found card data')
         }
       } catch (error) {
         console.error('Error fetching card data:', error)

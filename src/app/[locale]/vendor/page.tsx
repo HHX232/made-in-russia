@@ -1,4 +1,5 @@
 // app/vendor/page.tsx
+import {getAbsoluteLanguage} from '@/api/api.helper'
 import VendorPageClient from '@/components/pages/VendorPage/VendorPageClient/VendorPageClient'
 import {getQueryClient} from '@/lib/get-query-client'
 import {fetchUserDataOnServer} from '@/lib/server/userDataFetcher'
@@ -6,6 +7,7 @@ import {HydrationBoundary, dehydrate} from '@tanstack/react-query'
 
 export default async function VendorPage() {
   // Получаем данные пользователя на сервере
+  const lang = await getAbsoluteLanguage()
   const {user, phoneNumberCode, error} = await fetchUserDataOnServer()
 
   // Создаем клиент для предзаполнения кэша
@@ -13,7 +15,7 @@ export default async function VendorPage() {
 
   // Если есть данные пользователя, предзаполняем кэш
   if (user) {
-    queryClient.setQueryData(['user'], user)
+    queryClient.setQueryData(['user', lang], user)
   }
 
   // Если ошибка или нет данных, можно вернуть страницу с ошибкой или редирект

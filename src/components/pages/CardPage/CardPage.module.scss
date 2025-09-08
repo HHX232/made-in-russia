@@ -438,8 +438,17 @@
 }
 
 .price__list__title {
+  display: flex;
+  flex-wrap: wrap;
   font-size: 16px;
   font-weight: 500;
+  gap: 4px;
+}
+
+.price__range {
+  white-space: nowrap;
+
+  /* диапазон не переносится */
 }
 
 .price__list__value__start {
@@ -474,7 +483,9 @@
 
 .price__unit {
   height: fit-content;
+  flex-shrink: 0;
   margin-top: auto;
+  white-space: nowrap;
 }
 
 .price__currency__first {

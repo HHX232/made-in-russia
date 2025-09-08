@@ -11,6 +11,7 @@ const AdminCards = () => {
         <SearchInputUI />
       </div>
       <CardsCatalog
+        isForAdmin={true}
         extraButtonsBoxClass={styles.extraButtonsBoxClass}
         canCreateNewProduct
         initialProducts={[]}

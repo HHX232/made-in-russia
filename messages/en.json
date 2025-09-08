@@ -407,7 +407,16 @@
     "defaultTitle": "Best Deal",
     "cardImageAlt": "Product Image", 
     "saw": "View",
-    "edit": "Edit"
+    "edit": "Edit",
+    "success":"Success!",
+    "successDel":"Product successfully deleted",
+    "error":"Error!",
+    "errorDel":"Error deleting product",
+    "successUpdateStatus":"Product status changed to",
+   "errorUpdateStatus":"Error updating product status",
+   "PENDING": "Under Moderation",
+   "APPROVED": "Approved",
+   "REJECTED": "Rejected"
 },
 "Admin": {
     "Ads": {

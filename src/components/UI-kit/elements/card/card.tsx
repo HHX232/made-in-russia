@@ -1,6 +1,6 @@
 'use client'
 import {DeliveryMethod, Product} from '@/services/products/product.types'
-import {memo, useId} from 'react'
+import {memo, useId, useState} from 'react'
 import Image, {StaticImageData} from 'next/image'
 import styles from './card.module.scss'
 import {createPriceWithDot} from '@/utils/createPriceWithDot'
@@ -14,11 +14,16 @@ import {Link} from '@/i18n/navigation'
 import {useTranslations} from 'next-intl'
 import instance from '@/api/api.interceptor'
 import {toast} from 'sonner'
+import DropList from '../../Texts/DropList/DropList'
+import {useNProgress} from '@/hooks/useProgress'
 
 const t1 = '/tree.jpg'
 const t2 = '/tree2.jpg'
 
+type ApproveStatus = 'APPROVED' | 'PENDING' | 'REJECTED'
+
 export interface ICardProps {
+  approveStatus?: ApproveStatus
   id: number
   extraButtonsBoxClass?: string
   deliveryMethod: Omit<DeliveryMethod, 'creationDate' | 'lastModificationDate'>
@@ -34,6 +39,7 @@ export interface ICardProps {
   onPreventCardClick?: (item: Product) => void
   isShowButton?: boolean
   specialButtonText?: string
+  isForAdmin?: boolean
 }
 
 const Card = memo<ICardProps>(
@@ -52,13 +58,78 @@ const Card = memo<ICardProps>(
     canUpdateProduct = false,
     onPreventCardClick,
     specialButtonText,
-    isShowButton = true
+    isShowButton = true,
+    approveStatus,
+    isForAdmin = false
   }) => {
     const idFromHook = useId()
     const {toggleToFavorites} = useActions()
     const {productInFavorites} = useTypedSelector((state) => state.favorites)
     const t = useTranslations('CardComponent')
-    // console.log(fullProduct)
+    const {hide} = useNProgress()
+    const [status, setStatus] = useState(approveStatus)
+    // Функция для смены статуса продукта
+    const changeProductStatus = async (productId: number, newStatus: ApproveStatus) => {
+      const loadingToast = toast.loading('Обновление статуса...')
+
+      try {
+        const res = await instance.post(`/moderation/product/${productId}`, {
+          status: newStatus
+        })
+
+        console.log(res)
+        toast.dismiss(loadingToast)
+
+        toast.success(
+          <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('success')}</strong>
+            {/* Статус продукта изменен на */}
+            <span>
+              {t('successUpdateStatus')}
+              {newStatus}
+            </span>
+          </div>,
+          {
+            style: {
+              background: '#2E7D32'
+            }
+          }
+        )
+      } catch (e) {
+        console.log(e)
+        toast.dismiss(loadingToast)
+
+        toast.error(
+          <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('error')}</strong>
+            {/* Ошибка при изменении статуса */}
+            <span>{t('errorUpdateStatus')}</span>
+          </div>,
+          {
+            style: {
+              background: '#AC2525'
+            }
+          }
+        )
+      }
+    }
+
+    // Функции для конкретных статусов
+    const approveProduct = (productId: number) => {
+      changeProductStatus(productId, 'APPROVED')
+      setStatus('APPROVED')
+    }
+
+    const rejectProduct = (productId: number) => {
+      changeProductStatus(productId, 'REJECTED')
+      setStatus('REJECTED')
+    }
+
+    const setPendingProduct = (productId: number) => {
+      changeProductStatus(productId, 'PENDING')
+      setStatus('PENDING')
+    }
+
     const generateStructuredData = () => {
       const baseUrl = typeof window !== 'undefined' ? process.env.NEXT_PUBLIC_SITE_URL : 'https://exporteru.com'
       const hasDiscount = discount !== 0 && price !== discountedPrice && discountedPrice !== null
@@ -117,8 +188,8 @@ const Card = memo<ICardProps>(
         toast.dismiss(loadingToast)
         toast.success(
           <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Успешно!</strong>
-            <span>Товар успешно удален</span>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('success')}</strong>
+            <span>{t('successDel')}</span>
           </div>,
           {
             style: {
@@ -131,8 +202,8 @@ const Card = memo<ICardProps>(
         toast.dismiss(loadingToast)
         toast.error(
           <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>Ошибка!</strong>
-            <span>Ошибка удаления товара</span>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('error')}</strong>
+            <span>{t('errorDel')}</span>
           </div>,
           {
             style: {
@@ -142,6 +213,7 @@ const Card = memo<ICardProps>(
         )
       }
     }
+
     if (isLoading) {
       return (
         <div className={`${styles.card__box}`}>
@@ -191,7 +263,7 @@ const Card = memo<ICardProps>(
               onPreventCardClick(fullProduct)
             }}
             key={id + idFromHook}
-            className={`${styles.card__box}`}
+            className={`${styles.card__box} ${status === 'PENDING' ? styles.pending : ''}`}
             itemScope
             itemType='https://schema.org/Product'
           >
@@ -226,6 +298,33 @@ const Card = memo<ICardProps>(
                     toggleToFavorites(fullProduct as Product)
                   }}
                 />
+                {!isForAdmin && status === 'PENDING' && <p className={styles.approveStatus__text}>{t(status)}</p>}
+                {isForAdmin && (
+                  <div
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      hide()
+                    }}
+                    className={`${styles.approveStatus__drop} ${status === 'APPROVED' ? styles.approve__text : status === 'REJECTED' ? styles.reject__text : status === 'PENDING' ? styles.pending__text : ''}`}
+                  >
+                    <DropList
+                      color='#ffffff'
+                      title={t(`${status || 'PENDING'}`) || t('PENDING')}
+                      items={[
+                        <div style={{color: '#000'}} onClick={() => approveProduct(id)} key='APPROVED'>
+                          {t('APPROVED')}
+                        </div>,
+                        <div style={{color: '#000'}} onClick={() => rejectProduct(id)} key='REJECTED'>
+                          {t('REJECTED')}
+                        </div>,
+                        <div style={{color: '#000'}} onClick={() => setPendingProduct(id)} key='PENDING'>
+                          {t('PENDING')}
+                        </div>
+                      ]}
+                    />
+                  </div>
+                )}
               </div>
 
               <p id='cy-card-title' className={`${styles.card__title} fontInstrument`} itemProp='name'>
@@ -305,7 +404,7 @@ const Card = memo<ICardProps>(
             onClick={(e) => onClickFunction?.(e)}
             href={`/card/${id}`}
             key={id + idFromHook}
-            className={`${styles.card__box}`}
+            className={`${styles.card__box} ${status === 'PENDING' ? styles.pending : ''}`}
             itemScope
             itemType='https://schema.org/Product'
           >
@@ -331,6 +430,33 @@ const Card = memo<ICardProps>(
                     toggleToFavorites(fullProduct as Product)
                   }}
                 />
+                {!isForAdmin && status === 'PENDING' && <p className={styles.approveStatus__text}>{t(status)}</p>}
+                {isForAdmin && (
+                  <div
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      hide()
+                    }}
+                    className={`${styles.approveStatus__drop} ${status === 'APPROVED' ? styles.approve__text : status === 'REJECTED' ? styles.reject__text : status === 'PENDING' ? styles.pending__text : ''}`}
+                  >
+                    <DropList
+                      color='#ffffff'
+                      title={t(`${status || 'PENDING'}`) || t('PENDING')}
+                      items={[
+                        <div style={{color: '#000'}} onClick={() => approveProduct(id)} key='APPROVED'>
+                          {t('APPROVED')}
+                        </div>,
+                        <div style={{color: '#000'}} onClick={() => rejectProduct(id)} key='REJECTED'>
+                          {t('REJECTED')}
+                        </div>,
+                        <div style={{color: '#000'}} onClick={() => setPendingProduct(id)} key='PENDING'>
+                          {t('PENDING')}
+                        </div>
+                      ]}
+                    />
+                  </div>
+                )}
               </div>
 
               <p id='cy-card-title' className={`${styles.card__title} fontInstrument`} itemProp='name'>
