@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
       'TEMP_URL',
       'https://lh3.googleusercontent.com',
       'https://6e9e2c8a-521e-4620-9cf1-ef51353051d3.srvstatic.uz',
+      '6e9e2c8a-521e-4620-9cf1-ef51353051d3.srvstatic.uz',
       '6e9e2c8a-521e-4620-9cf1-ef51353051d3.srvstatic.uz'
     ]
   }

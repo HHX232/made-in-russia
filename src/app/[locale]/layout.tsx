@@ -10,6 +10,7 @@ import '@/fonts/fonts.scss'
 import '@/scss/_variables.scss'
 import '@/scss/main.scss'
 import 'keen-slider/keen-slider.min.css'
+// import GoogleRecaptchaProviderComponent from '@/providers/GoogleRecaptchaProviderComponent'
 
 export default async function RootLayoutLanguage({
   children,
@@ -32,7 +33,9 @@ export default async function RootLayoutLanguage({
     <DefaultProvider>
       <NextIntlClientProvider messages={messages}>
         {/* <MessageProvider initialMessages={messages}> */}
+        {/* <GoogleRecaptchaProviderComponent> */}
         {children}
+        {/* </GoogleRecaptchaProviderComponent> */}
         <ClientStyleLoader />
         {/* </MessageProvider> */}
       </NextIntlClientProvider>

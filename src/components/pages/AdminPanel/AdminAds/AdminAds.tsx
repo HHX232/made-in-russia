@@ -614,7 +614,7 @@ const AdminAds = () => {
                     }
                   }}
                   minDate={new Date().toISOString().split('T')[0]} // Не раньше сегодня
-                  placeholder='Выберите дату истечения (необязательно)'
+                  placeholder='Выберите дату истечения'
                 />
                 {errors.expiresAt && <span className={styles.error__text}>{errors.expiresAt}</span>}
               </div>

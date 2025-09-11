@@ -1,10 +1,12 @@
-import React from 'react'
+import React, {MouseEvent} from 'react'
 import Image from 'next/image'
 import styles from '../RegisterPage.module.scss'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import {useTranslations} from 'next-intl'
+import {useGoogleReCaptcha} from 'react-google-recaptcha-v3'
+import axios from 'axios'
 
 const belarusSvg = '/countries/belarus.svg'
 const kazakhstanSvg = '/countries/kazakhstan.svg'
@@ -119,6 +121,8 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
   onSubmit
 }) => {
   const t = useTranslations('RegisterUserPage')
+  const {executeRecaptcha} = useGoogleReCaptcha()
+  // const [isCanSubmit, setIsCanSubmit] = useState(false)
   const regions = [
     {imageSrc: belarusSvg, title: t('Belarus'), altName: 'Belarus'},
     {imageSrc: kazakhstanSvg, title: t('Kazakhstan'), altName: 'Kazakhstan'},
@@ -129,6 +133,24 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
   const handleRegionSelect = (region: RegionType) => {
     setSelectedRegion(region)
     setListIsOpen(false)
+  }
+  const handleSubmitFirstStep = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    if (!executeRecaptcha) return
+    const gRecaptchaToken = await executeRecaptcha('inquirySubmit')
+
+    const responseRec = await axios({
+      method: 'post',
+      url: '/api/recaptchaSubmit',
+      data: {gRecaptchaToken},
+      headers: {Accept: 'application/json, text/plain, */*', 'Content-Type': 'application/json'}
+    })
+
+    if (responseRec.data?.success) {
+      onSubmit(e)
+    } else {
+      console.log('error in recaptcha response')
+    }
   }
 
   return (
@@ -176,7 +198,16 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
         />
       </div>
 
-      <button onClick={onSubmit} className={`${styles.form__button}`}>
+      <button
+        onClick={(e) => {
+          if (!executeRecaptcha) {
+            console.log('executeRecaptcha is not defined')
+            return
+          }
+          handleSubmitFirstStep(e)
+        }}
+        className={`${styles.form__button}`}
+      >
         {t('next')}
       </button>
     </>

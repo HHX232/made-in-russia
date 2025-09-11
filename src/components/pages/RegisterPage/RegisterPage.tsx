@@ -5,7 +5,6 @@ import MinimalHeader from '@/components/MainComponents/MinimalHeader/MinimalHead
 import {useEffect, useState} from 'react'
 import {TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import {useActions} from '@/hooks/useActions'
-import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {Link} from '@/i18n/navigation'
 import {axiosClassic} from '@/api/api.interceptor'
 import {saveTokenStorage} from '@/services/auth/auth.helper'
@@ -21,7 +20,7 @@ import {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
-const decorImage = '/login__image.jpg'
+// const decorImage = '/login__image.jpg'
 const belarusSvg = '/countries/belarus.svg'
 const kazakhstanSvg = '/countries/kazakhstan.svg'
 const chinaSvg = '/countries/china.svg'
@@ -97,9 +96,27 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     // Сохраняем токены если они пришли в URL
     if (accessToken && refreshToken) {
       saveTokenStorage({accessToken, refreshToken})
-      router.push('/') // Перенаправляем на главную после успешной авторизации
+      router.replace('/') // Перенаправляем на главную после успешной авторизации
       return
     }
+
+    const fetchToTg = async () => {
+      try {
+        console.log('start fetch to tg')
+        const res = await axiosClassic.post('oauth2/telegram/callback', {
+          id: telegramId || '',
+          lastName: lastName || '',
+          firstName: firstName || '',
+          photoUrl: pictureFromUrl || '',
+          authDate: '',
+          hash: ''
+        })
+        toast.success('success in fetch auth telegram')
+      } catch {
+        toast.error('error in fetch auth telegram')
+      }
+    }
+    fetchToTg()
 
     if (emailFromUrl) {
       const decodedEmail = decodeURIComponent(emailFromUrl)
@@ -377,7 +394,12 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
         <div className={`${styles.login__inner}`}>
           <div className={styles.decor__image}></div>
 
-          <form className={`${styles.login__form__box}`}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+            }}
+            className={`${styles.login__form__box}`}
+          >
             {/* Показываем выбор типа пользователя если тип не выбран */}
             {!userTypeSelected && <UserTypeSelection />}
 

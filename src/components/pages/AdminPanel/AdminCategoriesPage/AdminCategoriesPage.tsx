@@ -234,13 +234,13 @@ const AdminCategoriesPage: FC = () => {
           <div className={styles.form__field}>
             <label className={styles.form__label}>OKVED коды (через точку)</label>
             <TextInputUI
-              currentValue={(editingCategory.okvedCategories || []).join('. ')}
-              placeholder='Введите OKVED коды через точку'
+              currentValue={(editingCategory.okvedCategories || []).join(', ')}
+              placeholder='Введите OKVED коды через запятую'
               onSetValue={(value) =>
                 setEditingCategory({
                   ...editingCategory,
                   okvedCategories: value
-                    .split('.')
+                    .split(',')
                     .map((s) => s.trim())
                     .filter(Boolean)
                 })

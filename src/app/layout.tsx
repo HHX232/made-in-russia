@@ -9,6 +9,7 @@ import NProgressProvider from '@/components/UI-kit/loaders/nprogress-provider'
 import ProductService from '@/services/products/product.service'
 import {NextIntlClientProvider} from 'next-intl'
 import {cookies, headers} from 'next/headers'
+// import GoogleRecaptchaProviderComponent from '@/providers/GoogleRecaptchaProviderComponent'
 // import {NextIntlClientProvider} from 'next-intl'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
@@ -22,10 +23,13 @@ export default async function RootLayout({children}: {children: React.ReactNode}
 
           <DefaultProvider>
             <NextIntlClientProvider>
+              {/* <GoogleRecaptchaProviderComponent> */}
               {children}
+              {/* </GoogleRecaptchaProviderComponent> */}
               <Toaster theme={'dark'} position={'top-right'} duration={3500} />
             </NextIntlClientProvider>
           </DefaultProvider>
+
           <div id='modal_portal'></div>
         </body>
       </html>

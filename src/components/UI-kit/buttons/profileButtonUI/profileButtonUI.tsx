@@ -9,6 +9,8 @@ import {useTypedSelector} from '@/hooks/useTypedSelector' // ваш кастом
 import {useUserCache, useUserQuery} from '@/hooks/useUserApi'
 import {getAccessToken} from '@/services/auth/auth.helper'
 import {useActions} from '@/hooks/useActions'
+import {useSearchParams} from 'next/navigation'
+import {saveTokenStorage} from '@/middleware'
 
 const ava = '/avatars/avatar-v.svg'
 const ava1 = '/avatars/avatar-v-1.svg'
@@ -36,8 +38,8 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   const accessToken = getAccessToken()
   // React Query hook для загрузки данных пользователя
   const {isLoading, error, isError} = useUserQuery()
+  const searchParams = useSearchParams()
 
-  // Local state
   const [randomAvatar, setRandomAvatar] = useState<string>(ava)
 
   // Hooks
@@ -45,6 +47,13 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   const t = useTranslations('HomePage')
   const {start} = useNProgress()
 
+  useEffect(() => {
+    const accessFromQuery = searchParams.get('accessToken')
+    const refreshFromQuery = searchParams.get('refreshToken')
+    if (accessFromQuery && refreshFromQuery) {
+      saveTokenStorage({accessToken: accessFromQuery, refreshToken: refreshFromQuery})
+    }
+  }, [searchParams])
   // Инициализация случайного аватара
   useEffect(() => {
     setRandomAvatar(avatarsArray[0])

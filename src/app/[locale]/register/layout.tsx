@@ -1,4 +1,5 @@
 import {NO_INDEX_PAGE} from '@/constants/seo.constants'
+import GoogleRecaptchaProviderComponent from '@/providers/GoogleRecaptchaProviderComponent'
 import {Metadata} from 'next'
 import {ReactNode} from 'react'
 
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 }
 
 export default function RegisterLayout({children}: {children: ReactNode}) {
-  return <>{children}</>
+  return <GoogleRecaptchaProviderComponent>{children}</GoogleRecaptchaProviderComponent>
 }
