@@ -53,7 +53,7 @@ const TelegramLoginWidget: React.FC<TelegramLoginWidgetProps> = ({
     const script = document.createElement('script')
     script.src = 'https://telegram.org/js/telegram-widget.js?22'
     script.async = true
-    script.setAttribute('data-telegram-login', 'exporterubot')
+    script.setAttribute('data-telegram-login', `${process.env.TELEGRAM_BOT_NAME}`)
     script.setAttribute('data-size', buttonSize)
     script.setAttribute('data-onauth', `${callbackName}(user)`)
     if (requestAccess) {
