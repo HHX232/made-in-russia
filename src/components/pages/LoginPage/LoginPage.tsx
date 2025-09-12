@@ -160,21 +160,21 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
     } catch (error: any) {
       console.error('Telegram auth error:', error)
 
-      if (error.response?.status === 404) {
-        // Пользователь не найден, перенаправляем на регистрацию с данными Telegram
-        const queryParams = new URLSearchParams({
-          email: user.email || '',
-          picture: user.photo_url || '',
-          telegram_id: user.id?.toString() || '',
-          username: user.username || '',
-          first_name: user.first_name || '',
-          last_name: user.last_name || ''
-        })
+      // if (error.response?.status === 404) {
+      // Пользователь не найден, перенаправляем на регистрацию с данными Telegram
+      const queryParams = new URLSearchParams({
+        email: user.email || '',
+        picture: user.photo_url || '',
+        telegram_id: user.id?.toString() || '',
+        username: user.username || '',
+        first_name: user.first_name || '',
+        last_name: user.last_name || ''
+      })
 
-        router.push(`/register?${queryParams.toString()}`)
-      } else {
-        toast.error(t('autorithationErrorTelegram'))
-      }
+      router.push(`/register?${queryParams.toString()}`)
+      // } else {
+      // toast.error(t('autorithationErrorTelegram'))
+      // }
     }
   }
 
