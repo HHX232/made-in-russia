@@ -44,6 +44,10 @@
    "loading":"Загрузка..."
   },
   "RegisterUserPage":{
+    "successTitleTG":"Успех!",
+    "successBodyTG":"Бот написал вам в телеграмме! Просмотрите, пожалуйста",
+    "errorTitleTG":"Ошибка телеграмма",
+    "errorPrefixTG":"Бот не смог написать вам",
    "Belarus":"Беларусь",
    "Kazakhstan":"Казахстан",
    "chooseUserType":"Выберите тип аккаунта",

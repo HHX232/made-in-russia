@@ -37,12 +37,10 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
   const t = useTranslations('LoginPage')
   const currentLang = useCurrentLanguage()
 
-  // Обработка токенов из URL
   useEffect(() => {
     const accessToken = searchParams?.get('accessToken')
     const refreshToken = searchParams?.get('refreshToken')
 
-    // Сохраняем токены если они пришли в URL
     if (accessToken && refreshToken) {
       saveTokenStorage({accessToken, refreshToken})
       router.push('/') // Перенаправляем на главную после успешной авторизации

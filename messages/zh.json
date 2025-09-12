@@ -44,6 +44,10 @@
     "loading":"加载中..."
 },
 "RegisterUserPage": {
+  "successTitleTG": "成功！",
+  "successBodyTG": "机器人已在Telegram上给您发送了消息！请查看。",
+  "errorTitleTG": "Telegram错误",
+  "errorPrefixTG": "机器人无法向您发送消息",
   "Belarus": "白俄罗斯",
   "Kazakhstan": "哈萨克斯坦",
   "China": "中国",

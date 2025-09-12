@@ -111,9 +111,25 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
           authDate: '',
           hash: ''
         })
-        toast.success('success in fetch auth telegram')
+        toast.success(
+          <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successTitleTG')}</strong>
+            <span>{t('successBodyTG')}</span>
+          </div>,
+          {
+            style: {background: '#2E7D32'}
+          }
+        )
       } catch {
-        toast.error('error in fetch auth telegram')
+        toast.error(
+          <div style={{lineHeight: 1.5}}>
+            <strong style={{display: 'block', marginBottom: 4}}>{t('errorTitleTG')}</strong>
+            <span>{t('errorPrefixTG')}</span>
+          </div>,
+          {
+            style: {background: '#AC2525'}
+          }
+        )
       }
     }
     fetchToTg()

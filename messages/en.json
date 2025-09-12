@@ -44,6 +44,10 @@
     "loading":"Loading..."
 },
 "RegisterUserPage": {
+  "successTitleTG": "Success!",
+  "successBodyTG": "The bot has written to you on Telegram! Please check your messages.",
+  "errorTitleTG": "Telegram Error",
+  "errorPrefixTG": "The bot couldn't send you a message",
   "Belarus": "Belarus",
   "Kazakhstan": "Kazakhstan",
   "chooseUserType": "Choose account type",

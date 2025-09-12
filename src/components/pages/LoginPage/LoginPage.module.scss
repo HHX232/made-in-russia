@@ -295,6 +295,10 @@
   width: 100%;
   flex-direction: column;
   gap: 40px;
+
+  @media (max-width: 560px) {
+    gap: 15px;
+  }
 }
 
 .apps__text {
@@ -344,6 +348,7 @@
   }
 
   .apps__images {
-    justify-content: space-between;
+    justify-content: center;
+    gap: 20px;
   }
 }
