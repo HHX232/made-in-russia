@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import {useEffect, useRef} from 'react'
-import {useRouter} from 'next/navigation'
 
 interface TelegramUser {
   id: number
@@ -34,7 +33,6 @@ const TelegramLoginWidget: React.FC<TelegramLoginWidgetProps> = ({
   lang = 'en'
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const router = useRouter()
 
   useEffect(() => {
     // Создаем уникальное имя для глобальной функции
@@ -42,47 +40,7 @@ const TelegramLoginWidget: React.FC<TelegramLoginWidgetProps> = ({
 
     // Создаем глобальную функцию для обратного вызова
     ;(window as any)[callbackName] = (user: TelegramUser) => {
-      console.log('Telegram user data received:', user)
-      console.log('User ID:', user.id)
-      console.log('First Name:', user.first_name)
-      console.log('Last Name:', user.last_name)
-      console.log('Username:', user.username)
-      console.log('Photo URL:', user.photo_url)
-      console.log('Auth Date:', user.auth_date)
-      console.log('Hash:', user.hash)
-
-      // ДОПОЛНИТЕЛЬНО помещаем данные в searchParams
-      const currentParams = new URLSearchParams(window.location.search)
-
-      // Добавляем данные Telegram в параметры
-      currentParams.set('telegram_id', user.id.toString())
-      currentParams.set('first_name', user.first_name)
-
-      if (user.last_name) {
-        currentParams.set('last_name', user.last_name)
-      }
-
-      if (user.username) {
-        currentParams.set('username', user.username)
-      }
-
-      if (user.photo_url) {
-        currentParams.set('picture', user.photo_url)
-      }
-
-      // Можно также добавить дополнительные параметры
-      currentParams.set('auth_date', user.auth_date.toString())
-      currentParams.set('hash', user.hash)
-
-      console.log('Adding query parameters:', currentParams.toString())
-
-      // Обновляем URL с новыми параметрами
-      const newUrl = `${window.location.pathname}?${currentParams.toString()}`
-      console.log('New URL will be:', newUrl)
-
-      router.push(newUrl)
-
-      // Вызываем переданную функцию onAuth
+      console.log('Telegram user data:', user)
       onAuth(user)
     }
 
@@ -91,20 +49,20 @@ const TelegramLoginWidget: React.FC<TelegramLoginWidgetProps> = ({
       containerRef.current.innerHTML = ''
     }
 
-    // Создаем скрипт для виджета Telegram по новому образцу
+    // Создаем скрипт для виджета Telegram
     const script = document.createElement('script')
     script.src = 'https://telegram.org/js/telegram-widget.js?22'
     script.async = true
     script.setAttribute('data-telegram-login', 'exporterubot')
     script.setAttribute('data-size', buttonSize)
     script.setAttribute('data-onauth', `${callbackName}(user)`)
-
     if (requestAccess) {
       script.setAttribute('data-request-access', requestAccess)
     }
 
     // Добавляем скрипт в контейнер
     if (containerRef.current) {
+      script.setAttribute('style', 'cursor: pointer !important')
       containerRef.current.appendChild(script)
     }
 
@@ -115,7 +73,7 @@ const TelegramLoginWidget: React.FC<TelegramLoginWidgetProps> = ({
         delete (window as any)[callbackName]
       }
     }
-  }, [onAuth, buttonSize, requestAccess, router])
+  }, [onAuth, buttonSize, requestAccess])
 
   return <div ref={containerRef} className={className} />
 }
