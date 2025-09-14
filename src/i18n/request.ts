@@ -3,22 +3,23 @@ import {hasLocale} from 'next-intl'
 import {routing} from './routing'
 import {axiosClassic} from '@/api/api.interceptor'
 import {headers} from 'next/headers'
+import {getCurrentLocale} from '@/lib/locale-detection'
 
 export default getRequestConfig(async ({requestLocale}) => {
   const headersList = await headers()
 
   // Сначала пытаемся получить локаль из заголовков (установленных middleware)
-  let locale = headersList.get('x-locale') || headersList.get('x-next-intl-locale')
+  // let locale = headersList.get('x-locale') || headersList.get('x-next-intl-locale')
+  let locale = await getCurrentLocale()
 
   // Если не найдено в заголовках, пытаемся извлечь из referer
   if (!locale) {
     const referer = headersList.get('referer')
     if (referer) {
-      const match = referer.match(/\/([a-z]{2})\//)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (match && routing.locales.includes(match[1] as any)) {
-        locale = match[1]
-      }
+      // const match = referer.match(/\/([a-z]{2})\//)
+      // if (match && routing.locales.includes(match[1] as any)) {
+      //   locale = match[1]
+      // }
     }
   }
 

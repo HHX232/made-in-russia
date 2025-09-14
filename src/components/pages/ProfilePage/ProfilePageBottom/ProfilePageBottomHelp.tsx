@@ -1,6 +1,6 @@
 import {FC, useEffect, useState} from 'react'
 import styles from './ProfilePageBottom.module.scss'
-// import {Link} from '@/i18n/navigation'
+// import Link from 'next/link'
 import Image from 'next/image'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import Accordion from '@/components/UI-kit/Texts/Accordions/Accordions'

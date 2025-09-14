@@ -44,6 +44,8 @@
     "loading":"加载中..."
 },
 "RegisterUserPage": {
+  "adressPlaceholder": "输入地址...",
+"adress": "公司地址",
   "successTitleTG": "成功！",
   "successBodyTG": "机器人已在Telegram上给您发送了消息！请查看。",
   "errorTitleTG": "Telegram错误",

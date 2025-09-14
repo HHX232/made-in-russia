@@ -129,6 +129,10 @@
   }
 }
 
+.inputs__text_extra__min__height > div:nth-child(2) {
+  min-height: 50px;
+}
+
 .input__title__tel {
   &::before {
     display: none !important;
@@ -150,6 +154,13 @@
     content: '*';
     font-size: 20px;
     transform: translate(-100%, -50%);
+  }
+}
+
+.input__title__without {
+  &::before {
+    display: none !important;
+    content: '' !important;
   }
 }
 

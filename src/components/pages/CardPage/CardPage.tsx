@@ -10,13 +10,14 @@ import ICardFull from '@/services/card/card.types'
 import CommentsSection from './CommentSection/CommentSection'
 import CardBottomPage from './CardBottomPage/CardBottomPage'
 import Footer from '@/components/MainComponents/Footer/Footer'
-import {getAbsoluteLanguage} from '@/api/api.helper'
+import {getCurrentLocale} from '@/lib/locale-detection'
 
 // import SEOHeader from '@/components/MainComponents/SEOHeader/SEOHeader'
 
 async function CardContent({id}: {id: string}) {
   let cardData: ICardFull
-  const locale = await getAbsoluteLanguage()
+  const locale = await getCurrentLocale()
+
   try {
     const {data} = await cardService.getFullCardById(id, locale)
     cardData = data as ICardFull

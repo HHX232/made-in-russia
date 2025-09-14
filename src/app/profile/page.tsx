@@ -1,4 +1,5 @@
-import {getAbsoluteLanguage} from '@/api/api.helper'
+import {getCurrentLocale} from '@/lib/locale-detection'
+
 import instance from '@/api/api.interceptor'
 import ProfilePage from '@/components/pages/ProfilePage/ProfilePage'
 import {User} from '@/services/users.types'
@@ -11,7 +12,7 @@ export default async function ProfilePageMain() {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get('accessToken')?.value || ''
 
-  const locale = await getAbsoluteLanguage()
+  const locale = await getCurrentLocale()
 
   try {
     // console.log('accessToken:', accessToken)

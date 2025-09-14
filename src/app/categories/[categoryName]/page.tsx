@@ -1,4 +1,5 @@
-import {getAbsoluteLanguage} from '@/api/api.helper'
+import {getCurrentLocale} from '@/lib/locale-detection'
+
 import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
@@ -11,7 +12,7 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
   let allCategories
   let breadcrumbs: {title: string; link: string}[] = []
 
-  const locale = await getAbsoluteLanguage()
+  const locale = await getCurrentLocale()
 
   let companyes: {name: string; inn: string; ageInYears: string}[]
   try {

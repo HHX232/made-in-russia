@@ -30,7 +30,9 @@ import {useActions} from '@/hooks/useActions'
 import {setInitialStorageValue} from '@/hooks/createCardHelpers'
 import {submitFormCardData} from '@/utils/createCardHelpers'
 import {toast} from 'sonner'
-import {useRouter} from '@/i18n/navigation'
+import {useRouter} from 'next/navigation'
+import RowsInputs from '@/components/UI-kit/RowsInputs/RowsInputs'
+
 // import {useQueryClient} from '@tanstack/react-query'
 // import {invalidateProductsCache} from '@/hooks/useProducts'
 
@@ -61,13 +63,11 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const t = useTranslations('createCard')
   // Language start ===========
   const pathname = usePathname()
-  const langFromPathname = pathname.split('/')[1]
+  // const langFromPathname = pathname.split('/')[1]
   const currentLangFromHook = useCurrentLanguage()
-  const currentLang = langFromPathname || currentLangFromHook
+  const currentLang = currentLangFromHook
 
-  const [currentLangState, setCurrentLangState] = useState<ICurrentLanguage>(
-    (langFromPathname as ICurrentLanguage) || (currentLang as ICurrentLanguage)
-  )
+  const [currentLangState, setCurrentLangState] = useState<ICurrentLanguage>(currentLang as ICurrentLanguage)
   // Language end ===========
 
   const [cardTitle, setCardTitle] = useState(initialData?.title || '')
@@ -98,8 +98,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     })
     setFaqMatrixForOthers({
       [currentLang]: initialData?.faq.map((el) => [
-        el.questionTranslations[currentLang as Language],
-        el.answerTranslations[currentLang as Language]
+        el.questionTranslations?.[currentLang as Language],
+        el.answerTranslations?.[currentLang as Language]
       ]) || [['', '']]
     })
 
@@ -109,7 +109,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const getValueForLang = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (state: any, objectValue: keyof ICardFull): any => {
-      const langData = cardObjectForOthers[currentLangState]
+      const langData = cardObjectForOthers?.[currentLangState]
       return langData?.[objectValue] !== undefined ? langData[objectValue] : state
     },
     [currentLangState, currentLang, cardObjectForOthers]
@@ -141,6 +141,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     initialImages || []
   )
 
+  const [testFaq, setTestFaq] = useState<string[][]>([['', '']])
+
   const [pricesArray, setPricesArray] = useState<
     {
       currency: string
@@ -164,8 +166,9 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const [descriptionImages, setDescriptionImages] = useState<ImageMapping[]>([])
 
   const {characteristics} = useTypedSelector(
-    (state) => state.multiLanguageCardPriceData[(langFromPathname as Language) || (currentLang as Language)]
+    (state) => state.multiLanguageCardPriceData[(currentLang as Language) || (currentLang as Language)]
   )
+  console.log('characteristics after selector', characteristics)
 
   // Состояние для ошибок валидации
   const [errors, setErrors] = useState<ValidationErrors>({
@@ -184,7 +187,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       submitAttempted: true,
       similarProducts,
       selectedCategory,
-      saleDate: multyLangObjectForPrices[currentLangState].priceInfo.daysBeforeSale,
+      saleDate: multyLangObjectForPrices?.[currentLangState]?.priceInfo?.daysBeforeSale,
       currentLangState,
       cardTitle,
       uploadedFiles,
@@ -193,9 +196,9 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       objectRemainingInitialImages,
       pricesArray,
       descriptionImages,
-      descriptionMatrix: characteristics.map((el) => [el.title, el.characteristic]),
-      packageArray: multyLangObjectForPrices[currentLangState].packaging.map((el) => [el.title, el.price]),
-      faqMatrix: faqMatrixForOthers[currentLangState || 'en'] || [],
+      descriptionMatrix: characteristics?.map((el) => [el.title, el.characteristic]),
+      packageArray: multyLangObjectForPrices?.[currentLangState]?.packaging?.map((el) => [el.title, el.price]),
+      faqMatrix: faqMatrixForOthers?.[currentLangState || 'en'] || [],
       errors,
       selectedDeliveryMethodIds: [1]
     }),
@@ -219,7 +222,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   )
 
   // Инициализируем хук валидации
-  const {validateAllFields} = useFormValidation(formState, () => descriptions[currentLangState]?.description, t)
+  const {validateAllFields} = useFormValidation(formState, () => descriptions?.[currentLangState]?.description, t)
 
   const handleUploadedFilesChange = useCallback(
     (files: File[]) => {
@@ -252,7 +255,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
   useEffect(() => {
     // Синхронизируем cardTitle с текущим языком
-    const currentTitleValue = cardObjectForOthers[currentLangState]?.title
+    const currentTitleValue = cardObjectForOthers?.[currentLangState]?.title
     if (currentTitleValue !== undefined && currentTitleValue !== cardTitle) {
       setCardTitle(currentTitleValue)
     }
@@ -265,7 +268,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
       const updatedCardTitleForOthers = {...cardObjectForOthers}
       updatedCardTitleForOthers[currentLangState] = {
-        ...updatedCardTitleForOthers[currentLangState],
+        ...updatedCardTitleForOthers?.[currentLangState],
         title: value
       }
       setCardObjectForOthers(updatedCardTitleForOthers)
@@ -314,7 +317,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
           faqMatrixForOthers,
           similarProducts,
           selectedCategory,
-          langFromPathname,
+          langFromPathname: currentLang,
           currentLangState,
           cardTitle,
           descriptions,
@@ -366,7 +369,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       faqMatrixForOthers,
       similarProducts,
       selectedCategory,
-      langFromPathname,
+      currentLang,
       currentLangState,
       cardTitle,
       descriptions,
@@ -404,7 +407,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
           <div className={`${styles.language__switcher}`}>
             <p className={`${styles.language__switcher__title}`}>{t('languageForInput')}</p>
             <p className={`${styles.language__switcher__subtitle}`}>
-              {t('languageForInputSubtitle')} - {langFromPathname}
+              {t('languageForInputSubtitle')} - {currentLang}
             </p>
             <div className={`${styles.language__buttons}`}>
               <button
@@ -590,11 +593,21 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             />
 
             <CreateDescriptionsElements descriptionError={errors.description} currentDynamicLang={currentLangState} />
+            <CreateFaqCard
+              values={testFaq}
+              onChange={(matrix) => {
+                setTestFaq(matrix)
+              }}
+            />
+
             {/* CreateFaqCard */}
             {currentLangState === 'ru' && (
               <CreateFaqCard
-                values={faqMatrixForOthers.ru}
+                values={faqMatrixForOthers?.ru}
                 onChange={(matrix) => {
+                  console.log('faqMatrixForOthers ru', faqMatrixForOthers?.ru)
+
+                  console.log('ru matrix update', matrix)
                   const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
                   updatedFaqMatrixForOthers['ru'] = matrix
                   setFaqMatrixForOthers(updatedFaqMatrixForOthers)
@@ -603,8 +616,10 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             )}
             {currentLangState === 'en' && (
               <CreateFaqCard
-                values={faqMatrixForOthers.en}
+                values={faqMatrixForOthers?.en}
                 onChange={(matrix) => {
+                  console.log('faqMatrixForOthers en', faqMatrixForOthers?.en)
+                  console.log('en matrix update', matrix)
                   const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
                   updatedFaqMatrixForOthers['en'] = matrix
                   setFaqMatrixForOthers(updatedFaqMatrixForOthers)
@@ -613,8 +628,10 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             )}
             {currentLangState === 'zh' && (
               <CreateFaqCard
-                values={faqMatrixForOthers.zh}
+                values={faqMatrixForOthers?.zh}
                 onChange={(matrix) => {
+                  console.log('faqMatrixForOthers zh', faqMatrixForOthers?.zh)
+                  console.log('zh matrix update', matrix)
                   const updatedFaqMatrixForOthers = {...faqMatrixForOthers}
                   updatedFaqMatrixForOthers['zh'] = matrix
                   setFaqMatrixForOthers(updatedFaqMatrixForOthers)

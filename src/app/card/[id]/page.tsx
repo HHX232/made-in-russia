@@ -1,4 +1,5 @@
-import {getAbsoluteLanguage} from '@/api/api.helper'
+import {getCurrentLocale} from '@/lib/locale-detection'
+
 import CardPage from '@/components/pages/CardPage/CardPage'
 import cardService from '@/services/card/card.service'
 import ICardFull from '@/services/card/card.types'
@@ -9,7 +10,8 @@ export default async function CardPageRoute({params}: {params: Promise<{id: stri
 
 export async function generateMetadata({params}: {params: Promise<{id: string}>}) {
   const {id} = await params
-  const locale = await getAbsoluteLanguage()
+  const locale = await getCurrentLocale()
+
   try {
     const {data} = await cardService.getFullCardById(id, locale)
     const product = data as ICardFull

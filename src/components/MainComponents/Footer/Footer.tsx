@@ -1,7 +1,7 @@
 'use client'
 import {CSSProperties, FC} from 'react'
 import styles from './Footer.module.scss'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 import Image from 'next/image'
 import {useTranslations} from 'next-intl'
 

@@ -2,7 +2,7 @@
 import {FC, useEffect, useState} from 'react'
 import styles from './ShopButtonUI.module.scss'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 
 interface ShopButtonUIProps {
   extraClass?: string

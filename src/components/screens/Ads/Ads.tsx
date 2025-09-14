@@ -2,9 +2,9 @@
 'use client'
 import React, {FC, useMemo, useState, useEffect, useRef} from 'react'
 import styles from './Promo.module.scss'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 import Image from 'next/image'
-import {IPromoFromServer} from '@/app/[locale]/page'
+import {IPromoFromServer} from '@/app/page'
 import Head from 'next/head'
 import {
   generateMainPromoSchema,

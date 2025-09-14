@@ -1,13 +1,13 @@
 'use client'
 // import Footer from '@/components/MainComponents/Footer/Footer'
 // import Header from '@/components/MainComponents/Header/Header'
-// import {Link} from '@/i18n/navigation'
+// import Link from 'next/link'
 import styles from '@/scss/notFound.module.scss'
 import {useState, useEffect, useRef, useCallback} from 'react'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import Header from '@/components/MainComponents/Header/Header'
 import {useTranslations} from 'next-intl'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 
 interface Dot {
   id: string

@@ -296,8 +296,8 @@ export const useCreateCardAPI = () => {
       const token = await getAccessToken()
       const method = isUpdate ? 'PUT' : 'POST'
       const url = isUpdate
-        ? `https://exporteru.com/api/v1/products/${initialData.id}`
-        : 'https://exporteru.com/api/v1/products'
+        ? `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/products/${initialData.id}`
+        : `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/products`
 
       const loadingToast = toast.loading(isUpdate ? t('updateCardProcess') : t('saveCardProcess'))
       console.log('formDataToSend', formDataToSend, Object.entries(formDataToSend))

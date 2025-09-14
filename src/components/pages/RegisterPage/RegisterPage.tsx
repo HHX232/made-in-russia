@@ -5,7 +5,7 @@ import MinimalHeader from '@/components/MainComponents/MinimalHeader/MinimalHead
 import {useEffect, useState} from 'react'
 import {TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import {useActions} from '@/hooks/useActions'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 import {axiosClassic} from '@/api/api.interceptor'
 import {saveTokenStorage} from '@/services/auth/auth.helper'
 import {useRouter, useSearchParams} from 'next/navigation'
@@ -72,7 +72,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const [inn, setInn] = useState('')
   const [selectedCountries, setSelectedCountries] = useState<MultiSelectOption[]>([])
   const [selectedCategories, setSelectedCategories] = useState<MultiSelectOption[]>([])
-
+  const [adress, setAdress] = useState('')
   // Redux hooks
   const {setRegion, setPassword, setNumber, setName} = useActions()
 
@@ -103,6 +103,9 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     const fetchToTg = async () => {
       try {
         console.log('start fetch to tg')
+        if (!telegramId && !firstName) {
+          return
+        }
         const res = await axiosClassic.post('oauth2/telegram/callback', {
           id: telegramId || '',
           lastName: lastName || '',
@@ -308,6 +311,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             email,
             login: name,
             inn,
+            adress: adress || '',
             password,
             countries: selectedCountries.map((c) => c.value),
             productCategories: selectedCategories.map((c) => c.value),
@@ -476,6 +480,8 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
                   {!isUser && !showFinalStep && (
                     <RegisterCompany
                       inn={inn}
+                      adress={adress}
+                      setAdress={setAdress}
                       name={name}
                       password={password}
                       telText={telText}

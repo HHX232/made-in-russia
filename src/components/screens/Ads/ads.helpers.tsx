@@ -1,4 +1,4 @@
-import {IPromoFromServer} from '@/app/[locale]/page'
+import {IPromoFromServer} from '@/app/page'
 
 export const stripHtml = (html: string): string => {
   if (!html) return ''

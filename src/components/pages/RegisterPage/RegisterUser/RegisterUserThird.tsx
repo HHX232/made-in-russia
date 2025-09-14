@@ -1,5 +1,5 @@
 import React from 'react'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 import styles from '../RegisterPage.module.scss'
 import InputOtp from '@/components/UI-kit/inputs/inputOTP/inputOTP'
 import {useTranslations} from 'next-intl'

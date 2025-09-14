@@ -181,7 +181,7 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
     }
 
     loadInitialReviews()
-  }, [size, minRating, maxRating, specialRoute])
+  }, [size, minRating, maxRating, specialRoute, currentLang])
 
   // Загрузка следующих страниц
   const loadMoreReviews = useCallback(async () => {
@@ -256,7 +256,7 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
       loadingRef.current = false
       console.log('Load more completed')
     }
-  }, [page, hasMore, size, minRating, maxRating, specialRoute, reviews.length])
+  }, [page, hasMore, size, minRating, maxRating, specialRoute, reviews.length, currentLang])
 
   return {
     reviews,

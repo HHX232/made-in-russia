@@ -212,7 +212,7 @@ const AdminAds = () => {
       }
 
       // Отправка через обычный fetch с токеном авторизации
-      const response = await fetch('https://exporteru.com/api/v1/advertisements', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/advertisements`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`
@@ -273,7 +273,7 @@ const AdminAds = () => {
       }
 
       // Отправка через обычный fetch с токеном авторизации
-      const response = await fetch(`https://exporteru.com/api/v1/advertisements/${editingAd}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/advertisements/${editingAd}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`

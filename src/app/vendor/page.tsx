@@ -1,5 +1,6 @@
 // app/vendor/page.tsx
-import {getAbsoluteLanguage} from '@/api/api.helper'
+import {getCurrentLocale} from '@/lib/locale-detection'
+
 import VendorPageClient from '@/components/pages/VendorPage/VendorPageClient/VendorPageClient'
 import {getQueryClient} from '@/lib/get-query-client'
 import {fetchUserDataOnServer} from '@/lib/server/userDataFetcher'
@@ -7,7 +8,8 @@ import {HydrationBoundary, dehydrate} from '@tanstack/react-query'
 
 export default async function VendorPage() {
   // Получаем данные пользователя на сервере
-  const lang = await getAbsoluteLanguage()
+  const lang = await getCurrentLocale()
+
   const {user, phoneNumberCode, error} = await fetchUserDataOnServer()
 
   // Создаем клиент для предзаполнения кэша

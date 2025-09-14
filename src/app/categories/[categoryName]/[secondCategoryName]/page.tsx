@@ -1,32 +1,27 @@
-import {getAbsoluteLanguage} from '@/api/api.helper'
+import {getCurrentLocale} from '@/lib/locale-detection'
+
 import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
-import {buildBreadcrumbs, findCategoryBySlug} from '@/utils/findCategoryPath'
+import {findCategoryBySlug, buildBreadcrumbs} from '@/utils/findCategoryPath'
 import {notFound} from 'next/navigation'
 
 export default async function CategoryPageSpecialSecond({
   params
 }: {
-  params: Promise<{
-    categoryName: string
-    secondCategoryName: string
-    thirdCategoryName: string
-    thirdCAtegoryName: string
-  }>
+  params: Promise<{categoryName: string; secondCategoryName: string}>
 }) {
-  const {thirdCategoryName, thirdCAtegoryName} = await params
-  // console.log('thirdCategoryName:', thirdCategoryName, 'thirdCAtegoryName', thirdCAtegoryName)
+  const {secondCategoryName} = await params
   let categories
   let allCategories
   let breadcrumbs: {title: string; link: string}[] = []
-  const locale = await getAbsoluteLanguage()
+  const locale = await getCurrentLocale()
 
   let companyes: {name: string; inn: string; ageInYears: string}[]
   try {
-    // console.log('Category:', `/companies/l3_${thirdCategoryName}`)
+    console.log('Category:', `/companies/l2_${secondCategoryName}`)
     const {data} = await axiosClassic.get<{name: string; inn: string; ageInYears: string}[]>(
-      `/companies/l3_${thirdCategoryName}`,
+      `/companies/l2_${secondCategoryName}`,
       {
         headers: {
           'Accept-Language': locale || 'en',
@@ -34,34 +29,37 @@ export default async function CategoryPageSpecialSecond({
         }
       }
     )
+
     // console.log('data companyes:', data)
     companyes = data
   } catch {
     companyes = []
   }
+  // console.log('companyes:', companyes)
 
   try {
     allCategories = await CategoriesService.getAll(locale || 'en')
 
-    const slugToFind = thirdCategoryName || thirdCAtegoryName
+    const slugToFind = secondCategoryName
     const foundCategory = findCategoryBySlug(allCategories, slugToFind)
 
-    categories = foundCategory || (await CategoriesService.getById('l3_' + slugToFind, locale || 'en'))
+    categories = foundCategory || (await CategoriesService.getById('l2_' + slugToFind, locale || 'en'))
 
     breadcrumbs = buildBreadcrumbs(allCategories, slugToFind)
   } catch {
     notFound()
   }
+  // console.log('categories second by slug:', categories)
 
   return (
     <CategoryPage
       companyes={companyes || []}
-      idOfFilter={categories.id}
       breadcrumbs={breadcrumbs}
+      idOfFilter={categories.id}
       categories={categories.children}
-      categoryName={thirdCategoryName || thirdCAtegoryName}
+      categoryName={secondCategoryName}
       categoryTitleName={categories.name}
-      level={3}
+      level={2}
     />
   )
 }

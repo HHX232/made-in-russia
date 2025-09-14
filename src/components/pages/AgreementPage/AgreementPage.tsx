@@ -3,10 +3,10 @@
 
 import React from 'react'
 import {useTranslations} from 'next-intl'
-import {useRouter} from '@/i18n/navigation'
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import styles from './AgreementPage.module.scss'
+import {useRouter} from 'next/navigation'
 
 const Agreement = () => {
   const t = useTranslations('Agreement')

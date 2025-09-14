@@ -4,7 +4,7 @@ import instance, {axiosClassic} from '@/api/api.interceptor'
 import {getAccessToken, getRefreshToken, removeFromStorage, saveTokenStorage} from '@/services/auth/auth.helper'
 import {useActions} from '@/hooks/useActions'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
-import {useRouter} from '@/i18n/navigation'
+import {useRouter} from 'next/navigation'
 
 // Используем ваш интерфейс User
 interface User {

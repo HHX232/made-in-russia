@@ -181,19 +181,19 @@ export const setInitialStorageValue = ({
 }) => {
   setDescriptions({
     ru: {
-      description: initialData?.mainDescriptionTranslations.ru || '',
-      additionalDescription: initialData?.furtherDescriptionTranslations.ru || '',
-      furtherDescription: initialData?.furtherDescriptionTranslations.ru || ''
+      description: initialData?.mainDescriptionTranslations?.ru || '',
+      additionalDescription: initialData?.furtherDescriptionTranslations?.ru || '',
+      furtherDescription: initialData?.furtherDescriptionTranslations?.ru || ''
     },
     en: {
-      description: initialData?.mainDescriptionTranslations.en || '',
-      additionalDescription: initialData?.furtherDescriptionTranslations.en || '',
-      furtherDescription: initialData?.furtherDescriptionTranslations.en || ''
+      description: initialData?.mainDescriptionTranslations?.en || '',
+      additionalDescription: initialData?.furtherDescriptionTranslations?.en || '',
+      furtherDescription: initialData?.furtherDescriptionTranslations?.en || ''
     },
     zh: {
-      description: initialData?.mainDescriptionTranslations.zh || '',
-      additionalDescription: initialData?.furtherDescriptionTranslations.zh || '',
-      furtherDescription: initialData?.furtherDescriptionTranslations.zh || ''
+      description: initialData?.mainDescriptionTranslations?.zh || '',
+      additionalDescription: initialData?.furtherDescriptionTranslations?.zh || '',
+      furtherDescription: initialData?.furtherDescriptionTranslations?.zh || ''
     }
   })
 

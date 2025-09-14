@@ -303,15 +303,18 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
       }
 
       // Send request using fetch with authorization token
-      const response = await fetch(`https://exporteru.com/api/v1/products/${cardData?.id}/reviews`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Accept-Language': currentLang
-          // Don't set Content-Type, browser will set correct type for FormData
-        },
-        body: formDataToSend
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/products/${cardData?.id}/reviews`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Accept-Language': currentLang
+            // Don't set Content-Type, browser will set correct type for FormData
+          },
+          body: formDataToSend
+        }
+      )
 
       if (!response.ok) {
         const errorData = await response.json()

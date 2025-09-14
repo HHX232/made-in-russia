@@ -5,11 +5,12 @@ import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI
 import MultiDropSelect, {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
-import {Category, useCategories} from '@/services/categoryes/categoryes.service'
+import {useCategories} from '@/services/categoryes/categoryes.service'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 interface RegisterCompanySecondProps {
   email: string
+  adress: string
   password: string
   selectedOption: string
   selectedCategories: MultiSelectOption[]
@@ -19,10 +20,12 @@ interface RegisterCompanySecondProps {
   handleOptionChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   onBack: (e: React.MouseEvent<HTMLButtonElement>) => void
   onNext: (e: React.MouseEvent<HTMLButtonElement>) => void
+  setAdress: (value: string) => void
 }
 
 const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
   email,
+  adress,
   password,
   selectedOption,
   selectedCategories,
@@ -31,27 +34,17 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
   setSelectedCategories,
   handleOptionChange,
   onBack,
-  onNext
+  onNext,
+  setAdress
 }) => {
-  const isEmailValid = email.includes('@') && email.includes('.') && email.length !== 0
-  const canProceed = selectedOption === 'Personal' && isEmailValid && password.length >= 6
+  const isEmailValid = email.includes('@') && email.includes('.') && email?.length !== 0
+  const canProceed = selectedOption === 'Personal' && isEmailValid && password?.length >= 6
   const [isClient, setIsClient] = useState(false)
   const windowWidth = useWindowWidth()
-  const [allCategories, setAllCategories] = useState<Category[]>([])
   const currentLang = useCurrentLanguage()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const categories = useCategories(currentLang as any)
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setAllCategories(categories?.data as Category[])
-      } catch (err) {
-        console.error('Error fetching categories:', err)
-      }
-    }
 
-    fetchCategories()
-  }, [])
   useEffect(() => {
     setIsClient(true)
   }, [])
@@ -60,14 +53,14 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
   return (
     <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '22px'}}>
       <TextInputUI
-        extraClass={`${styles.inputs__text_extra} ${!isEmailValid && email.length !== 0 ? styles.extra__email__error : ''}`}
+        extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra__min__height} ${!isEmailValid && email?.length !== 0 ? styles.extra__email__error : ''}`}
         extraStyle={{width: '100%'}}
         isSecret={false}
         autoComplete='on'
         inputType='email'
         onSetValue={setEmail}
         currentValue={email}
-        errorValue={!isEmailValid && email.length !== 0 ? t('emailError') : ''}
+        errorValue={!isEmailValid && email?.length !== 0 ? t('emailError') : ''}
         placeholder={t('corporateEmailPlaceholder')}
         title={<p className={`${styles.input__title}`}>{t('corporateEmail')}</p>}
       />
@@ -75,13 +68,20 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
       {/* <p className={`${styles.input__subtitle}`}>Используйте официальную почту компании для верификации.</p> */}
 
       <TextInputUI
-        extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2}`}
+        extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra__min__height}  ${styles.inputs__text_extra_2}`}
         isSecret={true}
         onSetValue={setPassword}
         currentValue={password}
-        errorValue={password.length < 6 && password.length !== 0 ? t('passwordError') : ''}
+        errorValue={password?.length < 6 && password?.length !== 0 ? t('passwordError') : ''}
         placeholder={t('passwordPlaceholder')}
         title={<p className={`${styles.input__title}`}>{t('password')}</p>}
+      />
+      <TextInputUI
+        extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra__min__height} ${styles.inputs__text_extra_2}`}
+        onSetValue={setAdress}
+        currentValue={adress}
+        placeholder={t('adressPlaceholder')}
+        title={<p className={`${styles.input__title} ${styles.input__title__without}`}>{t('adress')}</p>}
       />
 
       <div className={`${styles.some__drop__box}`} style={{marginTop: '16px', marginBottom: '16px'}}>
@@ -97,7 +97,7 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
           showSearchInput
           extraClass={styles.profile__region__dropdown__extra}
           extraDropListClass={styles.extra_extraDropListClass}
-          options={allCategories.map((category) => ({
+          options={(categories?.data || [])?.map((category) => ({
             id: category.id,
             label: category.name,
             value: category.name,

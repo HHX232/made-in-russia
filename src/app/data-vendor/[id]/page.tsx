@@ -1,4 +1,5 @@
-import {getAbsoluteLanguage} from '@/api/api.helper'
+import {getCurrentLocale} from '@/lib/locale-detection'
+
 import {axiosClassic} from '@/api/api.interceptor'
 import VendorPageComponent from '@/components/pages/VendorPage/VendorPage'
 import {Product} from '@/services/products/product.types'
@@ -9,7 +10,8 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
   let vendorData
   const cookieStore = await cookies()
   const accessToken = cookieStore.get('accessToken')?.value || ''
-  const currentLang = await getAbsoluteLanguage()
+  const currentLang = await getCurrentLocale()
+
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vendorData = await axiosClassic.get<any>(`/vendor/${id}`, {

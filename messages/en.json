@@ -44,6 +44,8 @@
     "loading":"Loading..."
 },
 "RegisterUserPage": {
+  "adressPlaceholder": "Enter address...",
+"adress": "Company address",
   "successTitleTG": "Success!",
   "successBodyTG": "The bot has written to you on Telegram! Please check your messages.",
   "errorTitleTG": "Telegram Error",

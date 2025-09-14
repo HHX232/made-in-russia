@@ -14,6 +14,8 @@ interface RegisterCompanyProps {
   isValidNumber: boolean
   selectedCountries: MultiSelectOption[]
   selectedCategories: MultiSelectOption[]
+  adress: string
+  setAdress: (value: string) => void
 
   // Сеттеры
   setInn: (value: string) => void
@@ -61,7 +63,9 @@ const RegisterCompany: React.FC<RegisterCompanyProps> = ({
   showNextStep,
   onSubmitFirstStep,
   onSubmitSecondStep,
-  handleBackToFirst
+  handleBackToFirst,
+  adress,
+  setAdress
 }) => {
   if (!showNextStep) {
     return (
@@ -85,6 +89,8 @@ const RegisterCompany: React.FC<RegisterCompanyProps> = ({
 
   return (
     <RegisterCompanySecond
+      adress={adress}
+      setAdress={setAdress}
       email={email}
       password={password}
       selectedOption={selectedOption}

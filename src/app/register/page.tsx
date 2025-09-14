@@ -1,21 +1,25 @@
-// import {getAbsoluteLanguage} from '@/api/api.helper'
-// import LoginPage from '@/components/pages/LoginPage/LoginPage'
+// import {getCurrentLocale} from '@/lib/locale-detection'
+
+// import RegisterPage from '@/components/pages/RegisterPage/RegisterPage'
 // import CategoriesService from '@/services/categoryes/categoryes.service'
 
 // export default async function Login() {
-//   const locale = await getAbsoluteLanguage()
+//   const locale = await getCurrentLocale()
 
 //   const categories = await CategoriesService.getAll(locale)
-//   return <LoginPage categories={categories} />
+//   return <RegisterPage categories={categories} />
 // }
 
-// import {getAbsoluteLanguage} from '@/api/api.helper'
-import LoginPage from '@/components/pages/LoginPage/LoginPage'
+// app/register/page.tsx
+// import {getCurrentLocale} from '@/lib/locale-detection'
+
+import RegisterPage from '@/components/pages/RegisterPage/RegisterPage'
 // import CategoriesService, {categoriesKeys} from '@/services/categoryes/categoryes.service'
 // import {dehydrate, HydrationBoundary, QueryClient} from '@tanstack/react-query'
 
-export default function Login() {
-  // const locale = await getAbsoluteLanguage()
+export default function Register() {
+  // const locale = await getCurrentLocale()
+
   // const queryClient = new QueryClient()
 
   // await queryClient.prefetchQuery({
@@ -25,5 +29,9 @@ export default function Login() {
 
   // const dehydratedState = dehydrate(queryClient)
 
-  return <LoginPage categories={[]} />
+  return (
+    // <HydrationBoundary state={dehydratedState}>
+    <RegisterPage />
+    // {/* </HydrationBoundary> */}
+  )
 }

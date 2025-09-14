@@ -9,12 +9,15 @@ import NProgressProvider from '@/components/UI-kit/loaders/nprogress-provider'
 import ProductService from '@/services/products/product.service'
 import {NextIntlClientProvider} from 'next-intl'
 import {cookies, headers} from 'next/headers'
+import ClientStyleLoader from '@/components/ClientStyleLoader'
+import {getMessages} from 'next-intl/server'
+import {getCurrentLocale} from '@/lib/locale-detection'
 // import GoogleRecaptchaProviderComponent from '@/providers/GoogleRecaptchaProviderComponent'
 // import {NextIntlClientProvider} from 'next-intl'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
-  const headersList = await headers()
-  const locale = headersList.get('x-locale') || 'en'
+  const locale = await getCurrentLocale()
+  const messages = await getMessages()
   return (
     <>
       <html lang={locale}>
@@ -22,10 +25,11 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           <NProgressProvider />
 
           <DefaultProvider>
-            <NextIntlClientProvider>
+            <NextIntlClientProvider messages={messages}>
               {/* <GoogleRecaptchaProviderComponent> */}
               {children}
               {/* </GoogleRecaptchaProviderComponent> */}
+              <ClientStyleLoader />
               <Toaster theme={'dark'} position={'top-right'} duration={3500} />
             </NextIntlClientProvider>
           </DefaultProvider>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {getAbsoluteLanguage} from '@/api/api.helper'
 import {axiosClassic} from '@/api/api.interceptor'
 import HomePage from '@/components/pages/HomePage/HomePage'
+import {getCurrentLocale} from '@/lib/locale-detection'
 import {Product} from '@/services/products/product.types'
 // import {cookies, headers} from 'next/headers'
 
@@ -64,7 +64,8 @@ async function getInitialData(locale: string) {
 }
 
 export default async function Home() {
-  const locale = await getAbsoluteLanguage()
+  const locale = await getCurrentLocale()
+  console.log('locale в доме', locale)
   const {products, categories, advertisements} = await getInitialData(locale)
 
   return (

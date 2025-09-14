@@ -1,4 +1,5 @@
 import instance from '@/api/api.interceptor'
+import {getCurrentLocale} from '@/lib/locale-detection'
 
 // types/comments.types.ts
 export interface Author {
@@ -83,6 +84,7 @@ export interface GetProductReviewsParams {
 
 const commentsService = {
   async getCommentsByMyProducts(params: GetProductReviewsParams = {}) {
+    const locale = await getCurrentLocale()
     try {
       const {page = 0, size = 10, minRating, maxRating} = params
 
@@ -104,7 +106,7 @@ const commentsService = {
           `${params.specialRoute}/reviews?${queryParams.toString()}`,
           {
             headers: {
-              'Accept-Language': params.currentLang || 'en'
+              'Accept-Language': locale || params.currentLang || 'en'
             }
           }
         )
@@ -116,7 +118,7 @@ const commentsService = {
       } else {
         const response = await instance.get<ProductReviewsResponse>(`/me/product-reviews?${queryParams.toString()}`, {
           headers: {
-            'Accept-Language': params.currentLang || 'en'
+            'Accept-Language': locale || params.currentLang || 'en'
           }
         })
 

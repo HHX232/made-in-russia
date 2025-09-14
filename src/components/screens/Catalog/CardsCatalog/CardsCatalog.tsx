@@ -10,7 +10,7 @@ import {useSelector} from 'react-redux'
 import {TypeRootState} from '@/store/store'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useActions} from '@/hooks/useActions'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 import {useTranslations} from 'next-intl'
 import {getAccessToken} from '@/services/auth/auth.helper'
 

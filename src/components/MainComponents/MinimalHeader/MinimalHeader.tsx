@@ -4,9 +4,9 @@ import styles from './MinimalHeader.module.scss'
 import {useEffect, useRef, useState} from 'react'
 import CategoryesMenuDesktop from '@/components/UI-kit/elements/CategoryesMenuDesktop/CategoryesMenuDesktop'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
-import {useTranslations} from 'next-intl'
+import {useLocale, useTranslations} from 'next-intl'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 import createTelText from '@/utils/createTelText'
 import createNewLangUrl from '@/utils/createNewLangUrl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
@@ -14,6 +14,9 @@ import {usePathname, useRouter} from 'next/navigation'
 const insta = '/insta.svg'
 const telephone = '/phone.svg'
 const telegram = '/telegram.svg'
+const setCookieLocale = (locale: string) => {
+  document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+}
 
 enum Languages {
   RUSSIAN = 'Русский',
@@ -46,8 +49,9 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
   const [categoriesList, setCategoriesList] = useState<Category[]>(categories || [])
   const t = useTranslations('MinimalHeader')
   const pathname = usePathname()
+  const locale = useLocale()
   const [activeLanguage, setActiveLanguage] = useState<Languages>(
-    localeToLanguage[pathname.split('/')[1] as keyof typeof localeToLanguage]
+    localeToLanguage[locale as keyof typeof localeToLanguage]
   )
   const router = useRouter()
   const currentLang = useCurrentLanguage()
@@ -199,7 +203,8 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                 style={{width: '100%'}}
                 onClick={() => {
                   setActiveLanguage(Languages.RUSSIAN)
-                  router.push(createNewLangUrl(languageToLocale[Languages.RUSSIAN] as TLocale, pathname))
+                  setCookieLocale(languageToLocale[Languages.RUSSIAN])
+                  router.refresh()
                 }}
                 key={1}
               >
@@ -209,7 +214,8 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                 style={{width: '100%'}}
                 onClick={() => {
                   setActiveLanguage(Languages.ENGLISH)
-                  router.push(createNewLangUrl(languageToLocale[Languages.ENGLISH] as TLocale, pathname))
+                  setCookieLocale(languageToLocale[Languages.ENGLISH])
+                  router.refresh()
                 }}
                 key={2}
               >
@@ -219,7 +225,8 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                 style={{width: '100%'}}
                 onClick={() => {
                   setActiveLanguage(Languages.CHINA)
-                  router.push(createNewLangUrl(languageToLocale[Languages.CHINA] as TLocale, pathname))
+                  setCookieLocale(languageToLocale[Languages.CHINA])
+                  router.refresh()
                 }}
                 key={3}
               >

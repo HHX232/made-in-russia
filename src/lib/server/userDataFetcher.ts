@@ -1,7 +1,8 @@
 // lib/server/userDataFetcher.ts
 import instance from '@/api/api.interceptor'
 import {cookies} from 'next/headers'
-import {getAbsoluteLanguage} from '@/api/api.helper'
+import {getCurrentLocale} from '@/lib/locale-detection'
+
 import {IVendorData, User} from '@/store/User/user.slice'
 
 interface ServerUserFetchResult {
@@ -43,7 +44,7 @@ export async function fetchUserDataOnServer(): Promise<ServerUserFetchResult> {
       return {user: null, error: 'No access token'}
     }
 
-    const locale = await getAbsoluteLanguage()
+    const locale = await getCurrentLocale()
 
     const response = await instance.get<IVendorData>('/me', {
       headers: {

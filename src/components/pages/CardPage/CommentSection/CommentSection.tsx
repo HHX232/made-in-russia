@@ -122,7 +122,7 @@ export default function CommentsSection({cardId}: CommentsSectionProps) {
     if (cardId) {
       loadComments()
     }
-  }, [cardId, pageParams.size])
+  }, [cardId, pageParams.size, locale])
 
   useEffect(() => {
     const loadMoreComment = async () => {
@@ -159,7 +159,7 @@ export default function CommentsSection({cardId}: CommentsSectionProps) {
     if (cardId) {
       loadMoreComment()
     }
-  }, [cardId, hasMore, pageParams.page, pageParams.size])
+  }, [cardId, hasMore, pageParams.page, pageParams.size, locale])
 
   useEffect(() => {
     return () => {

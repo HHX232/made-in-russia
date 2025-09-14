@@ -3,13 +3,14 @@ import {useEffect, useState, useRef, useMemo} from 'react'
 import Header from '@/components/MainComponents/Header/Header'
 import styles from './CategoryPage.module.scss'
 import Catalog from '@/components/screens/Catalog/Catalog'
-import {Link, usePathname} from '@/i18n/navigation'
 import {Category} from '@/services/categoryes/categoryes.service'
 import {useActions} from '@/hooks/useActions'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useKeenSlider} from 'keen-slider/react'
 import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
+import {usePathname} from 'next/navigation'
+import Link from 'next/link'
 
 const CATEGORYESCONST = [
   {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: ''},

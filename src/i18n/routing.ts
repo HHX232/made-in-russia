@@ -1,6 +1,11 @@
-import {defineRouting} from 'next-intl/routing'
+// i18n/routing.ts
+import {SUPPORTED_LOCALES, DEFAULT_LOCALE, type SupportedLocale} from '@/lib/locale-detection'
 
-export const routing = defineRouting({
-  locales: ['en', 'ru', 'zh'],
-  defaultLocale: 'en'
-})
+// Простая конфигурация без next-intl routing
+export const routing = {
+  locales: SUPPORTED_LOCALES,
+  defaultLocale: DEFAULT_LOCALE
+} as const
+
+// Экспортируем типы для совместимости
+export type Locale = SupportedLocale

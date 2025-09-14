@@ -62,11 +62,22 @@ const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
         idNames={['cy-question', 'cy-answer']}
         inputsInRowCount={2}
         maxRows={15}
-        initialRowsCount={5}
+        initialRowsCount={1}
         titles={[t('question'), t('answer')]}
         controlled={true}
         externalValues={values}
-        onSetValue={() => {}}
+        onSetValue={(rowIndex, inputIndex, value) => {
+          if (!onChange) return
+
+          const newValues = values ? values.map((row) => [...row]) : []
+
+          if (!newValues[rowIndex]) {
+            newValues[rowIndex] = []
+          }
+          newValues[rowIndex][inputIndex] = value
+          console.log('newValues', newValues)
+          onChange(newValues)
+        }}
         onRowsChange={onChange}
       />
     </div>

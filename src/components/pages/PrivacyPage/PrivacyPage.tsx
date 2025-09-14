@@ -4,7 +4,8 @@
 
 import React from 'react'
 import {useTranslations} from 'next-intl'
-import {useRouter} from '@/i18n/navigation'
+import {useRouter} from 'next/navigation'
+
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import styles from './PrivacyPage.module.scss'

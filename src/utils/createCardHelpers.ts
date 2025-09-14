@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {ValidationErrors} from '@/components/pages/CreateCard/CreateCard.types'
 import {getAccessToken} from '@/services/auth/auth.helper'
 import ICardFull, {ICategory} from '@/services/card/card.types'
@@ -423,7 +424,7 @@ export const submitFormCardData = async ({
     mainDescription:
       mainDescriptionTranslations[(langFromPathname || 'en') as keyof typeof mainDescriptionTranslations],
     mainDescriptionTranslations,
-    furtherDescription: typeof furtherDescriptionTranslations.ru,
+    furtherDescription: (furtherDescriptionTranslations as any)?.[langFromPathname || 'en'] || '',
     furtherDescriptionTranslations,
     categoryId: selectedCategory?.id || 0,
     deliveryMethodIds: [1],
@@ -467,8 +468,8 @@ export const submitFormCardData = async ({
   // API call
   const method = isUpdate ? 'PUT' : 'POST'
   const url = isUpdate
-    ? `https://exporteru.com/api/v1/products/${initialData?.id}`
-    : 'https://exporteru.com/api/v1/products'
+    ? `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/products/${initialData?.id}`
+    : `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/products`
 
   try {
     const response = await fetch(url, {
