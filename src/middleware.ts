@@ -100,6 +100,7 @@ export async function middleware(request: NextRequest) {
     const {pathname, hostname} = request.nextUrl
 
     // Определяем локаль по поддомену
+    console.log('hostname в middleware', hostname)
     const localeFromSubdomain = getLocaleFromSubdomain(hostname)
     const existingLocaleCookie = request.cookies.get('NEXT_LOCALE')?.value
 
