@@ -15,6 +15,7 @@ const HomePage: FC<CatalogProps & {categories: Category[]; ads: IPromoFromServer
   return (
     <>
       <Header categories={categories} />
+      <p>Its new frontend</p>
       <Ads ads={ads} />
       <Catalog initialProducts={initialProducts} initialHasMore={initialHasMore} />
       <Footer />

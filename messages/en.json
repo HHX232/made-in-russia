@@ -157,6 +157,8 @@
     "defaultError": "Error!",
     
     "ProfileForm": {
+      "address": "Address",
+"addressPlaceholder": "Enter address",
       "belarus": "Belarus",
   "kazakhstan": "Kazakhstan", 
   "china": "China",

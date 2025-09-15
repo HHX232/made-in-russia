@@ -76,9 +76,9 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   }, [user?.login])
 
   // Мемоизированный источник изображения
-  const imageSrc = useMemo(() => {
-    return user?.avatarUrl?.trim() ? user.avatarUrl : randomAvatar
-  }, [user?.avatarUrl, randomAvatar])
+  // const imageSrc = useMemo(() => {
+  //   return user?.avatarUrl?.trim() ? user.avatarUrl : randomAvatar
+  // }, [user?.avatarUrl, randomAvatar])
 
   // Обработчик клика
   const handleClick = useCallback(() => {
@@ -119,9 +119,9 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
       {isAuthenticated && user?.login ? (
         <>
           <Image
-            style={{borderRadius: '50%'}}
+            style={{borderRadius: '50%', aspectRatio: '1/1'}}
             className={styles.image}
-            src={imageSrc}
+            src={user?.avatarUrl || randomAvatar}
             alt='Profile'
             width={28}
             height={28}

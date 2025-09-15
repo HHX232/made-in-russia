@@ -19,6 +19,7 @@ import Footer from '@/components/MainComponents/Footer/Footer'
 import {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {useUserQuery} from '@/hooks/useUserApi'
 
 // const decorImage = '/login__image.jpg'
 const belarusSvg = '/countries/belarus.svg'
@@ -204,15 +205,20 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
 
   const onChangeTelNumber = (val: string) => {
     const cleanedNumber = val.replace(/\D/g, '')
-    let countryForValidation: TNumberStart = 'Belarus'
+    let countryForValidation: TNumberStart = 'Russia'
 
     if (isUser) {
       countryForValidation = selectedRegion.altName as TNumberStart
     } else if (selectedCountries.length > 0) {
-      countryForValidation = selectedCountries[0].value as TNumberStart
+      if (selectedCountries.length === 1) {
+        countryForValidation = selectedCountries[0].value as TNumberStart
+      } else {
+        countryForValidation = 'other' as TNumberStart
+      }
     }
 
     const isValid = validatePhoneLength(cleanedNumber, countryForValidation)
+    console.log('isValid', isValid, 'countryForValidation', countryForValidation)
     setTelText(val)
     setIsValidNumber(isValid)
     setTrueTelephoneNumber(cleanedNumber)
@@ -311,7 +317,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             email,
             login: name,
             inn,
-            adress: adress || '',
+            address: adress || '',
             password,
             countries: selectedCountries.map((c) => c.value),
             productCategories: selectedCategories.map((c) => c.value),
@@ -346,6 +352,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     }
   }
 
+  const {refetch} = useUserQuery()
   // Step 3 submit
   const onSubmitThirdStep = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
@@ -361,6 +368,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
 
       const {accessToken, refreshToken} = data
       saveTokenStorage({accessToken, refreshToken})
+      await refetch()
       router.push('/')
     } catch (e) {
       console.log(e)
@@ -540,9 +548,10 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
       return cleanedPhone.length === 11
     case 'Russia':
     case 'Kazakhstan':
+      return cleanedPhone.length >= 7
     case 'other':
     default:
-      return cleanedPhone.length >= 7
+      return cleanedPhone.length >= 1
   }
 }
 

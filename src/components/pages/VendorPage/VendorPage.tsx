@@ -97,6 +97,7 @@ export interface IVendorData {
   vendorDetails?: {
     id: number
     inn: string
+    address: string
     paymentDetails: string
     countries: Country[]
     productCategories: Category[]
@@ -119,6 +120,7 @@ export interface IVendorPageProps {
   numberCode?: string
   initialProductsForView?: Product[]
   onlyShowDescr?: string
+  onlyShowAddress?: string
   onlyShowPhones?: string[]
   onlyShowWebsites?: string[]
   onlyShowEmail?: string[]
@@ -130,6 +132,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   numberCode = '',
   initialProductsForView,
   onlyShowDescr,
+  onlyShowAddress,
   onlyShowPhones,
   onlyShowWebsites,
   onlyShowEmail
@@ -212,6 +215,8 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
     vendorData?.vendorDetails?.productCategories?.map((category) => category.name)
   )
   const [userInn, setUserInn] = useState(vendorData?.vendorDetails?.inn)
+  const [userAddress, setUserAddress] = useState(vendorData?.vendorDetails?.address)
+
   const [activeFaq, setActiveFaq] = useState(vendorData?.vendorDetails?.faq)
 
   useEffect(() => {
@@ -232,6 +237,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
     countries?: string[]
     categories?: string[]
     inn?: string
+    address?: string
   }>({})
 
   // Инициализация начальных данных
@@ -242,7 +248,8 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
         phoneNumber: currentData?.phoneNumber,
         countries: vendorData?.vendorDetails?.countries?.map((country) => country.name) || [],
         categories: vendorData?.vendorDetails?.productCategories?.map((category) => category.name) || [],
-        inn: vendorData?.vendorDetails?.inn || ''
+        inn: vendorData?.vendorDetails?.inn || '',
+        address: vendorData?.vendorDetails?.address || ''
       }
       setInitialLoadComplete(true)
     }
@@ -262,12 +269,13 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
     const hasChanges =
       userPhoneNumber !== initialDataRef.current.phoneNumber ||
+      userAddress !== initialDataRef.current.address ||
       userInn !== initialDataRef.current.inn ||
       !arraysEqual(userCountries, initialDataRef.current.countries) ||
       !arraysEqual(userCategories, initialDataRef.current.categories)
 
     setNeedToSave(hasChanges)
-  }, [userPhoneNumber, userInn, userCountries, userCategories, initialLoadComplete, arraysEqual])
+  }, [userPhoneNumber, userAddress, userInn, userCountries, userCategories, initialLoadComplete, arraysEqual])
 
   useEffect(() => {
     if (windowWidth && windowWidth < 700) {
@@ -604,6 +612,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
     setUserCountries(data.countries.map((country: any) => country.label))
     setUserCategories(data.productCategories.map((category: any) => category.label))
     setUserInn(data.inn)
+    setUserAddress(data?.address)
   }, [])
 
   // Мемоизируем обработчик удаления вопроса в FAQ
@@ -662,6 +671,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 onVendorDataChange={handleVendorDataChange}
                 setNeedToSave={safeSetNeedToSave}
                 isLoading={loading}
+                onlyShowAddress={onlyShowAddress}
                 userData={!!vendorData ? vendorData : (userData as any)}
                 regions={REGIONS}
               />
@@ -669,6 +679,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 <ProfileActions
                   categories={userCategories}
                   inn={userInn}
+                  address={userAddress}
                   countries={userCountries}
                   phoneNumber={formattedPhoneNumber}
                   isForVendor={isPageForVendor}

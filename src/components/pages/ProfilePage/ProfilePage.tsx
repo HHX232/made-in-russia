@@ -22,6 +22,7 @@ import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
 import {useLogout} from '@/hooks/useUserApi'
 import DeleteAccountButton from '@/components/UI-kit/buttons/DeleteAccountButton/DeleteAccountButton'
+import {useActions} from '@/hooks/useActions'
 
 // Константы
 export const ASSETS_COUNTRIES = {
@@ -126,6 +127,7 @@ interface ProfileActionsProps {
   phoneNumber?: string
   region?: string
   inn?: string
+  address?: string
   countries?: string[]
   categories?: string[]
 }
@@ -180,9 +182,17 @@ export const useUserData = () => {
 
 // Компонент заголовка профиля
 export const ProfileHeader: FC<ProfileHeaderProps> = ({userData, isPageForVendor = true}) => {
+  const {updateUserAvatar} = useActions()
   return (
     <div className={styles.profile__user__box__inner}>
-      <Avatar isOnlyShow={!isPageForVendor} avatarUrl={userData?.avatarUrl} />
+      <Avatar
+        onAvatarChange={(newAvatarUrl: string | null) => {
+          console.log('newAvatarUrl', newAvatarUrl)
+          updateUserAvatar(newAvatarUrl || '')
+        }}
+        isOnlyShow={!isPageForVendor}
+        avatarUrl={userData?.avatarUrl}
+      />
       <div className={styles.user__names__box}>
         <p className={styles.user__name}>{userData?.login} </p>
         <p className={styles.user__email}>{userData?.email}</p>
@@ -373,12 +383,13 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
   inn,
   countries,
   categories,
-  isForVendor
+  isForVendor,
+  address
 }) => {
   const t = useTranslations('ProfilePage')
   const currentLang = useCurrentLanguage()
+  const vendorDetails = useTypedSelector((state) => state.user?.user?.vendorDetails)
   const onSave = () => {
-    // console.log('Saving data:', {phoneNumber, region})
     let numberStartWith = ''
     switch (region) {
       case 'Belarus':
@@ -405,7 +416,8 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
             phoneNumber: numberStartWith + phoneNumber,
             inn,
             countries,
-            categories
+            categories,
+            address: vendorDetails?.address || address || ''
           },
           {
             headers: {

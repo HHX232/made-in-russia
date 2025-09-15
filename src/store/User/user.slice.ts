@@ -6,6 +6,7 @@ export interface VendorDetails {
   phoneNumber?: string
   region?: string
   inn?: string
+  address?: string
   description?: string
   sites?: string[]
   countries?: {name: string; value: string}[]
@@ -84,6 +85,11 @@ const userSlice = createSlice({
         state.user.vendorDetails = {...state.user.vendorDetails, ...action.payload}
       } else if (state.user) {
         state.user.vendorDetails = action.payload
+      }
+    },
+    updateVendorAddress: (state, action: PayloadAction<string>) => {
+      if (state.user && state.user.vendorDetails) {
+        state.user.vendorDetails.address = action.payload
       }
     }
   }

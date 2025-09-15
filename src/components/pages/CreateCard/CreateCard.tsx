@@ -593,12 +593,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             />
 
             <CreateDescriptionsElements descriptionError={errors.description} currentDynamicLang={currentLangState} />
-            <CreateFaqCard
-              values={testFaq}
-              onChange={(matrix) => {
-                setTestFaq(matrix)
-              }}
-            />
 
             {/* CreateFaqCard */}
             {currentLangState === 'ru' && (

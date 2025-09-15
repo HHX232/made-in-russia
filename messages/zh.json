@@ -166,6 +166,8 @@
 
 
     "ProfileForm": {
+      "address": "地址",
+"addressPlaceholder": "输入地址",
     "belarus": "白俄罗斯",
     "白俄罗斯":"白俄罗斯",
     "kazakhstan": "哈萨克斯坦",

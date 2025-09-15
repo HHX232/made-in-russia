@@ -4,6 +4,7 @@ import styles from './Avatar.module.scss'
 import {getAccessToken} from '@/services/auth/auth.helper'
 import {toast} from 'sonner'
 import {useTranslations} from 'next-intl'
+import {useUserCache, useUserQuery} from '@/hooks/useUserApi'
 
 interface AvatarProps {
   avatarUrl?: string
@@ -44,6 +45,8 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange, isOnlyShow = 
     uploadAvatar(file)
   }
 
+  const {invalidateUser} = useUserCache()
+  const {refetch} = useUserQuery()
   const uploadAvatar = async (file: File) => {
     setIsLoading(true)
 
@@ -79,6 +82,8 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange, isOnlyShow = 
         // Уведомляем родительский компонент, что аватар был загружен
         // Передаем специальный флаг или текущий localAvatar
         onAvatarChange?.(localAvatar)
+        await invalidateUser()
+        await refetch()
       } else {
         toast.error(
           <div style={{lineHeight: 1.5}}>

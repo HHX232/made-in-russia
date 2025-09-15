@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
@@ -54,6 +55,7 @@ interface UpdatedVendorData extends UpdatedUserData {
 
 interface ProfileFormProps {
   isVendor?: boolean
+  onlyShowAddress?: string
   userData?: User | IVendorData
   regions: RegionType[]
   isLoading: boolean
@@ -139,6 +141,7 @@ const PhoneInputSection: FC<PhoneInputSectionProps> = ({
 
 const ProfileForm: FC<ProfileFormProps> = ({
   isVendor = false,
+  onlyShowAddress,
   isShowForOwner = true,
   userData,
   regions,
@@ -155,7 +158,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
   const [error, setError] = useState<string | null>(null)
   const currentLang = useCurrentLanguage()
   const t = useTranslations('ProfilePage.ProfileForm')
-  const {updateVendorDetails: updateVendorDetailsAction, updateUserProfile} = useActions()
+  const {updateVendorDetails: updateVendorDetailsAction, updateUserProfile, updateVendorAddress} = useActions()
   // const user = useTypedSelector((s) => s.user.user)
   const vendorDetails = useTypedSelector((s) => s.user.user?.vendorDetails, shallowEqual)
   useEffect(() => {
@@ -279,6 +282,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
   const [originalData, setOriginalData] = useState<{
     phoneNumber: string
     region: string
+    address: string
   } | null>(null)
 
   // Функция для вызова колбэков с обновленными данными
@@ -383,9 +387,16 @@ const ProfileForm: FC<ProfileFormProps> = ({
         originalRegion = detectRegionFromPhone(userData.phoneNumber || '')
       }
 
+      console.log(
+        'userData.vendorDetails?.address',
+        (userData as any)?.vendorDetails?.address,
+        'userData.vendorDetaild',
+        (userData as any)?.vendorDetails
+      )
       setOriginalData({
         phoneNumber: userData.phoneNumber || '',
-        region: originalRegion
+        region: originalRegion,
+        address: (userData as any)?.vendorDetails?.address || ''
       })
 
       // Устанавливаем текущие значения
@@ -408,9 +419,22 @@ const ProfileForm: FC<ProfileFormProps> = ({
     // Сравниваем национальные номера
     const isPhoneChanged = currentNational !== originalNational
 
-    safeSetNeedToSave(isRegionChanged || isPhoneChanged)
-  }, [telText, selectedRegion, userData, isPhoneInitialized, userInteracted, originalData, safeSetNeedToSave])
+    // ➕ Сравниваем адрес
+    const currentAddress = vendorDetails?.address || ''
+    const isAddressChanged = currentAddress !== originalData.address
 
+    // ➕ Учитываем изменение адреса в проверке
+    safeSetNeedToSave(isRegionChanged || isPhoneChanged || isAddressChanged)
+  }, [
+    telText,
+    selectedRegion,
+    userData,
+    isPhoneInitialized,
+    userInteracted,
+    originalData,
+    safeSetNeedToSave,
+    vendorDetails?.address // ➕ Добавляем зависимость от адреса
+  ])
   // Установка региона из userData
   useEffect(() => {
     if (userData && !userInteracted) {
@@ -739,7 +763,27 @@ const ProfileForm: FC<ProfileFormProps> = ({
           </span>
         )}
       </div>
-
+      {isVendor && (
+        <div style={{margin: '5px 0 5px 0'}} className={styles.inn__box}>
+          <TextInputUI
+            disabled={!isShowForOwner}
+            extraClass={`${styles.extra__input} ${styles.extra__input__inn}`}
+            theme='light'
+            readOnly={!!onlyShowAddress}
+            currentValue={!isShowForOwner ? onlyShowAddress || '' : vendorDetails?.address || ''}
+            onSetValue={(value) => {
+              updateVendorAddress(value)
+              updateVendorDetailsAction({...vendorDetails, address: value})
+              console.log('value on set adress', value, 'vendorDetails after setter', vendorDetails)
+              if (value.length > 0) {
+                setUserInteracted(true)
+              }
+            }}
+            title={t('address')}
+            placeholder={t('addressPlaceholder')}
+          />
+        </div>
+      )}
       <PhoneInputSection
         telText={telText}
         isShowForVendor={isShowForOwner}
