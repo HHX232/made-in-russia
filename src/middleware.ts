@@ -5,6 +5,7 @@ import Cookies from 'js-cookie'
 import {User} from './services/users.types'
 import ICardFull from './services/card/card.types'
 
+// before include subdomain logic
 const getLocaleFromPathname = (pathname: string): string | null => {
   const segments = pathname.split('/').filter(Boolean)
   const firstSegment = segments[0]
