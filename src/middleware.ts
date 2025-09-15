@@ -5,30 +5,29 @@ import Cookies from 'js-cookie'
 import {User} from './services/users.types'
 import ICardFull from './services/card/card.types'
 
-// before include subdomain logic
-const getLocaleFromPathname = (pathname: string): string | null => {
-  const segments = pathname.split('/').filter(Boolean)
-  const firstSegment = segments[0]
+// Функция для определения локали по поддомену
+const getLocaleFromSubdomain = (hostname: string): string | null => {
+  const parts = hostname.split('.')
 
-  if (['en', 'ru', 'zh'].includes(firstSegment)) {
-    return firstSegment
+  // Если есть поддомен
+  if (parts.length > 2) {
+    const subdomain = parts[0]
+    switch (subdomain) {
+      case 'cn':
+        return 'zh'
+      case 'en':
+        return 'en'
+      default:
+        return null
+    }
   }
+
+  // Если это основной домен exporteru.com без поддомена - русский
+  if (parts.length === 2 && parts[0] === 'exporteru') {
+    return 'ru'
+  }
+
   return null
-}
-
-const createLocalizedURL = (path: string, locale: string | null): string => {
-  if (locale) {
-    return `/${locale}${path.startsWith('/') ? path : `/${path}`}`
-  }
-  return path.startsWith('/') ? path : `/${path}`
-}
-
-const getPathnameWithoutLocale = (pathname: string): string => {
-  const locale = getLocaleFromPathname(pathname)
-  if (locale) {
-    return pathname.replace(`/${locale}`, '') || '/'
-  }
-  return pathname
 }
 
 export const saveTokenStorage = (data: {accessToken: string; refreshToken: string}) => {
@@ -75,18 +74,46 @@ export async function middleware(request: NextRequest) {
 
   if (request.nextUrl.pathname.startsWith('/api')) {
     const response = NextResponse.next()
-    const locale = getLocaleFromPathname(request.nextUrl.pathname)
-    if (locale) {
-      response.headers.set('x-locale', locale)
+
+    // Обработка локали для API запросов
+    const hostname = request.nextUrl.hostname
+    const localeFromSubdomain = getLocaleFromSubdomain(hostname)
+    const existingLocaleCookie = request.cookies.get('NEXT_LOCALE')?.value
+
+    if (localeFromSubdomain && !existingLocaleCookie) {
+      response.cookies.set('NEXT_LOCALE', localeFromSubdomain)
+      console.log('🌍 Установлена кука NEXT_LOCALE для API:', localeFromSubdomain)
     }
+
+    if (localeFromSubdomain) {
+      response.headers.set('x-locale', localeFromSubdomain)
+    }
+
     return response // Пропускаем для API
   }
 
   try {
-    const {pathname} = request.nextUrl
-    const locale = getLocaleFromPathname(pathname)
-    const pathnameWithoutLocale = getPathnameWithoutLocale(pathname)
-    console.log('🌐 Обнаружена локаль:', locale, 'Путь без локали:', pathnameWithoutLocale)
+    const {pathname, hostname} = request.nextUrl
+
+    // Определяем локаль по поддомену
+    const localeFromSubdomain = getLocaleFromSubdomain(hostname)
+    const existingLocaleCookie = request.cookies.get('NEXT_LOCALE')?.value
+
+    console.log(
+      '🌐 Hostname:',
+      hostname,
+      'Локаль из поддомена:',
+      localeFromSubdomain,
+      'Существующая кука:',
+      existingLocaleCookie
+    )
+
+    // Устанавливаем куку NEXT_LOCALE если она не установлена и есть поддомен
+    let shouldSetLocaleCookie = false
+    if (localeFromSubdomain && !existingLocaleCookie) {
+      shouldSetLocaleCookie = true
+      console.log('🍪 Необходимо установить куку NEXT_LOCALE:', localeFromSubdomain)
+    }
 
     // Проверяем наличие токенов в запросе
     const accessToken = request.cookies.get('accessToken')?.value || ''
@@ -95,20 +122,21 @@ export async function middleware(request: NextRequest) {
     console.log('📌 Проверка токенов:', {
       accessTokenExists: !!accessToken,
       refreshTokenExists: !!refreshToken,
-      path: pathnameWithoutLocale
+      path: pathname
     })
 
     // Обработка маршрутов create-card
-    if (pathnameWithoutLocale === '/create-card' || pathnameWithoutLocale.startsWith('/create-card/')) {
-      console.log('🎨 Обнаружен маршрут create-card:', pathnameWithoutLocale)
+    if (pathname === '/create-card' || pathname.startsWith('/create-card/')) {
+      console.log('🎨 Обнаружен маршрут create-card:', pathname)
 
-      console.log('locale in start middleware', locale)
       // Проверка наличия refresh токена
       if (!refreshToken) {
         console.log('❌ Нет refresh токена, редирект на /login')
-        const loginUrl = createLocalizedURL('/login', locale)
-        const response = NextResponse.redirect(new URL(loginUrl, request.url))
-        response.headers.set('x-locale', locale || 'en')
+        const response = NextResponse.redirect(new URL('/login', request.url))
+        response.headers.set('x-locale', localeFromSubdomain || 'en')
+        if (shouldSetLocaleCookie) {
+          response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+        }
         return response
       }
       try {
@@ -125,24 +153,28 @@ export async function middleware(request: NextRequest) {
         // Проверяем роль пользователя
         if (userData.role !== 'Vendor' && userData.role !== 'Admin') {
           console.log('❌ Доступ запрещен для роли:', userData.role)
-          const homeUrl = createLocalizedURL('/', locale)
-          const response = NextResponse.redirect(new URL(homeUrl, request.url))
-          response.headers.set('x-locale', locale || 'en')
+          const response = NextResponse.redirect(new URL('/', request.url))
+          response.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return response
         }
 
         // Если это маршрут с ID товара
-        if (pathnameWithoutLocale.startsWith('/create-card/') && pathnameWithoutLocale !== '/create-card') {
-          const pathSegments = pathnameWithoutLocale.split('/')
+        if (pathname.startsWith('/create-card/') && pathname !== '/create-card') {
+          const pathSegments = pathname.split('/')
           const productId = pathSegments[2]
 
           console.log('🔍 Проверка доступа к товару с ID:', productId)
 
           if (!productId || isNaN(Number(productId))) {
             console.log('❌ Невалидный ID товара:', productId)
-            const createCardUrl = createLocalizedURL('/create-card', locale)
-            const response = NextResponse.redirect(new URL(createCardUrl, request.url))
-            response.headers.set('x-locale', locale || 'en')
+            const response = NextResponse.redirect(new URL('/create-card', request.url))
+            response.headers.set('x-locale', localeFromSubdomain || 'en')
+            if (shouldSetLocaleCookie) {
+              response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+            }
             return response
           }
 
@@ -152,8 +184,8 @@ export async function middleware(request: NextRequest) {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
                 'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
-                'Accept-Language': locale || 'en',
-                'X-Locale': locale || 'en'
+                'Accept-Language': localeFromSubdomain || 'en',
+                'X-Locale': localeFromSubdomain || 'en'
               }
             })
 
@@ -164,36 +196,49 @@ export async function middleware(request: NextRequest) {
             if (userData.role === 'Admin') {
               console.log('👑 Admin имеет доступ к редактированию любого товара')
               const response = NextResponse.next()
-              response.headers.set('x-locale', locale || 'en')
+              response.headers.set('x-locale', localeFromSubdomain || 'en')
+              if (shouldSetLocaleCookie) {
+                response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+              }
               return response
             }
 
             // Проверяем, является ли пользователь владельцем товара
             if (productOwnerId !== userData.id) {
               console.log('❌ Пользователь не является владельцем товара, редирект на /create-card')
-              const createCardUrl = createLocalizedURL('/create-card', locale)
-              const response = NextResponse.redirect(new URL(createCardUrl, request.url))
-              response.headers.set('x-locale', locale || 'en')
+              const response = NextResponse.redirect(new URL('/create-card', request.url))
+              response.headers.set('x-locale', localeFromSubdomain || 'en')
+              if (shouldSetLocaleCookie) {
+                response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+              }
               return response
             }
 
             console.log('✅ Пользователь является владельцем товара, доступ разрешен')
             const response = NextResponse.next()
-            response.headers.set('x-locale', locale || 'en')
+            response.headers.set('x-locale', localeFromSubdomain || 'en')
+            if (shouldSetLocaleCookie) {
+              response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+            }
             return response
           } catch (error) {
             console.error('❌ Ошибка при получении данных товара:', error)
             // Если товар не найден или произошла ошибка, редиректим на /create-card
-            const createCardUrl = createLocalizedURL('/create-card', locale)
-            const response = NextResponse.redirect(new URL(createCardUrl, request.url))
-            response.headers.set('x-locale', locale || 'en')
+            const response = NextResponse.redirect(new URL('/create-card', request.url))
+            response.headers.set('x-locale', localeFromSubdomain || 'en')
+            if (shouldSetLocaleCookie) {
+              response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+            }
             return response
           }
         }
 
         // Для маршрута /create-card без ID просто разрешаем доступ Vendor и Admin
         const response = NextResponse.next()
-        response.headers.set('x-locale', locale || 'en')
+        response.headers.set('x-locale', localeFromSubdomain || 'en')
+        if (shouldSetLocaleCookie) {
+          response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+        }
         return response
       } catch (error) {
         console.error('❗ Не удалось получить данные пользователя:', error)
@@ -218,6 +263,9 @@ export async function middleware(request: NextRequest) {
           // Создаем новый ответ и устанавливаем обновленные токены
           const response = NextResponse.next()
           response.cookies.set('accessToken', tokenData.accessToken)
+          if (shouldSetLocaleCookie) {
+            response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
 
           // Повторяем проверку с новым токеном
           const {data: userData} = await instance.get<User>('/me', {
@@ -230,34 +278,40 @@ export async function middleware(request: NextRequest) {
           // Проверяем роль пользователя
           if (userData.role !== 'Vendor' && userData.role !== 'Admin') {
             console.log('❌ Доступ запрещен для роли:', userData.role)
-            const homeUrl = createLocalizedURL('/', locale)
-            const redirectResponse = NextResponse.redirect(new URL(homeUrl, request.url))
+            const redirectResponse = NextResponse.redirect(new URL('/', request.url))
             redirectResponse.cookies.set('accessToken', tokenData.accessToken)
-            redirectResponse.headers.set('x-locale', locale || 'en')
+            redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+            if (shouldSetLocaleCookie) {
+              redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+            }
             return redirectResponse
           }
 
-          response.headers.set('x-locale', locale || 'en')
+          response.headers.set('x-locale', localeFromSubdomain || 'en')
           return response
         } catch (e) {
           console.error('❌ Не удалось обновить токен:', e)
-          const loginUrl = createLocalizedURL('/login', locale)
-          const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
-          redirectResponse.headers.set('x-locale', locale || 'en')
+          const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+          redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return removeTokensFromResponse(redirectResponse)
         }
       }
     }
 
-    if (protectedAdminRoutes.some((route) => pathnameWithoutLocale.startsWith(route))) {
-      console.log('🛡️ Обнаружен admin маршрут:', pathnameWithoutLocale)
+    if (protectedAdminRoutes.some((route) => pathname.startsWith(route))) {
+      console.log('🛡️ Обнаружен admin маршрут:', pathname)
 
       // Проверка наличия refresh токена
       if (!refreshToken) {
         console.log('❌ Нет refresh токена, редирект на /login')
-        const loginUrl = createLocalizedURL('/login', locale)
-        const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
-        redirectResponse.headers.set('x-locale', locale || 'en')
+        const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+        redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+        if (shouldSetLocaleCookie) {
+          redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+        }
         return redirectResponse
       }
       console.log('🔄 Проверка авторизации пользователя с accessToken')
@@ -275,12 +329,17 @@ export async function middleware(request: NextRequest) {
         if (userData.role === 'Admin') {
           console.log('👑 Admin имеет доступ ко всем маршрутам')
           const response = NextResponse.next()
-          response.headers.set('x-locale', locale || 'en')
+          response.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return response
         } else {
-          const homeUrl = createLocalizedURL('/', locale)
-          const redirectResponse = NextResponse.redirect(new URL(homeUrl, request.url))
-          redirectResponse.headers.set('x-locale', locale || 'en')
+          const redirectResponse = NextResponse.redirect(new URL('/', request.url))
+          redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return redirectResponse
         }
       } catch (error) {
@@ -306,6 +365,9 @@ export async function middleware(request: NextRequest) {
           // Создаем новый ответ и устанавливаем обновленные токены
           const response = NextResponse.next()
           response.cookies.set('accessToken', tokenData.accessToken)
+          if (shouldSetLocaleCookie) {
+            response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           // refreshToken остается прежним, если сервер не вернул новый
           console.log('🔐 Новый accessToken установлен в cookies')
 
@@ -322,56 +384,64 @@ export async function middleware(request: NextRequest) {
 
             if (userData.role === 'Admin') {
               console.log('👑 Admin имеет доступ ко всем маршрутам')
-              response.headers.set('x-locale', locale || 'en')
+              response.headers.set('x-locale', localeFromSubdomain || 'en')
               return response
             }
 
-            if (userData.role === 'Vendor' && pathnameWithoutLocale === '/profile') {
+            if (userData.role === 'Vendor' && pathname === '/profile') {
               console.log('🔀 Перенаправление User с ролью Vendor на /vendor')
-              const redirectResponse = NextResponse.redirect(
-                new URL(createLocalizedURL('/vendor', locale), request.url)
-              )
+              const redirectResponse = NextResponse.redirect(new URL('/vendor', request.url))
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
-              redirectResponse.headers.set('x-locale', locale || 'en')
+              redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+              if (shouldSetLocaleCookie) {
+                redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+              }
               return redirectResponse
-            } else if (userData.role === 'User' && pathnameWithoutLocale === '/vendor') {
+            } else if (userData.role === 'User' && pathname === '/vendor') {
               console.log('🔀 Перенаправление User с ролью User на /profile')
-              const redirectResponse = NextResponse.redirect(
-                new URL(createLocalizedURL('/profile', locale), request.url)
-              )
+              const redirectResponse = NextResponse.redirect(new URL('/profile', request.url))
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
-              redirectResponse.headers.set('x-locale', locale || 'en')
+              redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+              if (shouldSetLocaleCookie) {
+                redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+              }
               return redirectResponse
             }
 
             return response
           } catch (e) {
             console.error('❌ Не удалось авторизоваться даже с новым токеном:', e)
-            const loginUrl = createLocalizedURL('/login', locale)
-            const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
-            redirectResponse.headers.set('x-locale', locale || 'en')
+            const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+            redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+            if (shouldSetLocaleCookie) {
+              redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+            }
             return removeTokensFromResponse(redirectResponse)
           }
         } catch (e) {
           console.error('❌ Не удалось обновить токен:', e)
-          const loginUrl = createLocalizedURL('/login', locale)
-          const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
-          redirectResponse.headers.set('x-locale', locale || 'en')
+          const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+          redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return removeTokensFromResponse(redirectResponse)
         }
       }
     }
 
     // Обработка защищенных маршрутов
-    if (protectedRoutes.some((route) => pathnameWithoutLocale.startsWith(route))) {
-      console.log('🛡️ Обнаружен защищенный маршрут:', pathnameWithoutLocale)
+    if (protectedRoutes.some((route) => pathname.startsWith(route))) {
+      console.log('🛡️ Обнаружен защищенный маршрут:', pathname)
 
       // Проверка наличия refresh токена
       if (!refreshToken) {
         console.log('❌ Нет refresh токена, редирект на /login')
-        const loginUrl = createLocalizedURL('/login', locale)
-        const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
-        redirectResponse.headers.set('x-locale', locale || 'en')
+        const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+        redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+        if (shouldSetLocaleCookie) {
+          redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+        }
         return redirectResponse
       }
 
@@ -391,26 +461,36 @@ export async function middleware(request: NextRequest) {
         if (userData.role === 'Admin') {
           console.log('👑 Admin имеет доступ ко всем маршрутам')
           const response = NextResponse.next()
-          response.headers.set('x-locale', locale || 'en')
+          response.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return response
         }
 
-        if (userData.role === 'Vendor' && pathnameWithoutLocale === '/profile') {
+        if (userData.role === 'Vendor' && pathname === '/profile') {
           console.log('🔀 Перенаправление User с ролью Vendor на /vendor')
-          const vendorUrl = createLocalizedURL('/vendor', locale)
-          const response = NextResponse.redirect(new URL(vendorUrl, request.url))
-          response.headers.set('x-locale', locale || 'en')
+          const response = NextResponse.redirect(new URL('/vendor', request.url))
+          response.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return response
-        } else if (userData.role === 'User' && pathnameWithoutLocale === '/vendor') {
+        } else if (userData.role === 'User' && pathname === '/vendor') {
           console.log('🔀 Перенаправление User с ролью User на /profile')
-          const profileUrl = createLocalizedURL('/profile', locale)
-          const response = NextResponse.redirect(new URL(profileUrl, request.url))
-          response.headers.set('x-locale', locale || 'en')
+          const response = NextResponse.redirect(new URL('/profile', request.url))
+          response.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return response
         }
 
         const response = NextResponse.next()
-        response.headers.set('x-locale', locale || 'en')
+        response.headers.set('x-locale', localeFromSubdomain || 'en')
+        if (shouldSetLocaleCookie) {
+          response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+        }
         return response
       } catch (error) {
         console.error('❗ Не удалось получить данные пользователя с текущим accessToken:', error)
@@ -435,6 +515,9 @@ export async function middleware(request: NextRequest) {
           // Создаем новый ответ и устанавливаем обновленные токены
           const response = NextResponse.next()
           response.cookies.set('accessToken', tokenData.accessToken)
+          if (shouldSetLocaleCookie) {
+            response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           // refreshToken остается прежним, если сервер не вернул новый
           console.log('🔐 Новый accessToken установлен в cookies')
 
@@ -451,55 +534,64 @@ export async function middleware(request: NextRequest) {
 
             if (userData.role === 'Admin') {
               console.log('👑 Admin имеет доступ ко всем маршрутам')
-              response.headers.set('x-locale', locale || 'en')
+              response.headers.set('x-locale', localeFromSubdomain || 'en')
               return response
             }
 
-            if (userData.role === 'Vendor' && pathnameWithoutLocale === '/profile') {
+            if (userData.role === 'Vendor' && pathname === '/profile') {
               console.log('🔀 Перенаправление User с ролью Vendor на /vendor')
-              const redirectResponse = NextResponse.redirect(
-                new URL(createLocalizedURL('/vendor', locale), request.url)
-              )
+              const redirectResponse = NextResponse.redirect(new URL('/vendor', request.url))
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
-              redirectResponse.headers.set('x-locale', locale || 'en')
+              redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+              if (shouldSetLocaleCookie) {
+                redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+              }
               return redirectResponse
-            } else if (userData.role === 'User' && pathnameWithoutLocale === '/vendor') {
+            } else if (userData.role === 'User' && pathname === '/vendor') {
               console.log('🔀 Перенаправление User с ролью User на /profile')
-              const redirectResponse = NextResponse.redirect(
-                new URL(createLocalizedURL('/profile', locale), request.url)
-              )
+              const redirectResponse = NextResponse.redirect(new URL('/profile', request.url))
               redirectResponse.cookies.set('accessToken', tokenData.accessToken)
-              redirectResponse.headers.set('x-locale', locale || 'en')
+              redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+              if (shouldSetLocaleCookie) {
+                redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+              }
               return redirectResponse
             }
 
             return response
           } catch (e) {
             console.error('❌ Не удалось авторизоваться даже с новым токеном:', e)
-            const loginUrl = createLocalizedURL('/login', locale)
-            const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
-            redirectResponse.headers.set('x-locale', locale || 'en')
+            const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+            redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+            if (shouldSetLocaleCookie) {
+              redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+            }
             return removeTokensFromResponse(redirectResponse)
           }
         } catch (e) {
           console.error('❌ Не удалось обновить токен:', e)
-          const loginUrl = createLocalizedURL('/login', locale)
-          const redirectResponse = NextResponse.redirect(new URL(loginUrl, request.url))
-          redirectResponse.headers.set('x-locale', locale || 'en')
+          const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+          redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return removeTokensFromResponse(redirectResponse)
         }
       }
     }
 
     // Обработка публичных маршрутов (login, register)
-    if (publicRoutes.some((route) => pathnameWithoutLocale.startsWith(route))) {
-      console.log('🌐 Обнаружен публичный маршрут:', pathnameWithoutLocale)
+    if (publicRoutes.some((route) => pathname.startsWith(route))) {
+      console.log('🌐 Обнаружен публичный маршрут:', pathname)
 
       // Если нет токенов, разрешаем доступ к публичным маршрутам
       if (!accessToken && !refreshToken) {
         console.log('✅ Доступ к публичному маршруту разрешен (нет токенов)')
         const response = NextResponse.next()
-        response.headers.set('x-locale', locale || 'en')
+        response.headers.set('x-locale', localeFromSubdomain || 'en')
+        if (shouldSetLocaleCookie) {
+          response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+        }
         return response
       }
 
@@ -519,27 +611,35 @@ export async function middleware(request: NextRequest) {
           // Перенаправление в зависимости от роли
           if (userData.role === 'Admin') {
             console.log('👑 Admin перенаправляется на главную')
-            const homeUrl = createLocalizedURL('/', locale)
-            const redirectResponse = NextResponse.redirect(new URL(homeUrl, request.url))
-            redirectResponse.headers.set('x-locale', locale || 'en')
+            const redirectResponse = NextResponse.redirect(new URL('/', request.url))
+            redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+            if (shouldSetLocaleCookie) {
+              redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+            }
             return redirectResponse
           } else if (userData.role === 'Vendor') {
             console.log('🔀 Перенаправление Vendor на /vendor')
-            const vendorUrl = createLocalizedURL('/vendor', locale)
-            const redirectResponse = NextResponse.redirect(new URL(vendorUrl, request.url))
-            redirectResponse.headers.set('x-locale', locale || 'en')
+            const redirectResponse = NextResponse.redirect(new URL('/vendor', request.url))
+            redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+            if (shouldSetLocaleCookie) {
+              redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+            }
             return redirectResponse
           } else if (userData.role === 'User') {
             console.log('🔀 Перенаправление User на /profile')
-            const profileUrl = createLocalizedURL('/profile', locale)
-            const redirectResponse = NextResponse.redirect(new URL(profileUrl, request.url))
-            redirectResponse.headers.set('x-locale', locale || 'en')
+            const redirectResponse = NextResponse.redirect(new URL('/profile', request.url))
+            redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+            if (shouldSetLocaleCookie) {
+              redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+            }
             return redirectResponse
           }
 
-          const homeUrl = createLocalizedURL('/', locale)
-          const redirectResponse = NextResponse.redirect(new URL(homeUrl, request.url))
-          redirectResponse.headers.set('x-locale', locale || 'en')
+          const redirectResponse = NextResponse.redirect(new URL('/', request.url))
+          redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return redirectResponse
         } catch (error) {
           console.error(
@@ -587,10 +687,12 @@ export async function middleware(request: NextRequest) {
               }
 
               // Создаем редирект и устанавливаем обновленные токены
-              const redirectUrlNew = createLocalizedURL(redirectUrl, locale)
-              const response = NextResponse.redirect(new URL(redirectUrlNew, request.url))
+              const response = NextResponse.redirect(new URL(redirectUrl, request.url))
               response.cookies.set('accessToken', tokenData.accessToken)
-              response.headers.set('x-locale', locale || 'en')
+              response.headers.set('x-locale', localeFromSubdomain || 'en')
+              if (shouldSetLocaleCookie) {
+                response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+              }
               // refreshToken остается прежним
               console.log('🔐 Новый accessToken установлен в cookies на публичном маршруте')
 
@@ -599,7 +701,10 @@ export async function middleware(request: NextRequest) {
               console.error('❌ Не удалось получить данные пользователя после обновления токена:', userError)
               // На публичном маршруте мы просто разрешаем доступ, если получение данных не удалось
               const response = NextResponse.next()
-              response.headers.set('x-locale', locale || 'en')
+              response.headers.set('x-locale', localeFromSubdomain || 'en')
+              if (shouldSetLocaleCookie) {
+                response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+              }
               return removeTokensFromResponse(response)
             }
           } catch (e) {
@@ -607,7 +712,10 @@ export async function middleware(request: NextRequest) {
             // На публичном маршруте мы просто разрешаем доступ, если обновление не удалось
             // При этом удаляем невалидные токены
             const response = NextResponse.next()
-            response.headers.set('x-locale', locale || 'en')
+            response.headers.set('x-locale', localeFromSubdomain || 'en')
+            if (shouldSetLocaleCookie) {
+              response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+            }
             return removeTokensFromResponse(response)
           }
         }
@@ -615,15 +723,18 @@ export async function middleware(request: NextRequest) {
 
       console.log('✅ Доступ к публичному маршруту разрешен')
       const response = NextResponse.next()
-      response.headers.set('x-locale', locale || 'en')
+      response.headers.set('x-locale', localeFromSubdomain || 'en')
+      if (shouldSetLocaleCookie) {
+        response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+      }
       return response
     }
 
-    if (pathnameWithoutLocale.startsWith('/data-vendor/')) {
+    if (pathname.startsWith('/data-vendor/')) {
       console.log('🚀 Middleware запущен для пути:', request.nextUrl.pathname)
 
       // Извлекаем ID из пути URL
-      const pathSegments = pathnameWithoutLocale.split('/')
+      const pathSegments = pathname.split('/')
       const id = pathSegments[2] // Получаем ID из /data-vendor/{id}
 
       console.log('ищем продавца с id:', id)
@@ -632,8 +743,11 @@ export async function middleware(request: NextRequest) {
       if (!id || isNaN(Number(id))) {
         console.log('❌ Невалидный ID продавца:', id)
         // Вместо notFound() делаем редирект на 404 страницу
-        const redirectResponse = NextResponse.redirect(new URL(createLocalizedURL('/404', locale), request.url))
-        redirectResponse.headers.set('x-locale', locale || 'en')
+        const redirectResponse = NextResponse.redirect(new URL('/404', request.url))
+        redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+        if (shouldSetLocaleCookie) {
+          redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+        }
         return redirectResponse
       }
 
@@ -655,11 +769,17 @@ export async function middleware(request: NextRequest) {
         })
         if (data.id === userData.id) {
           const response = NextResponse.redirect(new URL('/vendor', request.url))
-          response.headers.set('x-locale', locale || 'en')
+          response.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return response
         }
         const response = NextResponse.next()
-        response.headers.set('x-locale', locale || 'en')
+        response.headers.set('x-locale', localeFromSubdomain || 'en')
+        if (shouldSetLocaleCookie) {
+          response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+        }
         return response
       } catch (e) {
         console.error('❌ Ошибка при получении данных продавца:', e)
@@ -669,14 +789,20 @@ export async function middleware(request: NextRequest) {
         const error = e as any
         if (error?.response?.status === 404 || error?.response?.status === 400) {
           // Продавец не найден или невалидный запрос - редирект на 404
-          const redirectResponse = NextResponse.redirect(new URL(createLocalizedURL('/404', locale), request.url))
-          redirectResponse.headers.set('x-locale', locale || 'en')
+          const redirectResponse = NextResponse.redirect(new URL('/404', request.url))
+          redirectResponse.headers.set('x-locale', localeFromSubdomain || 'en')
+          if (shouldSetLocaleCookie) {
+            redirectResponse.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+          }
           return redirectResponse
         }
 
         // Для других ошибок просто продолжаем
         const response = NextResponse.next()
-        response.headers.set('x-locale', locale || 'en')
+        response.headers.set('x-locale', localeFromSubdomain || 'en')
+        if (shouldSetLocaleCookie) {
+          response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+        }
         return response
       }
     }
@@ -684,14 +810,24 @@ export async function middleware(request: NextRequest) {
     // Для всех остальных маршрутов
     console.log('🌍 Обычный маршрут, продолжаем выполнение')
     const response = NextResponse.next()
-    response.headers.set('x-locale', locale || 'en')
+    response.headers.set('x-locale', localeFromSubdomain || 'en')
+    if (shouldSetLocaleCookie) {
+      response.cookies.set('NEXT_LOCALE', localeFromSubdomain!)
+    }
     return response
   } catch (error) {
     console.error('💥 Критическая ошибка в middleware:', error)
     // В случае критической ошибки просто продолжаем выполнение
     const response = NextResponse.next()
-    const locale = getLocaleFromPathname(request.nextUrl.pathname)
-    response.headers.set('x-locale', locale || 'en')
+    const localeFromSubdomain = getLocaleFromSubdomain(request.nextUrl.hostname)
+    response.headers.set('x-locale', localeFromSubdomain || 'en')
+
+    // Устанавливаем куку даже в случае ошибки
+    const existingLocaleCookie = request.cookies.get('NEXT_LOCALE')?.value
+    if (localeFromSubdomain && !existingLocaleCookie) {
+      response.cookies.set('NEXT_LOCALE', localeFromSubdomain)
+    }
+
     return response
   }
 }

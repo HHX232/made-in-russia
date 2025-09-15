@@ -34,7 +34,7 @@ export default getRequestConfig(async ({requestLocale}) => {
     locale = routing.defaultLocale
   }
 
-  console.log('🌍 Final locale determined:', locale)
+  // console.log('🌍 Final locale determined:', locale)
 
   const localMessages = (await import(`../../messages/${locale}.json`)).default
 

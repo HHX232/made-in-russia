@@ -65,7 +65,7 @@ async function getInitialData(locale: string) {
 
 export default async function Home() {
   const locale = await getCurrentLocale()
-  console.log('locale в доме', locale)
+  // console.log('locale в доме', locale)
   const {products, categories, advertisements} = await getInitialData(locale)
 
   return (
