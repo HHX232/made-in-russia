@@ -76,6 +76,8 @@ const publicRoutes = ['/login', '/register']
 export async function middleware(request: NextRequest) {
   console.log('🚀 Middleware запущен для пути:', request.nextUrl.pathname)
 
+  const hostnameFromHeaders = request.headers.get('host')
+  console.log('🥰 Реальный hostname из headers:', hostnameFromHeaders)
   if (request.nextUrl.pathname.startsWith('/api')) {
     const response = NextResponse.next()
 
@@ -98,7 +100,9 @@ export async function middleware(request: NextRequest) {
 
   try {
     const {pathname, hostname} = request.nextUrl
-
+    const hostnameFromHeaders = request.headers.get('host')
+    console.log('🥰 Реальный hostname из headers:', hostnameFromHeaders)
+    console.log('🌐 Реальный hostname из запроса:', hostname)
     // Определяем локаль по поддомену
     console.log('hostname в middleware', hostname)
     const localeFromSubdomain = getLocaleFromSubdomain(hostname)
