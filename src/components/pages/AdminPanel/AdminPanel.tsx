@@ -16,7 +16,7 @@ import {Product} from '@/services/products/product.types'
 
 export type TAdminTab = 'users' | 'categories' | 'cards' | 'ads' | 'FAQ' | 'translates'
 
-const AdminPanel: FC<{initialProducts: Product[]; hasMore: boolean}> = ({initialProducts, hasMore}) => {
+const AdminPanel: FC<{initialProducts?: Product[]; hasMore?: boolean}> = ({initialProducts, hasMore = true}) => {
   const [activeAdminTab, setActiveAdminTab] = useState<TAdminTab>()
   const pathname = usePathname()
 

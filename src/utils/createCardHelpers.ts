@@ -317,8 +317,10 @@ export const submitFormCardData = async ({
   }
 
   // Prepare prices data
+
   const prices = pricesArrayForSubmit.map((price) => ({
     quantityFrom: typeof price.quantity === 'object' ? price.quantity.from.toString() : price.quantity,
+    quantityTo: typeof price.quantity === 'object' ? price?.quantity?.to?.toString() : price.quantity,
     currency: price.currency,
     unit: price.unit,
     price: parseFloat(price.priceWithoutDiscount),
@@ -331,7 +333,7 @@ export const submitFormCardData = async ({
           )
         : 0
   }))
-
+  console.log('цена от и до:', prices)
   // Prepare similar products array
   const similarProductsArray = Array.from(similarProducts).map((product) => product.id)
 

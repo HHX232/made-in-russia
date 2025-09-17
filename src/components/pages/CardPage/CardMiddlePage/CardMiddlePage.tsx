@@ -6,9 +6,8 @@ import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionG
 import Skeleton from 'react-loading-skeleton'
 import ICardFull from '@/services/card/card.types'
 import {useTranslations} from 'next-intl'
-import dynamic from 'next/dynamic'
+import ShowMarkdown from '@/components/UI-kit/Texts/ShowMarkdown/ShowMarkdown'
 
-const ShowMarkdown = dynamic(() => import('@/components/UI-kit/Texts/ShowMarkdown/ShowMarkdown'), {ssr: false})
 const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoading, cardData}) => {
   useEffect(() => {
     // console.log('cardData in middle', cardData)

@@ -237,12 +237,14 @@ export const useCreateCardAPI = () => {
           } else {
             quantityTo = 999999
           }
+          console.log('здеся quantityTo', quantityTo)
 
           const originalPrice = parseFloat(price.priceWithoutDiscount) || 0
           const discountedPrice = parseFloat(price.priceWithDiscount) || 0
           const discountPercent =
             originalPrice > 0 ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0
 
+          console.log('прямо перед отправкой quantityTo', quantityTo, 'а quantityRange', quantityRange)
           return {
             quantityFrom: quantityRange.from,
             quantityTo: quantityTo,

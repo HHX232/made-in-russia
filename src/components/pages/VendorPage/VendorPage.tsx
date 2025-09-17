@@ -329,12 +329,13 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
     duration: 300,
     startAnimation
   })
+  const currentLang = useCurrentLanguage()
 
   // Вычисляем средний рейтинг - мемоизируем
   const averageRating = useMemo(
     () =>
       reviews.length > 0 ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1) : '0',
-    [reviews]
+    [reviews, currentLang]
   )
 
   // Запускаем анимацию после загрузки компонента
@@ -414,8 +415,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const handleDeleteAccount = useCallback(() => {
     // TODO: Implement delete account logic
   }, [])
-
-  const currentLang = useCurrentLanguage()
 
   // Обработчик сохранения медиа-файлов
   // const handleSaveMediaFiles = useCallback(async () => {
