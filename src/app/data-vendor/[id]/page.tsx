@@ -85,6 +85,7 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
   //     creationDate: '2025-08-21T12:28:25.769275Z',
   //     lastModificationDate: '2025-08-21T12:28:25.769293Z'
   //   }
+
   return (
     <VendorPageComponent
       onlyShowDescr={vendorData?.data?.vendorDetails?.description}

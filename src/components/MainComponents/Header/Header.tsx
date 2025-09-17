@@ -435,11 +435,11 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     positionIsAbsolute={false}
                     title={t('more')}
                     items={[
-                      <div key={'id2 delivery'} className={`${styles.bottom__list_item}`}>
-                        <Link href='/delivery'>{t('delivery')}</Link>
-                      </div>,
+                      // <div key={'id2 delivery'} className={`${styles.bottom__list_item}`}>
+                      //   <Link href='/delivery'>{t('delivery')}</Link>
+                      // </div>,
                       <div key={'id3 about'} className={`${styles.bottom__list_item}`}>
-                        <Link href='/about'>{t('about')}</Link>
+                        <Link href='/about-us'>{t('about')}</Link>
                       </div>,
                       <div key={'id4 help'} className={`${styles.bottom__list_item}`}>
                         <Link href='/help'>{t('help')}</Link>

@@ -60,17 +60,18 @@ const ProductSchema = ({
   const minPrice = Math.min(...prices)
   const maxPrice = Math.max(...prices)
 
+  console.log('priceList', priceList)
   // Формируем массив предложений для AggregateOffer
   const offers = priceList.items.map((item, index) => ({
     '@type': 'Offer',
     price: item.currentPrice || item.originalPrice,
-    priceCurrency: 'USD',
+    priceCurrency: item?.priceUnit,
     priceValidUntil: priceList.discountExpiration,
     availability: 'https://schema.org/InStock',
     eligibleQuantity: {
       '@type': 'Quantitative-Value',
       name: item.title,
-      unitCode: item.priceUnit // Код для тонн
+      unitCode: item.priceUnit
     }
   }))
 

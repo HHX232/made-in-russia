@@ -34,7 +34,7 @@
     "loginForgotPassword": "忘记密码？找回密码",
     "loginRegister": "注册",
     "loginWithSocial": "通过以下方式登录：",
-    "writeEmailOrNickname": "输入邮箱或用户名",
+    "writeEmailOrNickname": "邮箱/用户名",
     "writePassword": "输入密码",
     "passwordError": "密码至少需要6个字符",
     "nicknameError": "请输入用户名或邮箱",
@@ -718,6 +718,12 @@
     "loading": "正在加载类别...",
     "empty": "未找到类别",
     "subcategoriesCount": "{count} 个子类别"
+  },
+  "MetaTags": {
+    "MainPage": {
+      "firstText": "一个从俄罗斯出口商品的在线平台。我们帮助俄罗斯公司寻找外国合作伙伴并进入国际市场。我们专注于产品的批发供应。提供全方位支持：从商品上架到签订出口合同。在整个合作期间配备专属客户经理。",
+      "secondText": "一个从俄罗斯出口商品的服务平台。我们在所有阶段提供支持：筛选合作伙伴、谈判、达成交易。我们直接与供应商和国际买家合作。"
+    }
   }
 
 

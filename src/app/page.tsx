@@ -1,32 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {axiosClassic} from '@/api/api.interceptor'
 import HomePage from '@/components/pages/HomePage/HomePage'
-// import {getCurrentLocale} from '@/lib/locale-detection'
+import {getCurrentLocale} from '@/lib/locale-detection'
 import {Product} from '@/services/products/product.types'
-// import {useLocale} from 'next-intl'
-// import {cookies, headers} from 'next/headers'
-
-// async function getLocale(): Promise<string> {
-//   const cookieStore = await cookies()
-//   let locale = cookieStore.get('NEXT_LOCALE')?.value
-
-//   if (!locale) {
-//     const headersList = await headers()
-//     locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
-
-//     if (!locale) {
-//       const referer = headersList.get('referer')
-//       if (referer) {
-//         const match = referer.match(/\/([a-z]{2})\//)
-//         if (match && ['en', 'ru', 'zh'].includes(match[1])) {
-//           locale = match[1]
-//         }
-//       }
-//     }
-//   }
-
-//   return locale || 'en'
-// }
+import {getTranslations} from 'next-intl/server'
 
 export interface IPromoFromServer {
   id: number
@@ -52,37 +29,45 @@ interface IGeneralResponse {
 }
 
 // теперь только один запрос
-async function getInitialData() {
-  const {data} = await axiosClassic.get<IGeneralResponse>('/general')
+async function getInitialData(locale: string) {
+  const {data} = await axiosClassic.get<IGeneralResponse>('/general', {
+    headers: {
+      'Accept-Language': locale,
+      'x-locale': locale
+    }
+  })
 
   // console.log('general data', data)
   return data
 }
 
 export default async function Home() {
-  const {products, categories, advertisements} = await getInitialData()
+  const locale = await getCurrentLocale()
+  // console.log('locale в доме', locale)
+  const {products, categories, advertisements} = await getInitialData(locale)
 
   return (
     <HomePage
-      ads={advertisements || []}
-      initialProducts={products.content || []}
+      ads={advertisements ?? []}
+      initialProducts={products.content}
       initialHasMore={!products.last}
-      categories={categories || []}
+      categories={categories}
     />
   )
 }
 
-export function generateMetadata() {
+export async function generateMetadata() {
+  const t = await getTranslations('MetaTags.MainPage')
   try {
     return {
       title: {
         absolute: 'Exporteru',
         template: `%s | Exporteru`
       },
-      description: `Exporteru — онлайн-платформа для экспорта товаров из России. Мы помогаем российским компаниям находить иностранных контрагентов и выходить на международные рынки. Специализируемся на оптовых поставках продукции. Комплексное сопровождение: от размещения до заключения экспортного контракта. Персональный менеджер на весь период сотрудничества.`,
+      description: `Exporteru — ${t('firstText')}.`,
       openGraph: {
         title: 'Exporteru',
-        description: `Exporteru — сервис для экспорта товаров из России. Предлагаем поддержку на всех этапах: подбор контрагентов, переговоры, заключение сделок. Работаем напрямую с поставщиками и международными покупателями.`
+        description: `Exporteru — ${t('secondText')}.`
       },
       icons: {
         icon: '/mstile-c-144x144.png',

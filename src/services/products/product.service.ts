@@ -22,6 +22,7 @@ const ProductService = {
     const defaultParams = {
       page: params.page ?? 0,
       size: params.size ?? 10,
+      // creationDate: params.creationDate || 'asc',
       ...params
     }
 

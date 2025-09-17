@@ -75,35 +75,18 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
     setError('')
 
     try {
-      let response
-
-      if (isEmail(name)) {
-        response = await axiosClassic.post(
-          '/auth/login-with-email',
-          {
-            email: name,
-            password: password
-          },
-          {
-            headers: {
-              'Accept-Language': currentLang
-            }
+      const response = await axiosClassic.post(
+        '/auth/login-with-email',
+        {
+          email: name,
+          password: password
+        },
+        {
+          headers: {
+            'Accept-Language': currentLang
           }
-        )
-      } else {
-        response = await axiosClassic.post(
-          '/auth/login-with-login',
-          {
-            login: name,
-            password: password
-          },
-          {
-            headers: {
-              'Accept-Language': currentLang
-            }
-          }
-        )
-      }
+        }
+      )
 
       const {accessToken, refreshToken} = response.data as any
 

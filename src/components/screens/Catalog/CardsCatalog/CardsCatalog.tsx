@@ -60,7 +60,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     minPrice: priceRange?.min,
     maxPrice: priceRange?.max,
     deliveryMethodIds: delivery?.join(',') ? delivery?.join(',') : '',
-    title: searchTitle
+    title: searchTitle,
+    sort: 'creationDate',
+    order: 'desc'
   })
 
   const t = useTranslations('HomePage')
