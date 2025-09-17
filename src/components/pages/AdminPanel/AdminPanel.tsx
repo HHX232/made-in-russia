@@ -22,6 +22,7 @@ const AdminPanel: FC<{initialProducts?: Product[]; hasMore?: boolean}> = ({initi
 
   useEffect(() => {
     setActiveAdminTab(pathname.split('/').pop() as TAdminTab)
+    // console.log(message)
   }, [pathname])
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
