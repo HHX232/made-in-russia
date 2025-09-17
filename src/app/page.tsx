@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {axiosClassic} from '@/api/api.interceptor'
 import HomePage from '@/components/pages/HomePage/HomePage'
-import {getCurrentLocale} from '@/lib/locale-detection'
+// import {getCurrentLocale} from '@/lib/locale-detection'
 import {Product} from '@/services/products/product.types'
+// import {useLocale} from 'next-intl'
 // import {cookies, headers} from 'next/headers'
 
 // async function getLocale(): Promise<string> {
@@ -51,34 +52,27 @@ interface IGeneralResponse {
 }
 
 // теперь только один запрос
-async function getInitialData(locale: string) {
-  const {data} = await axiosClassic.get<IGeneralResponse>('/general', {
-    headers: {
-      'Accept-Language': locale,
-      'x-locale': locale
-    }
-  })
+async function getInitialData() {
+  const {data} = await axiosClassic.get<IGeneralResponse>('/general')
 
   // console.log('general data', data)
   return data
 }
 
 export default async function Home() {
-  const locale = await getCurrentLocale()
-  // console.log('locale в доме', locale)
-  const {products, categories, advertisements} = await getInitialData(locale)
+  const {products, categories, advertisements} = await getInitialData()
 
   return (
     <HomePage
-      ads={advertisements ?? []}
-      initialProducts={products.content}
+      ads={advertisements || []}
+      initialProducts={products.content || []}
       initialHasMore={!products.last}
-      categories={categories}
+      categories={categories || []}
     />
   )
 }
 
-export async function generateMetadata() {
+export function generateMetadata() {
   try {
     return {
       title: {

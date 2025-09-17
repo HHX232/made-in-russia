@@ -48,7 +48,7 @@ export async function getCurrentLocale(): Promise<SupportedLocale> {
       }
 
       // 2. Определение по Accept-Language заголовку
-      const acceptLanguageHeader = headersList.get('accept-language')
+      const acceptLanguageHeader = headersList.get('Accept-Language')
       if (acceptLanguageHeader) {
         const preferredLocale = parseAcceptLanguage(acceptLanguageHeader)
         if (preferredLocale) {

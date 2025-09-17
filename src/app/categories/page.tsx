@@ -1,10 +1,10 @@
 import Footer from '@/components/MainComponents/Footer/Footer'
 import Header from '@/components/MainComponents/Header/Header'
 import MainCategoryPage from '@/components/pages/MainCategoryPage /MainCategoryPage'
-import {getCurrentLocale} from '@/lib/locale-detection'
+import {useLocale} from 'next-intl'
 
-export default async function CategoriesPage() {
-  const locale = await getCurrentLocale()
+export default function CategoriesPage() {
+  const locale = useLocale()
   return (
     <div>
       <Header />

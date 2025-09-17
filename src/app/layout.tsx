@@ -8,19 +8,20 @@ import {Toaster} from 'sonner'
 import NProgressProvider from '@/components/UI-kit/loaders/nprogress-provider'
 import ProductService from '@/services/products/product.service'
 import {NextIntlClientProvider} from 'next-intl'
-import {cookies, headers} from 'next/headers'
+// import {cookies, headers} from 'next/headers'
 import ClientStyleLoader from '@/components/ClientStyleLoader'
 import {getMessages} from 'next-intl/server'
-import {getCurrentLocale} from '@/lib/locale-detection'
+// import {getCurrentLocale} from '@/lib/locale-detection'
 // import GoogleRecaptchaProviderComponent from '@/providers/GoogleRecaptchaProviderComponent'
 // import {NextIntlClientProvider} from 'next-intl'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
-  const locale = await getCurrentLocale()
+  // const locale = await getCurrentLocale()
   const messages = await getMessages()
+
   return (
     <>
-      <html lang={locale}>
+      <html lang={'en'}>
         <body>
           <NProgressProvider />
 
@@ -42,24 +43,24 @@ export default async function RootLayout({children}: {children: React.ReactNode}
 }
 
 export async function generateMetadata() {
-  const cookieStore = await cookies()
-  let locale = cookieStore.get('NEXT_LOCALE')?.value
+  // const cookieStore = await cookies()
+  // let locale = cookieStore.get('NEXT_LOCALE')?.value
 
-  const headersList = await headers()
+  // const headersList = await headers()
 
-  locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
+  // locale = headersList.get('x-next-intl-locale') || headersList.get('x-locale') || undefined
 
-  if (!locale) {
-    const referer = headersList.get('referer')
-    if (referer) {
-      const match = referer.match(/\/([a-z]{2})\//)
-      if (match && ['en', 'ru', 'zh'].includes(match[1])) {
-        locale = match[1]
-      }
-    }
-  }
+  // if (!locale) {
+  //   const referer = headersList.get('referer')
+  //   if (referer) {
+  //     const match = referer.match(/\/([a-z]{2})\//)
+  //     if (match && ['en', 'ru', 'zh'].includes(match[1])) {
+  //       locale = match[1]
+  //     }
+  //   }
+  // }
   try {
-    const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: locale}, undefined, locale)
+    const initialPage1 = await ProductService.getAll({page: 0, size: 10, currentLang: 'en'}, undefined, 'en')
 
     return {
       title: {

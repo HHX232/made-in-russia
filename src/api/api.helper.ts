@@ -1,26 +1,26 @@
+export const getCurrentLanguage = (): string => {
+  if (typeof window !== 'undefined') {
+    const cookieValue = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('NEXT_LOCALE='))
+      ?.split('=')[1]
+
+    if (cookieValue) {
+      return cookieValue
+    }
+
+    const pathname = window.location.pathname
+    const langMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)/)
+    if (langMatch) {
+      return langMatch[1]
+    }
+  }
+  return 'en'
+}
+
 export const getContentType = (overrideLang?: string) => {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json'
-  }
-
-  const getCurrentLanguage = (): string => {
-    if (typeof window !== 'undefined') {
-      const cookieValue = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('NEXT_LOCALE='))
-        ?.split('=')[1]
-
-      if (cookieValue) {
-        return cookieValue
-      }
-
-      const pathname = window.location.pathname
-      const langMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)/)
-      if (langMatch) {
-        return langMatch[1]
-      }
-    }
-    return 'en'
   }
 
   const currentLang = overrideLang || getCurrentLanguage()
