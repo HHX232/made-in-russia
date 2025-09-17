@@ -158,7 +158,7 @@ const Filters: FC = () => {
               min={0}
               max={1000000}
               step={100}
-              defaultMin={100}
+              defaultMin={0}
               defaultMax={1000000}
               debounceTime={500}
             />

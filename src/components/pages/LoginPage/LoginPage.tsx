@@ -17,6 +17,7 @@ import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import TelegramLoginWidget from './TelegramLoginWidget/TelegramLoginWidget'
 import {useRouter, useSearchParams} from 'next/navigation'
 import Link from 'next/link'
+import {useUserCache, useUserQuery} from '@/hooks/useUserApi'
 
 const google = '/google_registr.svg'
 const wechat = '/wechat_registr.svg'
@@ -56,7 +57,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
   const isEmail = (value: string | string[]) => {
     return value.includes('@') && value.includes('.')
   }
-
+  const {refetch} = useUserQuery()
   const onSubmit = async (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
 
@@ -107,6 +108,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
       const {accessToken, refreshToken} = response.data as any
 
       saveTokenStorage({accessToken, refreshToken})
+      await refetch()
       console.log('Access Token:', accessToken, 'Refresh Token:', refreshToken)
       router.push('/')
     } catch (error: any) {

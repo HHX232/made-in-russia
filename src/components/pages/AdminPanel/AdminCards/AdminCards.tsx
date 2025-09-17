@@ -2,8 +2,9 @@
 import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
 import styles from './AdminCards.module.scss'
 import CardsCatalog from '@/components/screens/Catalog/CardsCatalog/CardsCatalog'
+import {Product} from '@/services/products/product.types'
 
-const AdminCards = () => {
+const AdminCards = ({initialProducts, hasMore}: {initialProducts: Product[]; hasMore: boolean}) => {
   return (
     <div className={styles.container__cards}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
@@ -14,8 +15,8 @@ const AdminCards = () => {
         isForAdmin={true}
         extraButtonsBoxClass={styles.extraButtonsBoxClass}
         canCreateNewProduct
-        initialProducts={[]}
-        initialHasMore={true}
+        initialProducts={initialProducts || []}
+        initialHasMore={true || hasMore}
       />
     </div>
   )

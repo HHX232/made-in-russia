@@ -45,7 +45,8 @@ export const useProducts = (
     }
   }, [currentParamsKey])
   // ! обновил ключ с params -> currentParamsKey
-  const queryKey = [PRODUCTS_QUERY_KEY, currentLang, currentParamsKey, specialRoute]
+  // const queryKey = [PRODUCTS_QUERY_KEY, currentLang, currentParamsKey, specialRoute]
+  const queryKey = [PRODUCTS_QUERY_KEY, currentLang, currentParamsKey, specialRoute, params.page]
 
   const queryResult = useQuery({
     queryKey,

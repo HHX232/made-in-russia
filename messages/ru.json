@@ -254,6 +254,11 @@
   },
   "CardPage":{
    "CardTopPage":{
+    "successCreateOrder":"Заказ успешно создан!",
+    "successCreateBody":"Ожидайте, продавец скоро свяжется с вами",
+    "errorCreateOrder":"Ошибка при создании заказа",
+    "addressTitle": "Адрес",
+    "addressAlternative": "Адрес не указан",
     "innTitle": "ИНН",
     "countriesTitle": "Страны присутствия", 
     "description": "Описание",

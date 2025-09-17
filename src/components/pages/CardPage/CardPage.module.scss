@@ -60,6 +60,16 @@
   gap: 20px;
 }
 
+.vendor__modal__extra {
+  & > div {
+    min-width: 70vw;
+
+    @media (max-width: 700px) {
+      min-width: 90vw;
+    }
+  }
+}
+
 .modal__vendor__content {
   display: flex;
   width: 100%;

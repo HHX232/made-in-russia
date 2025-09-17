@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Skeleton from 'react-loading-skeleton'
@@ -17,6 +18,9 @@ import {useLocale, useTranslations} from 'next-intl'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import BreadForCard from './breadForCard/breadForCard'
+import PurchaseModal from './PurchaseModal/PurchaseModal'
+import {axiosClassic} from '@/api/api.interceptor'
+import {toast} from 'sonner'
 // import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
 // import {useCachedNode} from '@dnd-kit/core/dist/hooks/utilities'
 // import {useCategories} from '@/services/categoryes/categoryes.service'
@@ -370,13 +374,50 @@ const ImagesSlider = ({
 }
 
 export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData: ICardFull | null}) => {
+  const t = useTranslations('CardPage.CardTopPage')
   const [cardMiniData, setCardMiniData] = useState<ICardFull | null>(cardData)
   const [isMounted, setIsMounted] = useState(false)
   const [vendorModalOpen, setVendorModalOpen] = useState(false)
   const windowWidth = useWindowWidth()
   const [showPhone, setShowPhone] = useState(false)
   const currentLang = useLocale()
-
+  const [purchaseModalOpen, setPurchaseModalOpen] = useState(false)
+  const handlePurchaseSubmit = async (data: {
+    name: string
+    email: string
+    phone: string
+    quantity: number
+    selectedPrice: any
+    totalPrice: number
+  }) => {
+    console.log('Данные заказа:', data)
+    try {
+      const {data: orderData} = await axiosClassic.post(`/products/${cardData?.id}/create-order`, {
+        email: data?.email,
+        firstName: data?.name,
+        phoneNumber: data?.phone || '',
+        quantity: data?.quantity || 1
+      })
+      toast.success(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successCreateOrder')}</strong>
+          <span>{t('successCreateBody')}</span>
+        </div>,
+        {
+          style: {background: '#2E7D32'}
+        }
+      )
+    } catch {
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('errorCreateOrder')}</strong>
+        </div>,
+        {
+          style: {background: '#AC2525'}
+        }
+      )
+    }
+  }
   // const categories = useCategories(currentLang as any)
   // const normalizedSlug = cardData?.category?.slug?.replace(/^l\d+_/, '') || ''
 
@@ -387,13 +428,11 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   }, [])
 
   useEffect(() => {
-    // console.log('cardData', cardData)
+    console.log('cardData', cardData)
     if (cardData) {
       setCardMiniData(cardData)
     }
   }, [cardData])
-
-  const t = useTranslations('CardPage.CardTopPage')
 
   const isReallyLoading = isLoading || !cardMiniData
   const isLargeScreen = isMounted ? (windowWidth ? windowWidth : 0) > 1100 : true
@@ -536,6 +575,15 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
                     ))}
                   </ul>
                 </div>
+                <div className={`${styles.inn__box}`}>
+                  <span>
+                    {' '}
+                    <b className={styles.mini__title__vendor}> {t('addressTitle')}</b>{' '}
+                  </span>{' '}
+                  <p className={`${styles.countries__list}`}>
+                    {cardData?.user?.vendorDetails?.address || t('addressAlternative')}
+                  </p>
+                </div>
                 {cardData?.user.vendorDetails?.description?.length !== 0 && (
                   <TextAreaUI
                     currentValue={cardData?.user.vendorDetails?.description || ''}
@@ -576,7 +624,11 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
                   {!isReallyLoading ? (
                     <div className={`${styles.price__list__title}`}>
                       <span className={`${styles.price__range}`}>
-                        {el.to == 999999 ? el.from + '+' : el.from + '\u00AD-\u00AD' + el.to}
+                        {el.to == 999999
+                          ? el.from + '+'
+                          : el.from === el.to
+                            ? el.from
+                            : el.from + '\u00AD-\u00AD' + el.to}
                       </span>
                       <span className={`${styles.price__unit}`}>{el.unit}</span>
                     </div>
@@ -650,15 +702,9 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
           <div className={`${styles.buttons__box}`}>
             {!isReallyLoading ? (
-              <Link
-                href={`/data-vendor/${cardData?.user.id}`}
-                onClick={(event) => {
-                  event.preventDefault()
-                }}
-                className={`${styles.by__now__button}`}
-              >
+              <button onClick={() => setPurchaseModalOpen(true)} className={`${styles.by__now__button}`}>
                 {t('byNow')}
-              </Link>
+              </button>
             ) : (
               <Skeleton height={48} width={150} />
             )}
@@ -784,6 +830,14 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
           <CardContent />
         </div>
         <PriceAndDeliveryInfo />
+        <PurchaseModal
+          isOpen={purchaseModalOpen}
+          onClose={() => setPurchaseModalOpen(false)}
+          productTitle={cardMiniData?.title || ''}
+          prices={cardMiniData?.prices || []}
+          minimumOrderQuantity={cardMiniData?.minimumOrderQuantity || 1}
+          onSubmit={handlePurchaseSubmit}
+        />
       </span>
     </>
   )

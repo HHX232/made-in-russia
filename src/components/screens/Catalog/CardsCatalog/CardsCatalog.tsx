@@ -291,6 +291,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
           <p>{t('noResultsCatalog')}</p>
         </div>
       )}
+      {isForAdmin && (
+        <button onClick={() => setPageParams((prev) => ({...prev, page: prev.page + 1}))}>Показать еще</button>
+      )}
     </div>
   )
 }

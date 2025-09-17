@@ -253,6 +253,11 @@
 },
 "CardPage": {
     "CardTopPage": {
+      "successCreateOrder": "订单创建成功！",
+      "successCreateBody": "请稍候，卖家会很快联系您。",
+      "errorCreateOrder": "创建订单时出错",
+      "addressTitle": "地址",
+      "addressAlternative": "未指定地址",
       "innTitle": "税号",
       "countriesTitle": "业务所在国家",
       "description": "描述",

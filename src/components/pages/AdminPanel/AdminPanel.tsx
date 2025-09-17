@@ -12,10 +12,11 @@ import AdminCategoriesPage from './AdminCategoriesPage/AdminCategoriesPage'
 import AdminAds from './AdminAds/AdminAds'
 import AdminFAQPage from './AdminFAQPage/AdminFAQPage'
 import AdminReviewsPage from './AdminReviewsPage/AdminReviewsPage'
+import {Product} from '@/services/products/product.types'
 
 export type TAdminTab = 'users' | 'categories' | 'cards' | 'ads' | 'FAQ' | 'translates'
 
-const AdminPanel: FC = () => {
+const AdminPanel: FC<{initialProducts: Product[]; hasMore: boolean}> = ({initialProducts, hasMore}) => {
   const [activeAdminTab, setActiveAdminTab] = useState<TAdminTab>()
   const pathname = usePathname()
 
@@ -35,7 +36,7 @@ const AdminPanel: FC = () => {
       case 'categories':
         return <AdminCategoriesPage />
       case 'cards':
-        return <AdminCards />
+        return <AdminCards initialProducts={initialProducts || []} hasMore={hasMore} />
       case 'ads':
         return <AdminAds />
       case 'translates':

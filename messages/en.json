@@ -241,6 +241,11 @@
 },
 "CardPage": {
     "CardTopPage": {
+      "successCreateOrder": "Order created successfully!",
+      "successCreateBody": "Please wait, the seller will contact you shortly.",
+      "errorCreateOrder": "Error creating order",
+      "addressTitle": "Address",
+      "addressAlternative": "Address not specified",
       "innTitle": "Tax ID",
       "countriesTitle": "Countries of presence", 
       "description": "Description", 

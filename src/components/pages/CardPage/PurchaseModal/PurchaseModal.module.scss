@@ -1,0 +1,213 @@
+.purchaseModal {
+  & > div {
+    min-width: 70vw;
+
+    @media (max-width: 800px) {
+      min-width: 90vw;
+    }
+  }
+
+  .modalContent {
+    width: 100%;
+    padding: 32px;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 20px 40px rgb(0 0 0 / 10%);
+  }
+
+  .modalTitle {
+    margin: 0 0 24px;
+    color: #1a1a1a;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .productInfo {
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    background: #f8f9fa;
+
+    .productTitle {
+      margin: 0;
+      color: #2c2c2c;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+  }
+
+  .formSection {
+    margin-bottom: 24px;
+
+    .inputGroup {
+      margin-bottom: 20px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .label {
+        display: block;
+        margin-bottom: 8px;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 500;
+
+        .required {
+          margin-left: 4px;
+          color: #ef4444;
+        }
+      }
+
+      .error {
+        display: block;
+        margin-top: 4px;
+        color: #ef4444;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .priceSection {
+    padding: 20px;
+    border: 1px solid #e0f2fe;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    background: #fefefe;
+
+    .priceInfo {
+      .priceRange {
+        margin-bottom: 12px;
+        color: #64748b;
+        font-size: 12px;
+        text-align: center;
+      }
+
+      .unitPrice {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 16px;
+
+        .priceLabel {
+          color: #475569;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .priceValue {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .originalPrice {
+            color: #94a3b8;
+            font-size: 14px;
+            text-decoration: line-through;
+          }
+
+          .currentPrice {
+            color: #0f172a;
+            font-size: 16px;
+            font-weight: 600;
+          }
+
+          .currency {
+            color: #64748b;
+            font-size: 12px;
+          }
+        }
+      }
+
+      .totalPrice {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .totalLabel {
+          color: #1e293b;
+          font-size: 16px;
+          font-weight: 600;
+        }
+
+        .totalValue {
+          color: #0f172a;
+          font-size: 18px;
+          font-weight: 700;
+        }
+      }
+    }
+  }
+
+  .buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+
+    .cancelButton {
+      background: #f1f5f9;
+      color: #475569;
+
+      &:hover:not(:disabled) {
+        background: #e2e8f0;
+      }
+    }
+
+    .submitButton {
+      background: #3b82f6;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: #2563eb;
+      }
+
+      &:disabled {
+        background: #94a3b8;
+      }
+    }
+  }
+
+  // Мобильная адаптация
+  @media (max-width: 640px) {
+    .modalContent {
+      padding: 24px;
+      margin: 16px;
+    }
+
+    .modalTitle {
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .priceSection {
+      padding: 16px;
+    }
+
+    .buttonGroup {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

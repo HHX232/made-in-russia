@@ -130,6 +130,7 @@ interface Author {
   registrationDate: string
   lastModificationDate: string
   vendorDetails?: {
+    address?: string
     countries?: {id: string; name: string}[]
     creationDate?: string
     description?: string
