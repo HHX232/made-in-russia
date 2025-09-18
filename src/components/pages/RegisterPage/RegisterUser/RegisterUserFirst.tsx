@@ -141,7 +141,7 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
 
     const responseRec = await axios({
       method: 'post',
-      url: '/api/recaptchaSubmit',
+      url: '/backend/recaptchaSubmit',
       data: {gRecaptchaToken},
       headers: {Accept: 'application/json, text/plain, */*', 'Content-Type': 'application/json'}
     })

@@ -6,7 +6,7 @@ export default function TestButton() {
 
   const handleClick = async () => {
     try {
-      const res = await fetch('/api/test', {method: 'GET'})
+      const res = await fetch('/backend/test', {method: 'GET'})
       const data = await res.json()
       setResponse(JSON.stringify(data, null, 2))
     } catch (error) {
