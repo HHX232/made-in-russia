@@ -2,6 +2,8 @@
 import {NextResponse} from 'next/server'
 
 export async function POST(request: Request) {
+  console.log('API endpoint called:', request.method, request.url)
+
   try {
     const secretKey = process.env.RECAPTCHA_SECRET_KEY
 
