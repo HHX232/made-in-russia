@@ -1,11 +1,10 @@
-'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import {FC, useState} from 'react'
 import styles from './AdminCategoriesPage.module.scss'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {
-  EditingCategory,
   useAllCategoriesLanguages,
   useCreateCategory,
   useUpdateCategory,
@@ -18,14 +17,16 @@ export interface Category {
   slug: string
   name: string
   imageUrl?: string
+  okved: string[] | null
   children: Category[]
+  childrenCount: number
   creationDate: string
   lastModificationDate: string
-  okvedCategories: string[]
 }
+
 const AdminCategoriesPage: FC = () => {
   const [activeLanguage, setActiveLanguage] = useState<SupportedLanguage>('ru')
-  const [editingCategory, setEditingCategory] = useState<EditingCategory | null>(null)
+  const [editingCategory, setEditingCategory] = useState<any>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set())
 
@@ -37,7 +38,7 @@ const AdminCategoriesPage: FC = () => {
 
   const getCurrentCategories = (): Category[] => {
     const currentQuery = categoriesQueries[activeLanguage]
-    return currentQuery.data || []
+    return (currentQuery as any).data || []
   }
 
   const isLoading =
@@ -45,6 +46,13 @@ const AdminCategoriesPage: FC = () => {
     createCategoryMutation.isPending ||
     updateCategoryMutation.isPending ||
     deleteCategoryMutation.isPending
+
+  // Валидация формата ОКВЭД кодов
+  // const validateOkvedCode = (code: string): boolean => {
+  //   // ОКВЭД коды имеют формат XX.XX или XX.XX.X или XX.XX.XX
+  //   const okvedPattern = /^\d{2}\.\d{2}(\.\d{1,2})?$/
+  //   return okvedPattern.test(code)
+  // }
 
   const toggleCategoryExpansion = (categoryId: number) => {
     const newExpanded = new Set(expandedCategories)
@@ -62,9 +70,10 @@ const AdminCategoriesPage: FC = () => {
       slug: category.slug,
       name: category.name,
       imageUrl: category.imageUrl,
-      children: category.children,
+      children: category.children as any,
       parentId: parentId ?? null,
-      okvedCategories: category.okvedCategories || []
+      okvedString: (category.okved || []).join(', '), // Сохраняем как строку
+      okvedCategories: category.okved || []
     })
     setIsCreating(false)
   }
@@ -75,6 +84,7 @@ const AdminCategoriesPage: FC = () => {
       name: '',
       children: [],
       parentId: parentId ?? null,
+      okvedString: '', // Пустая строка для нового элемента
       okvedCategories: []
     })
     setIsCreating(true)
@@ -87,15 +97,31 @@ const AdminCategoriesPage: FC = () => {
       const nameTranslations = {en: '', ru: '', zh: ''}
       nameTranslations[activeLanguage] = editingCategory.name
 
+      // Разделяем строку ОКВЭД на массив только при сохранении
+      const okvedCodes = (editingCategory.okvedString || '')
+        .split(',')
+        .map((code: any) => code.trim())
+        .filter((code: any) => code.length > 0)
+
+      // const invalidOkvedCodes = okvedCodes.filter((code: any) => !validateOkvedCode(code))
+
+      // if (invalidOkvedCodes.length > 0) {
+      //   alert(
+      //     `Неверный формат ОКВЭД кодов: ${invalidOkvedCodes.join(', ')}\nФормат должен быть: XX.XX или XX.XX.X или XX.XX.XX`
+      //   )
+      //   return
+      // }
+
       const payload = {
         name: editingCategory.name,
         slug: editingCategory.slug.replace(/^(l[1-5]_)+/, ''),
         parentId: editingCategory.parentId || null,
         nameTranslations,
-        okvedCategories: editingCategory.okvedCategories || [],
+        okvedCategories: okvedCodes,
         image: editingCategory.image
       }
 
+      console.log('payload save', payload)
       if (isCreating) {
         await createCategoryMutation.mutateAsync(payload)
         alert('Категория создана успешно!')
@@ -132,6 +158,16 @@ const AdminCategoriesPage: FC = () => {
     setIsCreating(false)
   }
 
+  const handleOkvedChange = (value: string) => {
+    if (!editingCategory) return
+
+    // Просто сохраняем строку как есть, без разделения
+    setEditingCategory({
+      ...editingCategory,
+      okvedString: value
+    })
+  }
+
   const renderCategory = (category: Category, level: number = 0, parentId?: number) => {
     const isExpanded = expandedCategories.has(category.id)
     const hasChildren = category.children && category.children.length > 0
@@ -160,8 +196,10 @@ const AdminCategoriesPage: FC = () => {
           <div className={styles.category__info}>
             <span className={styles.category__name}>{category.name}</span>
             <span className={styles.category__slug}>/{category.slug}</span>
-            {category.okvedCategories && category.okvedCategories.length > 0 && (
-              <div className={styles.category__okved}>ОКВЭД: {category.okvedCategories.join(', ')}</div>
+            {category.okved && category.okved.length > 0 && (
+              <div style={{fontSize: '13px'}} className={styles.category__okved}>
+                ОКВЭД: {category.okved.join(', ')}
+              </div>
             )}
           </div>
 
@@ -203,6 +241,7 @@ const AdminCategoriesPage: FC = () => {
     if (!editingCategory) return null
 
     const isFirstLevel = !editingCategory.parentId
+    const okvedValue = editingCategory.okvedString || ''
 
     return (
       <div className={styles.edit__form__overlay}>
@@ -232,22 +271,40 @@ const AdminCategoriesPage: FC = () => {
           </div>
 
           <div className={styles.form__field}>
-            <label className={styles.form__label}>OKVED коды (через точку)</label>
+            <label className={styles.form__label}>
+              ОКВЭД коды (через запятую)
+              {/* <span className={styles.form__hint}>Формат: XX.XX или XX.XX.X (например: 01.11, 47.19, 01.13.2)</span> */}
+            </label>
+
+            {/* Использование обычного input вместо TextInputUI для ОКВЭД */}
             <TextInputUI
-              currentValue={(editingCategory.okvedCategories || []).join(', ')}
-              placeholder='Введите OKVED коды через запятую'
-              onSetValue={(value) =>
-                setEditingCategory({
-                  ...editingCategory,
-                  okvedCategories: value
-                    .split(',')
-                    .map((s) => s.trim())
-                    .filter(Boolean)
-                })
-              }
+              inputType='text'
+              currentValue={okvedValue}
+              onSetValue={(e) => handleOkvedChange(e)}
+              placeholder='Введите ОКВЭД коды через запятую (например: 01.11, 01.12, 47.19)'
+              // className={`${styles.form__input} ${styles.okved__input}`}
               theme='superWhite'
-              extraClass={styles.form__input}
+              disabled={isLoading}
             />
+
+            {/* {okvedValue.trim() && (
+              <div className={styles.okved__preview}>
+                Превью кодов:{' '}
+                {okvedValue.split(',').map((code: any, index: any) => {
+                  const trimmedCode = code.trim()
+                  if (!trimmedCode) return null
+
+                  return (
+                    <span
+                      key={index}
+                      className={`${styles.okved__code} ${validateOkvedCode(trimmedCode) ? styles.valid : styles.invalid}`}
+                    >
+                      {trimmedCode}
+                    </span>
+                  )
+                })}
+              </div>
+            )} */}
           </div>
 
           {isFirstLevel && (

@@ -38,6 +38,8 @@ export interface Category {
   name: string
   imageUrl?: string
   children: Category[]
+  okved?: string[] | null
+  childrenCount?: number
   creationDate: string
   lastModificationDate: string
 }

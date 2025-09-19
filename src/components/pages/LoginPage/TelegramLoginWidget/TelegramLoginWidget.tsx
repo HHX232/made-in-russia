@@ -35,7 +35,6 @@ const TelegramLoginWidget: React.FC<TelegramLoginWidgetProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Создаем уникальное имя для глобальной функции
     const callbackName = `onTelegramAuth_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
     // Создаем глобальную функцию для обратного вызова
