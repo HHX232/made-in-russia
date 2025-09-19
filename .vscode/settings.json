@@ -30,5 +30,6 @@
       "source.fixAll": "never",
       "source.fixAll.eslint": "never"
     }
-  }
+  },
+  "git.ignoreLimitWarning": true
 }

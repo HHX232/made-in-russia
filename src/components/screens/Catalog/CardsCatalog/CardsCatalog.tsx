@@ -13,6 +13,7 @@ import {useActions} from '@/hooks/useActions'
 import Link from 'next/link'
 import {useTranslations} from 'next-intl'
 import {getAccessToken} from '@/services/auth/auth.helper'
+import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 
 interface CardsCatalogProps {
   initialProducts?: Product[]
@@ -21,6 +22,8 @@ interface CardsCatalogProps {
   canCreateNewProduct?: boolean
   onPreventCardClick?: (item: Product) => void
   extraButtonsBoxClass?: string
+  approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL'
+  direction?: 'asc' | 'desc'
   isForAdmin?: boolean
 }
 interface PageParams {
@@ -30,6 +33,9 @@ interface PageParams {
   maxPrice?: number
   categoryIds?: string
   title?: string
+  approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL' | ''
+  direction?: 'asc' | 'desc'
+
   [key: string]: any
 }
 
@@ -40,7 +46,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   canCreateNewProduct = false,
   onPreventCardClick,
   extraButtonsBoxClass,
-  isForAdmin = false
+  isForAdmin = false,
+  direction = 'desc',
+  approveStatuses = 'ALL'
 }) => {
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
@@ -48,7 +56,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   // Используем Set для хранения ID товаров и отдельный массив для отображения
   const [productIds, setProductIds] = useState<Set<number>>(new Set())
   const [hasMore, setHasMore] = useState(initialHasMore)
-  const [isFiltersChanged, setIsFiltersChanged] = useState(false)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const lastProductRef = useRef<HTMLDivElement | null>(null)
   const [numericFilters, setNumericFilters] = useState<number[]>([])
@@ -62,7 +69,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     deliveryMethodIds: delivery?.join(',') ? delivery?.join(',') : '',
     title: searchTitle,
     sort: 'creationDate',
-    order: 'desc'
+    direction: direction || 'asc',
+    approveStatuses: approveStatuses === 'ALL' ? '' : approveStatuses
   })
 
   const t = useTranslations('HomePage')
@@ -107,7 +115,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // useEffect для searchTitle
   useEffect(() => {
-    setIsFiltersChanged(true)
     // Очищаем все товары при изменении поискового запроса
     setProductIds(new Set())
     setPageParams((prev) => ({
@@ -117,9 +124,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }))
   }, [searchTitle])
 
-  // useEffect для остальных фильтров
+  // useEffect для остальных фильтров (исключая admin-специфичные параметры)
   useEffect(() => {
-    setIsFiltersChanged(true)
     // Очищаем все товары при изменении фильтров
     setProductIds(new Set())
 
@@ -144,6 +150,32 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     })
   }, [numericFilters, priceRange, delivery])
 
+  // Отдельный useEffect для admin-специфичных параметров
+  useEffect(() => {
+    if (isForAdmin) {
+      // Очищаем товары при изменении admin параметров
+      setProductIds(new Set())
+      setPageParams((prev) => ({
+        ...prev,
+        page: 0,
+        approveStatuses: approveStatuses === 'ALL' ? '' : approveStatuses
+      }))
+    }
+  }, [approveStatuses, isForAdmin])
+
+  // Отдельный useEffect для direction
+  useEffect(() => {
+    if (isForAdmin) {
+      // Очищаем товары при изменении направления сортировки
+      setProductIds(new Set())
+      setPageParams((prev) => ({
+        ...prev,
+        page: 0,
+        direction: direction
+      }))
+    }
+  }, [direction, isForAdmin])
+
   const {
     data: pageResponse,
     isLoading,
@@ -152,15 +184,18 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     resData
   } = useProducts(pageParams, specialRoute, accessToken || '')
 
-  const showSkeleton = (isLoading || (isFetching && isFiltersChanged)) && (resData || initialProducts).length === 0
+  const showSkeleton = isLoading && resData.length === 0
+
+  useEffect(() => {
+    console.log('resData', resData)
+  }, [resData])
 
   // Основной useEffect для обработки ответов API
   useEffect(() => {
     if (pageResponse) {
-      if (isFiltersChanged || pageParams.page === 0) {
-        // Если фильтры изменились или это первая страница - заменяем
+      if (pageParams.page === 0) {
+        // Если это первая страница - заменяем
         addProducts(pageResponse.content, true)
-        setIsFiltersChanged(false)
       } else {
         // Иначе добавляем к существующим
         addProducts(pageResponse.content, false)
@@ -202,6 +237,92 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   return (
     <div id='cy-cards-catalog' className={styled.cardsCatalog__box}>
+      {isForAdmin && (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '200px',
+            justifyContent: 'space-evenly',
+            background: 'white',
+            borderRadius: '20px',
+            padding: '10px 30px'
+          }}
+        >
+          <DropList
+            extraClass={styled.dropList__box__extra__index}
+            title={
+              pageParams.approveStatuses === '' || pageParams.approveStatuses === 'ALL'
+                ? 'Все'
+                : pageParams.approveStatuses === 'APPROVED'
+                  ? 'Одобрено'
+                  : 'Ожидает'
+            }
+            items={[
+              <p
+                key='all'
+                onClick={() => {
+                  setPageParams((prev) => {
+                    return {...prev, page: 0, approveStatuses: ''}
+                  })
+                  setProductIds(new Set())
+                }}
+              >
+                Все
+              </p>,
+              <p
+                key='approved'
+                onClick={() => {
+                  setPageParams((prev) => {
+                    return {...prev, page: 0, approveStatuses: 'APPROVED'}
+                  })
+                  setProductIds(new Set())
+                }}
+              >
+                APPROVED
+              </p>,
+              <p
+                key='pending'
+                onClick={() => {
+                  setPageParams((prev) => {
+                    return {...prev, page: 0, approveStatuses: 'PENDING'}
+                  })
+                  setProductIds(new Set())
+                }}
+              >
+                PENDING
+              </p>
+            ]}
+          />
+          <DropList
+            title={pageParams.direction === 'asc' ? 'По возрастанию' : 'По убыванию'}
+            items={[
+              <p
+                onClick={() => {
+                  setPageParams((prev) => {
+                    return {...prev, page: 0, direction: 'desc'}
+                  })
+                  setProductIds(new Set())
+                }}
+                key='desc'
+              >
+                С начала
+              </p>,
+              <p
+                onClick={() => {
+                  setPageParams((prev) => {
+                    return {...prev, page: 0, direction: 'asc'}
+                  })
+                  setProductIds(new Set())
+                }}
+                key='asc'
+              >
+                С конца
+              </p>
+            ]}
+          />
+        </div>
+      )}
       {canCreateNewProduct && (
         <Link className={`${styled.cardsCatalog__create__link}`} href='/create-card'>
           <div className={`${styled.cardsCatalog__create}`}>
@@ -215,9 +336,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       )}
 
       {!showSkeleton &&
-        (resData || initialProducts).map((product, index) => {
+        resData.map((product, index) => {
           const uniqueKey = `${product.id}-${index}`
-          if (index === (resData || initialProducts).length - 1) {
+          if (index === resData.length - 1) {
             return (
               <div style={{height: '100%', width: '100%'}} key={uniqueKey} ref={lastElementRef}>
                 <Card
@@ -288,7 +409,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
         </>
       )}
 
-      {!showSkeleton && (resData || initialProducts).length === 0 && (
+      {!showSkeleton && resData.length === 0 && (
         <div className={styled.cardsCatalog__empty}>
           <p>{t('noResultsCatalog')}</p>
         </div>

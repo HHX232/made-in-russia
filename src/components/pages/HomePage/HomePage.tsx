@@ -5,20 +5,17 @@ import Catalog, {CatalogProps} from '@/components/screens/Catalog/Catalog'
 import {Category} from '@/services/categoryes/categoryes.service'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {IPromoFromServer} from '@/app/page'
-import TestButton from '@/components/UI-kit/buttons/TestButton/TestButton'
 
 const HomePage: FC<CatalogProps & {categories: Category[]; ads: IPromoFromServer[]}> = ({
   initialProducts = [],
   initialHasMore = false,
   categories = [],
   ads = []
+  // /Users/nikitatisevic/Desktop/made-in-russia/.next/static
 }) => {
   return (
     <>
-      <p>TEST NEW</p>
-      <TestButton />
       <Header categories={categories} />
-      {/* <p>Its new frontend4</p> */}
       <Ads ads={ads} />
       <Catalog initialProducts={initialProducts} initialHasMore={initialHasMore} />
       <Footer />

@@ -15,7 +15,8 @@ export interface ProductQueryParams {
   limit?: number
   size?: number
   sort?: string
-  order?: 'asc' | 'desc'
+  direction?: 'asc' | 'desc'
+  approveStatuses?: 'ALL' | 'APPROVED' | 'PENDING' | ''
   search?: string
   [key: string]: any
 }
@@ -38,42 +39,59 @@ export const useProducts = (
   delete paramsWithoutPage.page
   const currentParamsKey = JSON.stringify([paramsWithoutPage, specialRoute])
 
+  // Отдельно отслеживаем изменения параметров для очистки данных
   useEffect(() => {
     if (prevParamsRef.current !== currentParamsKey) {
+      console.log('Параметры изменились, очищаем данные')
       setResData([])
       prevParamsRef.current = currentParamsKey
     }
   }, [currentParamsKey])
-  // ! обновил ключ с params -> currentParamsKey
-  // const queryKey = [PRODUCTS_QUERY_KEY, currentLang, currentParamsKey, specialRoute]
+
   const queryKey = [PRODUCTS_QUERY_KEY, currentLang, currentParamsKey, specialRoute, params.page]
 
   const queryResult = useQuery({
     queryKey,
     queryFn: async () => {
-      const res = await ProductService.getAll(params, specialRoute, currentLang, accessToken)
+      console.log('Выполняем запрос с параметрами:', params)
+      const res = await ProductService.getAll(
+        {...params, approveStatuses: params.approveStatuses === 'ALL' ? '' : params.approveStatuses},
+        specialRoute,
+        currentLang,
+        accessToken
+      )
+
+      return res
+    },
+    placeholderData: (previousData) => previousData ?? undefined,
+    staleTime: 30000, // 30 секунд
+    refetchOnWindowFocus: false,
+    refetchOnMount: true
+  })
+
+  // Отдельный useEffect для обновления resData
+  useEffect(() => {
+    if (queryResult.data) {
+      console.log('Получили данные от API:', queryResult.data.content.length, 'товаров')
 
       setResData((prev) => {
         if (!params.page || params.page === 0) {
-          return res.content
+          console.log('Заменяем данные (первая страница)')
+          return queryResult.data.content
         }
 
-        const newUniqueProducts = res.content.filter(
+        console.log('Добавляем к существующим данным')
+        const newUniqueProducts = queryResult.data.content.filter(
           (newProduct) => !prev.some((prevProduct) => prevProduct.id === newProduct.id)
         )
 
         return [...prev, ...newUniqueProducts]
       })
-
-      return res
-    },
-    placeholderData: (previousData) => previousData ?? undefined,
-    staleTime: 5000 * 60,
-    refetchOnWindowFocus: false,
-    refetchOnMount: true
-  })
+    }
+  }, [queryResult.data, params.page])
 
   const forceRefetch = async () => {
+    console.log('Принудительное обновление')
     setResData([])
     await queryClient.invalidateQueries({queryKey: [PRODUCTS_QUERY_KEY]})
     queryResult.refetch()

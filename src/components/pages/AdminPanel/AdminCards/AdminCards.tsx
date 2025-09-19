@@ -9,6 +9,7 @@ const AdminCards = ({initialProducts, hasMore}: {initialProducts: Product[]; has
     <div className={styles.container__cards}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <h1 className={styles.admin__cards__title}>Товары</h1>
+
         <SearchInputUI />
       </div>
       <CardsCatalog
