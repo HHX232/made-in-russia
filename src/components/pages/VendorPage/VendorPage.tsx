@@ -704,7 +704,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
             )}
             <span className={`${styles.second__descr__box}`}>
               {windowWidth && windowWidth <= 1010 && (
-                <div style={{width: '100%'}} className=''>
+                <div style={{width: '100%'}} className={styles.extra__images__box}>
                   <CreateImagesInput
                     showBigFirstItem={false}
                     activeImages={descriptionImages}
