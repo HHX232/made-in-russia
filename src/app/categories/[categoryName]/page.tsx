@@ -21,6 +21,7 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
       `/companies/l1_${categoryName}`
     )
 
+    console.log('curr lang:', locale)
     console.log('data companyes:', data)
     companyes = data
   } catch {
