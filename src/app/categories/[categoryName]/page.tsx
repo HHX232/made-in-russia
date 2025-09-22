@@ -18,7 +18,13 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
   try {
     // console.log('Category:', `/companies/l1_${categoryName}`)
     const {data} = await axiosClassic.get<{name: string; inn: string; ageInYears: string}[]>(
-      `/companies/l1_${categoryName}`
+      `/companies/l1_${categoryName}`,
+      {
+        headers: {
+          'Accept-Language': locale,
+          'x-locale': locale
+        }
+      }
     )
 
     console.log('curr lang:', locale)

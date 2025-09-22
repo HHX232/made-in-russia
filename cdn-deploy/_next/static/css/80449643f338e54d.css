@@ -1,0 +1,145 @@
+.TextInputUI_dark__KVRyl .TextInputUI_input__box__7qJK3,
+.TextInputUI_lightBlue__5PvkA .TextInputUI_input__box__7qJK3,
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_input__box__7qJK3 {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.TextInputUI_dark__KVRyl .TextInputUI_titles_box__l45BH,
+.TextInputUI_lightBlue__5PvkA .TextInputUI_titles_box__l45BH,
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_titles_box__l45BH {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  padding: 0 15px;
+}
+.TextInputUI_dark__KVRyl .TextInputUI_input__title__K1pp8,
+.TextInputUI_lightBlue__5PvkA .TextInputUI_input__title__K1pp8,
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_input__title__K1pp8 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #2a2e46;
+}
+.TextInputUI_dark__KVRyl .TextInputUI_help__title__99bzW,
+.TextInputUI_lightBlue__5PvkA .TextInputUI_help__title__99bzW,
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_help__title__99bzW {
+  color: #2a2e46;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 18px;
+}
+.TextInputUI_dark__KVRyl .TextInputUI_input__inner__box__zlOVE,
+.TextInputUI_lightBlue__5PvkA .TextInputUI_input__inner__box__zlOVE,
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_input__inner__box__zlOVE {
+  display: flex;
+  align-items: center;
+  padding: 14px 21px;
+  background-color: #d9dffb;
+  border-radius: 15px;
+  justify-content: space-between;
+}
+.TextInputUI_dark__KVRyl .TextInputUI_input__H3IDJ,
+.TextInputUI_lightBlue__5PvkA .TextInputUI_input__H3IDJ,
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_input__H3IDJ {
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  width: 100%;
+}
+.TextInputUI_dark__KVRyl .TextInputUI_input__H3IDJ::placeholder,
+.TextInputUI_lightBlue__5PvkA .TextInputUI_input__H3IDJ::placeholder,
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_input__H3IDJ::placeholder {
+  color: #818181;
+}
+.TextInputUI_dark__KVRyl .TextInputUI_error__input__JoTSY::placeholder,
+.TextInputUI_lightBlue__5PvkA .TextInputUI_error__input__JoTSY::placeholder,
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_error__input__JoTSY::placeholder {
+  font-weight: 500;
+  color: #d61414;
+}
+.TextInputUI_dark__KVRyl .TextInputUI_error__input__inner__box__3F_jy,
+.TextInputUI_lightBlue__5PvkA .TextInputUI_error__input__inner__box__3F_jy,
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_error__input__inner__box__3F_jy {
+  border: 2px solid #ac2525 !important;
+}
+.TextInputUI_dark__KVRyl .TextInputUI_error__text__BCSYC,
+.TextInputUI_lightBlue__5PvkA .TextInputUI_error__text__BCSYC,
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_error__text__BCSYC {
+  padding: 0 15px;
+  font-weight: 600;
+  margin-top: 4px;
+  color: #2a2e46;
+}
+.TextInputUI_light__DVkPz .TextInputUI_input__box__7qJK3 {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.TextInputUI_light__DVkPz .TextInputUI_titles_box__l45BH {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  padding: 0;
+}
+.TextInputUI_light__DVkPz .TextInputUI_input__title__K1pp8 {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #818181;
+}
+.TextInputUI_light__DVkPz .TextInputUI_help__title__99bzW {
+  color: #000;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 18px;
+}
+.TextInputUI_light__DVkPz .TextInputUI_input__inner__box__zlOVE {
+  display: flex;
+  align-items: center;
+  padding: 14px 21px;
+  background-color: #fff;
+  border: 2px solid #2a2e46;
+  border-radius: 15px;
+  justify-content: space-between;
+}
+.TextInputUI_light__DVkPz .TextInputUI_input__H3IDJ {
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  width: 100%;
+  color: #000;
+}
+.TextInputUI_light__DVkPz .TextInputUI_input__H3IDJ::placeholder {
+  color: #818181;
+}
+.TextInputUI_light__DVkPz .TextInputUI_error__input__JoTSY::placeholder {
+  font-weight: 500;
+  color: #d61414;
+}
+.TextInputUI_light__DVkPz .TextInputUI_error__input__inner__box__3F_jy {
+  border: 2px solid #ac2525 !important;
+}
+.TextInputUI_light__DVkPz .TextInputUI_error__text__BCSYC {
+  padding: 0 15px;
+  font-weight: 600;
+  color: #000;
+}
+.TextInputUI_superWhite__Pr5Gz .TextInputUI_input__inner__box__zlOVE {
+  border: 1px solid #2a2e46;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.0823529412);
+}
+.TextInputUI_lightBlue__5PvkA .TextInputUI_input__inner__box__zlOVE {
+  border: 1px solid #2a2e46;
+  background-color: #f3f6fa;
+  box-shadow: none !important;
+}
+.TextInputUI_number__input__r2Vhq::-webkit-inner-spin-button,
+.TextInputUI_number__input__r2Vhq::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.TextInputUI_number__input__r2Vhq[type='number'] {
+  -moz-appearance: textfield;
+}

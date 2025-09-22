@@ -5,7 +5,13 @@
     "stylelint-config-idiomatic-order"
   ],
   "plugins": ["stylelint-scss"],
-  "ignoreFiles": [".fttemplates/**/*.scss"],
+  "ignoreFiles": [
+  ".fttemplates/**/*.scss", 
+  "**/.next/**/*",
+  "**/cdn-deploy/**/*",
+  "**/out/**/*",
+  "**/_next/**/*",
+  "**/node_modules/**/*"],
   "rules": {
     "no-empty-source": null,
     "selector-class-pattern": null,

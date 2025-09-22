@@ -1,0 +1,737 @@
+.AdminPanel_inner__uFkj8 {
+  display: flex;
+  width: 100%;
+  padding-top: 40px;
+  padding-bottom: 50px;
+  gap: 30px;
+}
+@media (max-width: 920px) {
+  .AdminPanel_inner__uFkj8 {
+    flex-direction: column;
+  }
+}
+.AdminUsersPage_admin__users__page__1U_WT {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px rgba(0, 0, 0, 0.0823529412);
+}
+.AdminUsersPage_extra__countries__list__bQLkL {
+  z-index: 50000 !important;
+}
+.AdminUsersPage_extra__countries__list__bQLkL > ul {
+  z-index: 50000 !important;
+  left: calc(55% + 10px) !important;
+}
+.AdminUsersPage_extra_extraDropListClass__wSyU7 {
+  z-index: 10000 !important;
+}
+@media (max-width: 600px) {
+  .AdminUsersPage_extra__role__list__k77x9 {
+    max-width: 230px !important;
+  }
+}
+@media (max-width: 400px) {
+  .AdminUsersPage_extra__role__list__k77x9 {
+    max-width: 180px !important;
+  }
+}
+.AdminUsersPage_users__title__VpL_G {
+  width: 100%;
+  margin-bottom: 25px;
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 42px;
+  text-align: center;
+}
+.AdminUsersPage_users__actions__UsXyd {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+  gap: 20px;
+}
+.AdminUsersPage_search__user__IVGwF > div:last-child {
+  padding: 9.5px 15px !important;
+  border-radius: 25px !important;
+  box-shadow: none !important;
+}
+.AdminUsersPage_drop__list__extra__J7VIs {
+  padding: 9px 20px;
+  border: 1px solid #2a2e46;
+  border-radius: 25px;
+  background-color: red;
+  background-color: #fff;
+}
+.AdminUsersPage_drop__list__extra__J7VIs > div {
+  width: 100%;
+  justify-content: space-evenly !important;
+  gap: 15px !important;
+}
+.AdminUsersPage_drop__list__extra__J7VIs > ul {
+  transform: translateX(0) !important;
+}
+.AdminUsersPage_users__actions__create__x18xJ {
+  padding: 10px 25px;
+  border-radius: 25px;
+  background-color: #d61414;
+  color: #fff;
+  cursor: pointer;
+  font-size: 15px;
+}
+.AdminUsersPage_users__table__v5lr3 {
+  display: grid;
+  width: 100%;
+  gap: 15px;
+}
+.AdminUsersPage_table__titles__V8Dfi {
+  display: grid;
+  padding: 0 23px 10px;
+  border-bottom: 1px solid #d7d7d7;
+  margin-bottom: 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  gap: 20px;
+  grid-template-columns: 30px 1fr 1fr 170px 140px 100px;
+}
+.AdminUsersPage_table__rows__pK5va {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.AdminUsersPage_user__row__OWLtN {
+  display: grid;
+  align-items: center;
+  padding: 20px 23px;
+  border: 1px solid #0f0f0f;
+  border-radius: 15px;
+  background-color: #fff;
+  gap: 20px;
+  grid-template-columns: 30px 1fr 1fr 170px 140px 100px;
+}
+.AdminUsersPage_id__text__R0_iH {
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+}
+.AdminUsersPage_login__box__Dp2wP {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+.AdminUsersPage_login__text__QgCvy {
+  display: -webkit-box;
+  overflow: hidden;
+  max-height: 3.9em;
+  -webkit-box-orient: vertical;
+  font-size: 15px;
+  -webkit-line-clamp: 3;
+  line-height: 1.3;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+.AdminUsersPage_email__text__GK9VY {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.AdminUsersPage_drop__list__extra__country__JAhmJ,
+.AdminUsersPage_drop__list__extra__role__RgKkG {
+  z-index: auto !important;
+}
+.AdminUsersPage_drop__list__extra__country__JAhmJ {
+  width: 100%;
+  max-width: 120px;
+  padding: 5px 15px;
+  border: 1px solid #2a2e46;
+  border-radius: 20px;
+  background-color: #fff;
+}
+.AdminUsersPage_drop__list__extra__country__JAhmJ > div {
+  width: 100%;
+  justify-content: space-evenly !important;
+}
+.AdminUsersPage_drop__list__extra__role__RgKkG {
+  width: 100%;
+  max-width: 120px;
+  padding: 5px 15px;
+  border-radius: 20px;
+  color: #fff !important;
+}
+.AdminUsersPage_drop__list__extra__role__RgKkG > div {
+  width: 100%;
+  justify-content: space-evenly !important;
+}
+.AdminUsersPage_drop__list__extra__role__item__yw7DR {
+  width: 100%;
+  color: #0f0f0f !important;
+}
+.AdminUsersPage_user__row__skeleton__RyA7j {
+  width: 100% !important;
+  grid-column: 1/-1;
+}
+.AdminUsersPage_deleat__button__RP7ny,
+.AdminUsersPage_edit__button__kNUe8 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 13px;
+  border-radius: 15px;
+  cursor: pointer;
+}
+.AdminUsersPage_deleat__button__RP7ny {
+  background-color: #e1251b;
+}
+.AdminUsersPage_edit__button__kNUe8 {
+  background-color: #ffcc4d;
+}
+.AdminUsersPage_avatar__8I2CR {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 100%;
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.AdminUsersPage_error__message__4CFCh {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border: 1px solid #f44336;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  background-color: #ffebee;
+  color: #d32f2f;
+  font-size: 14px;
+  gap: 15px;
+}
+.AdminUsersPage_retry__button__0fFOB {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #f44336;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
+.AdminUsersPage_retry__button__0fFOB:hover {
+  background-color: #d32f2f;
+}
+.AdminUsersPage_users__count__C13py {
+  padding: 10px 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 20px;
+  background-color: #f8f9fa;
+  color: #666;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.AdminUsersPage_no__users__qNNUb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  color: #666;
+  gap: 15px;
+  text-align: center;
+}
+.AdminUsersPage_no__users__qNNUb p {
+  margin: 0;
+  font-size: 16px;
+}
+.AdminUsersPage_clear__filters__button__Gkc48 {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background-color: #6c757d;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+.AdminUsersPage_clear__filters__button__Gkc48:hover {
+  background-color: #5a6268;
+}
+.AdminUsersPage_load__more__trigger__UOFwO {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+  margin-top: 20px;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+.AdminUsersPage_load__more__trigger__UOFwO.AdminUsersPage_hidden__PShyf {
+  opacity: 0;
+  pointer-events: none;
+}
+.AdminUsersPage_load__more__content___Gyj7 {
+  display: flex;
+  min-width: 300px;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 30px;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  gap: 15px;
+}
+.AdminUsersPage_modal__dropdown__list__extra__92ZQo {
+  left: 27% !important;
+}
+.AdminUsersPage_modal__dropdown__list__extra__user__e0ecc {
+  max-width: 250px;
+  min-height: 36px !important;
+  padding: 8px 12px 4px !important;
+}
+.AdminUsersPage_modal__dropdown__list__extra__user__e0ecc > div > span {
+  color: #fff !important;
+}
+.AdminUsersPage_edit__modal__eZ3QH > div {
+  width: 70vw;
+  min-width: 500px;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_modal__content__jj_MC {
+  width: 100%;
+  max-width: 500px;
+  padding: 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_modal__title__mJr_k {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_modal__avatar__section__SVToh {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_modal__form__XuZAM {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_form__input__VJDoU {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_form__input__VJDoU:focus {
+  border-color: #1fc13a;
+  box-shadow: 0 0 0 2px rgba(31, 193, 58, 0.1);
+  outline: none;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_modal__dropdowns__sSpgz {
+  display: flex;
+  gap: 12px;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_modal__dropdowns__sSpgz .AdminUsersPage_modal__dropdown__sGYZR {
+  max-width: 400px;
+  min-height: 36px;
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.AdminUsersPage_edit__modal__eZ3QH
+  .AdminUsersPage_modal__dropdowns__sSpgz
+  .AdminUsersPage_modal__dropdown__sGYZR
+  > div
+  > span {
+  color: #fff !important;
+}
+.AdminUsersPage_edit__modal__eZ3QH
+  .AdminUsersPage_modal__dropdowns__sSpgz
+  .AdminUsersPage_modal__dropdown__sGYZR:hover {
+  border-color: #1fc13a;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_modal__actions__Q_rTl {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+  gap: 16px;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_modal__button__M01zR {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_modal__button__M01zR:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_ban__button__qUK4A {
+  width: 100%;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_ban__button__qUK4A.AdminUsersPage_ban__dSB42 {
+  background-color: #c8313e;
+  color: #fff;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_ban__button__qUK4A.AdminUsersPage_ban__dSB42:hover:not(:disabled) {
+  background-color: #b02a36;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_ban__button__qUK4A.AdminUsersPage_unban__n6PCl {
+  background-color: #1fc13a;
+  color: #fff;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_ban__button__qUK4A.AdminUsersPage_unban__n6PCl:hover:not(:disabled) {
+  background-color: #1ba932;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_modal__main__actions__S1Lsl {
+  display: flex;
+  gap: 12px;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_cancel__button__CDa0b {
+  flex: 1;
+  background-color: #f5f5f5;
+  color: #666;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_cancel__button__CDa0b:hover:not(:disabled) {
+  background-color: #e8e8e8;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_save__button__qQNt9 {
+  flex: 1;
+  background-color: #1fc13a;
+  color: #fff;
+}
+.AdminUsersPage_edit__modal__eZ3QH .AdminUsersPage_save__button__qQNt9:hover:not(:disabled) {
+  background-color: #1ba932;
+}
+.AdminUsersPage_user__edits__07zYf {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.AdminUsersPage_user__edits__07zYf .AdminUsersPage_deleat__button__RP7ny.AdminUsersPage_loading__cJVur,
+.AdminUsersPage_user__edits__07zYf .AdminUsersPage_edit__button__kNUe8.AdminUsersPage_loading__cJVur {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.AdminUsersPage_create__modal__9wmDv > div {
+  width: 70vw;
+  min-width: 500px;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_modal__content__jj_MC {
+  width: 100%;
+  padding: 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_modal__title__mJr_k {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_modal__avatar__section__SVToh {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_modal__form__XuZAM {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_form__input__VJDoU {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_form__input__VJDoU:focus {
+  border-color: #1fc13a;
+  box-shadow: 0 0 0 2px rgba(31, 193, 58, 0.1);
+  outline: none;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_modal__dropdowns__sSpgz {
+  display: flex;
+  gap: 12px;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_modal__dropdowns__sSpgz .AdminUsersPage_modal__dropdown__sGYZR {
+  min-height: 44px;
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.AdminUsersPage_create__modal__9wmDv
+  .AdminUsersPage_modal__dropdowns__sSpgz
+  .AdminUsersPage_modal__dropdown__sGYZR:hover {
+  border-color: #1fc13a;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_modal__actions__Q_rTl {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+  gap: 16px;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_modal__button__M01zR {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_modal__button__M01zR:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_ban__button__qUK4A {
+  width: 100%;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_ban__button__qUK4A.AdminUsersPage_ban__dSB42 {
+  background-color: #c8313e;
+  color: #fff;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_ban__button__qUK4A.AdminUsersPage_ban__dSB42:hover:not(:disabled) {
+  background-color: #b02a36;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_ban__button__qUK4A.AdminUsersPage_unban__n6PCl {
+  background-color: #1fc13a;
+  color: #fff;
+}
+.AdminUsersPage_create__modal__9wmDv
+  .AdminUsersPage_ban__button__qUK4A.AdminUsersPage_unban__n6PCl:hover:not(:disabled) {
+  background-color: #1ba932;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_modal__main__actions__S1Lsl {
+  display: flex;
+  gap: 12px;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_cancel__button__CDa0b {
+  flex: 1;
+  background-color: #f5f5f5;
+  color: #666;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_cancel__button__CDa0b:hover:not(:disabled) {
+  background-color: #e8e8e8;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_save__button__qQNt9 {
+  flex: 1;
+  background-color: #1fc13a;
+  color: #fff;
+}
+.AdminUsersPage_create__modal__9wmDv .AdminUsersPage_save__button__qQNt9:hover:not(:disabled) {
+  background-color: #1ba932;
+}
+.AdminUsersPage_multi__select__section___pcf4 {
+  margin: 16px 0;
+}
+.AdminUsersPage_multi__select__section___pcf4 h4 {
+  margin: 0 0 12px;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+.AdminUsersPage_multi__select__grid__mkoZR {
+  display: grid;
+  max-height: 200px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  overflow-y: auto;
+}
+.AdminUsersPage_checkbox__item__UXnnC {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+.AdminUsersPage_checkbox__item__UXnnC:hover {
+  background-color: #f8f9fa;
+}
+.AdminUsersPage_checkbox__item__UXnnC input[type='checkbox'] {
+  margin: 0;
+  cursor: pointer;
+}
+.AdminUsersPage_checkbox__item__UXnnC span {
+  user-select: none;
+}
+@media (max-width: 768px) {
+  .AdminUsersPage_create__modal__9wmDv > div,
+  .AdminUsersPage_edit__modal__eZ3QH > div {
+    width: 95vw;
+    min-width: 300px;
+    max-height: 95vh;
+  }
+  .AdminUsersPage_multi__select__grid__mkoZR {
+    max-height: 150px;
+    grid-template-columns: 1fr;
+  }
+  .AdminUsersPage_modal__dropdowns__sSpgz,
+  .AdminUsersPage_modal__main__actions__S1Lsl {
+    flex-direction: column;
+  }
+}
+@keyframes AdminUsersPage_pulse__J3jpJ {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.AdminUsersPage_loading__cJVur {
+  animation: AdminUsersPage_pulse__J3jpJ 1.5s ease-in-out infinite;
+}
+.AdminUsersPage_load__more__text__U91rG {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+.AdminUsersPage_load__more__button__kzM4c {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  background-color: #d61414;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.AdminUsersPage_load__more__button__kzM4c:hover {
+  background-color: #b61010;
+  box-shadow: 0 4px 12px rgba(214, 20, 20, 0.3);
+  transform: translateY(-1px);
+}
+.AdminUsersPage_load__more__button__kzM4c:active {
+  box-shadow: 0 2px 6px rgba(214, 20, 20, 0.3);
+  transform: translateY(0);
+}
+.AdminUsersPage_load__more__button__kzM4c:focus {
+  box-shadow: 0 0 0 3px rgba(214, 20, 20, 0.2);
+  outline: none;
+}
+@media (max-width: 1400px) {
+  .AdminUsersPage_table__titles__V8Dfi,
+  .AdminUsersPage_user__row__OWLtN {
+    gap: 15px;
+    grid-template-columns: 30px 1fr 1fr 160px 120px 100px;
+  }
+}
+@media (max-width: 1200px) {
+  .AdminUsersPage_table__titles__V8Dfi,
+  .AdminUsersPage_user__row__OWLtN {
+    gap: 12px;
+    grid-template-columns: 25px 1fr 1fr 140px 100px 100px;
+  }
+  .AdminUsersPage_drop__list__extra__country__JAhmJ,
+  .AdminUsersPage_drop__list__extra__role__RgKkG {
+    max-width: 90px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 900px) {
+  .AdminUsersPage_table__titles__V8Dfi {
+    display: none;
+  }
+  .AdminUsersPage_table__rows__pK5va {
+    display: grid;
+    width: 100%;
+    gap: 15px;
+    grid-template-columns: 1fr 1fr;
+  }
+  .AdminUsersPage_user__row__OWLtN {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 15px;
+  }
+  .AdminUsersPage_user__row__OWLtN .AdminUsersPage_id__text__R0_iH:before {
+    color: #666;
+    content: 'ID: ';
+    font-weight: 700;
+  }
+  .AdminUsersPage_user__row__OWLtN .AdminUsersPage_email__text__GK9VY:before {
+    color: #666;
+    content: 'Email: ';
+    font-weight: 700;
+  }
+  .AdminUsersPage_user__row__OWLtN .AdminUsersPage_user__edits__07zYf {
+    align-self: flex-end;
+    margin-top: 10px;
+  }
+}
+@media (max-width: 768px) {
+  .AdminUsersPage_users__actions__UsXyd {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .AdminUsersPage_users__count__C13py {
+    width: 100%;
+    order: -1;
+    text-align: center;
+  }
+}
+@media (max-width: 600px) {
+  .AdminUsersPage_table__rows__pK5va {
+    gap: 10px;
+    grid-template-columns: 1fr;
+  }
+  .AdminUsersPage_user__row__OWLtN {
+    max-width: none;
+  }
+  .AdminUsersPage_users__actions__UsXyd {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .AdminUsersPage_drop__list__extra__J7VIs,
+  .AdminUsersPage_search__user__IVGwF,
+  .AdminUsersPage_users__actions__create__x18xJ {
+    width: 100%;
+    text-align: center;
+  }
+}

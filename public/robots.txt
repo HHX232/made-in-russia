@@ -1,0 +1,10 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api
+
+# Host
+Host: https://exporteru.com
+
+# Sitemaps
+Sitemap: https://exporteru.com/sitemap.xml

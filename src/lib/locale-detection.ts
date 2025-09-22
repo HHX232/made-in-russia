@@ -66,8 +66,8 @@ export async function getCurrentLocale(): Promise<SupportedLocale> {
       }
 
       return DEFAULT_LOCALE
-    } catch (error) {
-      console.warn('Ошибка при определении локали на сервере:', error)
+    } catch {
+      // console.warn('Ошибка при определении локали на сервере:', error)
       return DEFAULT_LOCALE
     }
   } else {

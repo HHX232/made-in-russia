@@ -24,8 +24,8 @@ export default async function CategoryPageSpecialSecond({
       `/companies/l2_${secondCategoryName}`,
       {
         headers: {
-          'Accept-Language': locale || 'en',
-          'x-language': locale || 'en'
+          'Accept-Language': locale,
+          'x-language': locale
         }
       }
     )

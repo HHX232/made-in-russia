@@ -869,15 +869,26 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                   </div>
                 </div>
               </div>
+              <Link href={'/create-card'}>CREATEEE</Link>
               <div className={styles.vendor__second__help}>
-                {helpListButtonData.map((item, index) => (
-                  <HelpListButton
-                    extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''}`}
-                    key={index}
-                    {...item}
-                    onClick={() => handleHelpButtonClick(index)}
-                  />
-                ))}
+                {helpListButtonData.map((item, index) =>
+                  index !== 1 ? (
+                    <HelpListButton
+                      extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''}`}
+                      key={index}
+                      {...item}
+                      onClick={() => handleHelpButtonClick(index)}
+                    />
+                  ) : (
+                    <Link key={index} href={'/create-card'}>
+                      <HelpListButton
+                        extraClass={`${styles.vendor__second__help__item} ${!isPageForVendor ? styles.vendor__second__help__item__only__vendor : ''} ${styles.extra__create__button}`}
+                        key={index}
+                        {...item}
+                      />
+                    </Link>
+                  )
+                )}
               </div>
             </div>
 

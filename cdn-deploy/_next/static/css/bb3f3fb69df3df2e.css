@@ -1,0 +1,31 @@
+.FavoritesPage_fav__box__rNn5J {
+  padding-top: 40px;
+}
+.FavoritesPage_favorites__page__8uWPo {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+.FavoritesPage_fav__title__z7MIn {
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 48px;
+  color: #2a2e46;
+  margin-bottom: 40px;
+}
+.FavoritesPage_fav__cards__7V9_W {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-auto-rows: minmax(412px, min-content);
+  gap: 22px;
+  width: 100%;
+  padding-bottom: 100px;
+  place-items: center;
+}
+@media screen and (max-width: 600px) {
+  .FavoritesPage_fav__cards__7V9_W {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) !important;
+    gap: 10px;
+    grid-auto-rows: auto;
+  }
+}

@@ -8,9 +8,11 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://exporteru.b-cdn.net' : '',
   reactStrictMode: true,
 
   images: {
+    unoptimized: true,
     domains: [
       'loremflickr.com',
       'www.aptronixindia.com',
@@ -31,7 +33,8 @@ const nextConfig: NextConfig = {
       'exporteru.b-cdn.net',
       'https://exporteru.b-cdn.net'
     ]
-  }
+  },
+  trailingSlash: true
 }
 
 const withNextIntl = createNextIntlPlugin()

@@ -30,8 +30,8 @@ export default async function CategoryPageSpecialSecond({
       `/companies/l3_${thirdCategoryName}`,
       {
         headers: {
-          'Accept-Language': locale || 'en',
-          'x-language': locale || 'en'
+          'Accept-Language': locale,
+          'x-language': locale
         }
       }
     )
