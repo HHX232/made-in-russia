@@ -25,7 +25,7 @@ import {toast} from 'sonner'
 // import {useCachedNode} from '@dnd-kit/core/dist/hooks/utilities'
 // import {useCategories} from '@/services/categoryes/categoryes.service'
 // import {buildBreadcrumbsForCard} from '@/utils/findCategoryPath'
-
+const ava = '/avatars/avatar-v.svg'
 interface IPriceItem {
   title: string | ReactNode
   currentPrice?: string | null
@@ -539,7 +539,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
       }
     }, [cardData])
 
-    const urlForLogo = useMemo(() => cardData?.user.avatarUrl || '', [])
+    const urlForLogo = useMemo(() => cardData?.user.avatarUrl || ava || '', [])
     return (
       <div className={`${styles.card__state}`}>
         <ModalWindowDefault
