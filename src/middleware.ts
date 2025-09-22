@@ -154,6 +154,7 @@ export async function middleware(request: NextRequest) {
     })
 
     // Обработка маршрутов create-card
+    // Исправленная часть для обработки маршрутов create-card
     if (pathname === '/create-card' || pathname.startsWith('/create-card/')) {
       console.log('🎨 Обнаружен маршрут create-card:', pathname)
 
@@ -182,10 +183,10 @@ export async function middleware(request: NextRequest) {
           return setLocaleInResponse(response, localeFromSubdomain || 'en', shouldSetLocaleCookie)
         }
 
-        // Если это маршрут с ID товара
-        if (pathname.startsWith('/create-card/') && pathname !== '/create-card') {
-          const pathSegments = pathname.split('/')
-          const productId = pathSegments[2]
+        // Если это маршрут с ID товара (исключаем /create-card и /create-card/)
+        if (pathname.startsWith('/create-card/') && pathname !== '/create-card/' && pathname !== '/create-card') {
+          const pathSegments = pathname.split('/').filter((segment) => segment) // Убираем пустые сегменты
+          const productId = pathSegments[1] // Теперь индекс 1, так как убрали пустые сегменты
 
           console.log('🔍 Проверка доступа к товару с ID:', productId)
 
@@ -234,7 +235,8 @@ export async function middleware(request: NextRequest) {
           }
         }
 
-        // Для маршрута /create-card без ID просто разрешаем доступ Vendor и Admin
+        // Для маршрутов /create-card и /create-card/ просто разрешаем доступ Vendor и Admin
+        console.log('✅ Доступ к базовому маршруту create-card разрешен')
         const response = NextResponse.next()
         return setLocaleInResponse(response, localeFromSubdomain || 'en', shouldSetLocaleCookie)
       } catch (error) {
