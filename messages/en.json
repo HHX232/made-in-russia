@@ -691,17 +691,21 @@
     "ready": "Done"
   },
   "HelpPage": {
-    "title": "Contact Us",
-    "namePlaceholder": "Your Name",
-    "emailPlaceholder": "Your Email",
-    "subjectPlaceholder": "Subject",
-    "messagePlaceholder": "Your Message",
-    "send": "Send",
-    "sending": "Sending...",
-    "successMessage": "Message sent successfully!",
-    "errorMessage": "Error sending message. Please try again.",
-    "contactInfo": "If you encounter any issues on our website, please contact us through various social networks and other communication methods. Thank you for being with us!"
-  },
+      "title": "Contact Us",
+      "namePlaceholder": "Your name",
+      "emailPlaceholder": "Your email",
+      "subjectPlaceholder": "Message subject",
+      "messagePlaceholder": "Your message",
+      "send": "Send",
+      "sending": "Sending...",
+      "successMessage": "Message sent successfully!",
+      "errorMessage": "Error sending message. Please try again.",
+      "contactInfo": "If you encounter any issues on our website, contact us through various social networks and other communication methods. Thank you for being with us!",
+      "nameError": "Name is required",
+      "emailError": "Email is required",
+      "emailFormatError": "Please enter a valid email address",
+      "messageError": "Message is required"
+    },
   "breadCrumbs": {
   "home": "Home",
   "card": "Item",

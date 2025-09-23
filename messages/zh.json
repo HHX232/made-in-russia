@@ -706,18 +706,22 @@
       "clearAll": "清除所有",
       "ready": "完成"
     },
-    "HelpPage": {
-    "title": "联系我们",
-    "namePlaceholder": "您的姓名",
-    "emailPlaceholder": "您的邮箱",
-    "subjectPlaceholder": "主题",
-    "messagePlaceholder": "您的留言",
-    "send": "发送",
-    "sending": "发送中...",
-    "successMessage": "消息发送成功！",
-    "errorMessage": "发送消息时出错。请重试。",
-    "contactInfo": "如果您在我们的网站上遇到任何问题，请通过各种社交网络和其他联系方式与我们联系。 感谢您与我们同行！"
-  },
+   "HelpPage": {
+      "title": "联系我们",
+      "namePlaceholder": "您的姓名",
+      "emailPlaceholder": "您的邮箱",
+      "subjectPlaceholder": "消息主题",
+      "messagePlaceholder": "您的消息",
+      "send": "发送",
+      "sending": "发送中...",
+      "successMessage": "消息发送成功！",
+      "errorMessage": "发送消息时出错，请重试。",
+      "contactInfo": "如果您在我们的网站上遇到任何问题，请通过各种社交网络和其他联系方式与我们联系。感谢您与我们同行！",
+      "nameError": "姓名为必填项",
+      "emailError": "邮箱为必填项",
+      "emailFormatError": "请输入有效的邮箱地址",
+      "messageError": "消息为必填项"
+    },
  "breadCrumbs": {
   "home": "主页",
   "card": "商品",

@@ -18,6 +18,12 @@ interface FormData {
   images: File[]
 }
 
+interface ValidationErrors {
+  name: string
+  email: string
+  message: string
+}
+
 const HelpPageComponent: FC = () => {
   const t = useTranslations('HelpPage')
   const user = useTypedSelector((state) => state.user.user)
@@ -30,17 +36,70 @@ const HelpPageComponent: FC = () => {
   })
   const [activeImages, setActiveImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null)
+  const [errors, setErrors] = useState<ValidationErrors>({
+    name: '',
+    email: '',
+    message: ''
+  })
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value
     }))
+
+    // Очищаем ошибку при изменении поля
+    if (field in errors) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: ''
+      }))
+    }
+  }
+
+  const validateForm = (): boolean => {
+    const newErrors: ValidationErrors = {
+      name: '',
+      email: '',
+      message: ''
+    }
+
+    // Валидация имени
+    if (!formData.name.trim()) {
+      newErrors.name = t('nameError')
+    }
+
+    // Валидация email
+    if (!formData.email.trim()) {
+      newErrors.email = t('emailError')
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = t('emailFormatError')
+      }
+    }
+
+    // Валидация сообщения
+    if (!formData.message.trim()) {
+      newErrors.message = t('messageError')
+    }
+
+    setErrors(newErrors)
+
+    // Возвращаем true если нет ошибок
+    return !newErrors.name && !newErrors.email && !newErrors.message
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Валидация формы
+    if (!validateForm()) {
+      return
+    }
+
     setIsSubmitting(true)
     setSubmitStatus(null)
 
@@ -79,31 +138,48 @@ const HelpPageComponent: FC = () => {
           images: []
         })
         setActiveImages([])
+        setErrors({
+          name: '',
+          email: '',
+          message: ''
+        })
 
-        // toast.success(
-        //   <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-        //     <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successMessage')}</strong>
-        //   </div>,
-        //   {style: {background: '#2E7D32'}}
-        // )
+        toast.success(
+          <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successMessage')}</strong>
+          </div>,
+          {
+            style: {
+              background: '#2E7D32'
+            }
+          }
+        )
       } else {
         setSubmitStatus('error')
-        // toast.error(
-        //   <div style={{lineHeight: 1.5}}>
-        //     <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
-        //   </div>,
-        //   {style: {background: '#AC2525'}}
-        // )
+        toast.error(
+          <div style={{lineHeight: 1.5}}>
+            <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
+          </div>,
+          {
+            style: {
+              background: '#AC2525'
+            }
+          }
+        )
       }
     } catch (error) {
       console.error('Error submitting form:', error)
       setSubmitStatus('error')
-      // toast.error(
-      //   <div style={{lineHeight: 1.5}}>
-      //     <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
-      //   </div>,
-      //   {style: {background: '#AC2525'}}
-      // )
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -122,6 +198,7 @@ const HelpPageComponent: FC = () => {
                 <TextInputUI
                   theme='superWhite'
                   placeholder={t('namePlaceholder')}
+                  errorValue={errors.name}
                   currentValue={formData.name}
                   onSetValue={(value) => handleInputChange('name', value)}
                 />
@@ -129,6 +206,7 @@ const HelpPageComponent: FC = () => {
                 <TextInputUI
                   theme='superWhite'
                   placeholder={t('emailPlaceholder')}
+                  errorValue={errors.email}
                   currentValue={formData.email}
                   onSetValue={(value) => handleInputChange('email', value)}
                 />
@@ -151,6 +229,7 @@ const HelpPageComponent: FC = () => {
                 <TextInputUI
                   theme='superWhite'
                   placeholder={t('subjectPlaceholder')}
+                  errorValue=''
                   currentValue={formData.subject}
                   onSetValue={(value) => handleInputChange('subject', value)}
                 />
@@ -158,6 +237,7 @@ const HelpPageComponent: FC = () => {
                 <TextAreaUI
                   theme='superWhite'
                   placeholder={t('messagePlaceholder')}
+                  errorValue={errors.message}
                   currentValue={formData.message}
                   onSetValue={(value) => handleInputChange('message', value)}
                 />
@@ -165,32 +245,6 @@ const HelpPageComponent: FC = () => {
                 <button type='submit' className={styles.submitButton} disabled={isSubmitting}>
                   {isSubmitting ? t('sending') : t('send')}
                 </button>
-
-                {submitStatus === 'success' &&
-                  toast.success(
-                    <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-                      <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>
-                        {t('successMessage')}
-                      </strong>
-                    </div>,
-                    {
-                      style: {
-                        background: '#2E7D32'
-                      }
-                    }
-                  )}
-
-                {submitStatus === 'error' &&
-                  toast.error(
-                    <div style={{lineHeight: 1.5}}>
-                      <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
-                    </div>,
-                    {
-                      style: {
-                        background: '#AC2525'
-                      }
-                    }
-                  )}
               </form>
             </div>
 
