@@ -34,7 +34,7 @@ const localeToLanguage = {
   en: Languages.ENGLISH,
   zh: Languages.CHINA
 }
-const insta = '/email.svg'
+const emailImage = '/email.svg'
 const telephone = '/phone.svg'
 const telegram = '/telegram.svg'
 
@@ -104,7 +104,7 @@ export const renderCategoryItems = (
 }
 
 const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
-  const instagramUrl = `https://www.instagram.com/${process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}`
+  const instagramUrl = `mailto:${process.env.NEXT_PUBLIC_EMAIL || 'info@exporteru.com'}`
   const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}`
   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
@@ -357,7 +357,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     title={t('contacts')}
                     items={[
                       <div key={1} className={styles.header__top_item}>
-                        <Link
+                        <a
                           style={{width: '100%'}}
                           className={styles.header__top_link}
                           href={instagramUrl}
@@ -365,16 +365,17 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                           rel='noopener noreferrer'
                           itemProp='sameAs'
                         >
+                          {/* <p>{instagramUrl}</p> */}
                           <Image
                             style={{marginRight: '5px'}}
                             className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
                             width={24}
                             height={24}
-                            src={insta}
-                            alt='Instagram'
+                            src={emailImage}
+                            alt='Email'
                           />
                           {process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}
-                        </Link>
+                        </a>
                       </div>,
                       <div key={id + 'telegram'} className={styles.header__top_item}>
                         <Link
@@ -454,7 +455,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                         title={t('contacts')}
                         items={[
                           <div key={1} className={styles.header__top_item}>
-                            <Link
+                            <a
                               style={{width: '100%'}}
                               className={styles.header__top_link}
                               href={instagramUrl}
@@ -462,16 +463,17 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                               rel='noopener noreferrer'
                               itemProp='sameAs'
                             >
+                              {/* <p>{instagramUrl}</p> */}
                               <Image
                                 style={{marginRight: '5px'}}
                                 className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
                                 width={24}
                                 height={24}
-                                src={insta}
-                                alt='Instagram'
+                                src={emailImage}
+                                alt='Email'
                               />
-                              {process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}
-                            </Link>
+                              {process.env.NEXT_PUBLIC_EMAIL || 'Exporteru'}
+                            </a>
                           </div>,
                           <div key={id + 'telegram second'} className={styles.header__top_item}>
                             <Link

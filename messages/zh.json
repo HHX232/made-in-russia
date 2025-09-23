@@ -252,6 +252,36 @@
   "noFavorites": "没有收藏的商品"
 },
 "CardPage": {
+  "PurchaseModal": {
+    "title": "下单",
+    "fields": {
+      "name": "姓名",
+      "email": "电子邮箱",
+      "phone": "电话号码",
+      "quantity": "数量"
+    },
+    "placeholders": {
+      "name": "请输入您的姓名",
+      "email": "example@email.com",
+      "phone": "+7 (999) 123-45-67",
+      "quantity": "最少 {minimum} 件"
+    },
+    "errors": {
+      "nameRequired": "姓名必须填写",
+      "emailRequired": "电子邮箱必须填写",
+      "emailInvalid": "邮箱格式不正确",
+      "quantityMinimum": "最低数量：{minimum}"
+    },
+    "priceInfo": {
+      "range": "范围",
+      "unitPrice": "单价",
+      "totalPrice": "总金额"
+    },
+    "buttons": {
+      "cancel": "取消",
+      "submit": "提交申请"
+    }
+  },
     "CardTopPage": {
       "successCreateOrder": "订单创建成功！",
       "successCreateBody": "请稍候，卖家会很快联系您。",

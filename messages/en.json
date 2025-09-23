@@ -240,6 +240,37 @@
   "noFavorites": "No favorite products"
 },
 "CardPage": {
+  "PurchaseModal": {
+    "title": "Place Order",
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "quantity": "Quantity"
+    },
+    "placeholders": {
+      "name": "Enter your name",
+      "email": "example@email.com",
+      "phone": "+7 (999) 123-45-67",
+      "quantity": "Minimum {minimum}"
+    },
+    "errors": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "quantityMinimum": "Minimum quantity: {minimum}"
+    },
+    "priceInfo": {
+      "range": "Range",
+      "unitPrice": "Unit price",
+      "totalPrice": "Total amount"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "submit": "Submit Application"
+    }
+  }
+,
     "CardTopPage": {
       "successCreateOrder": "Order created successfully!",
       "successCreateBody": "Please wait, the seller will contact you shortly.",

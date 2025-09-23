@@ -253,6 +253,36 @@
    "noFavorites":"Нет избранных товаров"
   },
   "CardPage":{
+    "PurchaseModal": {
+      "title": "Оформить заказ",
+      "fields": {
+        "name": "Имя",
+        "email": "Email",
+        "phone": "Номер телефона",
+        "quantity": "Количество"
+      },
+      "placeholders": {
+        "name": "Введите ваше имя",
+        "email": "example@email.com",
+        "phone": "+7 (999) 123-45-67",
+        "quantity": "Минимум {minimum}"
+      },
+      "errors": {
+        "nameRequired": "Имя обязательно для заполнения",
+        "emailRequired": "Email обязателен для заполнения",
+        "emailInvalid": "Некорректный формат email",
+        "quantityMinimum": "Минимальное количество: {minimum}"
+      },
+      "priceInfo": {
+        "range": "Диапазон",
+        "unitPrice": "Цена за единицу",
+        "totalPrice": "Общая сумма"
+      },
+      "buttons": {
+        "cancel": "Отмена",
+        "submit": "Отправить заявку"
+      }
+    },
    "CardTopPage":{
     "successCreateOrder":"Заказ успешно создан!",
     "successCreateBody":"Ожидайте, продавец скоро свяжется с вами",

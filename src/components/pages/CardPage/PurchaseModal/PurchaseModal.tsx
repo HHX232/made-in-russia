@@ -4,6 +4,7 @@ import {createPriceWithDot} from '@/utils/createPriceWithDot'
 import styles from './PurchaseModal.module.scss'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useTranslations} from 'next-intl'
 
 interface DiscountPriceRange {
   from: number
@@ -39,6 +40,8 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
   onSubmit
 }) => {
   const {user} = useTypedSelector((state) => state.user)
+  const t = useTranslations('CardPage.PurchaseModal')
+
   // Отладочная информация
   useEffect(() => {
     if (isOpen) {
@@ -61,6 +64,12 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
     name: '',
     email: '',
     quantity: ''
+  })
+
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    quantity: false
   })
 
   // Функция для определения подходящей цены на основе количества
@@ -122,39 +131,44 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
     let isValid = true
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Имя обязательно для заполнения'
+      newErrors.name = t('errors.nameRequired')
       isValid = false
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email обязателен для заполнения'
+      newErrors.email = t('errors.emailRequired')
       isValid = false
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Некорректный формат email'
+      newErrors.email = t('errors.emailInvalid')
       isValid = false
     }
 
     const quantity = parseInt(formData.quantity)
     if (!quantity || quantity < minimumOrderQuantity) {
-      newErrors.quantity = `Минимальное количество: ${minimumOrderQuantity}`
+      newErrors.quantity = t('errors.quantityMinimum', {minimum: minimumOrderQuantity})
       isValid = false
     }
 
     setErrors(newErrors)
+    setTouched({
+      name: true,
+      email: true,
+      quantity: true
+    })
     return isValid
   }
 
   // Проверка валидности формы в реальном времени
-  const isFormValid = useMemo(() => {
-    const quantity = parseInt(formData.quantity)
-    return (
-      formData.name.trim() &&
-      formData.email.trim() &&
-      /\S+@\S+\.\S+/.test(formData.email) &&
-      quantity >= minimumOrderQuantity &&
-      priceCalculation.selectedPrice
-    )
-  }, [formData, minimumOrderQuantity, priceCalculation.selectedPrice])
+  // const isFormValid = useMemo(() => {
+  //   const quantity = parseInt(formData.quantity)
+  //   return (
+  //     formData.name.trim() &&
+  //     formData.email.trim() &&
+  //     /\S+@\S+\.\S+/.test(formData.email) &&
+  //     quantity >= minimumOrderQuantity &&
+  //     priceCalculation.selectedPrice
+  //   )
+  // }, [formData, minimumOrderQuantity, priceCalculation.selectedPrice])
 
   const handleSubmit = () => {
     if (validateForm() && priceCalculation.selectedPrice) {
@@ -178,10 +192,19 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
     }
   }
 
+  const handleInputBlur = (field: keyof typeof touched) => {
+    setTouched((prev) => ({...prev, [field]: true}))
+  }
+
+  // Функция для получения текста ошибки для поля
+  const getFieldError = (field: keyof typeof errors) => {
+    return touched[field] && errors[field] ? errors[field] : ''
+  }
+
   return (
     <ModalWindowDefault isOpen={isOpen} onClose={onClose} extraClass={styles.purchaseModal}>
       <div className={styles.modalContent}>
-        <h2 className={styles.modalTitle}>Оформить заказ</h2>
+        <h2 className={styles.modalTitle}>{t('title')}</h2>
 
         <div className={styles.productInfo}>
           <h3 className={styles.productTitle}>{productTitle}</h3>
@@ -190,37 +213,41 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
         <div className={styles.formSection}>
           <div className={styles.inputGroup}>
             <label className={styles.label}>
-              Имя <span className={styles.required}>*</span>
+              {t('fields.name')} <span className={styles.required}>*</span>
             </label>
             <TextInputUI
               currentValue={formData.name}
-              placeholder='Введите ваше имя'
+              placeholder={t('placeholders.name')}
               onSetValue={(value) => handleInputChange('name', value)}
+              onBlur={() => handleInputBlur('name')}
               theme='superWhite'
               inputType='text'
+              errorValue={getFieldError('name')}
             />
-            {errors.name && <span className={styles.error}>{errors.name}</span>}
+            {/* {getFieldError('name') && <span className={styles.error}>{getFieldError('name')}</span>} */}
           </div>
 
           <div className={styles.inputGroup}>
             <label className={styles.label}>
-              Email <span className={styles.required}>*</span>
+              {t('fields.email')} <span className={styles.required}>*</span>
             </label>
             <TextInputUI
               currentValue={formData.email}
-              placeholder='example@email.com'
+              placeholder={t('placeholders.email')}
               onSetValue={(value) => handleInputChange('email', value)}
+              onBlur={() => handleInputBlur('email')}
               theme='superWhite'
               inputType='email'
+              errorValue={getFieldError('email')}
             />
-            {errors.email && <span className={styles.error}>{errors.email}</span>}
+            {/* {getFieldError('email') && <span className={styles.error}>{getFieldError('email')}</span>} */}
           </div>
 
           <div className={styles.inputGroup}>
-            <label className={styles.label}>Номер телефона</label>
+            <label className={styles.label}>{t('fields.phone')}</label>
             <TextInputUI
               currentValue={formData.phone}
-              placeholder='+7 (999) 123-45-67'
+              placeholder={t('placeholders.phone')}
               onSetValue={(value) => handleInputChange('phone', value)}
               theme='superWhite'
               inputType='text'
@@ -229,16 +256,18 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
 
           <div className={styles.inputGroup}>
             <label className={styles.label}>
-              Количество <span className={styles.required}>*</span>
+              {t('fields.quantity')} <span className={styles.required}>*</span>
             </label>
             <TextInputUI
               currentValue={formData.quantity}
-              placeholder={`Минимум ${minimumOrderQuantity}`}
+              placeholder={t('placeholders.quantity', {minimum: minimumOrderQuantity})}
               onSetValue={(value) => handleInputChange('quantity', value)}
+              onBlur={() => handleInputBlur('quantity')}
               theme='superWhite'
               inputType='number'
+              errorValue={getFieldError('quantity')}
             />
-            {errors.quantity && <span className={styles.error}>{errors.quantity}</span>}
+            {/* {getFieldError('quantity') && <span className={styles.error}>{getFieldError('quantity')}</span>} */}
           </div>
         </div>
 
@@ -246,13 +275,17 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
           <div className={styles.priceSection}>
             <div className={styles.priceInfo}>
               <div className={styles.priceRange}>
-                Диапазон: {priceCalculation.selectedPrice.from}
-                {priceCalculation.selectedPrice.to === 999999 ? '+' : `-${priceCalculation.selectedPrice.to}`}{' '}
+                {t('priceInfo.range')}: {priceCalculation.selectedPrice.from}
+                {priceCalculation.selectedPrice.to === 999999
+                  ? '+'
+                  : priceCalculation?.selectedPrice?.to
+                    ? `-${priceCalculation.selectedPrice.to}`
+                    : ''}{' '}
                 {priceCalculation.selectedPrice.unit}
               </div>
 
               <div className={styles.unitPrice}>
-                <span className={styles.priceLabel}>Цена за единицу:</span>
+                <span className={styles.priceLabel}>{t('priceInfo.unitPrice')}:</span>
                 <div className={styles.priceValue}>
                   {priceCalculation.hasDiscount && (
                     <span className={styles.originalPrice}>
@@ -269,7 +302,7 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               </div>
 
               <div className={styles.totalPrice}>
-                <span className={styles.totalLabel}>Общая сумма:</span>
+                <span className={styles.totalLabel}>{t('priceInfo.totalPrice')}:</span>
                 <span className={styles.totalValue}>
                   {createPriceWithDot(priceCalculation.totalPrice.toString())} {priceCalculation.selectedPrice.currency}
                 </span>
@@ -280,10 +313,10 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
 
         <div className={styles.buttonGroup}>
           <button className={styles.cancelButton} onClick={onClose}>
-            Отмена
+            {t('buttons.cancel')}
           </button>
-          <button className={styles.submitButton} onClick={handleSubmit} disabled={!isFormValid}>
-            Отправить заявку
+          <button className={styles.submitButton} onClick={handleSubmit}>
+            {t('buttons.submit')}
           </button>
         </div>
       </div>
