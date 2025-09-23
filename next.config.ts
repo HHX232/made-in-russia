@@ -45,7 +45,9 @@ const nextConfig: NextConfig = {
       'exporteru.b-cdn.net',
       'exporteru.com',
       'en.exporteru.com',
-      'cn.exporteru.com'
+      'cn.exporteru.com',
+      'exporteru.b-cdn.net',
+      'https://exporteru.b-cdn.net'
     ]
   },
 
