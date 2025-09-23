@@ -7,7 +7,6 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       cypressSplit(on, config)
 
-      // Дополнительные env-переменные
       config.env = {
         ...config.env,
         apiUrl: 'https://exporteru.com/api/v1',
@@ -17,8 +16,7 @@ export default defineConfig({
 
       return config
     },
-    // Базовый URL для тестов
-    baseUrl: 'http://localhost:3000/ru'
+    baseUrl: 'http://localhost:3000'
   },
 
   video: false,

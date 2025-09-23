@@ -20,10 +20,10 @@ const nextConfig: NextConfig = {
 
   images: {
     // ВАЖНО: убираем path для production или делаем правильно
-    ...(isProduction && {
-      loader: 'custom',
-      loaderFile: './image-loader.js' // Создадим кастомный лоадер
-    }),
+    // ...(isProduction && {
+    //   loader: 'custom',
+    //   loaderFile: './image-loader.js' // Создадим кастомный лоадер
+    // }),
 
     // Или используем unoptimized для простоты
     unoptimized: isProduction,

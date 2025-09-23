@@ -14,7 +14,7 @@ export interface FormState {
   cardTitle: string
   uploadedFiles: File[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cardObjectForOthers: any // Добавляем это поле
+  cardObjectForOthers: any
   remainingInitialImages: string[]
   objectRemainingInitialImages: {id: number; position: number}[]
   pricesArray: PriceItem[]

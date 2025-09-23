@@ -28,7 +28,6 @@ interface IGeneralResponse {
   advertisements?: IPromoFromServer[]
 }
 
-// теперь только один запрос
 async function getInitialData(locale: string) {
   const {data} = await axiosClassic.get<IGeneralResponse>('/general', {
     headers: {
