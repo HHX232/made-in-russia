@@ -383,7 +383,7 @@
     "save": "保存",
     
       "titleError": "商品标题必填",
-      "minimumImages": "至少需要3张图片",
+      "minimumImages": "至少需要1张图片",
       "now": "现在",
       "onePriceError": "至少添加一个价格",
       "descriptionError": "描述必填",

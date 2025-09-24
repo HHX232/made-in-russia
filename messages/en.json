@@ -371,7 +371,7 @@
     "altHelpWithSimilarProducts": "Help with similar products",
     "save": "Save",
       "titleError": "Product title is required",
-      "minimumImages": "Minimum 3 images",
+      "minimumImages": "Minimum 1 images",
       "now": "Now",
       "onePriceError": "Add at least one price",
       "descriptionError": "Description is required",

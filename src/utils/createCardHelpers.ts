@@ -329,8 +329,9 @@ export const submitFormCardData = async ({
         ? Math.round(
             ((parseFloat(price.priceWithoutDiscount) - parseFloat(price.priceWithDiscount)) /
               parseFloat(price.priceWithoutDiscount)) *
+              100 *
               100
-          )
+          ) / 100
         : 0
   }))
   console.log('цена от и до:', prices)

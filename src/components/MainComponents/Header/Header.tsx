@@ -104,7 +104,7 @@ export const renderCategoryItems = (
 }
 
 const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
-  const instagramUrl = `mailto:${process.env.NEXT_PUBLIC_EMAIL || 'info@exporteru.com'}`
+  const emailUrl = `mailto:${process.env.NEXT_PUBLIC_EMAIL || 'info@exporteru.com'}`
   const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}`
   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
@@ -189,7 +189,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     '@type': 'Organization',
     name: 'Exporteru',
     url: typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL,
-    sameAs: [instagramUrl, telegramUrl],
+    sameAs: [emailUrl, telegramUrl],
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '+78005553535',
@@ -360,9 +360,9 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                         <a
                           style={{width: '100%'}}
                           className={styles.header__top_link}
-                          href={instagramUrl}
-                          target='_blank'
-                          rel='noopener noreferrer'
+                          href={emailUrl}
+                          // target='_blank'
+                          // rel='noopener noreferrer'
                           itemProp='sameAs'
                         >
                           {/* <p>{instagramUrl}</p> */}
@@ -458,9 +458,9 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                             <a
                               style={{width: '100%'}}
                               className={styles.header__top_link}
-                              href={instagramUrl}
-                              target='_blank'
-                              rel='noopener noreferrer'
+                              href={emailUrl}
+                              // target='_blank'
+                              // rel='noopener noreferrer'
                               itemProp='sameAs'
                             >
                               {/* <p>{instagramUrl}</p> */}
