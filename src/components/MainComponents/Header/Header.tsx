@@ -14,8 +14,10 @@ import {useLocale, useTranslations} from 'next-intl'
 import {TLocale} from '../MinimalHeader/MinimalHeader'
 import {useRouter} from 'next/navigation'
 import Link from 'next/link'
+import {useActions} from '@/hooks/useActions'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
 
-const setCookieLocale = (locale: string) => {
+export const setCookieLocale = (locale: string) => {
   document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
 }
 
@@ -118,13 +120,26 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const locale = useLocale()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const categoriesFromHook = useCategories(locale as any)
-
+  const {setCurrentLang} = useActions()
+  const {currentLangValue} = useTypedSelector((state) => state.currentLangSlice)
   // Добавляем useTransition для плавного изменения языка
   const [isPending, startTransition] = useTransition()
 
   const [activeLanguage, setActiveLanguage] = useState<Languages>(
-    localeToLanguage[locale as keyof typeof localeToLanguage]
+    localeToLanguage[currentLangValue as keyof typeof localeToLanguage]
   )
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setCurrentLang(locale as any)
+  }, [])
+
+  useEffect(() => {
+    console.log('currentLangValue', currentLangValue)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setActiveLanguage(localeToLanguage[currentLangValue as keyof typeof localeToLanguage] as any)
+  }, [currentLangValue])
+
   const t = useTranslations('HomePage')
   const router = useRouter()
 

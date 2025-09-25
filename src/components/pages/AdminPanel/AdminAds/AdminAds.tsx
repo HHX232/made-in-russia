@@ -18,6 +18,32 @@ interface AdTranslations {
   en?: string
   zh?: string
 }
+// Вынеси куда-нибудь в начало файла
+const extractErrorMessage = (error: any): string => {
+  if (!error) return ''
+
+  if (typeof error === 'string') return error
+
+  if (error instanceof Error) {
+    try {
+      // Если в message лежит JSON
+      const parsed = JSON.parse(error.message)
+      if (parsed?.errors?.message) return parsed.errors.message
+      if (parsed?.message) return parsed.message
+    } catch {
+      return error.message
+    }
+  }
+
+  if (error.response?.data?.errors?.message) {
+    return error.response.data.errors.message
+  }
+
+  if (error.errors?.message) return error.errors.message
+  if (error.message) return error.message
+
+  return ''
+}
 
 interface AdData {
   id: number
@@ -72,6 +98,12 @@ const AdminAds = () => {
     activeImages: []
   })
   const [errors, setErrors] = useState<{[key: string]: string}>({})
+  const addDays = (date: Date, days: number) => {
+    const result = new Date(date)
+    result.setDate(result.getDate() + days)
+    return result
+  }
+  const formatYYYYMMDD = (date: Date) => date.toISOString().split('T')[0]
 
   // Extract language from pathname
   const getCurrentLanguage = (): Language => {
@@ -95,10 +127,23 @@ const AdminAds = () => {
           'Accept-Language': currentLanguage
         }
       })
+      //   {
+      //     "status": 400,
+      //     "error": "Bad Request",
+      //     "errors": {
+      //         "message": "Дата истечения рекламы не может быть пустой"
+      //     },
+      //     "message": "Validation failed"
+      // }
+      if (response.status === 400) {
+        throw new Error((response?.data as any)?.errors?.message)
+      }
       setAds(response.data)
     } catch (error) {
       console.error('Error fetching ads:', error)
-      toast.error('Ошибка при загрузке объявлений')
+      const msg = extractErrorMessage(error)
+
+      toast.error('Ошибка при загрузке объявлений' + '\n ' + msg)
     } finally {
       setLoading(false)
     }
@@ -122,6 +167,10 @@ const AdminAds = () => {
     setEditingAd(null)
     setShowCreateForm(false)
   }
+
+  useEffect(() => {
+    console.log('ads', ads)
+  }, [ads])
 
   const validateForm = (): boolean => {
     const newErrors: {[key: string]: string} = {}
@@ -222,20 +271,24 @@ const AdminAds = () => {
       })
 
       if (!response.ok) {
-        const errorData = await response.text()
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorData}`)
+        const errorData = await response.json()
+        throw new Error(errorData?.errors?.message || 'Неизвестная ошибка')
       }
 
       const result = await response.json()
       console.log(result)
       toast.dismiss(loadingToast)
       toast.success('Объявление успешно создано')
+      if (result.status === 400) {
+        throw new Error((result?.data as any)?.errors?.message)
+      }
       resetForm()
       fetchAds()
     } catch (error) {
       toast.dismiss(loadingToast)
       console.error('Error creating ad:', error)
-      toast.error('Ошибка при создании объявления')
+      const msg = extractErrorMessage(error)
+      toast.error('Ошибка при создании объявления' + '\n ' + msg)
     }
   }
 
@@ -248,8 +301,28 @@ const AdminAds = () => {
       const token = await getAccessToken()
 
       const formDataToSend = new FormData()
+      const today = new Date()
+      const rawExpiresAt = formData.expiresAt || ads.find((value) => value.id === editingAd)?.expiresAt || ''
 
-      // Prepare the data object - use current language as main
+      let finalExpirationDate: string
+      if (rawExpiresAt) {
+        const expires = new Date(rawExpiresAt)
+        const todayStart = new Date(formatYYYYMMDD(today)) // сегодня с 00:00
+
+        if (expires.getTime() <= todayStart.getTime()) {
+          // просрочена или сегодня
+          const plus30 = addDays(today, 30)
+          finalExpirationDate = formatDateForAPI(formatYYYYMMDD(plus30))
+        } else {
+          // ещё действительна
+          finalExpirationDate = formatDateForAPI(formatYYYYMMDD(expires))
+        }
+      } else {
+        // нет даты вообще → ставим сегодня +30
+        const plus30 = addDays(today, 30)
+        finalExpirationDate = formatDateForAPI(formatYYYYMMDD(plus30))
+      }
+
       const dataPayload = {
         title: formData.titleTranslations[currentLanguage] || '', // Use current language as main
         titleTranslations: formData.titleTranslations,
@@ -257,10 +330,22 @@ const AdminAds = () => {
         subtitleTranslations: formData.subtitleTranslations,
         thirdText: formData.thirdTextTranslations[currentLanguage] || '', // Use current language as main
         thirdTextTranslations: formData.thirdTextTranslations,
-        expirationDate: formData.expiresAt ? formatDateForAPI(formData.expiresAt) : null, // Format date for API
-        isBig: formData.isBig, // Include isBig field
-        link: formData.link || '' // Include link field
+        expirationDate: finalExpirationDate,
+        isBig: formData.isBig,
+        link: formData.link || ''
       }
+      console.log(
+        'dataPayload',
+        dataPayload,
+        'finalExpirationDate',
+        finalExpirationDate,
+        'ads',
+        ads?.[editingAd],
+        'all ads',
+        ads,
+        'editingAd',
+        editingAd
+      )
 
       // ИСПРАВЛЕНИЕ: Создаем Blob для JSON данных с правильным типом содержимого
       const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
@@ -281,13 +366,15 @@ const AdminAds = () => {
         },
         body: formDataToSend
       })
-
       if (!response.ok) {
-        const errorData = await response.text()
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorData}`)
+        const errorData = await response.json()
+        throw new Error(errorData?.errors?.message || errorData?.message || 'Неизвестная ошибка')
       }
 
       const result = await response.json()
+      if (result.status === 400) {
+        throw new Error((result?.data as any)?.errors?.message)
+      }
       console.log(result)
       toast.dismiss(loadingToast)
       toast.success('Объявление успешно обновлено')
@@ -296,7 +383,8 @@ const AdminAds = () => {
     } catch (error) {
       toast.dismiss(loadingToast)
       console.error('Error updating ad:', error)
-      toast.error('Ошибка при обновлении объявления')
+      const msg = extractErrorMessage(error)
+      toast.error('Ошибка при обновлении объявления' + '\n ' + msg)
     }
   }
 
@@ -312,7 +400,8 @@ const AdminAds = () => {
     } catch (error) {
       toast.dismiss(loadingToast)
       console.error('Error deleting ad:', error)
-      toast.error('Ошибка при удалении объявления')
+      const msg = extractErrorMessage(error)
+      toast.error('Ошибка при удалении объявления' + '\n ' + msg)
     }
   }
 
@@ -603,7 +692,11 @@ const AdminAds = () => {
 
               {/* Date Input for "Time to Live" */}
               <div className={styles.input__group}>
-                <label className={styles.input__label}>Дата истечения</label>
+                <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                  {' '}
+                  <label className={styles.input__label}>Дата истечения</label>
+                  <span className={styles.required__asterisk}>*</span>
+                </div>
                 <Calendar
                   selectedDate={formData.expiresAt}
                   onDateSelect={(date) => {

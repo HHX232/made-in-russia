@@ -182,7 +182,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     isError,
     isFetching,
     resData
-  } = useProducts(pageParams, specialRoute, accessToken || '')
+  } = useProducts(pageParams, () => setPageParams({...pageParams, page: 0}), specialRoute, accessToken || '')
 
   const showSkeleton = isLoading && resData.length === 0
 

@@ -290,12 +290,12 @@
   font-weight: 500;
   gap: 6px;
 
-  &::after {
-    margin-left: 2px; // Small margin for asterisk
-    color: #dc3545;
-    content: '*';
-    font-weight: bold;
-  }
+  // &::after {
+  //   margin-left: 2px; // Small margin for asterisk
+  //   color: #dc3545;
+  //   content: '*';
+  //   font-weight: bold;
+  // }
 }
 
 // Removed .form__input overrides for TextInputUI.

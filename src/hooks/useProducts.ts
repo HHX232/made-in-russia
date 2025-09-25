@@ -4,6 +4,8 @@ import ProductService from '@/services/products/product.service'
 import {useCurrentLanguage} from './useCurrentLanguage'
 import {useState, useEffect, useRef} from 'react'
 import {Product} from '@/services/products/product.types'
+// import {useTypedSelector} from './useTypedSelector'
+// import {useTypedSelector} from './useTypedSelector'
 
 // Типы для параметров запроса продуктов
 export interface ProductQueryParams {
@@ -26,14 +28,17 @@ export const PRODUCTS_QUERY_KEY = 'products'
 
 export const useProducts = (
   params: ProductQueryParams = {},
+  resetPageParams: () => void,
   specialRoute?: string | undefined,
   accessToken?: string
 ) => {
   const currentLang = useCurrentLanguage()
+  console.log('currentLang in useProducts', currentLang)
+  // const {currentLangValue} = useTypedSelector((state) => state.currentLangSlice)
   const [resData, setResData] = useState<Product[]>([])
   const prevParamsRef = useRef<string>('')
   const queryClient = useQueryClient()
-
+  const prevLangRef = useRef<string | null>(currentLang)
   // Создаем ключ для отслеживания изменений параметров (исключая page)
   const paramsWithoutPage = {...params}
   delete paramsWithoutPage.page
@@ -49,7 +54,16 @@ export const useProducts = (
   }, [currentParamsKey])
 
   const queryKey = [PRODUCTS_QUERY_KEY, currentLang, currentParamsKey, specialRoute, params.page]
-
+  useEffect(() => {
+    // Clear resData if params or language changed to prevent stale merge
+    if (prevParamsRef.current !== currentParamsKey || prevLangRef.current !== currentLang) {
+      resetPageParams()
+      setResData([])
+      prevParamsRef.current = currentParamsKey
+      prevLangRef.current = currentLang
+      queryClient.invalidateQueries({queryKey: [PRODUCTS_QUERY_KEY]}) // Invalidate cache on language or params change
+    }
+  }, [currentParamsKey, currentLang, queryClient])
   const queryResult = useQuery({
     queryKey,
     queryFn: async () => {
