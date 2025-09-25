@@ -126,5 +126,4 @@ const nextConfig: NextConfig = {
 
 const withNextIntl = createNextIntlPlugin()
 
-// Apply the plugins in sequence
 export default withNextIntl(withBundleAnalyzer(nextConfig))
