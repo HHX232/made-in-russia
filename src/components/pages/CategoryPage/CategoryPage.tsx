@@ -13,17 +13,12 @@ import {usePathname} from 'next/navigation'
 import Link from 'next/link'
 
 const CATEGORYESCONST = [
-  {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: ''},
-  {title: 'Многолетние культуры', value: 'Perennial_crops', imageSrc: ''},
-  {title: 'Рассада', value: 'Seedlings', imageSrc: ''},
-  {title: 'Животноводство', value: 'Livestock_farming', imageSrc: ''},
-  {title: 'Смешанное сельское хозяйство', value: 'Mixed_farming', imageSrc: ''}
+  {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: '/category/cat1.jpg'},
+  {title: 'Многолетние культуры', value: 'Perennial_crops', imageSrc: '/category/cat2.jpg'},
+  {title: 'Рассада', value: 'Seedlings', imageSrc: '/category/cat3.jpg'},
+  {title: 'Животноводство', value: 'Livestock_farming', imageSrc: '/category/cat4.jpg'},
+  {title: 'Смешанное сельское хозяйство', value: 'Mixed_farming', imageSrc: '/category/cat5.jpg'}
 ]
-// /category/cat1.jpg
-// /category/cat2.jpg
-// /category/cat3.jpg
-// /category/cat4.jpg
-// /category/cat5.jpg
 
 const CategoryPage = ({
   categoryName,
@@ -43,20 +38,31 @@ const CategoryPage = ({
   breadcrumbs?: {title: string; link: string}[]
   companyes?: {name: string; inn: string; ageInYears: string}[]
 }) => {
+  // Проверяем, выполняется ли код на сервере
+  const isServer = typeof window === 'undefined'
+
+  // Инициализируем состояние с переданными категориями для SSR
   const [sortedCategories, setSortedCategories] = useState<Category[]>(categories)
   const [activeFilterId, setActiveFilterId] = useState<number | null>(idOfFilter || null)
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [mounted, setMounted] = useState(false)
+
   const listRef = useRef<HTMLUListElement>(null)
   const itemRefs = useRef<(HTMLLIElement | null)[]>([])
   const pathname = usePathname()
   const {clearFilters, setFilter} = useActions()
   const windowWidth = useWindowWidth()
 
+  // Определяем, какую версию показывать
+  const shouldShowDesktop = isServer || (mounted && windowWidth && windowWidth > 900)
+  const shouldShowMobile = !isServer && mounted && windowWidth && windowWidth <= 900
+
   useEffect(() => {
+    setMounted(true)
     return () => {
       clearFilters()
     }
-  }, [])
+  }, [clearFilters])
 
   useEffect(() => {
     clearFilters()
@@ -72,10 +78,10 @@ const CategoryPage = ({
     return JSON.stringify(categories.map((cat) => cat.id || cat.slug))
   }, [categories])
 
-  // --- Keen-slider settings для компаний ---
+  // --- Keen-slider settings для компаний (только на клиенте) ---
   const companiesSlides = useMemo(
-    () => (companyes ? groupCompaniesIntoSlides(companyes, windowWidth || 1000) : []),
-    [companyes, windowWidth]
+    () => (companyes && !isServer ? groupCompaniesIntoSlides(companyes, windowWidth || 1200) : []),
+    [companyes, windowWidth, isServer]
   )
   const companiesTimer = useRef<NodeJS.Timeout | null>(null)
 
@@ -85,43 +91,45 @@ const CategoryPage = ({
       mode: 'snap',
       slides: {perView: 1, spacing: 15}
     },
-    [
-      (slider) => {
-        function clearNextTimeout() {
-          if (companiesTimer.current) {
-            clearTimeout(companiesTimer.current)
-            companiesTimer.current = null
-          }
-        }
-        function nextTimeout() {
-          clearNextTimeout()
-          if (companiesSlides.length > 1) {
-            companiesTimer.current = setTimeout(() => {
-              slider.next()
-            }, 6000)
-          }
-        }
+    mounted
+      ? [
+          (slider) => {
+            function clearNextTimeout() {
+              if (companiesTimer.current) {
+                clearTimeout(companiesTimer.current)
+                companiesTimer.current = null
+              }
+            }
+            function nextTimeout() {
+              clearNextTimeout()
+              if (companiesSlides.length > 1) {
+                companiesTimer.current = setTimeout(() => {
+                  slider.next()
+                }, 6000)
+              }
+            }
 
-        slider.on('created', () => {
-          nextTimeout()
-        })
-        slider.on('dragStarted', () => {
-          clearNextTimeout()
-        })
-        slider.on('animationEnded', () => {
-          nextTimeout()
-        })
-        slider.on('updated', () => {
-          nextTimeout()
-        })
-        slider.on('destroyed', () => {
-          clearNextTimeout()
-        })
-      }
-    ]
+            slider.on('created', () => {
+              nextTimeout()
+            })
+            slider.on('dragStarted', () => {
+              clearNextTimeout()
+            })
+            slider.on('animationEnded', () => {
+              nextTimeout()
+            })
+            slider.on('updated', () => {
+              nextTimeout()
+            })
+            slider.on('destroyed', () => {
+              clearNextTimeout()
+            })
+          }
+        ]
+      : []
   )
 
-  // --- Keen-slider settings для категорий (основной слайдер для мобильных) ---
+  // --- Keen-slider settings для категорий (только на клиенте) ---
   const slidesPerView = windowWidth && windowWidth < 600 ? 1 : 2
   const timer = useRef<NodeJS.Timeout | null>(null)
 
@@ -134,41 +142,43 @@ const CategoryPage = ({
         setCurrentSlide(s.track.details.rel)
       }
     },
-    [
-      (slider) => {
-        function clearNextTimeout() {
-          if (timer.current) {
-            clearTimeout(timer.current)
-            timer.current = null
-          }
-        }
-        function nextTimeout() {
-          clearNextTimeout()
-          const slidesForCategory = groupCategoriesIntoSlides(categoriesToDisplay)
-          if (slidesForCategory.length > 1) {
-            timer.current = setTimeout(() => {
-              slider.next()
-            }, 6000)
-          }
-        }
+    mounted
+      ? [
+          (slider) => {
+            function clearNextTimeout() {
+              if (timer.current) {
+                clearTimeout(timer.current)
+                timer.current = null
+              }
+            }
+            function nextTimeout() {
+              clearNextTimeout()
+              const slidesForCategory = groupCategoriesIntoSlides(categoriesToDisplay)
+              if (slidesForCategory.length > 1) {
+                timer.current = setTimeout(() => {
+                  slider.next()
+                }, 6000)
+              }
+            }
 
-        slider.on('created', () => {
-          nextTimeout()
-        })
-        slider.on('dragStarted', () => {
-          clearNextTimeout()
-        })
-        slider.on('animationEnded', () => {
-          nextTimeout()
-        })
-        slider.on('updated', () => {
-          nextTimeout()
-        })
-        slider.on('destroyed', () => {
-          clearNextTimeout()
-        })
-      }
-    ]
+            slider.on('created', () => {
+              nextTimeout()
+            })
+            slider.on('dragStarted', () => {
+              clearNextTimeout()
+            })
+            slider.on('animationEnded', () => {
+              nextTimeout()
+            })
+            slider.on('updated', () => {
+              nextTimeout()
+            })
+            slider.on('destroyed', () => {
+              clearNextTimeout()
+            })
+          }
+        ]
+      : []
   )
 
   function groupCompaniesIntoSlides(companies: {name: string; inn: string; ageInYears: string}[], windowWidth: number) {
@@ -198,8 +208,9 @@ const CategoryPage = ({
     return slides
   }
 
+  // Сортировка категорий только на клиенте после монтирования
   useEffect(() => {
-    if (level === 2 && listRef.current && categories.length > 0) {
+    if (mounted && level === 2 && listRef.current && categories.length > 0) {
       const timeoutId = setTimeout(() => {
         const measurements = itemRefs.current
           .filter((ref) => ref !== null)
@@ -227,10 +238,11 @@ const CategoryPage = ({
       }, 100)
 
       return () => clearTimeout(timeoutId)
-    } else {
+    } else if (!mounted) {
+      // На сервере используем исходный порядок
       setSortedCategories(categories)
     }
-  }, [level, categoryName, categoriesKey, categories])
+  }, [mounted, level, categoryName, categoriesKey, categories])
 
   const categoriesToDisplay = sortedCategories
 
@@ -279,8 +291,8 @@ const CategoryPage = ({
             </h1>
           )}
 
-          {/* Список категорий для desktop (ширина > 900) */}
-          {level < 3 && categoriesToDisplay.length > 0 && windowWidth && windowWidth > 900 && (
+          {/* Desktop версия - всегда рендерится для SSR */}
+          {level < 3 && categoriesToDisplay.length > 0 && shouldShowDesktop && (
             <ul
               ref={listRef}
               className={`${styles.category__list} ${
@@ -320,8 +332,8 @@ const CategoryPage = ({
             </ul>
           )}
 
-          {/* Мобильный слайдер категорий */}
-          {level < 3 && categoriesToDisplay.length > 0 && windowWidth && windowWidth < 900 && (
+          {/* Мобильная версия - только после гидратации */}
+          {level < 3 && categoriesToDisplay.length > 0 && shouldShowMobile && (
             <>
               {shouldUseSlider ? (
                 <div className={styles.category__slider__wrapper}>
@@ -443,32 +455,51 @@ const CategoryPage = ({
 
           <Catalog isShowFilters={false} initialProducts={[]} initialHasMore={false} />
 
-          {/* Секция компаний с keen-slider */}
-          {companyes && companyes.length > 0 && windowWidth && (
+          {/* Секция компаний - показываем простую версию на сервере, слайдер на клиенте */}
+          {companyes && companyes.length > 0 && (
             <div className={styles.companies__section}>
               <h2 className={styles.companies__title}>Компании</h2>
-              <div className={styles.companies__slider__wrapper}>
-                <div
-                  ref={companiesSliderRef}
-                  className={`keen-slider ${styles.companies__slider} companies__slider__main`}
-                >
-                  {companiesSlides.map((slideCompanies, slideIndex) => (
-                    <div key={slideIndex} className={`keen-slider__slide ${styles.company__slide__item}`}>
-                      <div className={styles.company__grid}>
-                        {slideCompanies.map((company, index) => (
-                          <div key={company.name + index} className={styles.company__card}>
-                            <div className={styles.company__info}>
-                              <h3 className={styles.company__name}>{company.name}</h3>
-                              <p className={styles.company__inn}>ИНН: {company.inn}</p>
-                              <p className={styles.company__age}>Опыт: {company.ageInYears} лет</p>
-                            </div>
-                          </div>
-                        ))}
+
+              {/* Серверная версия - простая сетка */}
+              {isServer && (
+                <div className={styles.company__grid}>
+                  {companyes.slice(0, 30).map((company, index) => (
+                    <div key={company.name + index} className={styles.company__card}>
+                      <div className={styles.company__info}>
+                        <h3 className={styles.company__name}>{company.name}</h3>
+                        <p className={styles.company__inn}>ИНН: {company.inn}</p>
+                        <p className={styles.company__age}>Опыт: {company.ageInYears} лет</p>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              )}
+
+              {/* Клиентская версия - слайдер */}
+              {!isServer && mounted && (
+                <div className={styles.companies__slider__wrapper}>
+                  <div
+                    ref={companiesSliderRef}
+                    className={`keen-slider ${styles.companies__slider} companies__slider__main`}
+                  >
+                    {companiesSlides.map((slideCompanies, slideIndex) => (
+                      <div key={slideIndex} className={`keen-slider__slide ${styles.company__slide__item}`}>
+                        <div className={styles.company__grid}>
+                          {slideCompanies.map((company, index) => (
+                            <div key={company.name + index} className={styles.company__card}>
+                              <div className={styles.company__info}>
+                                <h3 className={styles.company__name}>{company.name}</h3>
+                                <p className={styles.company__inn}>ИНН: {company.inn}</p>
+                                <p className={styles.company__age}>Опыт: {company.ageInYears} лет</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

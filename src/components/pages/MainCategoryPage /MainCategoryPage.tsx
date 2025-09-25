@@ -1,27 +1,22 @@
 'use client'
-import {useCategories} from '@/services/categoryes/categoryes.service'
 import {Category} from '@/services/categoryes/categoryes.service'
 import style from './MainCategoryPage.module.scss'
 import {useTranslations} from 'next-intl'
 
 interface MainCategoryPageProps {
-  currentLang?: string
+  categories?: Category[]
 }
 
-const MainCategoryPage = ({currentLang = 'en'}: MainCategoryPageProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const categories = useCategories(currentLang as any)
-
+const MainCategoryPage = ({categories}: MainCategoryPageProps) => {
   const topLevelCategories =
-    categories?.data?.filter((category: Category) => !category.slug.includes('_') || category.slug.startsWith('l1_')) ||
-    []
+    categories?.filter((category: Category) => !category.slug.includes('_') || category.slug.startsWith('l1_')) || []
 
   const t = useTranslations('mainCategory')
   const normalizeSlug = (slug: string): string => {
     return slug.replace(/^l\d+_/, '')
   }
 
-  if (!categories || categories?.data?.length === 0) {
+  if (!categories || categories?.length === 0) {
     return (
       <div className={style.container}>
         <div className={style.loading}>{t('loading')}</div>
