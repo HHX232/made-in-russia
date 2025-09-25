@@ -5,6 +5,11 @@ import VendorPageClient from '@/components/pages/VendorPage/VendorPageClient/Ven
 import {getQueryClient} from '@/lib/get-query-client'
 import {fetchUserDataOnServer} from '@/lib/server/userDataFetcher'
 import {HydrationBoundary, dehydrate} from '@tanstack/react-query'
+import {Metadata} from 'next'
+
+export const metadata: Metadata = {
+  title: 'Vendor'
+}
 
 export default async function VendorPage() {
   // Получаем данные пользователя на сервере

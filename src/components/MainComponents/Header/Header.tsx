@@ -57,7 +57,9 @@ export const renderCategoryItems = (
   isOpenAll?: boolean
 ): React.ReactNode[] => {
   return categories.map((category) => {
-    const currentPath = parentPath ? `${parentPath}/${category.slug}` : category.slug
+    // Убираем префиксы вида l1_, l2_ и т.д. из slug категории
+    const cleanSlug = category.slug.replace(/^l\d+_/, '')
+    const currentPath = parentPath ? `${parentPath}/${cleanSlug}` : cleanSlug
     const dropListId = `category-${currentPath.replace(/\//g, '-')}`
 
     if (category.children && category.children.length > 0) {

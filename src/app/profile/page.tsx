@@ -4,6 +4,11 @@ import instance from '@/api/api.interceptor'
 import ProfilePage from '@/components/pages/ProfilePage/ProfilePage'
 import {User} from '@/services/users.types'
 import {cookies} from 'next/headers'
+import {Metadata} from 'next'
+
+export const metadata: Metadata = {
+  title: 'Profile'
+}
 
 export default async function ProfilePageMain() {
   let userData
