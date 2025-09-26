@@ -46,11 +46,28 @@ export default async function CategoryPageSpecialSecond({
     categories = foundCategory || (await CategoriesService.getById('l2_' + slugToFind, locale || 'en'))
 
     breadcrumbs = buildBreadcrumbs(allCategories, slugToFind)
-  } catch {
+  } catch (error) {
+    console.log('EEEERRRROOOOOORRRRR', 'почему то выдаем 404', error)
     notFound()
   }
   // console.log('categories second by slug:', categories)
 
+  console.log(
+    'companyes',
+    companyes,
+    'breadcrumbs',
+    breadcrumbs,
+    'idOfFilter',
+    categories.id,
+    'categories',
+    categories.children,
+    'categoryName',
+    secondCategoryName,
+    'categoryTitleName',
+    categories.name,
+    'level',
+    2
+  )
   return (
     <CategoryPage
       companyes={companyes || []}
@@ -65,11 +82,19 @@ export default async function CategoryPageSpecialSecond({
 }
 
 export async function generateMetadata({params}: {params: Promise<{secondCategoryName: string}>}) {
-  const locale = await getCurrentLocale()
-  const {secondCategoryName} = await params
-  const slugToFind = secondCategoryName
-  const foundCategory = await CategoriesService.getById('l2_' + slugToFind, locale || 'en')
-  return {
-    title: foundCategory?.name
+  try {
+    const locale = await getCurrentLocale()
+    const {secondCategoryName} = await params
+    const slugToFind = secondCategoryName
+    const foundCategory = await CategoriesService.getById('l2_' + slugToFind, locale || 'en')
+
+    return {
+      title: foundCategory?.name || secondCategoryName || 'category'
+    }
+  } catch {
+    const {secondCategoryName} = await params
+    return {
+      title: secondCategoryName || 'category'
+    }
   }
 }

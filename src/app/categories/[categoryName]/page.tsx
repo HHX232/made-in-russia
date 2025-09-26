@@ -27,8 +27,8 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
       }
     )
 
-    console.log('curr lang:', locale)
-    console.log('data companyes:', data)
+    // console.log('curr lang:', locale)
+    // console.log('data companyes:', data)
     companyes = data
   } catch {
     companyes = []
@@ -39,13 +39,31 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
 
     const slugToFind = categoryName
     const foundCategory = findCategoryBySlug(allCategories, slugToFind)
-    console.log('foundCategory', foundCategory)
+    // console.log('foundCategory', foundCategory)
     categories = foundCategory || (await CategoriesService.getById('l1_' + slugToFind, locale || 'en'))
 
     breadcrumbs = buildBreadcrumbs(allCategories, slugToFind)
-  } catch {
+  } catch (error) {
+    console.log('EEEERRRROOOOOORRRRR', 'почему то выдаем 404', error)
     notFound()
   }
+
+  console.log(
+    'companyes',
+    companyes,
+    'breadcrumbs',
+    breadcrumbs,
+    'idOfFilter',
+    categories.id,
+    'categories',
+    categories.children,
+    'categoryName',
+    categoryName,
+    'categoryTitleName',
+    categories.name,
+    'level',
+    1
+  )
 
   return (
     <CategoryPage
@@ -61,12 +79,20 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
 }
 
 export async function generateMetadata({params}: {params: Promise<{categoryName: string}>}) {
-  const locale = await getCurrentLocale()
-  const allCategories = await CategoriesService.getAll(locale || 'en')
-  const {categoryName} = await params
-  const slugToFind = categoryName
-  const foundCategory = findCategoryBySlug(allCategories, slugToFind)
-  return {
-    title: foundCategory?.name
+  try {
+    const locale = await getCurrentLocale()
+    const allCategories = await CategoriesService.getAll(locale || 'en')
+    const {categoryName} = await params
+    const slugToFind = categoryName
+    const foundCategory = findCategoryBySlug(allCategories, slugToFind)
+
+    return {
+      title: foundCategory?.name || categoryName || 'category'
+    }
+  } catch {
+    const {categoryName} = await params
+    return {
+      title: categoryName || 'category'
+    }
   }
 }

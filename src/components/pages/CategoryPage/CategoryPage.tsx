@@ -11,6 +11,7 @@ import {useKeenSlider} from 'keen-slider/react'
 import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
 import {usePathname} from 'next/navigation'
 import Link from 'next/link'
+import {useTranslations} from 'next-intl'
 
 const CATEGORYESCONST = [
   {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: '/category/cat1.jpg'},
@@ -40,7 +41,7 @@ const CategoryPage = ({
 }) => {
   // Проверяем, выполняется ли код на сервере
   const isServer = typeof window === 'undefined'
-
+  const t = useTranslations('CategoryPage')
   // Инициализируем состояние с переданными категориями для SSR
   const [sortedCategories, setSortedCategories] = useState<Category[]>(categories)
   const [activeFilterId, setActiveFilterId] = useState<number | null>(idOfFilter || null)
@@ -458,7 +459,7 @@ const CategoryPage = ({
           {/* Секция компаний - показываем простую версию на сервере, слайдер на клиенте */}
           {companyes && companyes.length > 0 && (
             <div className={styles.companies__section}>
-              <h2 className={styles.companies__title}>Компании</h2>
+              <h2 className={styles.companies__title}>{t('companies')}</h2>
 
               {/* Серверная версия - простая сетка */}
               {isServer && (
@@ -467,8 +468,12 @@ const CategoryPage = ({
                     <div key={company.name + index} className={styles.company__card}>
                       <div className={styles.company__info}>
                         <h3 className={styles.company__name}>{company.name}</h3>
-                        <p className={styles.company__inn}>ИНН: {company.inn}</p>
-                        <p className={styles.company__age}>Опыт: {company.ageInYears} лет</p>
+                        <p className={styles.company__inn}>
+                          {t('inn')}: {company.inn}
+                        </p>
+                        <p className={styles.company__age}>
+                          {t('experience')}: {company.ageInYears} {t('years')}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -489,8 +494,12 @@ const CategoryPage = ({
                             <div key={company.name + index} className={styles.company__card}>
                               <div className={styles.company__info}>
                                 <h3 className={styles.company__name}>{company.name}</h3>
-                                <p className={styles.company__inn}>ИНН: {company.inn}</p>
-                                <p className={styles.company__age}>Опыт: {company.ageInYears} лет</p>
+                                <p className={styles.company__inn}>
+                                  {t('inn')}: {company.inn}
+                                </p>
+                                <p className={styles.company__age}>
+                                  {t('experience')}: {company.ageInYears} {t('years')}
+                                </p>
                               </div>
                             </div>
                           ))}

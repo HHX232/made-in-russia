@@ -762,9 +762,12 @@
   "catalogMeta": {
     "mainPageTitle": "类别",
     "mainPageText": "Exporteru 提供多种进出口产品类别。每位用户都能找到条件最优的合适产品。"
+},
+"CategoryPage": {
+    "companies": "公司",
+    "inn": "税号",
+    "experience": "经验",
+    "years": "年"
 }
-
-
-
 
 }

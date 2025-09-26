@@ -746,6 +746,12 @@
   "catalogMeta": {
     "mainPageTitle": "Categories",
     "mainPageText": "Exporteru provides a wide range of product categories for export and import. Every user will be able to find the right product with optimal conditions."
+},
+"CategoryPage": {
+    "companies": "Companies",
+    "inn": "Tax ID",
+    "experience": "Experience",
+    "years": "years"
 }
 
 }

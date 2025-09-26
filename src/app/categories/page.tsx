@@ -8,7 +8,12 @@ import {getTranslations} from 'next-intl/server'
 export default async function CategoriesPage() {
   const locale = await getCurrentLocale()
 
-  const categories = await CategoriesService.getAll(locale || 'en')
+  let categories
+  try {
+    categories = await CategoriesService.getAll(locale || 'en')
+  } catch {
+    categories = undefined
+  }
   return (
     <div>
       <Header />
