@@ -6,11 +6,10 @@ import {useRouter} from 'next/navigation'
 
 import {useTranslations} from 'next-intl'
 import {useNProgress} from '@/hooks/useProgress'
-import {useTypedSelector} from '@/hooks/useTypedSelector' // ваш кастомный хук
+import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useUserCache, useUserQuery} from '@/hooks/useUserApi'
 import {getAccessToken} from '@/services/auth/auth.helper'
 import {useActions} from '@/hooks/useActions'
-import {useSearchParams} from 'next/navigation'
 import {saveTokenStorage} from '@/middleware'
 
 const ava = '/avatars/avatar-v.svg'
@@ -32,58 +31,51 @@ interface IProfileProps {
 }
 
 const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
-  // Используем ваш кастомный selector hook
   const {user, isAuthenticated} = useTypedSelector((state) => state.user)
   const {clearUser} = useActions()
   const {removeUserFromCache} = useUserCache()
   const accessToken = getAccessToken()
-  // React Query hook для загрузки данных пользователя
   const {isLoading, error, isError} = useUserQuery()
-  const searchParams = useSearchParams()
 
   const [randomAvatar, setRandomAvatar] = useState<string>(ava)
 
-  // Hooks
   const router = useRouter()
   const t = useTranslations('HomePage')
   const {start} = useNProgress()
 
+  // читаем токены из query при монтировании
   useEffect(() => {
-    const accessFromQuery = searchParams.get('accessToken')
-    const refreshFromQuery = searchParams.get('refreshToken')
+    if (typeof window === 'undefined') return
+
+    const url = new URL(window.location.href)
+    const accessFromQuery = url.searchParams.get('accessToken')
+    const refreshFromQuery = url.searchParams.get('refreshToken')
+
     if (accessFromQuery && refreshFromQuery) {
       saveTokenStorage({accessToken: accessFromQuery, refreshToken: refreshFromQuery})
+      // можно сразу очистить query из адреса:
+      window.history.replaceState({}, '', window.location.pathname)
     }
-  }, [searchParams])
-  // Инициализация случайного аватара
+  }, [])
+
   useEffect(() => {
     setRandomAvatar(avatarsArray[0])
     if (!accessToken) {
       removeUserFromCache()
       clearUser()
     }
-  }, [accessToken, removeUserFromCache])
+  }, [accessToken, removeUserFromCache, clearUser])
 
-  // Мемоизированное имя пользователя с обрезкой
   const userName = useMemo(() => {
     if (!user?.login) return null
-
     if (user.login.length > 13) {
       return user.login.substring(0, 12) + '...'
     }
-
     return user.login
   }, [user?.login])
 
-  // Мемоизированный источник изображения
-  // const imageSrc = useMemo(() => {
-  //   return user?.avatarUrl?.trim() ? user.avatarUrl : randomAvatar
-  // }, [user?.avatarUrl, randomAvatar])
-
-  // Обработчик клика
   const handleClick = useCallback(() => {
     start()
-
     if (!isAuthenticated || !user?.login) {
       router.push('/login')
     } else {
@@ -91,7 +83,6 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
     }
   }, [isAuthenticated, user?.login, router, start])
 
-  // Отображение состояния загрузки (опционально)
   if (isLoading) {
     return (
       <div className={`${styles.profile_box} ${extraClass}`} style={extraStyles}>
@@ -103,10 +94,8 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
     )
   }
 
-  // Отображение ошибки (опционально)
   if (isError && error) {
     console.error('User data loading error:', error)
-    // Можно показать fallback UI или залогировать ошибку
   }
 
   return (

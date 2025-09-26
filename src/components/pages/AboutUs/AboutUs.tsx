@@ -2,6 +2,7 @@ import Header from '@/components/MainComponents/Header/Header'
 import styles from './AboutUs.module.scss'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {useTranslations} from 'next-intl'
+
 const AboutUs = () => {
   const t = useTranslations('AboutUsPage')
   return (

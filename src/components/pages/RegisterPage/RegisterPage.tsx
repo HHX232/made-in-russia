@@ -8,7 +8,7 @@ import {useActions} from '@/hooks/useActions'
 import Link from 'next/link'
 import {axiosClassic} from '@/api/api.interceptor'
 import {saveTokenStorage} from '@/services/auth/auth.helper'
-import {useRouter, useSearchParams} from 'next/navigation'
+import {useRouter} from 'next/navigation'
 import {toast} from 'sonner'
 import RegisterUserFirst from './RegisterUser/RegisterUserFirst'
 import RegisterUserSecond from './RegisterUser/RegisterUserSecond'
@@ -34,7 +34,6 @@ interface AuthResponse {
 
 const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const t = useTranslations('RegisterUserPage')
 
   // Новое состояние для выбора типа пользователя
@@ -84,30 +83,112 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   }, [telText])
 
   // Обработка параметров из URL (Google OAuth, Telegram и токенов)
+  // useEffect(() => {
+  //   const emailFromUrl = searchParams?.get('email')
+  //   const pictureFromUrl = searchParams?.get('picture')
+  //   const accessToken = searchParams?.get('accessToken')
+  //   const refreshToken = searchParams?.get('refreshToken')
+  //   const telegramId = searchParams?.get('telegram_id')
+  //   const username = searchParams?.get('username')
+  //   const firstName = searchParams?.get('first_name')
+  //   const lastName = searchParams?.get('last_name')
+
+  //   // Сохраняем токены если они пришли в URL
+  //   if (accessToken && refreshToken) {
+  //     saveTokenStorage({accessToken, refreshToken})
+  //     router.replace('/') // Перенаправляем на главную после успешной авторизации
+  //     return
+  //   }
+
+  //   const fetchToTg = async () => {
+  //     try {
+  //       console.log('start fetch to tg')
+  //       if (!telegramId && !firstName) {
+  //         return
+  //       }
+  //       const res = await axiosClassic.post('oauth2/telegram/callback', {
+  //         id: telegramId || '',
+  //         lastName: lastName || '',
+  //         firstName: firstName || '',
+  //         photoUrl: pictureFromUrl || '',
+  //         authDate: '',
+  //         hash: ''
+  //       })
+  //       toast.success(
+  //         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+  //           <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successTitleTG')}</strong>
+  //           <span>{t('successBodyTG')}</span>
+  //         </div>,
+  //         {
+  //           style: {background: '#2E7D32'}
+  //         }
+  //       )
+  //     } catch {
+  //       toast.error(
+  //         <div style={{lineHeight: 1.5}}>
+  //           <strong style={{display: 'block', marginBottom: 4}}>{t('errorTitleTG')}</strong>
+  //           <span>{t('errorPrefixTG')}</span>
+  //         </div>,
+  //         {
+  //           style: {background: '#AC2525'}
+  //         }
+  //       )
+  //     }
+  //   }
+  //   fetchToTg()
+
+  //   if (emailFromUrl) {
+  //     const decodedEmail = decodeURIComponent(emailFromUrl)
+  //     setEmailStore(decodedEmail)
+  //   }
+
+  //   if (pictureFromUrl) {
+  //     const decodedPicture = decodeURIComponent(pictureFromUrl)
+  //     setAvatarUrl(decodedPicture)
+  //   }
+
+  //   // Обрабатываем данные из Telegram
+  //   if (username) {
+  //     const decodedUsername = decodeURIComponent(username)
+  //     setNameState(decodedUsername) // Устанавливаем username как имя
+  //   }
+
+  //   // Можно также использовать имя и фамилию из Telegram если username нет
+  //   if (!username && (firstName || lastName)) {
+  //     const decodedFirstName = firstName ? decodeURIComponent(firstName) : ''
+  //     const decodedLastName = lastName ? decodeURIComponent(lastName) : ''
+  //     const fullName = `${decodedFirstName} ${decodedLastName}`.trim()
+  //     if (fullName) {
+  //       setNameState(fullName)
+  //     }
+  //   }
+  // }, [searchParams, router])
+
   useEffect(() => {
-    const emailFromUrl = searchParams?.get('email')
-    const pictureFromUrl = searchParams?.get('picture')
-    const accessToken = searchParams?.get('accessToken')
-    const refreshToken = searchParams?.get('refreshToken')
-    const telegramId = searchParams?.get('telegram_id')
-    const username = searchParams?.get('username')
-    const firstName = searchParams?.get('first_name')
-    const lastName = searchParams?.get('last_name')
+    if (typeof window === 'undefined') return
+
+    const url = new URL(window.location.href)
+    const emailFromUrl = url.searchParams.get('email')
+    const pictureFromUrl = url.searchParams.get('picture')
+    const accessToken = url.searchParams.get('accessToken')
+    const refreshToken = url.searchParams.get('refreshToken')
+    const telegramId = url.searchParams.get('telegram_id')
+    const username = url.searchParams.get('username')
+    const firstName = url.searchParams.get('first_name')
+    const lastName = url.searchParams.get('last_name')
 
     // Сохраняем токены если они пришли в URL
     if (accessToken && refreshToken) {
       saveTokenStorage({accessToken, refreshToken})
       router.replace('/') // Перенаправляем на главную после успешной авторизации
+      window.history.replaceState({}, '', window.location.pathname) // очищаем query
       return
     }
 
     const fetchToTg = async () => {
       try {
-        console.log('start fetch to tg')
-        if (!telegramId && !firstName) {
-          return
-        }
-        const res = await axiosClassic.post('oauth2/telegram/callback', {
+        if (!telegramId && !firstName) return
+        await axiosClassic.post('oauth2/telegram/callback', {
           id: telegramId || '',
           lastName: lastName || '',
           firstName: firstName || '',
@@ -120,9 +201,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successTitleTG')}</strong>
             <span>{t('successBodyTG')}</span>
           </div>,
-          {
-            style: {background: '#2E7D32'}
-          }
+          {style: {background: '#2E7D32'}}
         )
       } catch {
         toast.error(
@@ -130,69 +209,76 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             <strong style={{display: 'block', marginBottom: 4}}>{t('errorTitleTG')}</strong>
             <span>{t('errorPrefixTG')}</span>
           </div>,
-          {
-            style: {background: '#AC2525'}
-          }
+          {style: {background: '#AC2525'}}
         )
       }
     }
     fetchToTg()
 
-    if (emailFromUrl) {
-      const decodedEmail = decodeURIComponent(emailFromUrl)
-      setEmailStore(decodedEmail)
+    if (emailFromUrl) setEmailStore(decodeURIComponent(emailFromUrl))
+    if (pictureFromUrl) setAvatarUrl(decodeURIComponent(pictureFromUrl))
+    if (username) setNameState(decodeURIComponent(username))
+    else if (firstName || lastName) {
+      const fullName = `${firstName || ''} ${lastName || ''}`.trim()
+      if (fullName) setNameState(fullName)
     }
-
-    if (pictureFromUrl) {
-      const decodedPicture = decodeURIComponent(pictureFromUrl)
-      setAvatarUrl(decodedPicture)
-    }
-
-    // Обрабатываем данные из Telegram
-    if (username) {
-      const decodedUsername = decodeURIComponent(username)
-      setNameState(decodedUsername) // Устанавливаем username как имя
-    }
-
-    // Можно также использовать имя и фамилию из Telegram если username нет
-    if (!username && (firstName || lastName)) {
-      const decodedFirstName = firstName ? decodeURIComponent(firstName) : ''
-      const decodedLastName = lastName ? decodeURIComponent(lastName) : ''
-      const fullName = `${decodedFirstName} ${decodedLastName}`.trim()
-      if (fullName) {
-        setNameState(fullName)
-      }
-    }
-  }, [searchParams, router])
+  }, [router])
 
   // Reset form when switching between user and company
+  // useEffect(() => {
+  //   setShowNextStep(false)
+  //   setShowFinalStep(false)
+  //   // Не сбрасываем email, avatarUrl, name если они пришли из OAuth (Google/Telegram)
+  //   const emailFromUrl = searchParams?.get('email')
+  //   const pictureFromUrl = searchParams?.get('picture')
+  //   const usernameFromUrl = searchParams?.get('username')
+  //   const firstNameFromUrl = searchParams?.get('first_name')
+  //   const lastNameFromUrl = searchParams?.get('last_name')
+
+  //   if (!emailFromUrl) {
+  //     setEmailStore('')
+  //   }
+  //   if (!pictureFromUrl) {
+  //     setAvatarUrl('')
+  //   }
+  //   // Не сбрасываем имя если оно пришло из Telegram
+  //   if (!usernameFromUrl && !firstNameFromUrl && !lastNameFromUrl) {
+  //     setNameState('')
+  //   }
+  //   setPasswordState('')
+  //   setTelText('')
+  //   setSelectedOption('')
+  //   setInn('')
+  //   setSelectedCountries([])
+  //   setSelectedCategories([])
+  // }, [isUser, searchParams])
+
   useEffect(() => {
     setShowNextStep(false)
     setShowFinalStep(false)
-    // Не сбрасываем email, avatarUrl, name если они пришли из OAuth (Google/Telegram)
-    const emailFromUrl = searchParams?.get('email')
-    const pictureFromUrl = searchParams?.get('picture')
-    const usernameFromUrl = searchParams?.get('username')
-    const firstNameFromUrl = searchParams?.get('first_name')
-    const lastNameFromUrl = searchParams?.get('last_name')
 
-    if (!emailFromUrl) {
-      setEmailStore('')
-    }
-    if (!pictureFromUrl) {
-      setAvatarUrl('')
-    }
-    // Не сбрасываем имя если оно пришло из Telegram
-    if (!usernameFromUrl && !firstNameFromUrl && !lastNameFromUrl) {
-      setNameState('')
-    }
+    if (typeof window === 'undefined') return
+
+    const url = new URL(window.location.href)
+    const emailFromUrl = url.searchParams.get('email')
+    const pictureFromUrl = url.searchParams.get('picture')
+    const usernameFromUrl = url.searchParams.get('username')
+    const firstNameFromUrl = url.searchParams.get('first_name')
+    const lastNameFromUrl = url.searchParams.get('last_name')
+
+    // Не сбрасываем email, avatarUrl, name если они пришли из OAuth (Google/Telegram)
+    if (!emailFromUrl) setEmailStore('')
+    if (!pictureFromUrl) setAvatarUrl('')
+    if (!usernameFromUrl && !firstNameFromUrl && !lastNameFromUrl) setNameState('')
+
+    // Сбрасываем остальные поля формы
     setPasswordState('')
     setTelText('')
     setSelectedOption('')
     setInn('')
     setSelectedCountries([])
     setSelectedCategories([])
-  }, [isUser, searchParams])
+  }, [isUser])
 
   // Handlers
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {

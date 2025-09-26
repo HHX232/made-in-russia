@@ -15,9 +15,9 @@ import {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import TelegramLoginWidget from './TelegramLoginWidget/TelegramLoginWidget'
-import {useRouter, useSearchParams} from 'next/navigation'
+import {useRouter} from 'next/navigation'
 import Link from 'next/link'
-import {useUserCache, useUserQuery} from '@/hooks/useUserApi'
+import {useUserQuery} from '@/hooks/useUserApi'
 
 const google = '/google_registr.svg'
 const wechat = '/wechat_registr.svg'
@@ -34,21 +34,23 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
   const [error, setError] = useState('')
   const [showResetForm, setShowResetForm] = useState(false)
   const router = useRouter()
-  const searchParams = useSearchParams()
   const t = useTranslations('LoginPage')
   const currentLang = useCurrentLanguage()
 
   useEffect(() => {
-    const accessToken = searchParams?.get('accessToken')
-    const refreshToken = searchParams?.get('refreshToken')
+    if (typeof window === 'undefined') return
+
+    const url = new URL(window.location.href)
+    const accessToken = url.searchParams.get('accessToken')
+    const refreshToken = url.searchParams.get('refreshToken')
 
     if (accessToken && refreshToken) {
       saveTokenStorage({accessToken, refreshToken})
-      router.push('/') // Перенаправляем на главную после успешной авторизации
-      return
+      router.push('/') // Перенаправляем на главную после авторизации
+      // Очистка query из URL
+      window.history.replaceState({}, '', window.location.pathname)
     }
-  }, [searchParams, router])
-
+  }, [router])
   const handleNameChange = (value: SetStateAction<string>) => {
     setNameState(value)
     setError('')
