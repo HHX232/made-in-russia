@@ -131,7 +131,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
 
   const handleTelegramAuth = async (user: any) => {
     try {
-      const response = await axiosClassic.post('/auth/telegram-auth', user, {
+      const response = await axiosClassic.post('/auth/login-with-telegram', user, {
         headers: {
           'Accept-Language': currentLang
         }
