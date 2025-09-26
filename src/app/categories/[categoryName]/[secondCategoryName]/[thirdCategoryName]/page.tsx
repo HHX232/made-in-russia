@@ -66,3 +66,18 @@ export default async function CategoryPageSpecialSecond({
     />
   )
 }
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{thirdCategoryName: string; thirdCAtegoryName: string}>
+}) {
+  const locale = await getCurrentLocale()
+  const {thirdCategoryName, thirdCAtegoryName} = await params
+  const slugToFind = thirdCategoryName || thirdCAtegoryName
+  const foundCategory = await CategoriesService.getById('l3_' + slugToFind, locale || 'en')
+
+  return {
+    title: foundCategory?.name
+  }
+}

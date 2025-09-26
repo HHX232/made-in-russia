@@ -58,6 +58,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
           </Link>
           <a
             className={`${styles.footer__link}`}
+            rel='nofollow'
             href='https://exporteru.com'
             onClick={(e) => {
               e.preventDefault()
@@ -80,10 +81,11 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
               })
             }}
           >
-            <span style={{maxHeight: 'fit-content'}}>активировать русский</span>
+            <span style={{maxHeight: 'fit-content'}}>exporteru.com</span>
           </a>
           <a
             className={`${styles.footer__link}`}
+            rel='nofollow'
             href='https://en.exporteru.com'
             onClick={(e) => {
               e.preventDefault()
@@ -105,10 +107,11 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
               })
             }}
           >
-            <span style={{maxHeight: 'fit-content'}}>activate english</span>
+            <span style={{maxHeight: 'fit-content'}}>en.exporteru.com</span>
           </a>
           <a
             className={`${styles.footer__link}`}
+            rel='nofollow'
             href='https://cn.exporteru.com'
             onClick={(e) => {
               e.preventDefault()
@@ -130,7 +133,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
               })
             }}
           >
-            <span style={{maxHeight: 'fit-content'}}>激活英语</span>
+            <span style={{maxHeight: 'fit-content'}}>cn.exporteru.com</span>
           </a>
         </ul>
         {/* <p>LAng from redux {currentLangValue}</p> */}

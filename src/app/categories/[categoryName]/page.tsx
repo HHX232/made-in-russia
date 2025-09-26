@@ -39,7 +39,7 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
 
     const slugToFind = categoryName
     const foundCategory = findCategoryBySlug(allCategories, slugToFind)
-
+    console.log('foundCategory', foundCategory)
     categories = foundCategory || (await CategoriesService.getById('l1_' + slugToFind, locale || 'en'))
 
     breadcrumbs = buildBreadcrumbs(allCategories, slugToFind)
@@ -58,4 +58,15 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
       level={1}
     />
   )
+}
+
+export async function generateMetadata({params}: {params: Promise<{categoryName: string}>}) {
+  const locale = await getCurrentLocale()
+  const allCategories = await CategoriesService.getAll(locale || 'en')
+  const {categoryName} = await params
+  const slugToFind = categoryName
+  const foundCategory = findCategoryBySlug(allCategories, slugToFind)
+  return {
+    title: foundCategory?.name
+  }
 }

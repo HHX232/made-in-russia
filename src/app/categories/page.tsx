@@ -3,9 +3,11 @@ import Header from '@/components/MainComponents/Header/Header'
 import MainCategoryPage from '@/components/pages/MainCategoryPage /MainCategoryPage'
 import {getCurrentLocale} from '@/lib/locale-detection'
 import CategoriesService from '@/services/categoryes/categoryes.service'
+import {getTranslations} from 'next-intl/server'
 
 export default async function CategoriesPage() {
   const locale = await getCurrentLocale()
+
   const categories = await CategoriesService.getAll(locale || 'en')
   return (
     <div>
@@ -14,4 +16,12 @@ export default async function CategoriesPage() {
       <Footer />
     </div>
   )
+}
+
+export async function generateMetadata() {
+  const t = await getTranslations('catalogMeta')
+  return {
+    title: t('mainPageTitle'),
+    description: t('mainPageText')
+  }
 }

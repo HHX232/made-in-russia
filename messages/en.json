@@ -742,7 +742,11 @@
       "firstText": "an online platform for exporting goods from Russia. We help Russian companies find foreign counterparts and enter international markets. We specialize in wholesale product supplies. Comprehensive support: from listing to concluding an export contract. A personal manager for the entire period of cooperation.",
       "secondText": "a service for exporting goods from Russia. We offer support at all stages: selection of counterparts, negotiations, deal closure. We work directly with suppliers and international buyers."
     }
-  }
+  },
+  "catalogMeta": {
+    "mainPageTitle": "Categories",
+    "mainPageText": "Exporteru provides a wide range of product categories for export and import. Every user will be able to find the right product with optimal conditions."
+}
 
 }
 
