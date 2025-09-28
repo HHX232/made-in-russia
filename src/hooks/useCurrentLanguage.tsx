@@ -19,7 +19,9 @@ export const useCurrentLanguage = () => {
       return null
     }
 
+    // console.log('before set cookie in useCurrentLanguage access token', getAccessToken()?.slice(0, 5))
     setCookieLocale(getCookieLocale())
+    // console.log('after set cookie in useCurrentLanguage access token', getAccessToken()?.slice(0, 5))
   }, [locale])
 
   return useMemo(() => {
@@ -43,8 +45,10 @@ export const useCurrentLanguageWithCookie = () => {
         setCurrentLang(cookieValue || locale)
       }
     }
+    // console.log('before set cookie in useCurrentLanguage access token', getAccessToken()?.slice(0, 5))
 
     updateLanguage()
+    // console.log('after set cookie in useCurrentLanguage access token', getAccessToken()?.slice(0, 5))
   }, [locale, pathname])
 
   return currentLang
@@ -61,6 +65,7 @@ export const useCurrentLanguageFromCookie = () => {
         ?.split('=')[1]
       return cookieValue || locale
     }
+    // console.log('before set cookie in useCurrentLanguage access token', getAccessToken()?.slice(0, 5))
     return locale
   }, [locale])
 }

@@ -77,6 +77,7 @@ export default async function CategoryPageSpecialSecond({
       categoryName={secondCategoryName}
       categoryTitleName={categories.name}
       level={2}
+      language={locale}
     />
   )
 }

@@ -168,7 +168,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const {characteristics} = useTypedSelector(
     (state) => state.multiLanguageCardPriceData[(currentLang as Language) || (currentLang as Language)]
   )
-  console.log('characteristics after selector', characteristics)
+  // console.log('characteristics after selector', characteristics)
 
   // Состояние для ошибок валидации
   const [errors, setErrors] = useState<ValidationErrors>({

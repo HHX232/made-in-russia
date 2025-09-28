@@ -16,6 +16,7 @@ const telephone = '/phone.svg'
 const telegram = '/telegram.svg'
 const setCookieLocale = (locale: string) => {
   document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+  console.log('cookies after set', document?.cookie)
 }
 
 enum Languages {

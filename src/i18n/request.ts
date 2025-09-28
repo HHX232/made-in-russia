@@ -15,7 +15,7 @@ export default getRequestConfig(async ({requestLocale}) => {
   if (!hasLocale(routing.locales, locale)) {
     locale = routing.defaultLocale
   }
-  console.log('locale in request.ts', locale)
+  // console.log('locale in request.ts', locale)
   const localMessages = (await import(`../../messages/${locale === 'en' ? 'en' : locale === 'ru' ? 'ru' : 'zh'}.json`))
     .default
 

@@ -12,6 +12,7 @@ import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
 import {usePathname} from 'next/navigation'
 import Link from 'next/link'
 import {useTranslations} from 'next-intl'
+import CategoriesService from '@/services/categoryes/categoryes.service'
 
 const CATEGORYESCONST = [
   {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: '/category/cat1.jpg'},
@@ -28,7 +29,8 @@ const CategoryPage = ({
   idOfFilter,
   categoryTitleName,
   companyes,
-  breadcrumbs
+  breadcrumbs,
+  language
 }: {
   categoryName: string
   categoryTitleName?: string
@@ -38,6 +40,7 @@ const CategoryPage = ({
   idOfFilter?: number
   breadcrumbs?: {title: string; link: string}[]
   companyes?: {name: string; inn: string; ageInYears: string}[]
+  language?: 'ru' | 'en' | 'zh'
 }) => {
   // Проверяем, выполняется ли код на сервере
   const isServer = typeof window === 'undefined'
@@ -64,6 +67,47 @@ const CategoryPage = ({
       clearFilters()
     }
   }, [clearFilters])
+
+  useEffect(() => {
+    console.log('start useEffect lang categories')
+    const fetchCategoriesNew = async () => {
+      const newCategories = await CategoriesService.getById('l1_' + categoryName, language || 'en')
+      setSortedCategories(newCategories.children)
+      if (mounted && level === 2 && listRef.current && categories.length > 0) {
+        const timeoutId = setTimeout(() => {
+          const measurements = itemRefs.current
+            .filter((ref) => ref !== null)
+            .map((ref, index) => {
+              if (!ref || !categories[index]) return null
+              const width = ref.getBoundingClientRect().width
+              return {
+                index,
+                width,
+                category: categories[index]
+              }
+            })
+            .filter((item) => item !== null)
+
+          const sorted = measurements.sort((a, b) => {
+            if (!a || !b) return 0
+            return a.width - b.width
+          })
+
+          const newOrder = sorted.map((item) => item?.category).filter((cat): cat is Category => cat !== undefined)
+
+          if (newOrder.length > 0) {
+            setSortedCategories(newOrder)
+          }
+        }, 100)
+
+        return () => clearTimeout(timeoutId)
+      } else if (!mounted) {
+        setSortedCategories(categories)
+      }
+    }
+    fetchCategoriesNew()
+    console.log('end useEffect lang categories')
+  }, [language])
 
   useEffect(() => {
     clearFilters()

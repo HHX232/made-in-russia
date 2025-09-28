@@ -74,6 +74,7 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
       categoryName={categoryName}
       categoryTitleName={categories.name}
       level={1}
+      language={locale}
     />
   )
 }

@@ -114,7 +114,7 @@ const Privacy = () => {
       try {
         // Пытаемся получить весь объект секции
         const sectionData = t.raw(`policyLists.${sectionKey}`)
-        console.log('Section data:', sectionData)
+        // console.log('Section data:', sectionData)
 
         if (sectionData && sectionData.rows) {
           rows = sectionData.rows
