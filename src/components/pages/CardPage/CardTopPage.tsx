@@ -19,7 +19,7 @@ import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/Mo
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import BreadForCard from './breadForCard/breadForCard'
 import PurchaseModal from './PurchaseModal/PurchaseModal'
-import {axiosClassic} from '@/api/api.interceptor'
+import instance, {axiosClassic} from '@/api/api.interceptor'
 import {toast} from 'sonner'
 // import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
 // import {useCachedNode} from '@dnd-kit/core/dist/hooks/utilities'
@@ -424,6 +424,36 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
   // const bread = buildBreadcrumbsForCard(categories?.data || [], normalizedSlug, cardData?.title || 'йцу')
 
+  const handkeRequestCallback = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('handkeRequestCallback')
+    e.preventDefault()
+    console.log('cardData?.aboutVendor?.vendorId', cardData?.user?.vendorDetails?.id, 'cardData?.user', cardData?.user)
+    try {
+      await instance.post(`/vendor/${cardData?.user?.id}/request-call`).then(() => {
+        setVendorModalOpen(false)
+        toast.success(
+          <div style={{lineHeight: 1.5, marginLeft: '10px', zIndex: '1000000030'}}>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successCallback')}</strong>
+            <span>{t('successCreateBody')}</span>
+          </div>,
+          {
+            style: {background: '#2E7D32', zIndex: '1000000030'}
+          }
+        )
+      })
+    } catch {
+      setVendorModalOpen(false)
+      toast.error(
+        <div style={{lineHeight: 1.5, zIndex: '1000000030'}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('errorCallback')}</strong>
+        </div>,
+        {
+          style: {background: '#AC2525', zIndex: '1000000030'}
+        }
+      )
+    }
+  }
+
   useEffect(() => {
     setIsMounted(true)
   }, [])
@@ -612,7 +642,12 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             <button className={styles.button__vendor__bottom} onClick={() => {}}>
               {t('showOnEmail')}
             </button>
-            <button className={styles.button__vendor__bottom} onClick={() => {}}>
+            <button
+              className={styles.button__vendor__bottom}
+              onClick={(e) => {
+                handkeRequestCallback(e)
+              }}
+            >
               {t('RequestCallback')}
             </button>
           </div>
