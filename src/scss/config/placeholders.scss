@@ -1,0 +1,95 @@
+// Счетчик для списка
+%list-counter {
+  counter-reset: item;
+  list-style-type: none;
+
+  li {
+    position: relative;
+
+    &::before {
+      position: absolute;
+      content: counter(item);
+      counter-increment: item;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+    }
+  }
+}
+
+// Адаптивное видео
+%responsive-video {
+  position: relative;
+  overflow: hidden;
+  block-size: 0;
+  padding-block-end: 56.25%;
+
+  video,
+  iframe,
+  object,
+  embed {
+    position: absolute;
+    block-size: 100%;
+    inline-size: 100%;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+  }
+}
+
+// Видео в качестве фона
+%video-background {
+  video,
+  iframe,
+  object,
+  embed {
+    position: fixed;
+    z-index: -100;
+    background-size: cover;
+    block-size: auto;
+    inline-size: auto;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    min-block-size: 100%;
+    min-inline-size: 100%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+}
+
+// Серый фильтр
+%gray-filter {
+  filter: grayscale(1);
+  transition: all var(--transition);
+
+  @media (any-hover: hover) {
+    &:hover {
+      filter: grayscale(0);
+    }
+  }
+}
+
+// Отменить выделение
+%no-select {
+  user-select: none;
+}
+
+// Зеркальное отображение
+%mirror {
+  transform: scale(-1, 1);
+}
+
+// Плавный скролл
+%smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+// Скрыть скролл
+%hide-scroll {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+%flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

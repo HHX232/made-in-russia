@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import Image from 'next/image'
 import {FC, useEffect, useId, useRef, useState, useTransition} from 'react'
@@ -261,7 +262,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   }
 
   return (
-    <>
+    <div className='container'>
       <Head>
         <script
           type='application/ld+json'
@@ -283,7 +284,8 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
         />
       </Head>
 
-      <header ref={fullHeaderRef} className={`${styles.header}`} itemScope itemType='https://schema.org/WPHeader'>
+      {/* OLD */}
+      {/* <header ref={fullHeaderRef} className={`${styles.header}`} itemScope itemType='https://schema.org/WPHeader'>
         <div className={`${styles.middle__header}`}>
           <div className={`container ${styles.header__middle_box}`}>
             <Link
@@ -378,11 +380,10 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                           style={{width: '100%'}}
                           className={styles.header__top_link}
                           href={emailUrl}
-                          // target='_blank'
-                          // rel='noopener noreferrer'
+                       
                           itemProp='sameAs'
                         >
-                          {/* <p>{instagramUrl}</p> */}
+                       
                           <Image
                             style={{marginRight: '5px'}}
                             className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
@@ -453,9 +454,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                     positionIsAbsolute={false}
                     title={t('more')}
                     items={[
-                      // <div key={'id2 delivery'} className={`${styles.bottom__list_item}`}>
-                      //   <Link href='/delivery'>{t('delivery')}</Link>
-                      // </div>,
+                     
                       <div key={'id3 about'} className={`${styles.bottom__list_item}`}>
                         <Link href='/about-us'>{t('about')}</Link>
                       </div>,
@@ -480,7 +479,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                               // rel='noopener noreferrer'
                               itemProp='sameAs'
                             >
-                              {/* <p>{instagramUrl}</p> */}
+                            
                               <Image
                                 style={{marginRight: '5px'}}
                                 className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
@@ -577,8 +576,117 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
             </div>
           </div>
         )}
+      </header> */}
+
+      {/* NEW */}
+      <header className={` ${styles.header}`}>
+        <div className='container'>
+          <div className={styles.header__top}>
+            <nav className={styles.header__nav}>
+              <ul>
+                <li>
+                  <a href='#' className={styles.header__link}>
+                    Отзывы
+                  </a>
+                </li>
+                <li>
+                  <a href='#' className={styles.header__link}>
+                    Контакты
+                  </a>
+                </li>
+                <li>
+                  <a href='#' className={styles.header__link}>
+                    О нас
+                  </a>
+                </li>
+                <li>
+                  <a href='#' className={styles.header__link}>
+                    Помощь
+                  </a>
+                </li>
+              </ul>
+            </nav>
+            <div className={styles.header__contacts}>
+              <a className={styles.header__phone} href='tel:+78564674666'>
+                +7 856 467-46-66
+              </a>
+            </div>
+          </div>
+          <div className={styles.header__medium}>
+            <Link
+              href={'/'}
+              className={`${styles.header__logo_box}`}
+              itemScope
+              itemType='https://schema.org/Organization'
+            >
+              <Image
+                className={`${styles.bear__img}`}
+                alt='Logo with Bear'
+                src={logoFavBig}
+                width={286}
+                height={65}
+                itemProp='logo'
+              />
+              <Image
+                className={`${styles.bear__img_min}`}
+                alt='Logo with Bear'
+                src={logoFavSmall}
+                width={100}
+                height={100}
+                itemProp='logo'
+              />
+
+              <meta itemProp='name' content='Exporteru' />
+              <meta itemProp='url' content={process.env.NEXT_PUBLIC_SITE_URL} />
+            </Link>
+
+            <div className={styles.header__row}>
+              <div className={styles.header__row_group}>
+                <button id='catalog-btn' className={styles.btn_catalog} aria-label='Каталог'>
+                  <span className={styles.btn_catalog__burger}>
+                    <span></span>
+                  </span>
+                  <span className={styles.btn_catalog__name}>Каталог</span>
+                </button>
+
+                <form className={styles.search_form} id='search-form'>
+                  <input
+                    type='search'
+                    id='search-input'
+                    className={styles.search_form__input}
+                    placeholder='Поиск по сайту'
+                    name='s'
+                  />
+                  <button type='submit' className={styles.search_form__button} aria-label='Поиск'>
+                    <svg className={`${styles.icon} ${styles.icon_search}`}>
+                      <use href='./icons/symbol/sprite.svg#search'></use>
+                    </svg>
+                  </button>
+                </form>
+              </div>
+
+              <button id='open-popup-btn' className={`${styles.btn_login}`}>
+                <svg className={`${styles.icon} ${styles.icon_profile}`}>
+                  <use href='./icons/symbol/sprite.svg#profile'></use>
+                </svg>
+                <span>Войти</span>
+              </button>
+
+              <a href='#' className={styles.lang_switcher}>
+                <span className={styles.lang_switcher_icon}>
+                  <svg className={`${styles.icon} ${styles.icon_flag_russian}`}>
+                    <use href='./icons/symbol/sprite.svg#flag-russian'></use>
+                  </svg>
+                </span>
+                <span className={`${styles.lang_switcher__name}`}>Русский</span>
+              </a>
+            </div>
+          </div>
+
+          {/* <div className='header__bottom'>@@include('../blocks/block-catalog-overlay.html')</div> */}
+        </div>
       </header>
-    </>
+    </div>
   )
 }
 

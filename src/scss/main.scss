@@ -1,16 +1,26 @@
+@use 'sass:math';
 @import 'variables';
+@import './config/fonts';
+@import './config/root';
+@import './config/functions';
+@import './config/mixins';
+@import './config/placeholders';
+@import './config/reset';
+@import './config/typography';
+@import './config/base';
+@import './config/keyframes';
 
 /* Для Firefox */
-html {
-  font-family: $font-inter;
-  font-size: 15px;
-  scroll-behavior: smooth;
+// html {
+//   font-family: $font-inter;
+//   font-size: 15px;
+//   scroll-behavior: smooth;
 
-  /* 'auto' или 'thin' */
-  scrollbar-color: #2a2e46 #eff1f8;
-  scrollbar-width: thin;
-  text-size-adjust: 100%;
-}
+//   /* 'auto' или 'thin' */
+//   scrollbar-color: #2a2e46 #eff1f8;
+//   scrollbar-width: thin;
+//   text-size-adjust: 100%;
+// }
 
 // ! NEW SLIDER
 #telegram-login-exporterubot {

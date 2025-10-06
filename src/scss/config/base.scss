@@ -1,0 +1,187 @@
+/* ------------------------------------------------------------------------------------------------------------------------------
+BASE
+-------------------------------------------------------------------------------------------------------------------------------- */
+
+@use 'sass:math';
+@import '@/scss/config/mixins';
+@import '@/scss/config/functions';
+
+html {
+  opacity: 1;
+  scroll-behavior: smooth;
+  transition: opacity 1s ease-in-out;
+
+  &.loaded {
+    opacity: 1;
+  }
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  text-wrap: balance;
+}
+
+* {
+  &::-webkit-scrollbar {
+    background-color: var(--scrollbar);
+    inline-size: rem(8);
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: rem(10);
+    background: var(--scrollbar-track);
+    box-shadow: inset 0 0 rem(6) rgba(#000, 20%);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border: 0 none #fff;
+    border-radius: rem(10);
+    background-color: var(--scrollbar-thumb);
+    cursor: pointer;
+
+    @include any-hover {
+      background-color: grey;
+    }
+  }
+}
+
+.bred {
+  border: 1px solid red;
+}
+
+.justify-content-center {
+  display: flex;
+}
+
+.container {
+  margin-inline: auto;
+  max-inline-size: var(--max-width);
+  min-inline-size: rem(320);
+  padding-inline: var(--container-padding-desktop);
+
+  @include lg {
+    padding-inline: var(--container-padding-large);
+  }
+
+  @include sm {
+    padding-inline: var(--container-padding-small);
+  }
+}
+
+.sm-block {
+  @include sm {
+    display: block;
+  }
+}
+
+.container-full {
+  width: 100%;
+  margin-inline: auto;
+  max-inline-size: rem(1440);
+  min-inline-size: rem(320);
+}
+
+.img-responsive {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.image-bg {
+  position: relative;
+
+  img {
+    position: absolute;
+    display: block;
+    block-size: 100%;
+    inline-size: 100%;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    object-fit: cover;
+  }
+}
+
+.site-overlay {
+  position: fixed;
+  z-index: 5;
+  inset: 0;
+  backdrop-filter: blur(7px);
+
+  /* эффект размытия */
+  background-color: rgb(0 0 0 / 25%);
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+  visibility: hidden;
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+.screen-reader-text {
+  position: absolute;
+  top: auto;
+  left: -9999px;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+}
+
+.screen-reader-text:focus {
+  position: static;
+  z-index: 1000;
+  width: auto;
+  height: auto;
+
+  /* цвет текста */
+  padding: 8px;
+  background: #000;
+  clip: auto;
+
+  /* или другой фон для выделения */
+  color: #fff;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  overflow: hidden !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+
+  /* предотвращает перенос текста */
+  border: 0 !important;
+  margin: -1px !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+}
+
+.wrapper {
+  // max-inline-size: var(--max-width);
+  // transform-origin: top center;
+
+  display: flex;
+
+  /** Поменять на clip - если используется в проекте position: sticky */
+  overflow: clip;
+  flex-direction: column;
+  min-block-size: 100%;
+}
+
+.main {
+  position: relative;
+  flex: 1 1 auto;
+}
+
+svg {
+  max-width: rem(50);
+  max-height: rem(50);
+}

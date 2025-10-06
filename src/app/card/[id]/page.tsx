@@ -1,5 +1,4 @@
 import {getCurrentLocale} from '@/lib/locale-detection'
-
 import CardPage from '@/components/pages/CardPage/CardPage'
 import cardService from '@/services/card/card.service'
 import ICardFull from '@/services/card/card.types'
