@@ -1,0 +1,78 @@
+/* ------------------------------------------------------------------------------------------------------------------------------
+EXPERTS SECTION
+-------------------------------------------------------------------------------------------------------------------------------- */
+@import '@/scss/config/mixins';
+
+.exporteru {
+  padding: 2.2rem 0;
+  color: var(--text);
+
+  &__block {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 43px 40px;
+    aspect-ratio: 127/46;
+    background-image: url('../../../../public/imagesNew/main/main-5-bg-mobile.webp');
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    &::before {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      background: linear-gradient(180deg, #eaeaea 0%, #fff 50%, rgb(234 234 234 / 40%) 100%);
+      content: '';
+    }
+
+    @include xl {
+      width: 100%;
+      min-height: rem(412);
+      aspect-ratio: initial;
+    }
+
+    @include sm {
+      justify-content: start;
+      background-image: url('../../../../public/imagesNew/main/main-5-bg-mobile.webp');
+      gap: rem(19);
+      padding-block: 33px;
+      padding-inline: rem(12);
+    }
+  }
+
+  &__title {
+    max-width: rem(245);
+    color: var(--text);
+    font-size: rem(29.5);
+    font-weight: 500;
+    line-height: 120%;
+
+    @include xl {
+      max-width: rem(345);
+    }
+
+    @include md {
+      font-size: rem(24);
+    }
+
+    @include sm {
+      line-height: 105%;
+    }
+  }
+
+  &__description {
+    max-width: rem(245);
+    font-size: rem(18);
+    line-height: 120%;
+
+    @include xl {
+      max-width: rem(345);
+    }
+
+    @include sm {
+      font-size: rem(14);
+    }
+  }
+}
