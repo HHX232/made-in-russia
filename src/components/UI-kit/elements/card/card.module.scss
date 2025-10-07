@@ -1,3 +1,5 @@
+@import '@/scss/config/mixins';
+
 .card__box {
   display: flex;
   width: 100%;
@@ -179,4 +181,238 @@
   background-color: #ac2525;
   color: #fff;
   font-size: 15px;
+}
+
+.product_card {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #f6f6f6;
+  color: var(--text);
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background: #fff;
+    box-shadow: 0 0 32px 0 rgb(18 18 18 / 12%);
+
+    .poroduct_card__title {
+      color: var(--accent);
+    }
+  }
+
+  &__header {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    flex-shrink: 0;
+    margin-bottom: 4px;
+    aspect-ratio: 306/224;
+
+    @include sm {
+      margin-bottom: rem(0);
+      aspect-ratio: 155/188;
+    }
+
+    img {
+      display: block;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding: 0 13px 14px;
+
+    @include sm {
+      padding-top: 10px;
+      padding-bottom: 5px;
+    }
+  }
+
+  &__location {
+    display: block;
+    margin-bottom: rem(10);
+
+    @include sm {
+      margin-bottom: rem(5);
+      line-height: 80%;
+    }
+
+    svg {
+      position: relative;
+      top: 3px;
+      width: rem(15);
+      height: rem(15);
+      margin-right: 5px;
+      fill: var(--accent);
+      stroke: transparent;
+
+      @include sm {
+        top: 0;
+        width: rem(12);
+        height: rem(12);
+      }
+    }
+
+    span {
+      display: inline;
+      color: var(--text);
+      font-size: rem(14);
+      line-height: 145%;
+      opacity: 0.5;
+      vertical-align: middle;
+
+      @include sm {
+        font-size: rem(10);
+      }
+    }
+  }
+
+  &__title {
+    margin-bottom: rem(18);
+    color: var(--text);
+    font-size: rem(18);
+    font-weight: 500;
+    line-height: 129%;
+    transition: all 0.3s ease-in-out;
+
+    @include sm {
+      margin-bottom: rem(10);
+      font-size: rem(12);
+      line-height: 138%;
+    }
+  }
+
+  &__group {
+    position: relative;
+    display: flex;
+    min-height: rem(28);
+    align-items: center;
+    padding-right: rem(30);
+    gap: rem(6);
+
+    @include md {
+      position: initial;
+      min-height: initial;
+      align-items: start;
+      justify-content: space-between;
+      padding-right: 0;
+    }
+  }
+
+  &__price {
+    display: inline-flex;
+    height: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: rem(6);
+
+    @include md {
+      flex-direction: column;
+      align-items: initial;
+      gap: 0;
+    }
+
+    &_old {
+      font-size: rem(20);
+      font-weight: 400;
+      line-height: 100%;
+      opacity: 0.5;
+
+      @include xl {
+        font-size: rem(18);
+      }
+
+      @include sm {
+        font-size: rem(12);
+      }
+    }
+
+    &_real {
+      font-size: rem(20);
+      font-weight: 700;
+      line-height: 100%;
+
+      @include xl {
+        font-size: rem(18);
+      }
+
+      @include sm {
+        font-size: rem(18);
+      }
+    }
+  }
+
+  &__discount {
+    max-height: rem(20);
+    align-self: flex-end;
+    padding: rem(0) rem(8);
+    border-radius: rem(15);
+    margin: rem(6) rem(8);
+    background: var(--text);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 500;
+
+    @include sm {
+      font-size: rem(8);
+    }
+  }
+
+  &__like {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: inline-flex;
+    width: remm(30);
+    height: rem(30);
+    align-items: center;
+    cursor: pointer;
+
+    @include md {
+      top: rem(10);
+      right: rem(10);
+      bottom: initial;
+    }
+
+    &:hover {
+      svg {
+        stroke: var(--red);
+      }
+    }
+
+    &.active {
+      svg {
+        fill: var(--red);
+        stroke: var(--red);
+      }
+    }
+
+    svg {
+      width: rem(28);
+      height: rem(28);
+      fill: transparent;
+      stroke: var(--text);
+      stroke-width: 2px;
+      transition: all 0.3s ease-in-out;
+
+      @include sm {
+        fill: #d9d9d9;
+      }
+    }
+
+    span {
+      color: var(--text);
+      font-size: rem(14);
+      opacity: 0.5;
+    }
+  }
 }

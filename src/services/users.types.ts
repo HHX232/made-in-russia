@@ -23,6 +23,7 @@ export interface VendorDetails {
   productCategories: ProductCategory[]
   viewsCount?: number | string
   faq?: {question: string; answer: string}[]
+  address?: string
 }
 
 // Основной интерфейс User

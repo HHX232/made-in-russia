@@ -1,3 +1,5 @@
+import {User} from '../users.types'
+
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 export const PRODUCTS = '/products-summary'
 
@@ -37,6 +39,7 @@ export interface ProductPageResponse extends PageResponse<Product> {
 
 // Старый интерфейс (остается без изменений)
 export interface Product {
+  user: User
   approveStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
   id: number
   deliveryMethod: DeliveryMethod
