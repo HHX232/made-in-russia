@@ -1,77 +1,351 @@
+@import '@/scss/config/mixins';
+
 .footer {
-  width: 100vw;
-  margin-top: 40px;
-  background-color: #17469d;
-  box-shadow: 0 -4px 5px #00000015;
-}
+  background-color: var(--accent);
 
-.footer__inner {
-  display: grid;
-  width: 100%;
-  align-items: start;
-  padding: 20px 10px;
-  gap: 20px;
-  grid-template-columns: auto 1fr;
-}
+  &__top {
+    display: flex;
+    min-height: rem(165);
+    justify-content: space-between;
+    gap: 15px;
+    padding-block: 22px;
 
-.footer__logo_box {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+    @include xl {
+      flex-wrap: wrap;
+      gap: rem(30) rem(15);
+    }
 
-.footer__links {
-  display: grid;
-  height: 100%;
-  padding: 0;
-  margin: 0;
-  gap: 10px 20px;
-  grid-template-columns: repeat(3, 1fr);
-  list-style: none;
-}
-
-.footer__link {
-  color: #fff;
-  font-size: 15px;
-  text-align: center;
-  text-decoration: none;
-
-  & > li {
-    color: #fff;
-    font-size: 15px;
+    @include lg {
+      gap: rem(30) 0;
+      padding-block: rem(30);
+    }
   }
 
-  &:hover {
-    text-decoration: underline;
+  &__item {
+    &:nth-child(n + 2) {
+      .footer__title {
+        padding-left: 39px;
+      }
+
+      .footer__list {
+        padding-left: 41px;
+      }
+    }
+
+    @include xl {
+      &:nth-child(n + 2) {
+        .footer__title {
+          padding-left: 0;
+        }
+
+        .footer__list {
+          padding-left: 0;
+        }
+      }
+    }
+
+    &:nth-child(1),
+    &:nth-child(3) {
+      @include lg {
+        width: 55%;
+      }
+    }
+
+    &:nth-child(2),
+    &:nth-child(4) {
+      @include lg {
+        width: 45%;
+      }
+    }
+
+    &:last-child {
+      @include lg {
+        width: 100%;
+      }
+    }
+
+    &:first-child {
+      .footer__list {
+        gap: 2px;
+
+        @include sm {
+          gap: 0;
+        }
+      }
+    }
+
+    &:nth-child(2) {
+      .footer__list {
+        gap: 5px;
+
+        @include sm {
+          gap: 0;
+        }
+      }
+    }
+
+    &:nth-child(4) {
+      .footer__list {
+        gap: 0;
+      }
+    }
+
+    &_row {
+      display: flex;
+      gap: rem(15);
+
+      .footer__list {
+        width: 100%;
+        max-width: rem(67);
+      }
+    }
+
+    &_social {
+      @include lg {
+        width: 100%;
+
+        .footer__title {
+          display: none;
+        }
+      }
+    }
   }
-}
 
-.bear__img {
-  min-width: 224px;
-  min-height: 66px;
-}
+  &__title {
+    margin-bottom: rem(15);
+    color: var(--white);
+    font-size: rem(16);
+    font-weight: 500;
+    line-height: 125%;
 
-.bear__img_min {
-  display: none;
-}
+    @include sm {
+      width: 85%;
+      margin-bottom: rem(6);
+      font-size: rem(14);
+    }
 
-@media (max-width: 750px) {
-  .footer__inner {
-    padding: 40px 10px 20px;
-    gap: 30px;
-    grid-template-columns: 1fr;
+    &_social {
+      // Стили для социального заголовка, если нужны
+    }
   }
 
-  .bear__img {
-    min-width: 200px;
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: rem(7);
+
+    @include sm {
+      gap: 0;
+    }
   }
 
-  .bear__img_min {
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--white);
+    font-size: rem(14);
+    font-weight: 400;
+    gap: rem(10);
+    line-height: 110%;
+
+    @include sm {
+      font-size: rem(12);
+      white-space: nowrap;
+    }
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    .icon__phone {
+      width: rem(20);
+      height: rem(20);
+
+      @include sm {
+        width: rem(16);
+        height: rem(16);
+      }
+    }
+
+    .icon__email {
+      width: rem(20);
+      height: rem(20);
+
+      @include sm {
+        width: rem(16);
+        height: rem(16);
+      }
+    }
+
+    .icon__tg {
+      width: rem(20);
+      height: rem(16);
+
+      @include sm {
+        width: rem(16);
+        height: rem(13);
+      }
+    }
+  }
+
+  &__social {
+    display: flex;
+    max-width: rem(128);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 15px;
+
+    @include xl {
+      max-width: 100%;
+      justify-content: flex-start;
+    }
+
+    @include sm {
+      max-width: 100%;
+      gap: rem(30);
+    }
+
+    @media (max-width: 440px) {
+      justify-content: space-between;
+      gap: 0;
+    }
+
+    &_link {
+      display: flex;
+      width: rem(36);
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      aspect-ratio: 1/1;
+      transition: var(--transition);
+
+      &:hover {
+        filter: var(--filter);
+      }
+
+      &_vk {
+        background-color: var(--vk);
+      }
+
+      &_tg {
+        svg {
+          transform: translateX(-3px);
+        }
+
+        background-color: var(--tg);
+      }
+
+      &_max {
+        svg {
+          width: 25px;
+          height: 25px;
+        }
+
+        background-image: url('/imagesNew/max-bg.webp');
+      }
+
+      &_wechat {
+        background-color: var(--wechat);
+      }
+
+      &_whatsapp {
+        display: none;
+        background-color: var(--whatsapp);
+
+        @include md {
+          display: flex;
+        }
+      }
+    }
+  }
+
+  &__bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-top: 1px solid rgb(255 255 255 / 20%);
+    padding-block: rem(14) rem(20);
+
+    @include lg {
+      padding-bottom: rem(30);
+    }
+
+    @include sm {
+      padding-block: rem(15) rem(25);
+    }
+  }
+
+  &__logo {
     display: block;
-    min-width: 70px;
+    width: rem(201);
+    flex-shrink: 0;
+    transition: var(--transition);
+
+    &:hover {
+      filter: var(--filter);
+    }
+
+    @include lg {
+      width: rem(152);
+    }
+
+    img {
+      display: block;
+      overflow: hidden;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
   }
 
-  .footer__links {
-    grid-template-columns: 1fr;
+  &__copyright {
+    color: var(--white);
+    font-size: rem(14);
+    font-weight: 500;
+    opacity: 0.5;
+
+    @include sm {
+      display: none;
+    }
   }
+}
+
+.soc_vk_tile {
+  fill: white;
+}
+
+.soc_vk_char {
+  fill: var(--vk);
+}
+
+.soc_tg_char {
+  fill: white;
+}
+
+.soc_whatsapp_char {
+  fill: white;
+}
+
+.soc_max_char {
+  fill: white;
+}
+
+.soc_wechat_char_1 {
+  fill: white;
+}
+
+.soc_wechat_char_2 {
+  fill: white;
+}
+
+.soc_wechat_eye_1 {
+  fill: #09ba07;
+}
+
+.soc_wechat_eye_2 {
+  fill: #09ba07;
 }
