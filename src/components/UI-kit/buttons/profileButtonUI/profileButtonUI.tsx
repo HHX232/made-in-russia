@@ -22,7 +22,8 @@ const ava6 = '/avatars/avatar-v-6.svg'
 const ava7 = '/avatars/avatar-v-7.svg'
 const ava8 = '/avatars/avatar-v-8.svg'
 const ava9 = '/avatars/avatar-v-9.svg'
-const userLogin = '/man_login.svg'
+// const userLogin = '/man_login.svg'
+const userLogin2 = '/iconsNew/userNew.svg'
 const avatarsArray = [ava, ava1, ava2, ava3, ava4, ava5, ava6, ava7, ava8, ava9]
 
 interface IProfileProps {
@@ -127,7 +128,13 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
         </>
       ) : (
         <>
-          <Image className={styles.image} src={userLogin} alt='Please login' width={28} height={28} />
+          <Image
+            className={`${styles.image} ${isAuthenticated && styles.image__white}`}
+            src={userLogin2}
+            alt='Please login'
+            width={28}
+            height={28}
+          />
           <p className={styles.profile_text}>{t('login')}</p>
         </>
       )}

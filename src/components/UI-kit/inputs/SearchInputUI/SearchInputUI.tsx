@@ -68,7 +68,7 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId}) => {
   const id = useId()
   const {setSearchTitle, clearSearchTitle} = useActions()
   const t = useTranslations('HomePage')
-  const locale = useLocale() // Используем локаль из next-intl
+  const locale = useLocale()
 
   const debouncedSetSearchTitle = useDebounce(setSearchTitle, 1000)
   const debouncedSetSearchText = useDebounce(setDebouncedSearchText, 300)
@@ -79,17 +79,17 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId}) => {
     isLoading,
     error
   } = useQuery({
-    queryKey: ['search-hints', debouncedSearchText, locale, vendorId], // Локаль как часть ключа!
+    queryKey: ['search-hints', debouncedSearchText, locale, vendorId],
     queryFn: () =>
       fetchHints({
         text: debouncedSearchText,
         vendorId,
         locale
       }),
-    enabled: debouncedSearchText.trim().length > 0, // Запрос только если есть текст
-    staleTime: 1000 * 60 * 5, // Кеш на 5 минут
-    gcTime: 1000 * 60 * 10, // Удаление из памяти через 10 минут
-    retry: 1, // Только одна попытка повтора
+    enabled: debouncedSearchText.trim().length > 0,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+    retry: 1,
     retryDelay: 1000
   })
 
@@ -111,12 +111,24 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId}) => {
         setInputValue(value)
       }
 
-      // Обновляем поисковый запрос с debounce
       debouncedSetSearchTitle(value)
       debouncedSetSearchText(value)
     },
     [debouncedSetSearchTitle, debouncedSetSearchText]
   )
+
+  // Функция очистки инпута
+  const handleClearInput = useCallback(() => {
+    setInputValue('')
+    setDebouncedSearchText('')
+    setListIsOpen(false)
+    clearSearchTitle()
+
+    if (inputRef.current) {
+      inputRef.current.value = ''
+      inputRef.current.focus()
+    }
+  }, [clearSearchTitle])
 
   // Закрытие списка при клике вне
   useEffect(() => {
@@ -144,11 +156,11 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId}) => {
 
   const hasHints = hints.length > 0
   const showList = inputValue.length > 0 && listIsOpen
+  const showClearButton = inputValue.length > 0
 
   return (
     <div ref={boxRef} className={`${styles.search__box} ${disabled ? styles.search__box_disabled : ''}`}>
       <label htmlFor={'inputID' + id} className={styles.search__label}>
-        <Image src={loop} width={16} height={16} alt='search icon' className={styles.search__icon} />
         <input
           type='text'
           id={'inputID' + id}
@@ -161,6 +173,22 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId}) => {
           autoComplete='off'
           value={inputValue}
         />
+        <Image src={loop} width={16} height={16} alt='search icon' className={styles.search__icon} />
+
+        {/* Кнопка очистки */}
+        {showClearButton && (
+          <button type='button' onClick={handleClearInput} className={styles.clear__button} aria-label='Clear search'>
+            <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+              <path
+                d='M12 4L4 12M4 4L12 12'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+          </button>
+        )}
       </label>
 
       {showList && (
@@ -191,6 +219,7 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId}) => {
                   <Link
                     key={`${locale}-${product.id}`}
                     href={`/card/${product.id}`}
+                    style={{background: 'red'}}
                     className={styles.list__item}
                     onClick={() => {
                       setListIsOpen(false)

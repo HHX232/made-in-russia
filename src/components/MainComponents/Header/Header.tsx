@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import Image from 'next/image'
@@ -60,7 +61,6 @@ export const renderCategoryItems = (
   isOpenAll?: boolean
 ): React.ReactNode[] => {
   return categories.map((category) => {
-    // Убираем префиксы вида l1_, l2_ и т.д. из slug категории
     const cleanSlug = category.slug.replace(/^l\d+_/, '')
     const currentPath = parentPath ? `${parentPath}/${cleanSlug}` : cleanSlug
     const dropListId = `category-${currentPath.replace(/\//g, '-')}`
@@ -116,28 +116,28 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const [categoriesList, setCategoriesList] = useState<Category[]>(categories || [])
   const [categoryListIsOpen, setCategoryListIsOpen] = useState<boolean>(false)
   const categoryListRefDesktop = useRef<HTMLDivElement>(null)
+  const catalogButtonRef = useRef<HTMLButtonElement>(null)
   const fullHeaderRef = useRef<HTMLDivElement>(null)
   const id = useId()
   const locale = useLocale()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const categoriesFromHook = useCategories(locale as any)
   const {setCurrentLang} = useActions()
   const {currentLangValue} = useTypedSelector((state) => state.currentLangSlice)
-  // Добавляем useTransition для плавного изменения языка
   const [isPending, startTransition] = useTransition()
-
+  const [allFlags, setAllFlags] = useState({
+    zh: '/countries/china.svg',
+    ru: '/countries/russia.svg',
+    en: '/countries/english.svg'
+  })
   const [activeLanguage, setActiveLanguage] = useState<Languages>(
     localeToLanguage[currentLangValue as keyof typeof localeToLanguage]
   )
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCurrentLang(locale as any)
   }, [])
 
   useEffect(() => {
-    console.log('currentLangValue', currentLangValue)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setActiveLanguage(localeToLanguage[currentLangValue as keyof typeof localeToLanguage] as any)
   }, [currentLangValue])
 
@@ -150,21 +150,13 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
 
   const handleLanguageChange = (language: Languages) => {
     const newLocale = languageToLocale[language] as TLocale
-
-    // Устанавливаем куки
     setCookieLocale(newLocale)
-
-    // Обновляем состояние (для UI)
     setActiveLanguage(language)
-
-    // Используем startTransition для плавного перехода
     startTransition(() => {
-      // Обновляем страницу, чтобы Next.js подхватил новые куки
       router.refresh()
     })
   }
 
-  // Обновляем обработчики в dropdown элементах
   const languageDropdownItems = [
     <p
       style={{
@@ -201,7 +193,6 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
     </p>
   ]
 
-  // Остальная логика остается без изменений...
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -245,7 +236,9 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
       if (
         categoryListIsOpen &&
         categoryListRefDesktop.current &&
-        !categoryListRefDesktop.current.contains(event.target as Node)
+        catalogButtonRef.current &&
+        !categoryListRefDesktop.current.contains(event.target as Node) &&
+        !catalogButtonRef.current.contains(event.target as Node)
       ) {
         setCategoryListIsOpen(false)
       }
@@ -262,7 +255,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   }
 
   return (
-    <div className='container'>
+    <div className={` ${styles.header}`}>
       <Head>
         <script
           type='application/ld+json'
@@ -284,8 +277,38 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
         />
       </Head>
 
-      {/* OLD */}
-      {/* <header ref={fullHeaderRef} className={`${styles.header}`} itemScope itemType='https://schema.org/WPHeader'>
+      <div className={` ${styles.header__top} container`}>
+        <nav className={`${styles.header__nav}`}>
+          <ul>
+            <li>
+              <Link href='#' className={`${styles.header__link}`}>
+                Отзывы
+              </Link>
+            </li>
+            <li>
+              <Link href='#' className={`${styles.header__link}`}>
+                Контакты
+              </Link>
+            </li>
+            <li>
+              <Link href='#' className={`${styles.header__link}`}>
+                О нас
+              </Link>
+            </li>
+            <li>
+              <Link href='#' className={`${styles.header__link}`}>
+                Помощь
+              </Link>
+            </li>
+          </ul>
+        </nav>
+        <div className={`${styles.header__contacts}`}>
+          <a className={`${styles.header__phone}`} href={telephoneUrl}>
+            {telephoneText}
+          </a>
+        </div>
+      </div>
+      <header ref={fullHeaderRef} className={`${styles.header}`} itemScope itemType='https://schema.org/WPHeader'>
         <div className={`${styles.middle__header}`}>
           <div className={`container ${styles.header__middle_box}`}>
             <Link
@@ -315,19 +338,46 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
               <meta itemProp='url' content={process.env.NEXT_PUBLIC_SITE_URL} />
             </Link>
 
-            <div className={`${styles.searchBox}`} role='search' aria-label='Поиск по сайту'>
-              <SearchInputUI placeholder={t('search')} />
-            </div>
+            <div className={styles.catalog_search_box}>
+              <button
+                ref={catalogButtonRef}
+                id='catalog-btn'
+                className={`${styles.btn_catalog} ${categoryListIsOpen ? styles.btn_catalog_active : ''}`}
+                aria-label='Каталог'
+                onClick={handleToggleCategories}
+              >
+                <span className={`${styles.btn_catalog__burger} ${categoryListIsOpen ? styles.active : ''}`}>
+                  <span></span>
+                </span>
+                <span className={`${styles.btn_catalog__name}`}>Каталог</span>
+              </button>
 
+              <div className={`${styles.searchBox}`} role='search' aria-label='Поиск по сайту'>
+                <SearchInputUI placeholder={t('search')} />
+              </div>
+            </div>
             <div className={`${styles.main__middle_content}`}>
               <ProfileButtonUI />
 
               <DropList
                 closeOnMouseLeave={true}
                 extraStyle={{zIndex: '1001'}}
+                arrowClassName={styles.hide_arrow}
                 extraClass={`${styles.extra__header__language_box}`}
                 color='white'
-                title={isPending ? `${activeLanguage}` : activeLanguage}
+                title={
+                  <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
+                    <Image
+                      src={(allFlags as any)[languageToLocale?.[activeLanguage]]}
+                      alt='English'
+                      width={34}
+                      height={24}
+                    />
+                    <p className={styles.active_lang_text} style={{color: 'white'}}>
+                      {activeLanguage}
+                    </p>
+                  </div>
+                }
                 gap='5'
                 safeAreaEnabled={true}
                 positionIsAbsolute={false}
@@ -335,238 +385,19 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
                 trigger='hover'
               />
             </div>
-            <BurgerMenu />
+            {/* <BurgerMenu /> */}
           </div>
         </div>
 
-        {isShowBottom && (
-          <nav
-            className={`${styles.bottom_header}`}
-            role='navigation'
-            aria-label='Основная навигация'
-            itemScope
-            itemType='https://schema.org/SiteNavigationElement'
-          >
-            <div className='container'>
-              <ul className={`${styles.bottom__header__inner}`}>
-                <div className={`${styles.bottom__list_item}`}>
-                  <DropList
-                    dropListId='categories-seo'
-                    title={<p>{t('category')}</p>}
-                    extraStyle={{position: 'absolute', top: '-1000vh', left: '-1000vw', opacity: '0'}}
-                    trigger='hover'
-                    isOpen={true}
-                    safeAreaEnabled
-                    items={renderCategoryItems(categoriesList, true, 'bottom', '10', '', '', '', true)}
-                  />
-
-                  <button id='cy-category-button' onClick={handleToggleCategories}>
-                    {t('category')}
-                  </button>
-                </div>
-
-                <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
-                  <DropList
-                    key={'id5 contacts'}
-                    extraClass={`${styles.extra__mobile__list}`}
-                    direction='bottom'
-                    gap='20'
-                    positionIsAbsolute={false}
-                    trigger='hover'
-                    title={t('contacts')}
-                    items={[
-                      <div key={1} className={styles.header__top_item}>
-                        <a
-                          style={{width: '100%'}}
-                          className={styles.header__top_link}
-                          href={emailUrl}
-                       
-                          itemProp='sameAs'
-                        >
-                       
-                          <Image
-                            style={{marginRight: '5px'}}
-                            className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
-                            width={24}
-                            height={24}
-                            src={emailImage}
-                            alt='Email'
-                          />
-                          {process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}
-                        </a>
-                      </div>,
-                      <div key={id + 'telegram'} className={styles.header__top_item}>
-                        <Link
-                          className={styles.header__top_link}
-                          href={telegramUrl}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          itemProp='sameAs'
-                        >
-                          <Image
-                            className={`${styles.header__top_image} ${styles.header__top_image_telegram}`}
-                            width={24}
-                            height={24}
-                            src={telegram}
-                            alt='Telegram'
-                          />
-                          {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
-                        </Link>
-                      </div>,
-                      <div key={id + 'telephone'} className={styles.header__top_item}>
-                        <Link
-                          className={styles.header__top_link}
-                          href={telephoneUrl}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          itemProp='telephone'
-                        >
-                          <Image
-                            className={`${styles.header__top_image} ${styles.header__top_image_telephone}`}
-                            width={24}
-                            height={24}
-                            src={telephone}
-                            alt='Телефон'
-                          />
-                          {telephoneText}
-                        </Link>
-                      </div>
-                    ]}
-                  />
-                </li>
-
-                <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
-                  <Link href='/about-us' itemProp='url'>
-                    <span itemProp='name'>{t('about')}</span>
-                  </Link>
-                </li>
-
-                <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
-                  <Link href='/help' itemProp='url'>
-                    <span itemProp='name'>{t('help')}</span>
-                  </Link>
-                </li>
-
-                <li className={`${styles.drop__bottom_list}`}>
-                  <DropList
-                    extraClass={`${styles.extra__bottom__header__list}`}
-                    trigger='hover'
-                    positionIsAbsolute={false}
-                    title={t('more')}
-                    items={[
-                     
-                      <div key={'id3 about'} className={`${styles.bottom__list_item}`}>
-                        <Link href='/about-us'>{t('about')}</Link>
-                      </div>,
-                      <div key={'id4 help'} className={`${styles.bottom__list_item}`}>
-                        <Link href='/help'>{t('help')}</Link>
-                      </div>,
-                      <DropList
-                        key={'id5 contacts'}
-                        extraClass={`${styles.extra__mobile__list}`}
-                        direction='bottom'
-                        gap='20'
-                        safeAreaEnabled
-                        trigger='hover'
-                        title={t('contacts')}
-                        items={[
-                          <div key={1} className={styles.header__top_item}>
-                            <a
-                              style={{width: '100%'}}
-                              className={styles.header__top_link}
-                              href={emailUrl}
-                              // target='_blank'
-                              // rel='noopener noreferrer'
-                              itemProp='sameAs'
-                            >
-                            
-                              <Image
-                                style={{marginRight: '5px'}}
-                                className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
-                                width={24}
-                                height={24}
-                                src={emailImage}
-                                alt='Email'
-                              />
-                              {process.env.NEXT_PUBLIC_EMAIL || 'Exporteru'}
-                            </a>
-                          </div>,
-                          <div key={id + 'telegram second'} className={styles.header__top_item}>
-                            <Link
-                              className={styles.header__top_link}
-                              href={telegramUrl}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              itemProp='sameAs'
-                            >
-                              <Image
-                                className={`${styles.header__top_image} ${styles.header__top_image_telegram}`}
-                                width={24}
-                                height={24}
-                                src={telegram}
-                                alt='Telegram'
-                              />
-                              {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
-                            </Link>
-                          </div>,
-                          <div key={id + 'telephone second'} className={styles.header__top_item}>
-                            <Link
-                              className={styles.header__top_link}
-                              href={telephoneUrl}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              itemProp='telephone'
-                            >
-                              <Image
-                                className={`${styles.header__top_image} ${styles.header__top_image_telephone}`}
-                                width={24}
-                                height={24}
-                                src={telephone}
-                                alt='Телефон'
-                              />
-                              {telephoneText}
-                            </Link>
-                          </div>
-                        ]}
-                      />
-                    ]}
-                  />
-                </li>
-
-                <li className={`${styles.drop__bottom_list}`}>
-                  <DropList
-                    closeOnMouseLeave={true}
-                    extraStyle={{zIndex: '99999'}}
-                    color='white'
-                    title={isPending ? `${activeLanguage}` : activeLanguage}
-                    gap='5'
-                    safeAreaEnabled={true}
-                    positionIsAbsolute={false}
-                    items={languageDropdownItems}
-                    trigger='hover'
-                  />
-                </li>
-              </ul>
-            </div>
-          </nav>
-        )}
-
         {categoryListIsOpen && (
           <div
-            style={{
-              position: 'absolute',
-              width: '100vw',
-              top: fullHeaderRef.current?.offsetHeight,
-              minHeight: 'fit-content',
-              height: `calc(80vh - ${fullHeaderRef.current?.offsetHeight}px)`,
-              background: '#FFF',
-              left: '0',
-              zIndex: '1000000000000000'
-            }}
             ref={categoryListRefDesktop}
-            className={`${styles.category__list__bottom__desktop}`}
+            className={`${styles.exp_catalog} ${categoryListIsOpen ? styles.active : ''}`}
           >
-            <div className='container'>
+            <div className={`container ${styles.exp_catalog__container__class}`}>
+              <div className={styles.new_search_box}>
+                <SearchInputUI placeholder={t('search')} />
+              </div>
               <CategoryesMenuDesktop
                 categories={categoriesList}
                 setCategoryListIsOpen={setCategoryListIsOpen}
@@ -576,118 +407,645 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
             </div>
           </div>
         )}
-      </header> */}
-
-      {/* NEW */}
-      <header className={` ${styles.header}`}>
-        <div className='container'>
-          <div className={styles.header__top}>
-            <nav className={styles.header__nav}>
-              <ul>
-                <li>
-                  <a href='#' className={styles.header__link}>
-                    Отзывы
-                  </a>
-                </li>
-                <li>
-                  <a href='#' className={styles.header__link}>
-                    Контакты
-                  </a>
-                </li>
-                <li>
-                  <a href='#' className={styles.header__link}>
-                    О нас
-                  </a>
-                </li>
-                <li>
-                  <a href='#' className={styles.header__link}>
-                    Помощь
-                  </a>
-                </li>
-              </ul>
-            </nav>
-            <div className={styles.header__contacts}>
-              <a className={styles.header__phone} href='tel:+78564674666'>
-                +7 856 467-46-66
-              </a>
-            </div>
-          </div>
-          <div className={styles.header__medium}>
-            <Link
-              href={'/'}
-              className={`${styles.header__logo_box}`}
-              itemScope
-              itemType='https://schema.org/Organization'
-            >
-              <Image
-                className={`${styles.bear__img}`}
-                alt='Logo with Bear'
-                src={logoFavBig}
-                width={286}
-                height={65}
-                itemProp='logo'
-              />
-              <Image
-                className={`${styles.bear__img_min}`}
-                alt='Logo with Bear'
-                src={logoFavSmall}
-                width={100}
-                height={100}
-                itemProp='logo'
-              />
-
-              <meta itemProp='name' content='Exporteru' />
-              <meta itemProp='url' content={process.env.NEXT_PUBLIC_SITE_URL} />
-            </Link>
-
-            <div className={styles.header__row}>
-              <div className={styles.header__row_group}>
-                <button id='catalog-btn' className={styles.btn_catalog} aria-label='Каталог'>
-                  <span className={styles.btn_catalog__burger}>
-                    <span></span>
-                  </span>
-                  <span className={styles.btn_catalog__name}>Каталог</span>
-                </button>
-
-                <form className={styles.search_form} id='search-form'>
-                  <input
-                    type='search'
-                    id='search-input'
-                    className={styles.search_form__input}
-                    placeholder='Поиск по сайту'
-                    name='s'
-                  />
-                  <button type='submit' className={styles.search_form__button} aria-label='Поиск'>
-                    <svg className={`${styles.icon} ${styles.icon_search}`}>
-                      <use href='./icons/symbol/sprite.svg#search'></use>
-                    </svg>
-                  </button>
-                </form>
-              </div>
-
-              <button id='open-popup-btn' className={`${styles.btn_login}`}>
-                <svg className={`${styles.icon} ${styles.icon_profile}`}>
-                  <use href='./icons/symbol/sprite.svg#profile'></use>
-                </svg>
-                <span>Войти</span>
-              </button>
-
-              <a href='#' className={styles.lang_switcher}>
-                <span className={styles.lang_switcher_icon}>
-                  <svg className={`${styles.icon} ${styles.icon_flag_russian}`}>
-                    <use href='./icons/symbol/sprite.svg#flag-russian'></use>
-                  </svg>
-                </span>
-                <span className={`${styles.lang_switcher__name}`}>Русский</span>
-              </a>
-            </div>
-          </div>
-
-          {/* <div className='header__bottom'>@@include('../blocks/block-catalog-overlay.html')</div> */}
-        </div>
       </header>
     </div>
   )
 }
 
 export default Header
+
+// /* eslint-disable @typescript-eslint/no-explicit-any */
+// /* eslint-disable @typescript-eslint/no-unused-vars */
+// 'use client'
+// import Image from 'next/image'
+// import {FC, useEffect, useId, useRef, useState, useTransition} from 'react'
+// import styles from './Header.module.scss'
+// import createTelText from '@/utils/createTelText'
+// import DropList from '@/components/UI-kit/Texts/DropList/DropList'
+// import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
+// import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
+// import BurgerMenu from '../BurgerMenu/BurgerMenu'
+// import Head from 'next/head'
+// import {Category, useCategories} from '@/services/categoryes/categoryes.service'
+// import CategoryesMenuDesktop from '@/components/UI-kit/elements/CategoryesMenuDesktop/CategoryesMenuDesktop'
+// import {useLocale, useTranslations} from 'next-intl'
+// import {TLocale} from '../MinimalHeader/MinimalHeader'
+// import {useRouter} from 'next/navigation'
+// import Link from 'next/link'
+// import {useActions} from '@/hooks/useActions'
+// import {useTypedSelector} from '@/hooks/useTypedSelector'
+
+// export const setCookieLocale = (locale: string) => {
+//   document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+// }
+
+// enum Languages {
+//   RUSSIAN = 'Русский',
+//   ENGLISH = 'English',
+//   CHINA = '中文'
+// }
+// const languageToLocale = {
+//   [Languages.RUSSIAN]: 'ru',
+//   [Languages.ENGLISH]: 'en',
+//   [Languages.CHINA]: 'zh'
+// }
+// const localeToLanguage = {
+//   ru: Languages.RUSSIAN,
+//   en: Languages.ENGLISH,
+//   zh: Languages.CHINA
+// }
+// const emailImage = '/email.svg'
+// const telephone = '/phone.svg'
+// const telegram = '/telegram.svg'
+
+// const logoFavBig = '/logos/logoWithoutText.svg'
+// const logoFavSmall = '/logos/logo_fav.svg'
+
+// interface HeaderProps {
+//   isShowBottom?: boolean
+//   categories?: Category[]
+// }
+
+// export const renderCategoryItems = (
+//   categories: Category[],
+//   positionIsAbsolute?: boolean,
+//   direction?: 'right' | 'left' | 'bottom' | 'top',
+//   gap?: '0' | '5' | '10' | '15' | '20' | '25' | '30' | '35' | '40' | '45' | '50',
+//   parentPath?: string,
+//   parentDropListId?: string,
+//   extraClass?: string,
+//   isOpenAll?: boolean
+// ): React.ReactNode[] => {
+//   return categories.map((category) => {
+//     // Убираем префиксы вида l1_, l2_ и т.д. из slug категории
+//     const cleanSlug = category.slug.replace(/^l\d+_/, '')
+//     const currentPath = parentPath ? `${parentPath}/${cleanSlug}` : cleanSlug
+//     const dropListId = `category-${currentPath.replace(/\//g, '-')}`
+
+//     if (category.children && category.children.length > 0) {
+//       return (
+//         <DropList
+//           {...(isOpenAll === true && {isOpen: isOpenAll})}
+//           key={category.id}
+//           scrollThreshold={200}
+//           dropListId={dropListId}
+//           parentDropListId={parentDropListId}
+//           extraClass={`${styles.extra_list} ${extraClass}`}
+//           direction={direction || 'right'}
+//           positionIsAbsolute={positionIsAbsolute}
+//           gap={gap || '0'}
+//           title={
+//             <Link href={`/categories/${currentPath}`}>
+//               <p>{category.name}</p>
+//             </Link>
+//           }
+//           items={renderCategoryItems(
+//             category.children,
+//             positionIsAbsolute,
+//             direction,
+//             gap,
+//             currentPath,
+//             dropListId,
+//             '',
+//             isOpenAll
+//           )}
+//           trigger='hover'
+//           hoverDelay={150}
+//           safeAreaEnabled={true}
+//           safeAreaSize={30}
+//         />
+//       )
+//     }
+
+//     return (
+//       <Link key={category.id} href={`/categories/${currentPath}`}>
+//         <p>{category.name}</p>
+//       </Link>
+//     )
+//   })
+// }
+
+// const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
+//   const emailUrl = `mailto:${process.env.NEXT_PUBLIC_EMAIL || 'info@exporteru.com'}`
+//   const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}`
+//   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
+//   const telephoneText = createTelText(process.env.NEXT_PUBLIC_TELEPHONE)
+//   const [categoriesList, setCategoriesList] = useState<Category[]>(categories || [])
+//   const [categoryListIsOpen, setCategoryListIsOpen] = useState<boolean>(false)
+//   const categoryListRefDesktop = useRef<HTMLDivElement>(null)
+//   const fullHeaderRef = useRef<HTMLDivElement>(null)
+//   const id = useId()
+//   const locale = useLocale()
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   const categoriesFromHook = useCategories(locale as any)
+//   const {setCurrentLang} = useActions()
+//   const {currentLangValue} = useTypedSelector((state) => state.currentLangSlice)
+//   // Добавляем useTransition для плавного изменения языка
+//   const [isPending, startTransition] = useTransition()
+//   const [allFlags, setAllFlags] = useState({
+//     zh: '/countries/china.svg',
+//     ru: '/countries/russia.svg',
+//     en: '/countries/english.svg'
+//   })
+//   const [activeLanguage, setActiveLanguage] = useState<Languages>(
+//     localeToLanguage[currentLangValue as keyof typeof localeToLanguage]
+//   )
+
+//   useEffect(() => {
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     setCurrentLang(locale as any)
+//   }, [])
+
+//   useEffect(() => {
+//     console.log('currentLangValue', currentLangValue)
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     setActiveLanguage(localeToLanguage[currentLangValue as keyof typeof localeToLanguage] as any)
+//   }, [currentLangValue])
+
+//   const t = useTranslations('HomePage')
+//   const router = useRouter()
+
+//   useEffect(() => {
+//     setCategoriesList(categoriesFromHook?.data || [])
+//   }, [categoriesFromHook?.data])
+
+//   const handleLanguageChange = (language: Languages) => {
+//     const newLocale = languageToLocale[language] as TLocale
+
+//     // Устанавливаем куки
+//     setCookieLocale(newLocale)
+
+//     // Обновляем состояние (для UI)
+//     setActiveLanguage(language)
+
+//     // Используем startTransition для плавного перехода
+//     startTransition(() => {
+//       // Обновляем страницу, чтобы Next.js подхватил новые куки
+//       router.refresh()
+//     })
+//   }
+
+//   // Обновляем обработчики в dropdown элементах
+//   const languageDropdownItems = [
+//     <p
+//       style={{
+//         width: '100%',
+//         opacity: isPending ? 0.5 : 1,
+//         cursor: isPending ? 'wait' : 'pointer'
+//       }}
+//       onClick={() => !isPending && handleLanguageChange(Languages.RUSSIAN)}
+//       key={1}
+//     >
+//       {Languages.RUSSIAN} {isPending && activeLanguage === Languages.RUSSIAN}
+//     </p>,
+//     <p
+//       style={{
+//         width: '100%',
+//         opacity: isPending ? 0.5 : 1,
+//         cursor: isPending ? 'wait' : 'pointer'
+//       }}
+//       onClick={() => !isPending && handleLanguageChange(Languages.ENGLISH)}
+//       key={2}
+//     >
+//       {Languages.ENGLISH} {isPending && activeLanguage === Languages.ENGLISH}
+//     </p>,
+//     <p
+//       style={{
+//         width: '100%',
+//         opacity: isPending ? 0.5 : 1,
+//         cursor: isPending ? 'wait' : 'pointer'
+//       }}
+//       onClick={() => !isPending && handleLanguageChange(Languages.CHINA)}
+//       key={3}
+//     >
+//       {Languages.CHINA} {isPending && activeLanguage === Languages.CHINA}
+//     </p>
+//   ]
+
+//   // Остальная логика остается без изменений...
+//   const organizationSchema = {
+//     '@context': 'https://schema.org',
+//     '@type': 'Organization',
+//     name: 'Exporteru',
+//     url: typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL,
+//     sameAs: [emailUrl, telegramUrl],
+//     contactPoint: {
+//       '@type': 'ContactPoint',
+
+//       telephone: process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '+78005553535',
+//       contactType: 'customer service',
+//       availableLanguage: ['Russian', 'English', 'Chinese']
+//     }
+//   }
+
+//   const searchActionSchema = {
+//     '@context': 'https://schema.org',
+//     '@type': 'WebSite',
+//     url: typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL,
+//     potentialAction: {
+//       '@type': 'SearchAction',
+//       target: {
+//         '@type': 'EntryPoint',
+//         urlTemplate: `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/search?q={search_term_string}`
+//       },
+//       'query-input': 'required name=search_term_string'
+//     }
+//   }
+
+//   const navigationSchema = {
+//     '@context': 'https://schema.org',
+//     '@type': 'Site-Navigation-Element',
+//     name: 'Main Navigation',
+//     url: [
+//       `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/categories`,
+//       `${typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL}/about-us`
+//     ]
+//   }
+
+//   useEffect(() => {
+//     const handleClickOutside = (event: MouseEvent) => {
+//       if (
+//         categoryListIsOpen &&
+//         categoryListRefDesktop.current &&
+//         !categoryListRefDesktop.current.contains(event.target as Node)
+//       ) {
+//         setCategoryListIsOpen(false)
+//       }
+//     }
+
+//     document.addEventListener('mousedown', handleClickOutside)
+//     return () => {
+//       document.removeEventListener('mousedown', handleClickOutside)
+//     }
+//   }, [categoryListIsOpen])
+
+//   const handleToggleCategories = () => {
+//     setCategoryListIsOpen(!categoryListIsOpen)
+//   }
+
+//   return (
+//     <div className={` ${styles.header}`}>
+//       <Head>
+//         <script
+//           type='application/ld+json'
+//           dangerouslySetInnerHTML={{
+//             __html: JSON.stringify(organizationSchema)
+//           }}
+//         />
+//         <script
+//           type='application/ld+json'
+//           dangerouslySetInnerHTML={{
+//             __html: JSON.stringify(searchActionSchema)
+//           }}
+//         />
+//         <script
+//           type='application/ld+json'
+//           dangerouslySetInnerHTML={{
+//             __html: JSON.stringify(navigationSchema)
+//           }}
+//         />
+//       </Head>
+
+//       <div className={` ${styles.header__top} container`}>
+//         <nav className={`${styles.header__nav}`}>
+//           <ul>
+//             <li>
+//               <Link href='#' className={`${styles.header__link}`}>
+//                 Отзывы
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href='#' className={`${styles.header__link}`}>
+//                 Контакты
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href='#' className={`${styles.header__link}`}>
+//                 О нас
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href='#' className={`${styles.header__link}`}>
+//                 Помощь
+//               </Link>
+//             </li>
+//           </ul>
+//         </nav>
+//         <div className={`${styles.header__contacts}`}>
+//           <a className={`${styles.header__phone}`} href={telephoneUrl}>
+//             {telephoneText}
+//           </a>
+//         </div>
+//       </div>
+//       <header ref={fullHeaderRef} className={`${styles.header}`} itemScope itemType='https://schema.org/WPHeader'>
+//         <div className={`${styles.middle__header}`}>
+//           <div className={`container ${styles.header__middle_box}`}>
+//             <Link
+//               href={'/'}
+//               className={`${styles.header__logo_box}`}
+//               itemScope
+//               itemType='https://schema.org/Organization'
+//             >
+//               <Image
+//                 className={`${styles.bear__img}`}
+//                 alt='Logo with Bear'
+//                 src={logoFavBig}
+//                 width={286}
+//                 height={65}
+//                 itemProp='logo'
+//               />
+//               <Image
+//                 className={`${styles.bear__img_min}`}
+//                 alt='Logo with Bear'
+//                 src={logoFavSmall}
+//                 width={100}
+//                 height={100}
+//                 itemProp='logo'
+//               />
+
+//               <meta itemProp='name' content='Exporteru' />
+//               <meta itemProp='url' content={process.env.NEXT_PUBLIC_SITE_URL} />
+//             </Link>
+
+//             <div className={styles.catalog_search_box}>
+//               <button id='catalog-btn' className={`${styles.btn_catalog}`} aria-label='Каталог'>
+//                 <span className={`${styles.btn_catalog__burger}`}>
+//                   <span></span>
+//                 </span>
+//                 <span className={`${styles.btn_catalog__name}`}>Каталог</span>
+//               </button>
+
+//               <div className={`${styles.searchBox}`} role='search' aria-label='Поиск по сайту'>
+//                 <SearchInputUI placeholder={t('search')} />
+//               </div>
+//             </div>
+//             <div className={`${styles.main__middle_content}`}>
+//               <ProfileButtonUI />
+
+//               <DropList
+//                 closeOnMouseLeave={true}
+//                 extraStyle={{zIndex: '1001'}}
+//                 arrowClassName={styles.hide_arrow}
+//                 extraClass={`${styles.extra__header__language_box}`}
+//                 color='white'
+//                 title={
+//                   <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
+//                     <Image
+//                       src={(allFlags as any)[languageToLocale?.[activeLanguage]]}
+//                       alt='English'
+//                       width={34}
+//                       height={24}
+//                     />
+//                     <p style={{color: 'white'}}>{activeLanguage}</p>
+//                   </div>
+//                 }
+//                 gap='5'
+//                 safeAreaEnabled={true}
+//                 positionIsAbsolute={false}
+//                 items={languageDropdownItems}
+//                 trigger='hover'
+//               />
+//             </div>
+//             <BurgerMenu />
+//           </div>
+//         </div>
+
+//         {false && (
+//           <nav
+//             className={`${styles.bottom_header}`}
+//             role='navigation'
+//             aria-label='Основная навигация'
+//             itemScope
+//             itemType='https://schema.org/SiteNavigationElement'
+//           >
+//             <div className='container'>
+//               <ul className={`${styles.bottom__header__inner}`}>
+//                 <div className={`${styles.bottom__list_item}`}>
+//                   <DropList
+//                     dropListId='categories-seo'
+//                     title={<p>{t('category')}</p>}
+//                     extraStyle={{position: 'absolute', top: '-1000vh', left: '-1000vw', opacity: '0'}}
+//                     trigger='hover'
+//                     isOpen={true}
+//                     safeAreaEnabled
+//                     items={renderCategoryItems(categoriesList, true, 'bottom', '10', '', '', '', true)}
+//                   />
+
+//                   <button id='cy-category-button' onClick={handleToggleCategories}>
+//                     {t('category')}
+//                   </button>
+//                 </div>
+
+//                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
+//                   <DropList
+//                     key={'id5 contacts'}
+//                     extraClass={`${styles.extra__mobile__list}`}
+//                     direction='bottom'
+//                     gap='20'
+//                     positionIsAbsolute={false}
+//                     trigger='hover'
+//                     title={t('contacts')}
+//                     items={[
+//                       <div key={1} className={styles.header__top_item}>
+//                         <a
+//                           style={{width: '100%'}}
+//                           className={styles.header__top_link}
+//                           href={emailUrl}
+//                           itemProp='sameAs'
+//                         >
+//                           <Image
+//                             style={{marginRight: '5px'}}
+//                             className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
+//                             width={24}
+//                             height={24}
+//                             src={emailImage}
+//                             alt='Email'
+//                           />
+//                           {process.env.NEXT_PUBLIC_INSTA || 'Exporteru'}
+//                         </a>
+//                       </div>,
+//                       <div key={id + 'telegram'} className={styles.header__top_item}>
+//                         <Link
+//                           className={styles.header__top_link}
+//                           href={telegramUrl}
+//                           target='_blank'
+//                           rel='noopener noreferrer'
+//                           itemProp='sameAs'
+//                         >
+//                           <Image
+//                             className={`${styles.header__top_image} ${styles.header__top_image_telegram}`}
+//                             width={24}
+//                             height={24}
+//                             src={telegram}
+//                             alt='Telegram'
+//                           />
+//                           {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
+//                         </Link>
+//                       </div>,
+//                       <div key={id + 'telephone'} className={styles.header__top_item}>
+//                         <Link
+//                           className={styles.header__top_link}
+//                           href={telephoneUrl}
+//                           target='_blank'
+//                           rel='noopener noreferrer'
+//                           itemProp='telephone'
+//                         >
+//                           <Image
+//                             className={`${styles.header__top_image} ${styles.header__top_image_telephone}`}
+//                             width={24}
+//                             height={24}
+//                             src={telephone}
+//                             alt='Телефон'
+//                           />
+//                           {telephoneText}
+//                         </Link>
+//                       </div>
+//                     ]}
+//                   />
+//                 </li>
+
+//                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
+//                   <Link href='/about-us' itemProp='url'>
+//                     <span itemProp='name'>{t('about')}</span>
+//                   </Link>
+//                 </li>
+
+//                 <li className={`${styles.bottom__list_item} ${styles.spec__bottom_el}`}>
+//                   <Link href='/help' itemProp='url'>
+//                     <span itemProp='name'>{t('help')}</span>
+//                   </Link>
+//                 </li>
+
+//                 <li className={`${styles.drop__bottom_list}`}>
+//                   <DropList
+//                     extraClass={`${styles.extra__bottom__header__list}`}
+//                     trigger='hover'
+//                     positionIsAbsolute={false}
+//                     title={t('more')}
+//                     items={[
+//                       <div key={'id3 about'} className={`${styles.bottom__list_item}`}>
+//                         <Link href='/about-us'>{t('about')}</Link>
+//                       </div>,
+//                       <div key={'id4 help'} className={`${styles.bottom__list_item}`}>
+//                         <Link href='/help'>{t('help')}</Link>
+//                       </div>,
+//                       <DropList
+//                         key={'id5 contacts'}
+//                         extraClass={`${styles.extra__mobile__list}`}
+//                         direction='bottom'
+//                         gap='20'
+//                         safeAreaEnabled
+//                         trigger='hover'
+//                         title={t('contacts')}
+//                         items={[
+//                           <div key={1} className={styles.header__top_item}>
+//                             <a
+//                               style={{width: '100%'}}
+//                               className={styles.header__top_link}
+//                               href={emailUrl}
+//                               // target='_blank'
+//                               // rel='noopener noreferrer'
+//                               itemProp='sameAs'
+//                             >
+//                               <Image
+//                                 style={{marginRight: '5px'}}
+//                                 className={`${styles.header__top_image} ${styles.header__top_image_insta}`}
+//                                 width={24}
+//                                 height={24}
+//                                 src={emailImage}
+//                                 alt='Email'
+//                               />
+//                               {process.env.NEXT_PUBLIC_EMAIL || 'Exporteru'}
+//                             </a>
+//                           </div>,
+//                           <div key={id + 'telegram second'} className={styles.header__top_item}>
+//                             <Link
+//                               className={styles.header__top_link}
+//                               href={telegramUrl}
+//                               target='_blank'
+//                               rel='noopener noreferrer'
+//                               itemProp='sameAs'
+//                             >
+//                               <Image
+//                                 className={`${styles.header__top_image} ${styles.header__top_image_telegram}`}
+//                                 width={24}
+//                                 height={24}
+//                                 src={telegram}
+//                                 alt='Telegram'
+//                               />
+//                               {process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}
+//                             </Link>
+//                           </div>,
+//                           <div key={id + 'telephone second'} className={styles.header__top_item}>
+//                             <Link
+//                               className={styles.header__top_link}
+//                               href={telephoneUrl}
+//                               target='_blank'
+//                               rel='noopener noreferrer'
+//                               itemProp='telephone'
+//                             >
+//                               <Image
+//                                 className={`${styles.header__top_image} ${styles.header__top_image_telephone}`}
+//                                 width={24}
+//                                 height={24}
+//                                 src={telephone}
+//                                 alt='Телефон'
+//                               />
+//                               {telephoneText}
+//                             </Link>
+//                           </div>
+//                         ]}
+//                       />
+//                     ]}
+//                   />
+//                 </li>
+
+//                 <li className={`${styles.drop__bottom_list}`}>
+//                   <DropList
+//                     closeOnMouseLeave={true}
+//                     extraStyle={{zIndex: '99999'}}
+//                     color='white'
+//                     title={isPending ? `${activeLanguage}` : activeLanguage}
+//                     gap='5'
+//                     safeAreaEnabled={true}
+//                     positionIsAbsolute={false}
+//                     items={languageDropdownItems}
+//                     trigger='hover'
+//                   />
+//                 </li>
+//               </ul>
+//             </div>
+//           </nav>
+//         )}
+
+//         {categoryListIsOpen && (
+//           <div
+//             style={{
+//               position: 'absolute',
+//               width: '100vw',
+//               top: fullHeaderRef.current?.offsetHeight,
+//               minHeight: 'fit-content',
+//               height: `calc(80vh - ${fullHeaderRef.current?.offsetHeight}px)`,
+//               background: '#FFF',
+//               left: '0',
+//               zIndex: '1000000000000000'
+//             }}
+//             ref={categoryListRefDesktop}
+//             className={`${styles.category__list__bottom__desktop}`}
+//           >
+//             <div className='container'>
+//               <CategoryesMenuDesktop
+//                 categories={categoriesList}
+//                 setCategoryListIsOpen={setCategoryListIsOpen}
+//                 isOpen={categoryListIsOpen}
+//                 onToggle={handleToggleCategories}
+//               />
+//             </div>
+//           </div>
+//         )}
+//       </header>
+//     </div>
+//   )
+// }
+
+// export default Header

@@ -12,16 +12,15 @@ interface ICategoryesMenuDesktopProps {
   onToggle?: () => void
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ValuesItem: FC<Category & {parentPath: string}> = ({children, name, slug, parentPath}) => {
-  return (
-    <div className={`${styles.subtitles__box__item}`}>
-      <Link href={`/categories/${parentPath}/${slug}`}>
-        <p className={`${styles.subtitles__box__item__title}`}>{name}</p>
-      </Link>
-    </div>
-  )
-}
+// const ValuesItem: FC<Category & {parentPath: string}> = ({children, name, slug, parentPath}) => {
+//   return (
+//     <div className={`${styles.subtitles__box__item}`}>
+//       <Link href={`/categories/${parentPath}/${slug}`}>
+//         <p className={`${styles.subtitles__box__item__title}`}>{name}</p>
+//       </Link>
+//     </div>
+//   )
+// }
 
 type MenuLevel = 'main' | 'subcategory' | 'subsubcategory'
 
@@ -33,9 +32,8 @@ interface BreadcrumbItem {
 const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
   categories,
   setCategoryListIsOpen,
-  isOpen = true,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onToggle
+  isOpen = true
+  // onToggle
 }) => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeSlug, setActiveSlug] = useState<string | null>(null)
@@ -48,7 +46,6 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
   const menuRef = useRef<HTMLDivElement>(null)
   const t = useTranslations('CategoryMenu')
 
-  // Инициализация первой категории при загрузке
   useEffect(() => {
     if (categories && categories.length > 0 && !activeCategory) {
       setActiveCategory(categories[0].name)
@@ -67,13 +64,11 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
     return () => window.removeEventListener('resize', checkWidth)
   }, [])
 
-  // Обработчик клика вне меню для мобильных устройств
   useEffect(() => {
     if (isMobile && isMenuOpen) {
       const handleClickOutside = (event: MouseEvent) => {
         const target = event.target as HTMLElement
 
-        // Проверяем, что клик НЕ по стрелочке
         const isArrowClick =
           target.classList.contains('mobile_menu_item_arrow') ||
           target.closest('.mobile_menu_item_arrow') !== null ||
@@ -82,14 +77,11 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
           target.closest('.back_button') !== null ||
           target.className.includes('back_button')
 
-        console.log('isArrowClick:', isArrowClick, 'target classes:', target.className)
-
         if (menuRef.current && !menuRef.current.contains(target) && !isArrowClick) {
           handleCloseMenu()
         }
       }
 
-      // Добавляем небольшую задержку чтобы избежать конфликта с открытием меню
       setTimeout(() => {
         document.addEventListener('click', handleClickOutside)
       }, 100)
@@ -98,32 +90,25 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
     }
   }, [isMobile, isMenuOpen])
 
-  // Обработчик для десктопа - реагируем на изменение isOpen
   useEffect(() => {
     if (!isMobile && isOpen !== undefined) {
-      // Если меню закрывается извне, сбрасываем активную категорию
       if (!isOpen) {
-        // Можно оставить последнюю выбранную категорию
-        // или сбросить на первую при следующем открытии
+        // Menu closed
       }
     }
   }, [isOpen, isMobile])
 
   const handleCategoryClick = (category: Category) => {
-    // Если у категории нет детей, переходим по ссылке
     if (!category.children || category.children.length === 0) {
       window.location.href = `/categories/${category.slug}`
       return
     }
     setSelectedCategory(category)
     setMenuLevel('subcategory')
-    console.log('go to subcategory')
-    console.log('selectedCategory', selectedCategory, 'category', category)
     setBreadcrumbs([{name: category.name, level: 'main'}])
   }
 
   const handleSubcategoryClick = (subcategory: Category) => {
-    // Если у подкатегории нет детей, переходим по ссылке
     if (!subcategory.children || subcategory.children.length === 0) {
       window.location.href = `/categories/${selectedCategory?.slug}/${subcategory.slug}`
       return
@@ -148,23 +133,16 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
   const handleCloseMenu = () => {
     if (isMobile) {
       setIsMenuOpen(false)
-
       setMenuLevel('main')
       setSelectedCategory(null)
       setSelectedSubcategory(null)
       setBreadcrumbs([])
       setCategoryListIsOpen(false)
-      // Задержка для плавной анимации закрытия
     } else {
       setCategoryListIsOpen(false)
     }
   }
 
-  // const handleOpenMenu = () => {
-  //   setIsMenuOpen(true)
-  // }
-
-  // Hover handlers для десктопа
   const handleCategoryHover = (categoryName: string, categorySlug: string) => {
     if (!isMobile) {
       setActiveCategory(categoryName)
@@ -172,16 +150,14 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
     }
   }
 
-  // Проверка наличия категорий
   if (!categories || categories.length === 0) {
     return (
-      <div className={styles.menu__box}>
+      <div className={styles.exp_catalog__menu}>
         <p className={styles.no_categories}>{t('isEmptyAll')}</p>
       </div>
     )
   }
 
-  // Мобильная версия
   if (isMobile) {
     return (
       <div className={styles.mobile_menu} ref={menuRef}>
@@ -223,16 +199,17 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                 >
                   <span>{category.name}</span>
                 </Link>
-                <button
-                  className={styles.mobile_menu_item_arrow}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    console.log('Clicked category:', category.name, 'Children:', category.children)
-                    handleCategoryClick(category)
-                  }}
-                >
-                  →
-                </button>
+                {category.children && category.children.length > 0 && (
+                  <button
+                    className={styles.mobile_menu_item_arrow}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleCategoryClick(category)
+                    }}
+                  >
+                    →
+                  </button>
+                )}
               </li>
             ))}
 
@@ -248,16 +225,17 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                 >
                   <span>{subcategory.name}</span>
                 </Link>
-                <button
-                  className={styles.mobile_menu_item_arrow}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    console.log('Clicked subcategory:', subcategory.name, 'Children:', subcategory.children)
-                    handleSubcategoryClick(subcategory)
-                  }}
-                >
-                  →
-                </button>
+                {subcategory.children && subcategory.children.length > 0 && (
+                  <button
+                    className={styles.mobile_menu_item_arrow}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleSubcategoryClick(subcategory)
+                    }}
+                  >
+                    →
+                  </button>
+                )}
               </li>
             ))}
 
@@ -298,62 +276,63 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
   }
 
   return (
-    <div className={`${styles.menu__box}`}>
-      <ul id='cy-category-list-box' className={`${styles.titles__box}`}>
-        {categories?.map((el) => {
-          return (
-            <li
-              className={`${styles.titles__box__item} ${activeCategory === el.name ? styles.titles__box__item__active : ''}`}
-              onMouseEnter={() => handleCategoryHover(el.name, el.slug)}
-              key={el.id}
-            >
-              <Link
-                id='cy-category-list-item-title'
-                href={`/categories/${el.slug}`}
-                style={{width: '100%'}}
-                onClick={() => {
-                  // Если у категории есть дети, предотвращаем переход по ссылке при клике
-                  if (el.children && el.children.length > 0) {
-                    // e.preventDefault()
-                    handleCategoryHover(el.name, el.slug)
-                  }
-                }}
-              >
-                <div style={{width: '100%'}}>{el.name}</div>
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
-      {activeCategory && activeSlug && (
-        <span className={`${styles.span__subtitles__box}`}>
-          <Link href={`/categories/${activeSlug}`}>
-            <div className={`${styles.subtitles__title}`}>{activeCategory}</div>
-          </Link>
-          <ul id='cy-subcategory-list-box' className={`${styles.subtitles__box}`}>
-            {categories
-              ?.filter((el) => el.name === activeCategory)
-              ?.map((el) => {
-                return el.children && el.children.length > 0 ? (
-                  el.children
-                    .slice()
-                    .sort((a, b) => a.name.length - b.name.length)
-                    .map((child) => {
+    <div className={`${styles.exp_catalog__menu}`}>
+      <nav className={`${styles.exp_catalog__sidebar}`}>
+        <div className={`${styles.exp_catalog__catwrapper}`}>
+          <ul className={`${styles.exp_catalog__cat}`}>
+            {categories?.map((el) => {
+              return (
+                <li
+                  className={`${styles.exp_catalog__cat_item} ${activeCategory === el.name ? styles.active : ''}`}
+                  onMouseEnter={() => handleCategoryHover(el.name, el.slug)}
+                  key={el.id}
+                >
+                  <Link href={`/categories/${el.slug}`} className={`${styles.exp_catalog__cat_link}`}>
+                    <span>{el.name}</span>
+                  </Link>
+                  <span className={`${styles.exp_catalog__cat_arrow}`}></span>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      </nav>
+
+      <div className={`${styles.exp_catalog__content}`}>
+        {activeCategory && activeSlug && (
+          <div className={`${styles.exp_catalog__subcats} ${styles.active}`}>
+            <div className={`${styles.exp_catalog__subcats_header}`}>
+              <h2 className={`${styles.exp_catalog__subcats_title}`}>
+                <Link href={`/categories/${activeSlug}`}>{activeCategory}</Link>
+              </h2>
+            </div>
+            <ul className={`${styles.exp_catalog__subcats_list}`}>
+              {categories
+                ?.filter((el) => el.name === activeCategory)
+                ?.map((el) => {
+                  return el.children && el.children.length > 0 ? (
+                    el.children.map((child) => {
                       return (
-                        <li id='cy-subcategory-list-item' key={child.id}>
-                          <ValuesItem key={child.id} {...child} parentPath={el.slug} />
+                        <li key={child.id}>
+                          <Link
+                            href={`/categories/${el.slug}/${child.slug}`}
+                            className={`${styles.exp_catalog__subcats_link}`}
+                          >
+                            {child.name}
+                          </Link>
                         </li>
                       )
                     })
-                ) : (
-                  <li key={`empty-${el.id}`} className={styles.empty_category}>
-                    <p>{t('subCategoryEmpty')}</p>
-                  </li>
-                )
-              })}
-          </ul>
-        </span>
-      )}
+                  ) : (
+                    <li key={`empty-${el.id}`} className={styles.empty_category}>
+                      <p>{t('subCategoryEmpty')}</p>
+                    </li>
+                  )
+                })}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
