@@ -1,13 +1,8 @@
-.cardsCatalog__box {
-  display: grid;
-  width: 100%;
-  padding-bottom: 100px;
+@import '@/scss/config/mixins';
 
-  /* Максимальная высота строки */
-  gap: 22px;
-  grid-auto-rows: minmax(412px, min-content);
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  place-items: center;
+.cardsCatalog__box {
+  position: relative;
+  flex: 1 1 auto;
 }
 
 .dropList__box__extra__index {
@@ -83,5 +78,182 @@
     gap: 10px;
     grid-auto-rows: auto;
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) !important;
+  }
+}
+
+// Популярные товары
+.popularprod {
+  color: var(--text);
+}
+
+@media (max-width: 576px) {
+  .popularprod.section {
+    padding-block-start: 1.875rem;
+  }
+}
+
+.popularprod .section_flexheader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.875rem;
+}
+
+@media (max-width: 576px) {
+  .popularprod .section_flexheader {
+    padding-block-end: 2.1875rem;
+  }
+}
+
+.section_flexheader__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.popularprod__header_group {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media (max-width: 576px) {
+  .popularprod__header_group {
+    flex-grow: 0;
+    gap: 0.875rem;
+  }
+
+  .popularprod__header_group .btn_accent {
+    width: 100%;
+  }
+}
+
+.popularprod__navigation_wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+// Убираем overflow у слайдера
+.popularprod .swiper_wrapper {
+  overflow: visible !important;
+  gap: 24px;
+}
+
+.popularprod .swiper {
+  overflow: visible !important;
+}
+
+@media (max-width: 768px) {
+  .popularprod__sm_navigation {
+    margin-top: 2.1875rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .popularprod__sm_navigation {
+    margin-top: 1.75rem;
+  }
+}
+
+.btn_accent {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  border-radius: 0;
+  background-color: var(--accent);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 122%;
+  padding-inline: 46px;
+  text-decoration: none;
+  transition: var(--transition);
+
+  &--max493 {
+    display: flex;
+    width: 100%;
+    max-width: 493px;
+    min-height: 53px;
+    justify-content: center;
+    margin-top: 20px;
+    font-size: 18px;
+    margin-inline: auto;
+
+    @include md {
+      width: 100%;
+      min-width: initial;
+    }
+  }
+
+  &:hover {
+    filter: var(--filter);
+  }
+
+  @include sm {
+    display: flex;
+    min-height: 45px;
+    justify-content: center;
+    font-size: 14px;
+  }
+}
+
+// Стили для слайда с сеткой карточек
+.slider__slide {
+  display: grid !important;
+  min-width: 100%;
+  min-height: 0;
+  padding: 10px 0;
+  gap: 22px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+
+  @media (max-width: 850px) {
+    grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+  }
+
+  @media (max-width: 500px) {
+    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+}
+
+// Стрелки навигации
+.arrow {
+  position: relative;
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #f5f6f7;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: #e6e5e5;
+  }
+
+  &::after {
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid #333;
+    border-bottom: 2px solid #333;
+    content: '';
+  }
+
+  &_left::after {
+    margin-left: 3px;
+    transform: rotate(135deg);
+  }
+
+  &_right::after {
+    margin-right: 3px;
+    transform: rotate(-45deg);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 }

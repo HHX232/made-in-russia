@@ -347,7 +347,7 @@ const Card = memo<ICardProps>(
 
                 {+discount > 0 && <div className={`${styles.product_card__discount}`}>-{discount}%</div>}
 
-                <div data-likeID={fullProduct.id} className={`${styles.product_card__like}`}>
+                <div className={`${styles.product_card__like}`}>
                   <button
                     className={`${styles.product_card__like} ${isInFavorite ? styles.active : ''}`}
                     onClick={(e: React.MouseEvent<HTMLButtonElement>) => {

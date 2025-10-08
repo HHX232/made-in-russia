@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import {FC, useEffect, useState, useRef, useCallback} from 'react'
+import {FC, useEffect, useState, useRef, useCallback, useMemo} from 'react'
 import styled from './CardsCatalog.module.scss'
 import Card from '@/components/UI-kit/elements/card/card'
 import {useProducts} from '@/hooks/useProducts'
@@ -10,10 +10,9 @@ import {useSelector} from 'react-redux'
 import {TypeRootState} from '@/store/store'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useActions} from '@/hooks/useActions'
-import Link from 'next/link'
-import {useTranslations} from 'next-intl'
 import {getAccessToken} from '@/services/auth/auth.helper'
-import DropList from '@/components/UI-kit/Texts/DropList/DropList'
+import {useKeenSlider} from 'keen-slider/react'
+import Link from 'next/link'
 
 interface CardsCatalogProps {
   initialProducts?: Product[]
@@ -26,6 +25,7 @@ interface CardsCatalogProps {
   direction?: 'asc' | 'desc'
   isForAdmin?: boolean
 }
+
 interface PageParams {
   page: number
   size: number
@@ -35,9 +35,14 @@ interface PageParams {
   title?: string
   approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL' | ''
   direction?: 'asc' | 'desc'
-
+  deliveryMethodIds?: string
+  sort?: string
   [key: string]: any
 }
+
+// Константы
+const SLIDER_PAGE_SIZE = 6
+const INITIAL_PAGE_SIZE = 10
 
 const CardsCatalog: FC<CardsCatalogProps> = ({
   initialProducts = [],
@@ -50,72 +55,87 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   direction = 'desc',
   approveStatuses = 'ALL'
 }) => {
+  // Селекторы и состояния
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
-
-  // Используем Set для хранения ID товаров и отдельный массив для отображения
-  const [productIds, setProductIds] = useState<Set<number>>(new Set())
-  const [hasMore, setHasMore] = useState(initialHasMore)
-  const observerRef = useRef<IntersectionObserver | null>(null)
-  const lastProductRef = useRef<HTMLDivElement | null>(null)
-  const [numericFilters, setNumericFilters] = useState<number[]>([])
   const {addToLatestViews} = useActions()
   const accessToken = getAccessToken()
+
+  // Состояния
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [productIds, setProductIds] = useState<Set<number>>(new Set())
+  const [hasMore, setHasMore] = useState(initialHasMore)
+  const [numericFilters, setNumericFilters] = useState<number[]>([])
+  const [isSliderInitialized, setIsSliderInitialized] = useState(false)
+
+  // Refs
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const lastProductRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Параметры пагинации
   const [pageParams, setPageParams] = useState<PageParams>({
-    page: 0, // Всегда начинаем с 0
-    size: 10,
+    page: 0,
+    size: INITIAL_PAGE_SIZE,
     minPrice: priceRange?.min,
     maxPrice: priceRange?.max,
-    deliveryMethodIds: delivery?.join(',') ? delivery?.join(',') : '',
+    deliveryMethodIds: delivery?.join(',') || '',
     title: searchTitle,
     sort: 'creationDate',
-    direction: direction || 'asc',
+    direction: direction,
     approveStatuses: approveStatuses === 'ALL' ? '' : approveStatuses
   })
 
-  const t = useTranslations('HomePage')
+  // Загрузка продуктов
+  const {
+    data: pageResponse,
+    isLoading,
+    isError,
+    isFetching,
+    resData
+  } = useProducts(pageParams, () => setPageParams((prev) => ({...prev, page: 0})), specialRoute, accessToken || '')
 
-  // Функция для добавления товаров с использованием Set
-  const addProducts = (newProducts: Product[], replace: boolean = false) => {
-    if (replace) {
-      // Заменяем все товары
-      const newIds = new Set(newProducts.map((p) => p.id))
-      setProductIds(newIds)
-    } else {
-      // Добавляем только уникальные товары
-      const currentIds = productIds
-      const uniqueProducts = newProducts.filter((product) => !currentIds.has(product.id))
+  // Мемоизированные данные
+  const showSkeleton = useMemo(() => isLoading && resData.length === 0, [isLoading, resData.length])
 
-      if (uniqueProducts.length > 0) {
-        const newIds = new Set([...currentIds, ...uniqueProducts.map((p) => p.id)])
-        setProductIds(newIds)
+  // Обработка продуктов
+  const addProducts = useCallback((newProducts: Product[], replace: boolean = false) => {
+    setProductIds((prev) => {
+      if (replace) {
+        return new Set(newProducts.map((p) => p.id))
+      } else {
+        const newIds = new Set(prev)
+        newProducts.forEach((product) => {
+          if (!newIds.has(product.id)) {
+            newIds.add(product.id)
+          }
+        })
+        return newIds
       }
-    }
-  }
+    })
+  }, [])
 
-  // Инициализация с initialProducts
+  // Инициализация начальных продуктов
   useEffect(() => {
     if (initialProducts.length > 0) {
       addProducts(initialProducts, true)
-      // Устанавливаем следующую страницу для пагинации
       setPageParams((prev) => ({
         ...prev,
         page: 1
       }))
     }
-  }, []) // Выполняется только один раз при монтировании
+  }, [initialProducts, addProducts])
 
+  // Обработка числовых фильтров
   useEffect(() => {
     const numericKeys = Object.keys(selectedFilters)
       .filter((key) => !isNaN(Number(key)))
       .map(Number)
-
     setNumericFilters(numericKeys)
   }, [selectedFilters])
 
-  // useEffect для searchTitle
+  // Сброс при изменении поискового запроса
   useEffect(() => {
-    // Очищаем все товары при изменении поискового запроса
     setProductIds(new Set())
     setPageParams((prev) => ({
       ...prev,
@@ -124,11 +144,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }))
   }, [searchTitle])
 
-  // useEffect для остальных фильтров (исключая admin-специфичные параметры)
+  // Сброс при изменении фильтров
   useEffect(() => {
-    // Очищаем все товары при изменении фильтров
     setProductIds(new Set())
-
     setPageParams((prev) => {
       const newParams: PageParams = {
         ...prev,
@@ -141,19 +159,16 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       if (numericFilters.length > 0) {
         newParams.categoryIds = numericFilters.join(',')
       } else {
-        if ('categoryIds' in newParams) {
-          delete newParams.categoryIds
-        }
+        delete newParams.categoryIds
       }
 
       return newParams
     })
   }, [numericFilters, priceRange, delivery])
 
-  // Отдельный useEffect для admin-специфичных параметров
+  // Сброс для админки при изменении статусов
   useEffect(() => {
     if (isForAdmin) {
-      // Очищаем товары при изменении admin параметров
       setProductIds(new Set())
       setPageParams((prev) => ({
         ...prev,
@@ -163,10 +178,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }
   }, [approveStatuses, isForAdmin])
 
-  // Отдельный useEffect для direction
+  // Сброс для админки при изменении направления
   useEffect(() => {
     if (isForAdmin) {
-      // Очищаем товары при изменении направления сортировки
       setProductIds(new Set())
       setPageParams((prev) => ({
         ...prev,
@@ -176,35 +190,19 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }
   }, [direction, isForAdmin])
 
-  const {
-    data: pageResponse,
-    isLoading,
-    isError,
-    isFetching,
-    resData
-  } = useProducts(pageParams, () => setPageParams({...pageParams, page: 0}), specialRoute, accessToken || '')
-
-  const showSkeleton = isLoading && resData.length === 0
-
-  useEffect(() => {
-    console.log('resData', resData)
-  }, [resData])
-
-  // Основной useEffect для обработки ответов API
+  // Обработка ответа от API
   useEffect(() => {
     if (pageResponse) {
       if (pageParams.page === 0) {
-        // Если это первая страница - заменяем
         addProducts(pageResponse.content, true)
       } else {
-        // Иначе добавляем к существующим
         addProducts(pageResponse.content, false)
       }
-
       setHasMore(!pageResponse.last && pageResponse.content.length > 0)
     }
-  }, [pageResponse])
+  }, [pageResponse, pageParams.page, addProducts])
 
+  // Infinite Scroll
   const lastElementRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (showSkeleton) return
@@ -231,193 +229,197 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     [showSkeleton, hasMore, isFetching]
   )
 
+  // Разделение данных на страницы для слайдера
+  const pages = useMemo(() => {
+    const result: Product[][] = []
+    let pageIndex = 0
+
+    resData.forEach((product, index) => {
+      if (index % SLIDER_PAGE_SIZE === 0) {
+        result.push([])
+        if (index !== 0) pageIndex++
+      }
+      result[pageIndex].push(product)
+    })
+
+    return result
+  }, [resData])
+
+  // Конфигурация слайдера
+  const sliderOptions = useMemo(
+    () => ({
+      slides: {
+        perView: 1,
+        spacing: 0
+      },
+      loop: false,
+      mode: 'snap' as const,
+      created: () => {
+        setIsSliderInitialized(true)
+      },
+      updated: () => {
+        setIsSliderInitialized(true)
+      }
+    }),
+    []
+  )
+
+  const [sliderRef, instanceRef] = useKeenSlider(sliderOptions)
+
+  // Принудительное обновление слайдера при изменении данных
+  useEffect(() => {
+    if (instanceRef.current && pages.length > 0) {
+      // Небольшая задержка для гарантии рендера DOM
+      const timer = setTimeout(() => {
+        try {
+          instanceRef.current?.update()
+          setIsSliderInitialized(true)
+        } catch (error) {
+          console.warn('Slider update failed:', error)
+        }
+      }, 100)
+
+      return () => clearTimeout(timer)
+    }
+  }, [pages.length, instanceRef])
+
+  // Обновление слайдера при изменении размера окна
+  useEffect(() => {
+    const handleResize = () => {
+      if (instanceRef.current && isSliderInitialized) {
+        instanceRef.current.update()
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [instanceRef, isSliderInitialized])
+
+  const [currentSlide, setCurrentSlide] = useState(0)
+
+  // Обработчики навигации
+  const handlePrevClick = useCallback(() => {
+    if (instanceRef.current && isSliderInitialized) {
+      instanceRef.current.prev()
+      setCurrentSlide((v) => v - 1)
+    }
+  }, [instanceRef, isSliderInitialized])
+
+  const handleNextClick = useCallback(() => {
+    if (instanceRef.current && isSliderInitialized) {
+      instanceRef.current.next()
+      setCurrentSlide((v) => v + 1)
+    }
+  }, [instanceRef, isSliderInitialized])
+
   if (isError) {
     return <div style={{marginBottom: '50px'}}>Not found</div>
   }
 
   return (
-    <div id='cy-cards-catalog' className={styled.cardsCatalog__box}>
-      {isForAdmin && (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '200px',
-            justifyContent: 'space-evenly',
-            background: 'white',
-            borderRadius: '20px',
-            padding: '10px 30px'
-          }}
-        >
-          <DropList
-            extraClass={styled.dropList__box__extra__index}
-            title={
-              pageParams.approveStatuses === '' || pageParams.approveStatuses === 'ALL'
-                ? 'Все'
-                : pageParams.approveStatuses === 'APPROVED'
-                  ? 'Одобрено'
-                  : 'Ожидает'
-            }
-            items={[
-              <p
-                key='all'
-                onClick={() => {
-                  setPageParams((prev) => {
-                    return {...prev, page: 0, approveStatuses: ''}
-                  })
-                  setProductIds(new Set())
-                }}
-              >
-                Все
-              </p>,
-              <p
-                key='approved'
-                onClick={() => {
-                  setPageParams((prev) => {
-                    return {...prev, page: 0, approveStatuses: 'APPROVED'}
-                  })
-                  setProductIds(new Set())
-                }}
-              >
-                APPROVED
-              </p>,
-              <p
-                key='pending'
-                onClick={() => {
-                  setPageParams((prev) => {
-                    return {...prev, page: 0, approveStatuses: 'PENDING'}
-                  })
-                  setProductIds(new Set())
-                }}
-              >
-                PENDING
-              </p>
-            ]}
-          />
-          <DropList
-            title={pageParams.direction === 'asc' ? 'По возрастанию' : 'По убыванию'}
-            items={[
-              <p
-                onClick={() => {
-                  setPageParams((prev) => {
-                    return {...prev, page: 0, direction: 'desc'}
-                  })
-                  setProductIds(new Set())
-                }}
-                key='desc'
-              >
-                С начала
-              </p>,
-              <p
-                onClick={() => {
-                  setPageParams((prev) => {
-                    return {...prev, page: 0, direction: 'asc'}
-                  })
-                  setProductIds(new Set())
-                }}
-                key='asc'
-              >
-                С конца
-              </p>
-            ]}
-          />
-        </div>
-      )}
-      {canCreateNewProduct && (
-        <Link className={`${styled.cardsCatalog__create__link}`} href='/create-card'>
-          <div className={`${styled.cardsCatalog__create}`}>
-            <div className={`${styled.cardsCatalog__create__image}`}>+</div>
-            <div className={`${styled.cardsCatalog__create__text}`}></div>
-            <div className={`${styled.cardsCatalog__create__text}`}></div>
-            <div className={`${styled.cardsCatalog__create__text}`}></div>
-            <div className={`${styled.cardsCatalog__create__button}`}></div>
+    <section className={`section ${styled.popularprod}`}>
+      <div className='container'>
+        <div className={`${styled.section_flexheader}`}>
+          <div className={`${styled.section_flexheader__title}`}>Популярные товары</div>
+
+          <div className={`${styled.popularprod__header_group}`} id='popularprod-navig-group'>
+            <Link href='#' className={`${styled.btn_accent}`}>
+              Смотреть все
+            </Link>
           </div>
-        </Link>
-      )}
-
-      {!showSkeleton &&
-        resData.map((product, index) => {
-          const uniqueKey = `${product.id}-${index}`
-          if (index === resData.length - 1) {
-            return (
-              <div style={{height: '100%', width: '100%'}} key={uniqueKey} ref={lastElementRef}>
-                <Card
-                  isForAdmin={isForAdmin}
-                  approveStatus={product?.approveStatus}
-                  extraButtonsBoxClass={extraButtonsBoxClass}
-                  onPreventCardClick={onPreventCardClick}
-                  canUpdateProduct={canCreateNewProduct}
-                  isLoading={false}
-                  id={product.id}
-                  title={product.title}
-                  price={product.originalPrice}
-                  discount={product.discount}
-                  previewImageUrl={product.previewImageUrl}
-                  discountedPrice={product.discountedPrice}
-                  deliveryMethod={product.deliveryMethod}
-                  fullProduct={product}
-                  onClickFunction={() => {
-                    addToLatestViews(product)
-                  }}
-                />
-              </div>
-            )
-          } else {
-            return (
-              <Card
-                isForAdmin={isForAdmin}
-                approveStatus={product?.approveStatus}
-                extraButtonsBoxClass={extraButtonsBoxClass}
-                onPreventCardClick={onPreventCardClick}
-                canUpdateProduct={canCreateNewProduct}
-                isLoading={false}
-                key={uniqueKey}
-                id={product.id}
-                title={product.title}
-                price={product.originalPrice}
-                discount={product.discount}
-                previewImageUrl={product.previewImageUrl}
-                discountedPrice={product.discountedPrice}
-                deliveryMethod={product.deliveryMethod}
-                fullProduct={product}
-                onClickFunction={() => {
-                  addToLatestViews(product)
-                }}
-              />
-            )
-          }
-        })}
-
-      {showSkeleton && (
-        <>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((el, i) => {
-            return (
-              <Card
-                isLoading={true}
-                key={`skeleton-${i}`}
-                id={el}
-                title='Загрузка...'
-                price={0}
-                discount={0}
-                previewImageUrl=''
-                discountedPrice={0}
-                deliveryMethod={'Самовывоз' as any}
-                fullProduct={{} as any}
-              />
-            )
-          })}
-        </>
-      )}
-
-      {!showSkeleton && resData.length === 0 && (
-        <div className={styled.cardsCatalog__empty}>
-          <p>{t('noResultsCatalog')}</p>
+          <div className={`${styled.popularprod__navigation_wrap}`}>
+            <div
+              className={`${styled.arrow} ${styled.arrow_left} ${currentSlide === 0 ? styled.arrow_disabled : ''}`}
+              onClick={handlePrevClick}
+              style={{
+                cursor: isSliderInitialized ? 'pointer' : 'not-allowed',
+                opacity: isSliderInitialized ? 1 : 0.5
+              }}
+            ></div>
+            <div
+              className={`${styled.arrow} ${styled.arrow_right} ${currentSlide === pages.length - 1 ? styled.arrow_disabled : ''}`}
+              onClick={handleNextClick}
+              style={{
+                cursor: isSliderInitialized ? 'pointer' : 'not-allowed',
+                opacity: isSliderInitialized ? 1 : 0.5
+              }}
+            ></div>
+          </div>
         </div>
-      )}
-      {isForAdmin && (
-        <button onClick={() => setPageParams((prev) => ({...prev, page: prev.page + 1}))}>Показать еще</button>
-      )}
-    </div>
+
+        <div className={`${styled.swiper}`} id='popularprod-swiper' ref={containerRef}>
+          <div ref={sliderRef} className={`keen-slider ${styled.swiper_wrapper}`}>
+            {pages.map((page, pageIndex) => {
+              const isLastSlide = pageIndex === pages.length - 1
+
+              return (
+                <div
+                  className={`keen-slider__slide ${styled.slider__slide}`}
+                  key={`page-${pageIndex}`}
+                  ref={isLastSlide ? lastElementRef : null}
+                >
+                  {page.map((product, productIndex) => {
+                    const uniqueKey = `${product.id}-${pageIndex}-${productIndex}`
+
+                    return (
+                      <div style={{height: '100%', width: '100%'}} key={uniqueKey}>
+                        <Card
+                          isForAdmin={isForAdmin}
+                          approveStatus={product?.approveStatus}
+                          extraButtonsBoxClass={extraButtonsBoxClass}
+                          onPreventCardClick={onPreventCardClick}
+                          canUpdateProduct={canCreateNewProduct}
+                          isLoading={false}
+                          id={product.id}
+                          title={product.title}
+                          price={product.originalPrice}
+                          discount={product.discount}
+                          previewImageUrl={product.previewImageUrl}
+                          discountedPrice={product.discountedPrice}
+                          deliveryMethod={product.deliveryMethod}
+                          fullProduct={product}
+                          onClickFunction={() => {
+                            addToLatestViews(product)
+                          }}
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })}
+
+            {/* Скелетоны при загрузке */}
+            {showSkeleton && (
+              <div className={`keen-slider__slide ${styled.slider__slide}`}>
+                {Array.from({length: SLIDER_PAGE_SIZE}).map((_, index) => (
+                  <div key={`skeleton-${index}`} style={{height: '100%', width: '100%'}}>
+                    <Card
+                      isForAdmin={isForAdmin}
+                      approveStatus={'PENDING'}
+                      extraButtonsBoxClass={extraButtonsBoxClass}
+                      onPreventCardClick={onPreventCardClick}
+                      canUpdateProduct={canCreateNewProduct}
+                      isLoading={true}
+                      id={-1}
+                      title={''}
+                      price={-1}
+                      discount={-1}
+                      previewImageUrl={''}
+                      discountedPrice={-1}
+                      deliveryMethod={{} as any}
+                      fullProduct={null as any}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className={`${styled.popularprod__sm_navigation}`} id='popularprod-sm-place'></div>
+      </div>
+    </section>
   )
 }
 
