@@ -62,11 +62,12 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const accessToken = getAccessToken()
 
   // Состояния
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [productIds, setProductIds] = useState<Set<number>>(new Set())
+  const [, setProductIds] = useState<Set<number>>(new Set())
   const [hasMore, setHasMore] = useState(initialHasMore)
   const [numericFilters, setNumericFilters] = useState<number[]>([])
   const [isSliderInitialized, setIsSliderInitialized] = useState(false)
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [opacities, setOpacities] = useState<number[]>([])
 
   // Refs
   const observerRef = useRef<IntersectionObserver | null>(null)
@@ -245,31 +246,30 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     return result
   }, [resData])
 
-  // Конфигурация слайдера
-  const sliderOptions = useMemo(
-    () => ({
-      slides: {
-        perView: 1,
-        spacing: 0
-      },
-      loop: false,
-      mode: 'snap' as const,
-      created: () => {
-        setIsSliderInitialized(true)
-      },
-      updated: () => {
-        setIsSliderInitialized(true)
-      }
-    }),
-    []
-  )
-
-  const [sliderRef, instanceRef] = useKeenSlider(sliderOptions)
+  // Конфигурация слайдера с fade эффектом
+  const [sliderRef, instanceRef] = useKeenSlider({
+    slides: {
+      perView: 1,
+      spacing: 0
+    },
+    loop: false,
+    created: (s) => {
+      setIsSliderInitialized(true)
+      const newOpacities = s.track.details.slides.map((slide: any) => slide.portion)
+      setOpacities(newOpacities)
+    },
+    slideChanged: (slider) => {
+      setCurrentSlide(slider.track.details.rel)
+    },
+    detailsChanged: (s) => {
+      const newOpacities = s.track.details.slides.map((slide: any) => slide.portion)
+      setOpacities(newOpacities)
+    }
+  })
 
   // Принудительное обновление слайдера при изменении данных
   useEffect(() => {
     if (instanceRef.current && pages.length > 0) {
-      // Небольшая задержка для гарантии рендера DOM
       const timer = setTimeout(() => {
         try {
           instanceRef.current?.update()
@@ -283,32 +283,16 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }
   }, [pages.length, instanceRef])
 
-  // Обновление слайдера при изменении размера окна
-  useEffect(() => {
-    const handleResize = () => {
-      if (instanceRef.current && isSliderInitialized) {
-        instanceRef.current.update()
-      }
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [instanceRef, isSliderInitialized])
-
-  const [currentSlide, setCurrentSlide] = useState(0)
-
   // Обработчики навигации
   const handlePrevClick = useCallback(() => {
     if (instanceRef.current && isSliderInitialized) {
       instanceRef.current.prev()
-      setCurrentSlide((v) => v - 1)
     }
   }, [instanceRef, isSliderInitialized])
 
   const handleNextClick = useCallback(() => {
     if (instanceRef.current && isSliderInitialized) {
       instanceRef.current.next()
-      setCurrentSlide((v) => v + 1)
     }
   }, [instanceRef, isSliderInitialized])
 
@@ -357,12 +341,15 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
                   className={`keen-slider__slide ${styled.slider__slide}`}
                   key={`page-${pageIndex}`}
                   ref={isLastSlide ? lastElementRef : null}
+                  style={{
+                    opacity: opacities[pageIndex] !== undefined ? opacities[pageIndex] : pageIndex === 0 ? 1 : 0
+                  }}
                 >
                   {page.map((product, productIndex) => {
                     const uniqueKey = `${product.id}-${pageIndex}-${productIndex}`
 
                     return (
-                      <div style={{height: '100%', width: '100%'}} key={uniqueKey}>
+                      <div className={styled.card_wrapper} key={uniqueKey}>
                         <Card
                           isForAdmin={isForAdmin}
                           approveStatus={product?.approveStatus}
@@ -391,9 +378,14 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
             {/* Скелетоны при загрузке */}
             {showSkeleton && (
-              <div className={`keen-slider__slide ${styled.slider__slide}`}>
+              <div
+                className={`keen-slider__slide ${styled.slider__slide}`}
+                style={{
+                  opacity: 1
+                }}
+              >
                 {Array.from({length: SLIDER_PAGE_SIZE}).map((_, index) => (
-                  <div key={`skeleton-${index}`} style={{height: '100%', width: '100%'}}>
+                  <div key={`skeleton-${index}`} className={styled.card_wrapper}>
                     <Card
                       isForAdmin={isForAdmin}
                       approveStatus={'PENDING'}

@@ -83,6 +83,7 @@
 
 // Популярные товары
 .popularprod {
+  width: 100%;
   color: var(--text);
 }
 
@@ -108,6 +109,10 @@
 .section_flexheader__title {
   font-size: 1.5rem;
   font-weight: 600;
+
+  @media (max-width: 576px) {
+    font-size: 1.25rem;
+  }
 }
 
 .popularprod__header_group {
@@ -115,6 +120,11 @@
   flex-grow: 1;
   align-items: center;
   justify-content: space-between;
+
+  @media (max-width: 768px) {
+    flex-grow: 0;
+    gap: 1rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -132,16 +142,101 @@
   display: flex;
   align-items: center;
   gap: 10px;
+
+  @media (max-width: 576px) {
+    gap: 8px;
+  }
 }
 
-// Убираем overflow у слайдера
-.popularprod .swiper_wrapper {
-  overflow: visible !important;
-  gap: 24px;
+// Контейнер слайдера
+.swiper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin-top: 1.5rem;
+
+  @media (max-width: 576px) {
+    margin-top: 1rem;
+  }
 }
 
-.popularprod .swiper {
+// Обертка слайдера
+.swiper_wrapper {
+  position: relative;
   overflow: visible !important;
+  width: 100% !important;
+  min-height: 850px;
+  transform: none !important;
+
+  @media (max-width: 768px) {
+    min-height: 1100px;
+  }
+
+  @media (max-width: 576px) {
+    min-height: 1200px;
+  }
+}
+
+// Стили для слайда с сеткой карточек
+.slider__slide {
+  position: absolute !important;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: grid !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto;
+  padding: 10px 0;
+  gap: 22px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  transform: none !important;
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+
+  @media (max-width: 1200px) {
+    gap: 18px;
+  }
+
+  @media (max-width: 1024px) {
+    gap: 16px;
+  }
+
+  @media (max-width: 850px) {
+    gap: 14px;
+  }
+
+  @media (max-width: 768px) {
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 640px) {
+    gap: 12px;
+  }
+
+  @media (max-width: 500px) {
+    gap: 10px;
+  }
+
+  @media (max-width: 375px) {
+    gap: 8px;
+  }
+}
+
+// Обертка для карточки
+.card_wrapper {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 }
 
 @media (max-width: 768px) {
@@ -160,9 +255,12 @@
   display: inline-flex;
   min-height: 42px;
   align-items: center;
+  justify-content: center;
+  border: none;
   border-radius: 0;
   background-color: var(--accent);
   color: var(--white);
+  cursor: pointer;
   font-size: 15px;
   font-weight: 500;
   line-height: 122%;
@@ -187,7 +285,14 @@
   }
 
   &:hover {
-    filter: var(--filter);
+    background-color: var(--accent-hover);
+    box-shadow: 0 4px 12px rgb(0 71 186 / 30%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    box-shadow: 0 2px 6px rgb(0 71 186 / 30%);
+    transform: translateY(0);
   }
 
   @include sm {
@@ -195,25 +300,7 @@
     min-height: 45px;
     justify-content: center;
     font-size: 14px;
-  }
-}
-
-// Стили для слайда с сеткой карточек
-.slider__slide {
-  display: grid !important;
-  min-width: 100%;
-  min-height: 0;
-  padding: 10px 0;
-  gap: 22px;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-
-  @media (max-width: 850px) {
-    grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
-  }
-
-  @media (max-width: 500px) {
-    gap: 10px;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    padding-inline: 32px;
   }
 }
 
@@ -225,13 +312,20 @@
   height: 40px;
   align-items: center;
   justify-content: center;
+  border: 1px solid transparent;
   border-radius: 50%;
   background-color: #f5f6f7;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 
   &:hover {
+    border-color: #d0d0d0;
     background-color: #e6e5e5;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 
   &::after {
@@ -240,20 +334,268 @@
     border-right: 2px solid #333;
     border-bottom: 2px solid #333;
     content: '';
+    transition: all 0.3s ease;
   }
 
   &_left::after {
-    margin-left: 3px;
+    margin-left: 2px;
     transform: rotate(135deg);
   }
 
   &_right::after {
-    margin-right: 3px;
+    margin-right: 2px;
     transform: rotate(-45deg);
   }
 
-  &:disabled {
+  &_disabled {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.4;
+
+    &:hover {
+      border-color: transparent;
+      background-color: #f5f6f7;
+      transform: none;
+    }
   }
+
+  @media (max-width: 576px) {
+    width: 36px;
+    height: 36px;
+
+    &::after {
+      width: 8px;
+      height: 8px;
+    }
+  }
+}
+
+// Пагинация
+.slider_pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+
+  @media (max-width: 576px) {
+    margin-top: 1rem;
+  }
+}
+
+.pagination_dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination_dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #bdbdbd;
+    transform: scale(1.2);
+  }
+
+  &_active {
+    background-color: var(--accent);
+    transform: scale(1.2);
+
+    &:hover {
+      background-color: var(--accent-hover);
+    }
+  }
+}
+
+// Специфичные стили для скелетонов
+.skeleton_slide {
+  .slider__slide {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// Индикатор загрузки
+.loading_indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 0.9rem;
+
+  &::before {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e6e5e5;
+    border-radius: 50%;
+    border-top: 2px solid var(--accent);
+    margin-right: 8px;
+    animation: spin 1s linear infinite;
+    content: '';
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Сообщение об ошибке
+.error_message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  color: #666;
+  text-align: center;
+
+  &::before {
+    margin-right: 8px;
+    content: '⚠️';
+    font-size: 1.2rem;
+  }
+}
+
+// Адаптивные улучшения
+@media (max-width: 1024px) {
+  .popularprod .section_flexheader {
+    gap: 1.5rem;
+  }
+
+  .section_flexheader__title {
+    font-size: 1.375rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .popularprod .section_flexheader {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .section_flexheader__title {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .popularprod__header_group {
+    width: 100%;
+    justify-content: flex-start;
+    order: 3;
+  }
+
+  .popularprod__navigation_wrap {
+    order: 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .slider__slide {
+    padding: 5px 0;
+  }
+
+  .swiper {
+    min-height: 280px;
+  }
+
+  .btn_accent {
+    min-height: 40px;
+    font-size: 13px;
+    padding-inline: 24px;
+  }
+
+  .pagination_dot {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+// Темная тема поддержка
+@media (prefers-color-scheme: dark) {
+  .arrow {
+    background-color: #2a2a2a;
+
+    &::after {
+      border-color: #fff;
+    }
+
+    &:hover {
+      background-color: #3a3a3a;
+    }
+  }
+
+  .pagination_dot {
+    background-color: #555;
+
+    &:hover {
+      background-color: #777;
+    }
+
+    &_active {
+      background-color: var(--accent);
+    }
+  }
+
+  .cardsCatalog__create {
+    border-color: #3a3a3a;
+    background-color: #2a2a2a;
+
+    &:hover {
+      border-color: #4a4a4a;
+    }
+  }
+
+  .cardsCatalog__create__image,
+  .cardsCatalog__create__text,
+  .cardsCatalog__create__button {
+    background-color: #3a3a3a;
+  }
+}
+
+// Улучшения доступности
+@media (prefers-reduced-motion: reduce) {
+  .slider__slide {
+    transition: opacity 0.1s ease !important;
+  }
+
+  .arrow,
+  .btn_accent {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// Фокус состояния для доступности
+.arrow:focus-visible,
+.pagination_dot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn_accent:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
