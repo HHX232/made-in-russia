@@ -73,9 +73,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 21px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgb(47 47 47 / 20%);
   border-radius: 15px;
-  background: #d9dffb;
+  background: #dedede;
   cursor: pointer;
   transition: border-color 0.2s;
 
@@ -108,7 +108,7 @@
   gap: 4px;
 
   &:hover {
-    background: #ebebeb;
+    background: #dedede;
   }
 }
 
@@ -170,16 +170,16 @@
   transition: background-color 0.2s;
 
   &:hover {
-    border-radius: 10px;
-    background-color: #d9dffb;
+    // border-radius: 10px;
+    background-color: #dedede;
   }
 
   &.optionSelected {
-    border-radius: 10px;
+    // border-radius: 10px;
     background-color: #f0f7ff;
 
     &:hover {
-      background-color: #d9dffb;
+      background-color: #dedede;
     }
   }
 }
@@ -257,7 +257,7 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: #f8f9fa;
+    background-color: #dedede;
   }
 
   &:active {
@@ -275,7 +275,7 @@
     font-weight: 600;
 
     &:hover {
-      background-color: #e3f2fd;
+      background-color: #dedede;
     }
   }
 
@@ -382,7 +382,7 @@
 
 .actionButton {
   padding: 8px 16px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgb(47 47 47 / 20%);
   border-radius: 4px;
   background: transparent;
   color: #666;
@@ -392,7 +392,7 @@
 
   &:hover:not(:disabled) {
     border-color: #d0d0d0;
-    background-color: #f5f5f5;
+    background-color: #dedede;
     color: #333;
   }
 

@@ -316,7 +316,12 @@
 }
 
 .new_search_box {
+  display: none;
   width: 100%;
+
+  @media (max-width: 992px) {
+    display: block;
+  }
 
   @media (max-width: 600px) {
     padding-bottom: 22px;

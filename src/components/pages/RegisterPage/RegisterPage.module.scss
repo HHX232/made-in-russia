@@ -1,93 +1,141 @@
+/* stylelint-disable no-duplicate-selectors */
+
+.login__box {
+  min-height: 100vh;
+}
+
 .login__inner {
   display: flex;
   width: 100%;
-  max-height: min-content;
-  border-radius: 20px;
-  margin: 0 auto;
   margin-top: 40px;
-}
+  gap: 100px;
 
-.extra_extraDropListClass {
-  & > li:hover {
-    background-color: transparent !important;
+  @media (max-width: 1000px) {
+    gap: 50px;
+  }
+
+  @media (max-width: 840px) {
+    max-height: fit-content;
+    flex-direction: column;
+    align-items: center;
+    gap: 70px;
   }
 }
 
+.extraFooter {
+  margin-top: 40px;
+}
+
 .login__form__box {
+  position: relative;
   display: flex;
-  width: 50%;
-  min-height: 640px;
+  width: 54%;
+  max-height: fit-content;
   flex-direction: column;
   align-items: center;
-  padding: 20px 20px 40px;
-  border: 2px solid #2a2e46;
-  border-radius: 0 20px 20px 0;
-  background-color: #fff;
+  padding: 20px 75px;
+  background-color: #f6f6f6;
+
+  @media (max-width: 1200px) {
+    padding: 40px 40px 20px;
+  }
+
+  @media (max-width: 840px) {
+    width: 100%;
+  }
+
+  @media (max-width: 580px) {
+    padding: 30px 15px 20px 30px;
+  }
 }
 
 .decor__image {
-  width: 50%;
-  min-height: 640px;
-  border-radius: 20px 0 0 20px;
-  background-image: url('/login__image.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  width: 44%;
 }
 
-.toggle__action__button {
-  display: block;
-  margin-bottom: 10px;
-  color: #2a2e46;
+// .toggle__action__button {
+//   display: block;
+//   margin-bottom: 10px;
 
-  // margin-left: auto;
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 17px;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
+//   font-size: 14px;
+//   line-height: 17px;
+//   text-decoration: underline;
+//   text-underline-offset: 2px;
+//   color: #2f2f2f;
+//   opacity: .5;
+//   transition: all .2s;
+
+//   &:hover {
+//     opacity: 1;
+//   }
+// }
 
 .top__links {
+  position: absolute;
+  top: 20px;
+  right: 20px;
   display: flex;
   width: 100%;
-  justify-content: space-between;
+  justify-content: end;
 }
 
 .login__title {
-  margin: 0 auto;
-  margin-top: 30px;
-  margin-bottom: 25px;
-  color: #2a2e46;
+  margin: 22px auto 15px;
+  color: #2f2f2f;
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 39px;
-
-  // margin-right: auto;
-  text-align: center;
 }
 
 .inputs__box {
   display: flex;
   width: 100%;
-  max-width: 450px;
-  height: 100%;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
   margin: 0 auto;
-  gap: 30px;
+  gap: 20px;
 }
 
 .form__button {
-  padding: 8px 100px;
-  border: 3px solid #ac2525;
-  border-radius: 10px;
-  margin: auto;
-  color: #2a2e46;
+  width: 100%;
+  padding: 8px 0;
+  border: 3px solid #0047ba;
+  background-color: #0047ba;
+  color: #fff;
   cursor: pointer;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 500;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    border: 3px solid #006bff;
+    background-color: #006bff;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.form__button_register {
+  display: block;
+  width: 100%;
+  padding: 12px 0;
+  border: 3px solid #e1251b !important;
+  margin: 0 auto;
+  background-color: transparent;
+  color: #2f2f2f;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #e1251b;
+    color: #fff;
+  }
 }
 
 .region__item {
@@ -100,8 +148,12 @@
 .drop__box {
   width: 100%;
   padding: 15px;
-  border-radius: 15px;
-  background-color: #d9dffb;
+  border: 2px solid #e0e0e0;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #c0c0c0;
+  }
 }
 
 .extra__drop__list {
@@ -110,72 +162,37 @@
     justify-content: space-between;
 
     & > p {
-      color: #2a2e46;
+      color: #2f2f2f;
     }
   }
 }
 
 .extra__list__style {
+  top: calc(100% + 16px) !important;
   left: -15px !important;
   width: calc(100% + 30px) !important;
+  border: 1px solid #fff !important;
+  border-radius: 0 !important;
+  background-color: #fff !important;
   transform: translateX(0) !important;
 }
 
 .inputs__text_extra {
   width: 100%;
 
-  & > div:nth-child(2) {
-    border: 2px solid transparent !important;
+  & > div:nth-child(1) {
+    margin-bottom: 10px;
   }
-}
-
-.inputs__text_extra__min__height > div:nth-child(2) {
-  min-height: 50px;
-}
-
-.input__title__tel {
-  &::before {
-    display: none !important;
-    content: '';
-  }
-}
-
-.input__title {
-  position: relative;
-  margin-bottom: 10px;
-  color: #2a2e46;
-  font-size: 15px;
-  font-weight: 500;
-
-  &::before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    content: '*';
-    font-size: 20px;
-    transform: translate(-100%, -50%);
-  }
-}
-
-.input__title__without {
-  &::before {
-    display: none !important;
-    content: '' !important;
-  }
-}
-
-.hidden_extra_list {
-  display: none !important;
-}
-
-.show_extra_list {
-  display: block !important;
 }
 
 .inputs__text_extra_2 {
   & > div:nth-child(2) {
     padding: 10px 20px !important;
-    border: 2px solid transparent;
+  }
+
+  & > div:nth-child(3) {
+    margin-top: 4px;
+    color: #2f2f2f;
   }
 }
 
@@ -189,11 +206,10 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-
-  // gap: 10px;
+  gap: 10px;
 
   & > p {
-    margin: 0 15px 10px;
+    margin: 0;
   }
 }
 
@@ -203,12 +219,26 @@
   }
 }
 
-.input__subtitle {
-  margin-top: 19px;
-  margin-bottom: 35px;
-  color: #2a2e46;
+.input__title {
+  position: relative;
+  color: #2f2f2f;
+  font-size: 15px;
+  font-weight: 500;
 }
 
+.input__title__tel {
+  &::before {
+    display: none !important;
+    content: '';
+  }
+}
+
+.policy__checkbox {
+  width: 100%;
+  margin-top: 10px;
+}
+
+// Step-based styles (для старых компонентов)
 .buttons__box {
   display: flex;
   width: 100%;
@@ -220,16 +250,43 @@
 .checked__email {
   display: flex;
   width: 100%;
-  max-width: 405px;
+  max-width: unset;
   align-items: center;
   justify-content: center;
   padding: 10px 20px;
-  border-radius: 10px;
-  background-color: #ac2525;
+  border-radius: 0;
+  background-color: #0047ba;
   color: #fff;
   cursor: pointer;
   font-size: 20px;
   font-weight: 600;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #006bff;
+  }
+}
+
+.button__box__switch {
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  margin-bottom: 40px;
+}
+
+.toggle__action__button {
+  padding: 8px 30px;
+  margin-left: auto;
+  background-color: #dedede;
+  color: #2f2f2fa4;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 18px;
+}
+
+.active__user_button {
+  background-color: #006bff;
+  color: #fff;
 }
 
 .back_step_button {
@@ -237,10 +294,15 @@
   height: 100%;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 0;
   aspect-ratio: 1/1;
-  background-color: #ac2525;
+  background-color: #e1251b;
   cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #c41e1a;
+  }
 }
 
 .inputOtp_section {
@@ -253,15 +315,28 @@
 .otp__text {
   width: 100%;
   max-height: 460px;
-  color: #2a2e46;
+  color: #2f2f2f;
   font-size: 19px;
   font-weight: 500;
   line-height: 24px;
 }
 
+.input__subtitle {
+  margin-top: 19px;
+  margin-bottom: 35px;
+  color: #2f2f2f;
+}
+
 .problem__link {
-  color: #2a2e46;
+  color: #2f2f2f;
   font-size: 14px;
+  opacity: 0.7;
+  text-decoration: underline;
+  transition: all 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 @media (max-width: 1050px) {
@@ -270,9 +345,8 @@
   }
 
   .login__form__box {
-    min-width: 500px;
+    min-width: 400px;
     padding: 30px;
-    border-radius: 20px;
     margin: 0 auto;
   }
 }
@@ -289,184 +363,79 @@
   }
 }
 
-/* Добавить к существующим стилям RegisterPage.module.scss */
-
-/* Стили для экрана выбора типа пользователя */
-.user_type_selection {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+// Стили для мультиселектов категорий
+.extra_extraDropListClass {
+  & > li:hover {
+    background-color: transparent !important;
+  }
 }
 
-.user_type_buttons {
-  display: flex;
-  width: 100%;
-  max-width: 400px;
-  flex-direction: column;
-  margin-top: auto;
-  margin-bottom: auto;
-  gap: 25px;
+// Дополнительный класс для дропдауна регионов/категорий
+.profile__region__dropdown__extra {
+  // Можно добавить специфичные стили если понадобится
 }
 
-.user_type_button {
-  position: relative;
-  display: flex;
-  overflow: hidden;
-  align-items: center;
-  justify-content: center;
-  padding: 25px 30px;
-  border: none;
-  border-radius: 15px;
-  animation: fadeInUp 0.6s ease-out;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  box-shadow: 0 4px 15px rgb(42 46 70 / 10%);
-  color: #2a2e46;
-  cursor: pointer;
-  font-size: 20px;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
+// Для полей без обязательной звездочки (например, адрес)
+.input__title__without {
   &::before {
-    position: absolute;
-    z-index: -1;
-    border: 3px solid transparent;
-    border-radius: 15px;
-    content: '';
-    inset: -3px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    display: none !important;
+    content: '' !important;
   }
+}
 
-  &::after {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgb(220 208 208 / 10%), transparent);
-    content: '';
-    transition: left 0.5s ease;
-  }
+// Обновленный drop__box для белого фона (вместо синего)
+.drop__box {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.2s;
 
   &:hover {
-    box-shadow: 0 8px 25px rgb(42 46 70 / 15%);
-    transform: translateY(-3px);
-
-    &::before {
-      border-color: #cdbaba;
-      opacity: 1;
-    }
-
-    &::after {
-      left: 100%;
-    }
-
-    .button_text {
-      transform: scale(1.05);
-    }
-  }
-
-  &:active {
-    box-shadow: 0 4px 15px rgb(42 46 70 / 20%);
-    transform: translateY(-1px);
+    border-color: #c0c0c0;
   }
 }
 
-.buyer_button {
-  background: linear-gradient(135deg, #4e5479 0%, #4e5479 100%);
-  color: #fff;
-
-  &:hover {
-    background: linear-gradient(135deg, #4e5479 0%, #4e5479 100%);
-
-    &::before {
-      border-color: #2a2e46;
-    }
-  }
+// Обновленные стили для extra__list__style (dropdown список)
+.extra__list__style {
+  top: calc(100% + 16px) !important;
+  left: -15px !important;
+  width: calc(100% + 30px) !important;
+  border: 1px solid #fff !important;
+  border-radius: 0 !important;
+  background-color: #fff !important;
+  transform: translateX(0) !important;
 }
 
-.exporter_button {
-  // color: #4e5479;
-  background: linear-gradient(135deg, #aa2a2a 0%, #aa2a2a 100%);
-  color: #fff;
-
-  &:hover {
-    background: linear-gradient(135deg, #ac2525 0%, #ac2525 100%);
-  }
+// Стили для свитчера (переключатель пользователь/вендор)
+.button__box__switch {
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  margin-bottom: 40px;
 }
 
-.button_text {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.extraDropClass {
+  border-radius: 0 !important;
+  background-color: #f6f6f6 !important;
 }
 
-.login_link_button {
-  display: block;
-  padding: 15px 20px;
-  margin-top: 10px;
-  color: #6c757d;
+.extra_extraDropListClassSecond {
+  border: 1px solid rgb(47 47 47 / 20%) !important;
+  border-radius: 0 !important;
+  background-color: #f6f6f6 !important;
+}
+
+.toggle__action__button {
+  padding: 8px 30px;
+  margin-left: auto;
+  background-color: #dedede;
+  color: #2f2f2fa4;
+  cursor: pointer;
   font-size: 16px;
-  text-align: center;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: #2a2e46;
-  }
+  line-height: 18px;
 }
 
-/* Адаптивность для мобильных устройств */
-@media (max-width: 768px) {
-  .user_type_buttons {
-    max-width: 100%;
-    gap: 20px;
-  }
-
-  .user_type_button {
-    padding: 20px 25px;
-  }
-
-  .button_text {
-    font-size: 18px;
-  }
-}
-
-@media (max-width: 560px) {
-  .user_type_button {
-    padding: 18px 20px;
-  }
-
-  .button_text {
-    font-size: 16px;
-  }
-
-  .login_link_button {
-    font-size: 14px;
-  }
-}
-
-.user_type_button:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.user_type_button:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.active__user_button {
+  background-color: #006bff;
+  color: #fff;
 }

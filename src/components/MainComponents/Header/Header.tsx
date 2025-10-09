@@ -118,7 +118,6 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   const categoryListRefDesktop = useRef<HTMLDivElement>(null)
   const catalogButtonRef = useRef<HTMLButtonElement>(null)
   const fullHeaderRef = useRef<HTMLDivElement>(null)
-  const id = useId()
   const locale = useLocale()
   const categoriesFromHook = useCategories(locale as any)
   const {setCurrentLang} = useActions()
@@ -392,6 +391,9 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
         {categoryListIsOpen && (
           <div
             ref={categoryListRefDesktop}
+            style={{
+              height: `calc(100vh - ${fullHeaderRef?.current?.offsetHeight || 0}px)`
+            }}
             className={`${styles.exp_catalog} ${categoryListIsOpen ? styles.active : ''}`}
           >
             <div className={`container ${styles.exp_catalog__container__class}`}>

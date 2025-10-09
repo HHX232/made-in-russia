@@ -330,7 +330,7 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
             minHeight: 'fit-content',
             // 100vh
             height: `calc(80vh - ${fullHeaderRef.current?.offsetHeight}px)`,
-            background: '#FFF',
+            background: '#0047BA',
 
             left: '0',
             zIndex: '1000000'
@@ -356,7 +356,7 @@ const MinimalHeader = ({categories}: {categories?: Category[]}) => {
                   cursor: 'pointer',
                   fontSize: '24px',
                   padding: '10px',
-                  color: '#333',
+                  color: '#fff',
                   transition: 'opacity 0.2s'
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.7')}

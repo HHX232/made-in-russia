@@ -7,7 +7,6 @@ import {axiosClassic} from '@/api/api.interceptor'
 import {toast} from 'sonner'
 import InputOtp from '@/components/UI-kit/inputs/inputOTP/inputOTP'
 import {saveTokenStorage} from '@/middleware'
-// import { useRouter } from 'next/navigation'
 
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {useTranslations} from 'next-intl'
@@ -99,7 +98,6 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
   }
 
   const handleVerifyCode = async (code: string) => {
-    // Предотвращаем множественные запросы
     if (isLoading) return
 
     setIsLoading(true)
@@ -179,6 +177,7 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
         <TextInputUI
           extraClass={`${styles.inputs__text_extra} ${error && !isValidEmail(email) && email.length > 0 && styles.extra__error__class}`}
           isSecret={false}
+          theme='newGray'
           onSetValue={handleEmailChange}
           currentValue={email}
           placeholder={t('emailPlaceholder')}
@@ -189,6 +188,7 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
         <TextInputUI
           extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2} ${error && styles.extra__error__class}`}
           isSecret={true}
+          theme='newGray'
           onSetValue={handlePasswordChange}
           currentValue={newPassword}
           errorValue={newPassword.length < 6 && newPassword.length !== 0 ? t('passwordMinLength') : ''}

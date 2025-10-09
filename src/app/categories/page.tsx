@@ -1,6 +1,7 @@
 import Footer from '@/components/MainComponents/Footer/Footer'
 import Header from '@/components/MainComponents/Header/Header'
 import MainCategoryPage from '@/components/pages/MainCategoryPage /MainCategoryPage'
+import Catalog from '@/components/screens/Catalog/Catalog'
 import {getCurrentLocale} from '@/lib/locale-detection'
 import CategoriesService from '@/services/categoryes/categoryes.service'
 import {getTranslations} from 'next-intl/server'
@@ -18,6 +19,7 @@ export default async function CategoriesPage() {
     <div>
       <Header />
       <MainCategoryPage categories={categories} />
+      <Catalog initialProducts={[]} initialHasMore />
       <Footer />
     </div>
   )

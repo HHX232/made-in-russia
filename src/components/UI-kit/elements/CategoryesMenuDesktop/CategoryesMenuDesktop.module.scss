@@ -148,9 +148,9 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
 // Правая часть
 .exp_catalog__content {
   position: relative;
+  overflow: hidden auto;
   width: 100%;
   padding: 17px 0 90px 24px;
-  overflow: hidden auto;
 
   &::-webkit-scrollbar {
     inline-size: rem(0);
@@ -247,6 +247,10 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     color: var(--white);
     font-size: 22px;
     font-weight: 600;
+
+    & > a {
+      font-size: 22px;
+    }
 
     a {
       color: var(--white);

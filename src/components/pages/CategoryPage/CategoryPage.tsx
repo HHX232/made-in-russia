@@ -13,6 +13,7 @@ import {usePathname} from 'next/navigation'
 import Link from 'next/link'
 import {useTranslations} from 'next-intl'
 import CategoriesService from '@/services/categoryes/categoryes.service'
+import Image from 'next/image'
 
 const CATEGORYESCONST = [
   {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: '/category/cat1.jpg'},
@@ -42,24 +43,24 @@ const CategoryPage = ({
   companyes?: {name: string; inn: string; ageInYears: string}[]
   language?: 'ru' | 'en' | 'zh'
 }) => {
-  // Проверяем, выполняется ли код на сервере
   const isServer = typeof window === 'undefined'
   const t = useTranslations('CategoryPage')
-  // Инициализируем состояние с переданными категориями для SSR
   const [sortedCategories, setSortedCategories] = useState<Category[]>(categories)
   const [activeFilterId, setActiveFilterId] = useState<number | null>(idOfFilter || null)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [mounted, setMounted] = useState(false)
 
   const listRef = useRef<HTMLUListElement>(null)
-  const itemRefs = useRef<(HTMLLIElement | null)[]>([])
   const pathname = usePathname()
   const {clearFilters, setFilter} = useActions()
   const windowWidth = useWindowWidth()
 
-  // Определяем, какую версию показывать
   const shouldShowDesktop = isServer || (mounted && windowWidth && windowWidth > 900)
   const shouldShowMobile = !isServer && mounted && windowWidth && windowWidth <= 900
+
+  // Определяем, это последний уровень перед товарами или нет
+  const isLastCategoryLevel =
+    level >= 3 && categories.length > 0 && (!categories[0]?.children || categories[0]?.children?.length === 0)
 
   useEffect(() => {
     setMounted(true)
@@ -69,45 +70,12 @@ const CategoryPage = ({
   }, [clearFilters])
 
   useEffect(() => {
-    console.log('start useEffect lang categories')
     const fetchCategoriesNew = async () => {
       const newCategories = await CategoriesService.getById('l1_' + categoryName, language || 'en')
       setSortedCategories(newCategories.children)
-      if (mounted && level === 2 && listRef.current && categories.length > 0) {
-        const timeoutId = setTimeout(() => {
-          const measurements = itemRefs.current
-            .filter((ref) => ref !== null)
-            .map((ref, index) => {
-              if (!ref || !categories[index]) return null
-              const width = ref.getBoundingClientRect().width
-              return {
-                index,
-                width,
-                category: categories[index]
-              }
-            })
-            .filter((item) => item !== null)
-
-          const sorted = measurements.sort((a, b) => {
-            if (!a || !b) return 0
-            return a.width - b.width
-          })
-
-          const newOrder = sorted.map((item) => item?.category).filter((cat): cat is Category => cat !== undefined)
-
-          if (newOrder.length > 0) {
-            setSortedCategories(newOrder)
-          }
-        }, 100)
-
-        return () => clearTimeout(timeoutId)
-      } else if (!mounted) {
-        setSortedCategories(categories)
-      }
     }
     fetchCategoriesNew()
-    console.log('end useEffect lang categories')
-  }, [language])
+  }, [language, categoryName])
 
   useEffect(() => {
     clearFilters()
@@ -119,22 +87,17 @@ const CategoryPage = ({
     }
   }, [clearFilters, idOfFilter, setFilter])
 
-  const categoriesKey = useMemo(() => {
-    return JSON.stringify(categories.map((cat) => cat.id || cat.slug))
-  }, [categories])
-
-  // --- Keen-slider settings для компаний (только на клиенте) ---
   const companiesSlides = useMemo(
     () => (companyes && !isServer ? groupCompaniesIntoSlides(companyes, windowWidth || 1200) : []),
     [companyes, windowWidth, isServer]
   )
   const companiesTimer = useRef<NodeJS.Timeout | null>(null)
 
-  const [companiesSliderRef] = useKeenSlider<HTMLDivElement>(
+  const [companiesSliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
     {
       loop: true,
       mode: 'snap',
-      slides: {perView: 1, spacing: 15}
+      slides: {perView: 1, spacing: 11}
     },
     mounted
       ? [
@@ -154,31 +117,21 @@ const CategoryPage = ({
               }
             }
 
-            slider.on('created', () => {
-              nextTimeout()
-            })
-            slider.on('dragStarted', () => {
-              clearNextTimeout()
-            })
-            slider.on('animationEnded', () => {
-              nextTimeout()
-            })
-            slider.on('updated', () => {
-              nextTimeout()
-            })
-            slider.on('destroyed', () => {
-              clearNextTimeout()
-            })
+            slider.on('created', nextTimeout)
+            slider.on('dragStarted', clearNextTimeout)
+            slider.on('animationEnded', nextTimeout)
+            slider.on('updated', nextTimeout)
+            slider.on('destroyed', clearNextTimeout)
           }
         ]
       : []
   )
 
-  // --- Keen-slider settings для категорий (только на клиенте) ---
+  // Keen slider для последнего уровня категорий
   const slidesPerView = windowWidth && windowWidth < 600 ? 1 : 2
   const timer = useRef<NodeJS.Timeout | null>(null)
 
-  const [categoriesSliderRef, categoriesSliderInstanceRef] = useKeenSlider<HTMLDivElement>(
+  const [lastLevelSliderRef, lastLevelSliderInstanceRef] = useKeenSlider<HTMLDivElement>(
     {
       loop: false,
       mode: 'snap',
@@ -206,36 +159,26 @@ const CategoryPage = ({
               }
             }
 
-            slider.on('created', () => {
-              nextTimeout()
-            })
-            slider.on('dragStarted', () => {
-              clearNextTimeout()
-            })
-            slider.on('animationEnded', () => {
-              nextTimeout()
-            })
-            slider.on('updated', () => {
-              nextTimeout()
-            })
-            slider.on('destroyed', () => {
-              clearNextTimeout()
-            })
+            slider.on('created', nextTimeout)
+            slider.on('dragStarted', clearNextTimeout)
+            slider.on('animationEnded', nextTimeout)
+            slider.on('updated', nextTimeout)
+            slider.on('destroyed', clearNextTimeout)
           }
         ]
       : []
   )
 
   function groupCompaniesIntoSlides(companies: {name: string; inn: string; ageInYears: string}[], windowWidth: number) {
-    let itemsPerSlide = 30
+    let itemsPerSlide = 12
     if (windowWidth <= 480) {
-      itemsPerSlide = 10
+      itemsPerSlide = 5
     } else if (windowWidth <= 600) {
-      itemsPerSlide = 10
+      itemsPerSlide = 5
     } else if (windowWidth <= 900) {
-      itemsPerSlide = 20
+      itemsPerSlide = 5
     } else if (windowWidth <= 1200) {
-      itemsPerSlide = 30
+      itemsPerSlide = 12
     }
 
     const slides = []
@@ -252,42 +195,6 @@ const CategoryPage = ({
     }
     return slides
   }
-
-  // Сортировка категорий только на клиенте после монтирования
-  useEffect(() => {
-    if (mounted && level === 2 && listRef.current && categories.length > 0) {
-      const timeoutId = setTimeout(() => {
-        const measurements = itemRefs.current
-          .filter((ref) => ref !== null)
-          .map((ref, index) => {
-            if (!ref || !categories[index]) return null
-            const width = ref.getBoundingClientRect().width
-            return {
-              index,
-              width,
-              category: categories[index]
-            }
-          })
-          .filter((item) => item !== null)
-
-        const sorted = measurements.sort((a, b) => {
-          if (!a || !b) return 0
-          return a.width - b.width
-        })
-
-        const newOrder = sorted.map((item) => item?.category).filter((cat): cat is Category => cat !== undefined)
-
-        if (newOrder.length > 0) {
-          setSortedCategories(newOrder)
-        }
-      }, 100)
-
-      return () => clearTimeout(timeoutId)
-    } else if (!mounted) {
-      // На сервере используем исходный порядок
-      setSortedCategories(categories)
-    }
-  }, [mounted, level, categoryName, categoriesKey, categories])
 
   const categoriesToDisplay = sortedCategories
 
@@ -316,8 +223,8 @@ const CategoryPage = ({
     }
   }
 
-  const slidesForCategory = groupCategoriesIntoSlides(categoriesToDisplay)
-  const shouldUseSlider = slidesForCategory.length > 1
+  const slidesForLastLevel = groupCategoriesIntoSlides(categoriesToDisplay)
+  const shouldUseSlider = slidesForLastLevel.length > 1
 
   return (
     <div style={{overflowX: 'hidden'}}>
@@ -327,114 +234,149 @@ const CategoryPage = ({
         <BreadCrumbs customItems={breadcrumbs} />
 
         <div className={styles.category__inner}>
-          {level < 4 && (
-            <h1 id='cy-category-page-title' className={styles.category__title__main}>
-              {categoryTitleName
-                ? categoryTitleName.charAt(0).toUpperCase() +
-                  categoryTitleName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')
-                : categoryName.charAt(0).toUpperCase() + categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
-            </h1>
+          <h1 id='cy-category-page-title' className={styles.category__title__main}>
+            {categoryTitleName
+              ? categoryTitleName.charAt(0).toUpperCase() +
+                categoryTitleName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')
+              : categoryName.charAt(0).toUpperCase() + categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
+          </h1>
+
+          {/* Карточки для всех уровней КРОМЕ последнего - Desktop версия */}
+          {!isLastCategoryLevel && categoriesToDisplay.length > 0 && shouldShowDesktop && (
+            <div className={`row ${styles.category__cards__grid}`}>
+              {categoriesToDisplay.map((category, index) => (
+                <div
+                  key={category.id || category.slug}
+                  className={`col-lg-4 col-xl-3 col-12 col-sm-6 ${styles.category__card__col}`}
+                >
+                  <div className={styles.category_in_card}>
+                    {(category.imageUrl || (level === 1 && CATEGORYESCONST[index]?.imageSrc)) && (
+                      <div className={styles.category_in_card__image}>
+                        <Image
+                          src={category.imageUrl || CATEGORYESCONST[index]?.imageSrc || ''}
+                          alt={category.name}
+                          width={302}
+                          height={201}
+                        />
+                      </div>
+                    )}
+                    <div className={styles.category_in_card__content}>
+                      <Link href={buildHref(category)}>
+                        <h3 className={styles.category_in_card__title}>{category.name}</h3>
+                      </Link>
+                      {category.children && category.children.length > 0 && (
+                        <ul className={styles.category_in_card__list}>
+                          {category.children.slice(0, 8).map((child) => (
+                            <li key={child.id || child.slug}>
+                              <Link href={`${buildHref(category)}/${child.slug.toLowerCase()}`}>{child.name}</Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
 
-          {/* Desktop версия - всегда рендерится для SSR */}
-          {level < 3 && categoriesToDisplay.length > 0 && shouldShowDesktop && (
-            <ul
-              ref={listRef}
-              className={`${styles.category__list} ${
-                level === 1 ? styles.category__list__first : ''
-              } ${level > 1 ? styles.category__list__more_than_first : ''} ${level === 2 ? styles.category__list__second : ''}`}
-            >
+          {/* Карточки для всех уровней КРОМЕ последнего - Mobile версия */}
+          {!isLastCategoryLevel && categoriesToDisplay.length > 0 && shouldShowMobile && (
+            <div className={`row ${styles.category__cards__grid}`}>
               {categoriesToDisplay.map((category, index) => (
-                <Link key={category.id || category.slug} href={buildHref(category)}>
-                  <li
-                    style={{
-                      backgroundImage: `
-                          ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-                          url(${
-                            category.imageUrl
-                              ? category.imageUrl
-                              : (!category.imageUrl && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''
-                          })`,
-                      color: level === 1 ? '#FFF' : '#000'
-                    }}
-                    ref={(el) => {
-                      if (level === 2) {
-                        itemRefs.current[index] = el
-                      }
-                    }}
-                    className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${
-                      level === 1 ? styles.category__item__with__image : ''
-                    }`}
-                  >
-                    <p
-                      className={`${styles.category__item__title} ${level === 2 ? styles.category__item__title__second : ''}`}
-                    >
-                      {category.name}
-                    </p>
-                  </li>
-                </Link>
+                <div key={category.id || category.slug} className={`col-12 ${styles.category__card__col}`}>
+                  <div className={styles.category_in_card}>
+                    {(category.imageUrl || (level === 1 && CATEGORYESCONST[index]?.imageSrc)) && (
+                      <div className={styles.category_in_card__image}>
+                        <Image
+                          src={category.imageUrl || CATEGORYESCONST[index]?.imageSrc || ''}
+                          alt={category.name}
+                          width={302}
+                          height={201}
+                        />
+                      </div>
+                    )}
+                    <div className={styles.category_in_card__content}>
+                      <Link href={buildHref(category)}>
+                        <h3 className={styles.category_in_card__title}>{category.name}</h3>
+                      </Link>
+                      {category.children && category.children.length > 0 && (
+                        <ul className={styles.category_in_card__list}>
+                          {category.children.slice(0, 8).map((child) => (
+                            <li key={child.id || child.slug}>
+                              <Link href={`${buildHref(category)}/${child.slug.toLowerCase()}`}>{child.name}</Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Слайдер для ПОСЛЕДНЕГО уровня категорий - Desktop */}
+          {isLastCategoryLevel && categoriesToDisplay.length > 0 && shouldShowDesktop && (
+            <ul ref={listRef} className={`${styles.category__list} ${styles.category__list__last__level}`}>
+              {categoriesToDisplay.map((category) => (
+                <li
+                  key={category.id || category.slug}
+                  onClick={() => handleFilterClick(category)}
+                  style={{
+                    backgroundColor: activeFilterId === category.id ? 'rgba(0, 71, 186, 0.1)' : '#f4f5f6',
+                    cursor: 'pointer'
+                  }}
+                  className={`${styles.category__item} ${styles.category__last__level__item}`}
+                >
+                  <p className={`${styles.category__item__title} ${styles.category__last__level__title}`}>
+                    {category.name}
+                  </p>
+                </li>
               ))}
             </ul>
           )}
 
-          {/* Мобильная версия - только после гидратации */}
-          {level < 3 && categoriesToDisplay.length > 0 && shouldShowMobile && (
+          {/* Слайдер для ПОСЛЕДНЕГО уровня - Mobile */}
+          {isLastCategoryLevel && categoriesToDisplay.length > 0 && shouldShowMobile && (
             <>
               {shouldUseSlider ? (
                 <div className={styles.category__slider__wrapper}>
                   <div
-                    ref={categoriesSliderRef}
-                    className={`${styles.category__slider} category__slider__main ${
-                      level === 1 ? 'category__slider__first' : ''
-                    } keen-slider`}
+                    ref={lastLevelSliderRef}
+                    className={`${styles.category__slider} category__slider__last keen-slider`}
                   >
-                    {slidesForCategory.map((slideCategories, slideIndex) => (
+                    {slidesForLastLevel.map((slideCategories, slideIndex) => (
                       <div key={slideIndex} className={`keen-slider__slide ${styles.category__slide}`}>
                         <div className={styles.category__slide__content}>
-                          {slideCategories.map((category, index) => (
-                            <Link key={category.id || category.slug} href={buildHref(category)}>
-                              <div
-                                style={{
-                                  backgroundImage: `
-                                      ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-                                      url(${
-                                        category.imageUrl
-                                          ? category.imageUrl
-                                          : (!category.imageUrl &&
-                                              level === 1 &&
-                                              CATEGORYESCONST[slideIndex * 2 + index]?.imageSrc) ||
-                                            ''
-                                      })`,
-                                  color: level === 1 ? '#FFF' : '#000'
-                                }}
-                                className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${
-                                  level === 1 ? styles.category__item__with__image : ''
-                                } ${styles.category__item__slider}`}
-                              >
-                                <p
-                                  className={`${styles.category__item__title} ${
-                                    level === 2 ? styles.category__item__title__second : ''
-                                  }`}
-                                >
-                                  {category.name}
-                                </p>
-                              </div>
-                            </Link>
+                          {slideCategories.map((category) => (
+                            <div
+                              key={category.id || category.slug}
+                              onClick={() => handleFilterClick(category)}
+                              style={{
+                                backgroundColor: activeFilterId === category.id ? 'rgba(0, 71, 186, 0.1)' : '#f4f5f6',
+                                cursor: 'pointer'
+                              }}
+                              className={`${styles.category__item} ${styles.category__item__slider} ${styles.category__last__level__item}`}
+                            >
+                              <p className={`${styles.category__item__title} ${styles.category__last__level__title}`}>
+                                {category.name}
+                              </p>
+                            </div>
                           ))}
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  {/* Точки навигации */}
-                  {shouldUseSlider && categoriesSliderInstanceRef.current && (
+                  {shouldUseSlider && lastLevelSliderInstanceRef.current && (
                     <div className={styles.category__dots}>
-                      {slidesForCategory.map((_, idx) => (
+                      {slidesForLastLevel.map((_, idx) => (
                         <button
                           key={idx}
                           className={`${styles.category__dot} ${idx === currentSlide ? styles.category__dot__active : ''}`}
                           onClick={() => {
-                            categoriesSliderInstanceRef.current?.moveToIdx(idx)
+                            lastLevelSliderInstanceRef.current?.moveToIdx(idx)
                             setCurrentSlide(idx)
                           }}
                         />
@@ -443,69 +385,58 @@ const CategoryPage = ({
                   )}
                 </div>
               ) : (
-                // Если слайдов мало, показываем список без слайдера
-                <div
-                  className={`${styles.category__simple__container} ${
-                    level === 1 ? styles.category__simple__container__first : ''
-                  } ${styles.category__simple__container__without__slider}`}
-                >
-                  {categoriesToDisplay.map((category, index) => (
-                    <Link key={category.id || category.slug} href={buildHref(category)}>
-                      <div
-                        style={{
-                          backgroundImage: `
-                              ${level === 1 ? 'linear-gradient(rgba(24, 24, 24, 0.4), rgba(24, 24, 24, 0.4)),' : ''}
-                              url(${
-                                category.imageUrl
-                                  ? category.imageUrl
-                                  : (!category.imageUrl && level === 1 && CATEGORYESCONST[index]?.imageSrc) || ''
-                              })`,
-                          color: level === 1 ? '#FFF' : '#000'
-                        }}
-                        className={`${styles.category__item} ${level === 2 ? styles.category__item__second : ''} ${
-                          level === 1 ? styles.category__item__with__image : ''
-                        } ${styles.category__item__simple}`}
-                      >
-                        <p className={`${styles.category__item__title} ${styles.category__item__title__second}`}>
-                          {category.name}
-                        </p>
-                      </div>
-                    </Link>
+                <ul className={`${styles.category__list} ${styles.category__list__last__level}`}>
+                  {categoriesToDisplay.map((category) => (
+                    <li
+                      key={category.id || category.slug}
+                      onClick={() => handleFilterClick(category)}
+                      style={{
+                        backgroundColor: activeFilterId === category.id ? 'rgba(0, 71, 186, 0.1)' : '#f4f5f6',
+                        cursor: 'pointer'
+                      }}
+                      className={`${styles.category__item} ${styles.category__last__level__item}`}
+                    >
+                      <p className={`${styles.category__item__title} ${styles.category__last__level__title}`}>
+                        {category.name}
+                      </p>
+                    </li>
                   ))}
-                </div>
+                </ul>
               )}
             </>
           )}
 
-          {/* Фильтры для level === 3 */}
-          {level === 3 && categoriesToDisplay.length > 0 && (
-            <ul ref={listRef} className={`${styles.category__list} ${styles.category__list__more_than_first}`}>
-              {categoriesToDisplay.map((category) => (
-                <li
-                  key={category.id || category.slug}
-                  onClick={() => handleFilterClick(category)}
-                  style={{
-                    backgroundColor: activeFilterId === category.id ? 'rgba(255, 182, 193, 0.3)' : 'transparent',
-                    cursor: 'pointer'
-                  }}
-                  className={`${styles.category__item} ${styles.category__item__second}`}
-                >
-                  <p className={`${styles.category__item__title} ${styles.category__item__title__second}`}>
-                    {category.name}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-
           <Catalog isShowFilters={false} initialProducts={[]} initialHasMore={false} />
 
-          {/* Секция компаний - показываем простую версию на сервере, слайдер на клиенте */}
+          {/* Секция компаний */}
           {companyes && companyes.length > 0 && (
-            <div className={styles.companies__section}>
-              <h2 className={styles.companies__title}>{t('companies')}</h2>
+            <div className={`${styles.companies__section} container`}>
+              <div className={styles.navigation__box}>
+                <h2 className={styles.companies__title}>{t('companies')}</h2>
+                <div className={styles.arrows_box}>
+                  <Image
+                    onClick={() => {
+                      instanceRef.current?.prev()
+                    }}
+                    width={24}
+                    height={24}
+                    className={styles.left_arrow}
+                    src='/iconsNew/arrow-right-def.svg'
+                    alt='arrow prev'
+                  />
+                  <Image
+                    onClick={() => {
+                      instanceRef.current?.next()
+                    }}
+                    width={24}
+                    height={24}
+                    className={styles.right_arrow}
+                    src='/iconsNew/arrow-right-def.svg'
+                    alt='arrow next'
+                  />
+                </div>
+              </div>
 
-              {/* Серверная версия - простая сетка */}
               {isServer && (
                 <div className={styles.company__grid}>
                   {companyes.slice(0, 30).map((company, index) => (
@@ -524,7 +455,6 @@ const CategoryPage = ({
                 </div>
               )}
 
-              {/* Клиентская версия - слайдер */}
               {!isServer && mounted && (
                 <div className={styles.companies__slider__wrapper}>
                   <div
@@ -535,15 +465,24 @@ const CategoryPage = ({
                       <div key={slideIndex} className={`keen-slider__slide ${styles.company__slide__item}`}>
                         <div className={styles.company__grid}>
                           {slideCompanies.map((company, index) => (
-                            <div key={company.name + index} className={styles.company__card}>
-                              <div className={styles.company__info}>
-                                <h3 className={styles.company__name}>{company.name}</h3>
-                                <p className={styles.company__inn}>
-                                  {t('inn')}: {company.inn}
-                                </p>
-                                <p className={styles.company__age}>
-                                  {t('experience')}: {company.ageInYears} {t('years')}
-                                </p>
+                            <div key={company.name + company.inn + index} className={styles['companys-card']}>
+                              <div className={styles['companys-card__top']}>
+                                <div className={styles['companys-card__avatar']}>
+                                  <span className={styles['avatar-name']}>
+                                    {(() => {
+                                      const parts = company.name.split('"')
+                                      if (parts.length > 1 && parts[1].trim().length > 0) {
+                                        return parts[1].trim().charAt(0)
+                                      }
+                                      return 'N'
+                                    })()}
+                                  </span>
+                                </div>
+                                <h3 className={styles['companys-card__name']}>{company.name}</h3>
+                              </div>
+                              <div className={styles['companys-card__bottom']}>
+                                <span className={styles['companys-card__inn']}>ИНН: {company.inn}</span>
+                                <span className={styles['companys-card__practice']}>Опыт: {company.ageInYears}</span>
                               </div>
                             </div>
                           ))}

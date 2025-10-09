@@ -1,33 +1,32 @@
 .input__box {
-   display: flex;
-   align-items: center;
-   width: 100%;
-   background-color: #D9DFFB;
-   border-radius: 15px;
-
+  display: flex;
+  width: 100%;
+  align-items: center;
+  border-radius: 0;
+  background-color: #f6f6f6;
 }
 
 .def__input {
-   background-color: transparent;
-   font-size: 15px;
-   border: none;
-   margin-left: 10px;
-   min-height: 46px;
-   width: 90%;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 20px !important;
+  border: none;
+  border: 1px solid rgb(47 47 47 / 20%);
+  border-left: 0 !important;
+  background-color: transparent;
+  font-size: 15px;
 }
 
 .box__start {
-   font-weight: 600;
-   font-size: 15px;
-   color: #2A2E46;
-   padding: 14px 15px;
-   background-color: #B6BCD7;
-   border-radius: 15px;
-   line-height: 18px !important;
-   border: 1px solid #2A2E46;
-
+  padding: 14px 15px;
+  border: 1px solid rgb(47 47 47 / 20%);
+  background-color: #f6f6f6;
+  color: #0f1019;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 18px !important;
 }
 
 .error__box {
-   color: #AC2525;
+  color: #ac2525;
 }

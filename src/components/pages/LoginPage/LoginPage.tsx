@@ -4,7 +4,7 @@
 import Image from 'next/image'
 import styles from './LoginPage.module.scss'
 import MinimalHeader from '@/components/MainComponents/MinimalHeader/MinimalHeader'
-import {SetStateAction, MouseEvent, useEffect, useState, useRef} from 'react'
+import {SetStateAction, MouseEvent, useEffect, useState, useRef, useId} from 'react'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {axiosClassic} from '@/api/api.interceptor'
 import {toast} from 'sonner'
@@ -18,14 +18,10 @@ import TelegramLoginWidget from './TelegramLoginWidget/TelegramLoginWidget'
 import {useRouter} from 'next/navigation'
 import Link from 'next/link'
 import {useUserQuery} from '@/hooks/useUserApi'
+import LoginSlider from './LoginSlider/LoginSlider'
 
 const google = '/google_registr.svg'
-const wechat = '/wechat_registr.svg'
-const weibo = '/weibo-svgrepo-com.svg'
-const tg = '/tg.svg'
-
-const decorImage = '/login__image.jpg'
-const decorImage2 = '/new_login.webp'
+const tg = 'iconsNew/telegram.svg'
 
 const LoginPage = ({categories}: {categories: Category[]}) => {
   const [name, setNameState] = useState('')
@@ -36,7 +32,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
   const router = useRouter()
   const t = useTranslations('LoginPage')
   const currentLang = useCurrentLanguage()
-
+  const id = useId()
   useEffect(() => {
     if (typeof window === 'undefined') return
 
@@ -56,9 +52,6 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
     setError('')
   }
 
-  const isEmail = (value: string | string[]) => {
-    return value.includes('@') && value.includes('.')
-  }
   const {refetch} = useUserQuery()
   const onSubmit = async (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
@@ -170,14 +163,6 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
       <MinimalHeader categories={categories} />
       <div className={`${styles.login__container} container`}>
         <div className={`${styles.login__inner}`}>
-          <Image
-            className={styles.decor__image}
-            src={decorImage2}
-            width={580}
-            height={745}
-            alt={t('decorationImage')}
-          />
-
           {showResetForm ? (
             <ResetPasswordForm onBack={handleBackToLogin} />
           ) : (
@@ -191,6 +176,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                       idForLabel='cy-email-input'
                       extraClass={` ${styles.inputs__text_extra} ${name.length !== 0 && name.length < 3 && styles.extra__name__class} ${error && styles.extra__name__class}`}
                       isSecret={false}
+                      theme='newGray'
                       onSetValue={handleNameChange}
                       currentValue={name}
                       placeholder={t('writeEmailOrNickname')}
@@ -199,6 +185,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                     <TextInputUI
                       idForLabel='cy-password-input'
                       extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2} ${error && styles.extra__name__class}`}
+                      theme='newGray'
                       isSecret={true}
                       onSetValue={setPasswordState}
                       currentValue={password}
@@ -221,7 +208,11 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                       {t('loginForgotPassword')}
                     </div>
                     <div className={`${styles.apps__login}`}>
-                      <p className={`${styles.apps__text}`}>{t('loginWithSocial')}</p>
+                      <div className={`${styles.flex_soc}`}>
+                        <div className={styles.line_soc}></div>
+                        <p className={`${styles.apps__text}`}>{t('loginWithSocial')}</p>
+                        <div className={styles.line_soc}></div>
+                      </div>
                       <div className={`${styles.apps__images}`}>
                         {currentLang === 'en' && (
                           <Link
@@ -242,10 +233,11 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                           <Image
                             className={`${styles.registr__image}`}
                             src={tg}
-                            width={50}
-                            height={50}
+                            width={28}
+                            height={20}
                             alt='registr with telegram'
                           />
+                          <p className={styles.tg_text}>Войти через Telegram</p>
                           <TelegramLoginWidget
                             onAuth={handleTelegramAuth}
                             className={styles.telegram__widget__overlay}
@@ -258,6 +250,17 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
               </div>
             </form>
           )}
+
+          {/* <div className={`${styles.decor__image}`}>
+            <Image
+              className={styles.decor__image}
+              src={decorImage2}
+              width={580}
+              height={745}
+              alt={t('decorationImage')}
+            />
+          </div> */}
+          <LoginSlider key={`${showResetForm} ${id}`} />
         </div>
         <div className={`${styles.margin__box}`}></div>
       </div>

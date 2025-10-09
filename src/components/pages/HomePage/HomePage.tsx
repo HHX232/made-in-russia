@@ -6,6 +6,8 @@ import {Category} from '@/services/categoryes/categoryes.service'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {IPromoFromServer} from '@/app/page'
 import Exports from '@/components/screens/Exports/Exports'
+import PopularCategories from '@/components/screens/PopularCategories/PopularCategories'
+import AdvantagesSection from '@/components/screens/AdvantagesSection/AdvantagesSection'
 
 const HomePage: FC<CatalogProps & {categories: Category[]; ads: IPromoFromServer[]}> = ({
   initialProducts = [],
@@ -18,7 +20,9 @@ const HomePage: FC<CatalogProps & {categories: Category[]; ads: IPromoFromServer
     <>
       <Header categories={categories} />
       <Ads ads={ads} />
-      <Catalog initialProducts={initialProducts} initialHasMore={initialHasMore} isShowFilters={false} />
+      <PopularCategories />
+      <AdvantagesSection />
+      <Catalog initialProducts={initialProducts} initialHasMore={initialHasMore} />
       <Exports />
       <Footer />
     </>

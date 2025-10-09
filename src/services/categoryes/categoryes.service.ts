@@ -148,9 +148,8 @@ const CategoriesAPI = {
     const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
     formData.append('data', jsonBlob)
 
-    if (payload.image) {
-      formData.append('image', payload.image)
-    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    formData.append('image', payload?.image || (null as any))
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/categories/${payload.id}`, {
       method: 'PUT',

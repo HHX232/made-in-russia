@@ -118,7 +118,7 @@ const AdminCategoriesPage: FC = () => {
         parentId: editingCategory.parentId || null,
         nameTranslations,
         okvedCategories: okvedCodes,
-        image: editingCategory.image
+        image: editingCategory.image ? editingCategory.image : ''
       }
 
       console.log('payload save', payload)
@@ -171,7 +171,6 @@ const AdminCategoriesPage: FC = () => {
   const renderCategory = (category: Category, level: number = 0, parentId?: number) => {
     const isExpanded = expandedCategories.has(category.id)
     const hasChildren = category.children && category.children.length > 0
-    const isFirstLevel = level === 0
 
     return (
       <div key={category.id} className={styles.category__item}>
@@ -189,9 +188,7 @@ const AdminCategoriesPage: FC = () => {
             </button>
           )}
 
-          {isFirstLevel && category.imageUrl && (
-            <img src={category.imageUrl} alt={category.name} className={styles.category__image} />
-          )}
+          {category.imageUrl && <img src={category.imageUrl} alt={category.name} className={styles.category__image} />}
 
           <div className={styles.category__info}>
             <span className={styles.category__name}>{category.name}</span>
@@ -240,7 +237,6 @@ const AdminCategoriesPage: FC = () => {
   const renderEditForm = () => {
     if (!editingCategory) return null
 
-    const isFirstLevel = !editingCategory.parentId
     const okvedValue = editingCategory.okvedString || ''
 
     return (
@@ -307,31 +303,29 @@ const AdminCategoriesPage: FC = () => {
             )} */}
           </div>
 
-          {isFirstLevel && (
-            <div className={styles.form__field}>
-              <label className={styles.form__label}>Изображение категории (горизонтальное)</label>
-              <CreateImagesInput
-                extraClass={styles.admin__categories__page__images}
-                maxFiles={1}
-                inputIdPrefix='category'
-                onActiveImagesChange={(images) => {
-                  if (images.length > 0) {
-                    setEditingCategory({...editingCategory, imageUrl: images[0]})
-                  } else {
-                    setEditingCategory({...editingCategory, imageUrl: undefined})
-                  }
-                }}
-                activeImages={editingCategory.imageUrl ? [editingCategory.imageUrl] : []}
-                onFilesChange={(files) => {
-                  if (files.length > 0) {
-                    setEditingCategory({...editingCategory, image: files[0]})
-                  } else {
-                    setEditingCategory({...editingCategory, image: undefined})
-                  }
-                }}
-              />
-            </div>
-          )}
+          <div className={styles.form__field}>
+            <label className={styles.form__label}>Изображение категории (горизонтальное)</label>
+            <CreateImagesInput
+              extraClass={styles.admin__categories__page__images}
+              maxFiles={1}
+              inputIdPrefix='category'
+              onActiveImagesChange={(images) => {
+                if (images.length > 0) {
+                  setEditingCategory({...editingCategory, imageUrl: images[0]})
+                } else {
+                  setEditingCategory({...editingCategory, imageUrl: undefined})
+                }
+              }}
+              activeImages={editingCategory.imageUrl ? [editingCategory.imageUrl] : []}
+              onFilesChange={(files) => {
+                if (files.length > 0) {
+                  setEditingCategory({...editingCategory, image: files[0]})
+                } else {
+                  setEditingCategory({...editingCategory, image: undefined})
+                }
+              }}
+            />
+          </div>
 
           <div className={styles.form__actions}>
             <button
@@ -426,6 +420,7 @@ const AdminCategoriesPage: FC = () => {
 }
 
 export default AdminCategoriesPage
+
 // import {FC, useEffect, useState} from 'react'
 // import styles from './AdminCategoriesPage.module.scss'
 // import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
