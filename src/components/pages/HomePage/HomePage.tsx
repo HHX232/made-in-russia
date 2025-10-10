@@ -22,7 +22,7 @@ const HomePage: FC<CatalogProps & {categories: Category[]; ads: IPromoFromServer
       <Ads ads={ads} />
       <PopularCategories />
       <AdvantagesSection />
-      <Catalog initialProducts={initialProducts} initialHasMore={initialHasMore} />
+      <Catalog isShowFilters={false} initialProducts={initialProducts} initialHasMore={initialHasMore} />
       <Exports />
       <Footer />
     </>

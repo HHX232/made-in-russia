@@ -107,7 +107,7 @@
 }
 
 .section_flexheader__title {
-  font-size: 1.5rem;
+  font-size: 1.85rem;
   font-weight: 600;
 
   @media (max-width: 576px) {
@@ -141,7 +141,7 @@
 .popularprod__navigation_wrap {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
 
   @media (max-width: 576px) {
     gap: 8px;
@@ -166,7 +166,10 @@
   overflow: visible !important;
   width: 100% !important;
   min-height: 850px;
-  transform: none !important;
+
+  @media (max-width: 1270px) {
+    min-height: 850px;
+  }
 
   @media (max-width: 768px) {
     min-height: 1100px;
@@ -189,12 +192,27 @@
   height: auto;
   padding: 10px 0;
   gap: 22px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  // 4 колонки на широких экранах с минимумом 270px
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
+  opacity: 0;
+  pointer-events: none;
   transform: none !important;
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Активный слайд
+  &_active {
+    z-index: 1;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  // Медиазапросы для адаптивной сетки
+  @media (max-width: 1270px) {
+    // При ширине меньше 1270px переключаемся на 3 колонки
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 
   @media (max-width: 1200px) {
     gap: 18px;
@@ -211,7 +229,7 @@
   @media (max-width: 768px) {
     gap: 14px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr)); // 8 товаров = 4 ряда × 2 колонки
   }
 
   @media (max-width: 640px) {
@@ -303,6 +321,18 @@
     padding-inline: 32px;
   }
 }
+
+// .arrow__left {
+//   left: 0;
+//   background-image: url('/iconsNew/arrow-right-def.svg');
+//   transform: translateY(-50%) rotate(180deg);
+// }
+
+// .arrow__right {
+//   right: 0;
+//   left: auto;
+//   background-image: url('/iconsNew/arrow-right-def.svg');
+// }
 
 // Стрелки навигации
 .arrow {
@@ -418,6 +448,11 @@
   }
 }
 
+.popularprod__header_group__for_unvis,
+.popularprod__navigation_wrap__for_unvis {
+  display: none;
+}
+
 @keyframes pulse {
   0%,
   100% {
@@ -483,11 +518,25 @@
   }
 
   .section_flexheader__title {
-    font-size: 1.375rem;
+    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
+  .popularprod__header_group__for_vis,
+  .popularprod__navigation_wrap__for_vis {
+    display: none !important;
+  }
+
+  .popularprod__header_group__for_unvis,
+  .popularprod__navigation_wrap__for_unvis {
+    display: block !important;
+  }
+
+  .popularprod__navigation_wrap__for_unvis {
+    display: flex !important;
+  }
+
   .popularprod .section_flexheader {
     flex-wrap: wrap;
     gap: 1rem;
