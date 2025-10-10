@@ -23,13 +23,17 @@
   }
 
   &__item {
+    .footer__title {
+      font-size: 1.05rem;
+    }
+
     &:nth-child(n + 2) {
       .footer__title {
         padding-left: 39px;
       }
 
       .footer__list {
-        padding-left: 41px;
+        font-size: 1rem;
       }
     }
 
@@ -77,7 +81,7 @@
 
     &:nth-child(2) {
       .footer__list {
-        gap: 5px;
+        gap: rem(18);
 
         @include sm {
           gap: 0;
@@ -133,21 +137,21 @@
   &__list {
     display: flex;
     flex-direction: column;
-    gap: rem(7);
+    gap: rem(17);
 
-    @include sm {
-      gap: 0;
-    }
+    // @include sm {
+    //   gap: 0;
+    // }
   }
 
   &__link {
     display: inline-flex;
     align-items: center;
     color: var(--white);
-    font-size: rem(14);
+    font-size: rem(15);
     font-weight: 400;
-    gap: rem(10);
-    line-height: 110%;
+    gap: rem(16);
+    line-height: 200%;
 
     @include sm {
       font-size: rem(12);
