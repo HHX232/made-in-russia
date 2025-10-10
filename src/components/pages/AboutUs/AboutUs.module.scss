@@ -1,160 +1,275 @@
-.about__box {
-   padding: 60px 0;
-   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-   min-height: 70vh;
+@import '@/scss/config/mixins';
 
-   .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-   }
+/* ------------------------------------------------------------------------------------------------------------------------------
+COMPONENTS (НЕКОТОРЫЕ БАЗОВЫЕ СТИЛИ КОМПОНЕНТОВ) 
+-------------------------------------------------------------------------------------------------------------------------------- */
 
-   h1 {
-      font-size: 3rem;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 50px;
-      color: #AC2525;
-      position: relative;
+.section,
+.section_null,
+.section_topnull {
+  padding-block: rem(35);
 
-      @media (max-width: 768px) {
-         font-size: 2.2rem;
+  @include sm {
+    padding-block: rem(30);
+  }
+
+  // простой заголовок
+  &-header {
+    margin-bottom: rem(45);
+
+    @include sm {
+      margin-bottom: rem(25);
+    }
+
+    &__title {
+      font-size: rem(30);
+      font-weight: 500;
+
+      @include sm {
+        font-size: rem(24);
       }
-   }
+    }
+  }
 
-   &__inner {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 40px;
-      margin-bottom: 40px;
-      box-shadow: 0 10px 30px rgba(172, 37, 37, 0.08);
-      border: 1px solid rgba(172, 37, 37, 0.1);
-      position: relative;
-      overflow: hidden;
+  // заголовок для флекс
+  &-flexheader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 26px;
 
+    &__title {
+      color: var(--text);
+      font-size: rem(30);
+      font-weight: 500;
 
-      &::before {
-         content: '';
-         position: absolute;
-         top: 0;
-         left: 0;
-         right: 0;
-         height: 4px;
-         background: linear-gradient(90deg,
-               #AC2525 0%,
-               #0056b3 25%,
-               #AC2525 50%,
-               #AC2525 100%);
-         background-size: 200% 200%;
-         animation: gradientSlide 16s linear infinite;
+      @include md {
+        font-size: rem(24);
       }
-
-      p {
-         font-size: 1.1rem;
-         line-height: 1.8;
-         color: #2c3e50;
-         margin-bottom: 25px;
-         text-align: justify;
-
-         &:last-child {
-            margin-bottom: 0;
-            position: relative;
-            padding-left: 20px;
-
-            &::before {
-               content: '';
-               position: absolute;
-               left: 0;
-               top: 8px;
-               width: 4px;
-               height: 20px;
-               background: #AC2525;
-               border-radius: 2px;
-            }
-         }
-
-         &:first-child {}
-      }
-
-      @media (max-width: 768px) {
-         padding: 25px;
-         margin-bottom: 30px;
-
-         p {
-            font-size: 1rem;
-            line-height: 1.7;
-         }
-      }
-   }
-
-   // Последний параграф вне inner
-   >.container>p:last-child {
-      font-size: 1.2rem;
-      font-weight: 600;
-      text-align: center;
-      color: #0056b3;
-      background: linear-gradient(135deg, rgba(0, 86, 179, 0.05) 0%, rgba(172, 37, 37, 0.05) 100%);
-      padding: 25px 30px;
-      border-radius: 12px;
-      border: 2px solid rgba(0, 86, 179, 0.15);
-      position: relative;
-      overflow: hidden;
-
-      &::before {
-         content: '';
-         position: absolute;
-         top: 0;
-         left: -100%;
-         width: 100%;
-         height: 100%;
-         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-         animation: shimmer 3s infinite;
-      }
-
-      @media (max-width: 768px) {
-         font-size: 1.1rem;
-         padding: 20px;
-      }
-   }
-
-   @keyframes shimmer {
-      0% {
-         left: -100%;
-      }
-
-      100% {
-         left: 100%;
-      }
-   }
-
-   // Адаптивность
-   @media (max-width: 992px) {
-      padding: 40px 0;
-
-      .container {
-         padding: 0 15px;
-      }
-   }
-
-   @media (max-width: 768px) {
-      padding: 30px 0;
-
-      h1 {
-         margin-bottom: 35px;
-      }
-   }
+    }
+  }
 }
 
-@keyframes gradientSlide {
-   0% {
-      background-position: 0% 0%;
-   }
+.section-null {
+  padding-block: 0;
 
-   50% {
-      background-position: 200% 0%;
-   }
+  @include sm {
+    padding-block: 0;
+  }
+}
 
-   100% {
-      background-position: 300% 0%;
-   }
+.section-topnull {
+  padding-block-start: 0;
+
+  @include sm {
+    padding-block-start: 0;
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------------------------------------
+ABOUT BLOCK
+-------------------------------------------------------------------------------------------------------------------------------- */
+
+nav.bread_crumbs_container {
+  margin-top: 4px;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.about__row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+  gap: 30px;
+
+  @include sm {
+    gap: 12px;
+  }
+}
+
+.about__title {
+  margin-top: -3px;
+  margin-bottom: 40px;
+  color: #2f2f2f;
+  font-size: 46px;
+  font-weight: 500;
+
+  @include sm {
+    margin-top: -8px;
+    margin-bottom: 25px;
+    font-size: 24px;
+  }
+}
+
+.about_block {
+  display: flex;
+  width: 100%;
+  max-width: 776px;
+  padding: 40px 25px;
+  border: 1px solid rgb(47 47 47 / 20%);
+  color: #2f2f2f;
+  gap: 30px;
+
+  &:nth-child(even) {
+    align-self: flex-end;
+  }
+
+  @include sm {
+    flex-direction: column;
+    padding: 10px 15px 20px;
+    gap: 10px;
+  }
+
+  &__number {
+    flex-shrink: 0;
+    background: linear-gradient(180deg, rgb(0 71 186 / 10%) 0%, #0047ba 100%);
+    background-clip: text;
+    font-size: 150px;
+    font-weight: 600;
+    line-height: 72%;
+    -webkit-text-fill-color: transparent;
+
+    span {
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+    }
+
+    @include sm {
+      margin-bottom: -10px;
+      font-size: 70px;
+      line-height: 100%;
+    }
+  }
+
+  &__title {
+    margin-bottom: 5px;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.17;
+
+    @include sm {
+      margin-bottom: 3px;
+      font-size: 20px;
+    }
+  }
+
+  &__description {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 137%;
+
+    p {
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+    }
+
+    @include sm {
+      font-size: 14px;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------------------------------------
+ABOUT EXPORTERU SECTION
+-------------------------------------------------------------------------------------------------------------------------------- */
+.about_exporteru {
+  color: var(--text);
+
+  &__block {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #f6f6f6;
+    padding-block: 64px 62px;
+    padding-inline: 85px;
+
+    @include md {
+      padding: 0;
+    }
+  }
+
+  &__image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 647px;
+    height: 100%;
+    user-select: none;
+
+    @include md {
+      position: relative;
+      aspect-ratio: 320/213;
+    }
+
+    img {
+      position: absolute;
+      display: block;
+      block-size: 100%;
+      inline-size: 100%;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      object-fit: cover;
+    }
+
+    &::after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -2px;
+      width: 80%;
+      background: linear-gradient(270deg, #f6f6f6 0%, rgb(246 246 246 / 0%) 100%);
+      content: '';
+      transform: rotate(-180deg);
+
+      @include md {
+        top: -2px;
+        left: 0;
+        width: 100%;
+        height: 45%;
+        background: linear-gradient(360deg, #f6f6f6 0%, rgb(246 246 246 / 0%) 100%);
+        transform: rotate(-180deg);
+      }
+    }
+  }
+
+  &__wrap {
+    position: relative;
+    z-index: 1;
+
+    @include md {
+      padding: 30px 20px;
+    }
+
+    @include sm {
+      padding: 30px 20px 35px;
+    }
+  }
+
+  &__title {
+    max-width: 75%;
+    margin-bottom: 29px;
+    color: #2f2f2f;
+    font-size: 46px;
+    font-weight: 600;
+    line-height: 1.17;
+
+    @include md {
+      font-size: rem(24);
+    }
+
+    @include sm {
+      margin-bottom: 20px;
+    }
+  }
+
+  .btn_accent {
+    min-height: 46px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2233;
+  }
 }
