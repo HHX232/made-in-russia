@@ -265,11 +265,46 @@ ABOUT EXPORTERU SECTION
       margin-bottom: 20px;
     }
   }
+}
 
-  .btn_accent {
-    min-height: 46px;
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 1.2233;
+/* --------------------------------------------------------------- ACCENT BUTTON -------------------------------------------------------------------- */
+
+.btn_accent {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  background-color: var(--accent);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2233;
+  padding-inline: rem(46);
+  transition: var(--transition);
+
+  &__max493 {
+    display: flex;
+    width: 100%;
+    max-width: 493px;
+    min-height: 53px;
+    justify-content: center;
+    margin-top: 20px;
+    font-size: 18px;
+    margin-inline: auto;
+
+    @include md {
+      width: 100%;
+      min-width: initial;
+    }
+  }
+
+  &:hover {
+    filter: var(--filter);
+  }
+
+  @include sm {
+    display: flex;
+    min-height: rem(45);
+    justify-content: center;
+    font-size: rem(14);
   }
 }
