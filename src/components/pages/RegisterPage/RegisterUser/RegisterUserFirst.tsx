@@ -44,6 +44,7 @@ interface RegionDropListProps {
   handleRegionSelect: (region: RegionType) => void
   extraClass?: string
   extraStyle?: React.CSSProperties
+  isUseNewTheme?: boolean
 }
 
 const RegionItem = ({
@@ -72,14 +73,15 @@ export const RegionDropList: React.FC<RegionDropListProps> = ({
   setListIsOpen,
   handleRegionSelect,
   extraClass = '',
-  extraStyle = {}
+  extraStyle = {},
+  isUseNewTheme = true
 }) => {
   return (
     <div style={extraStyle} className={extraClass}>
       <DropList
-        extraClass={`${styles.extra__drop__list}`}
+        extraClass={`${styles.extra__drop__list} ${isUseNewTheme ? styles.extra__drop__list__new : ''}`}
         gap='15'
-        extraListClass={`${styles.extra__list__style}`}
+        extraListClass={`${styles.extra__list__style} ${isUseNewTheme ? styles.extra__list__style__new : ''}`}
         title={
           <RegionItem
             imageSrc={selectedRegion.imageSrc}

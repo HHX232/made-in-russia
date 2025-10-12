@@ -23,7 +23,7 @@ interface ITextInputProps {
   customIcon?: StaticImageData
   customIconOnAlternativeState?: StaticImageData
   linkToHelp?: Url
-  theme?: 'dark' | 'light' | 'superWhite' | 'lightBlue' | 'newGray'
+  theme?: 'dark' | 'light' | 'superWhite' | 'lightBlue' | 'newGray' | 'newWhite'
   // Дополнительные события для input
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
@@ -131,7 +131,8 @@ const TextInputUI = memo<ITextInputProps>(
           [styles.light]: theme === 'light',
           [styles.superWhite]: theme === 'superWhite',
           [styles.lightBlue]: theme === 'lightBlue',
-          [styles.newGray]: theme === 'newGray'
+          [styles.newGray]: theme === 'newGray',
+          [styles.newWhite]: theme === 'newWhite'
         })}
       >
         <div className={`${styles.titles_box}`}>

@@ -1,25 +1,33 @@
-/* Добавить в конец ProfilePageBottom.module.scss */
-
-/* Reviews list */
-.delivery__list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+/* Account vitrine styles */
+.account_vitrine {
+  margin-bottom: 20px;
 }
 
-.no_reviews_message {
-  padding: 40px 0;
-  color: #818181;
-  font-size: 16px;
-  text-align: center;
+.products_grid {
+  display: grid;
+  gap: 20px;
+  grid-auto-rows: auto;
+  grid-template-columns: repeat(3, 1fr);
+
+  @media (max-width: 1135px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   @media (max-width: 768px) {
-    padding: 30px 0;
-    font-size: 14px;
+    gap: 15px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Pagination для Reviews */
+.product_card_wrapper {
+  border: 1px solid rgb(47 47 47 / 10%);
+}
+
+/* Pagination */
 .justify_content_center {
   display: flex;
   justify-content: center;
@@ -152,5 +160,49 @@
       height: 36px;
       font-size: 14px;
     }
+  }
+}
+
+/* Account tile */
+.account_tile {
+  // padding: 25px 40px;
+  border-radius: 0;
+  background-color: #f6f6f6;
+
+  // min-height: 100%;
+
+  // @media (max-width: 768px) {
+  //    padding: 20px 25px;
+  // }
+}
+
+/* Products count */
+.products_count {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  color: rgb(47 47 47 / 70%);
+  font-size: 16px;
+  font-weight: 400;
+
+  @media (max-width: 768px) {
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+}
+
+/* Empty message */
+.empty__message {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: #818181;
+  font-size: 35px;
+  font-weight: 500;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
   }
 }

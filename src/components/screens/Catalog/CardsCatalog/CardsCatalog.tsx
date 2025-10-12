@@ -42,9 +42,6 @@ interface PageParams {
   [key: string]: any
 }
 
-// Константы
-// >1315 -> 8 ; 1315px -> 9; 768 -> 8
-const SLIDER_PAGE_SIZE = 9 // 4 колонки × 2 ряда
 const INITIAL_PAGE_SIZE = 10
 
 const CardsCatalog: FC<CardsCatalogProps> = ({
@@ -58,12 +55,17 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   direction = 'desc',
   approveStatuses = 'ALL'
 }) => {
+  console.log('🎯 CardsCatalog: Component render')
+
+  const {setCurrentSlide: setCurrentSlideRedux} = useActions()
+  const {currentSlide: currentSlideRedux} = useTypedSelector((state) => state.sliderHomeSlice)
   // Селекторы и состояния
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
   const {addToLatestViews} = useActions()
   const accessToken = getAccessToken()
-  // Only client hook
+
+  // Slider page size
   const [sliderPageSize, setSliderPageSize] = useState(9)
   const width = useWindowWidth()
 
@@ -76,6 +78,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     } else {
       setSliderPageSize(8)
     }
+    console.log('📐 Slider page size updated:', width > 1315 ? 8 : width >= 769 ? 9 : 8)
   }, [width])
 
   // Состояния
@@ -85,12 +88,17 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const [isSliderInitialized, setIsSliderInitialized] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [sliderHeight, setSliderHeight] = useState<number | null>(null)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const previousSlideRef = useRef<number>(currentSlide)
+  useEffect(() => {
+    previousSlideRef.current = currentSlide
+  }, [currentSlide])
 
   // Refs
-  const observerRef = useRef<IntersectionObserver | null>(null)
-  const lastProductRef = useRef<HTMLDivElement | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const activeSlideRef = useRef<HTMLDivElement | null>(null)
+  const isFirstRender = useRef(true)
+  const hasRequestedMoreRef = useRef(false) // Флаг для предотвращения дублирования запросов
 
   // Параметры пагинации
   const [pageParams, setPageParams] = useState<PageParams>({
@@ -105,6 +113,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     approveStatuses: approveStatuses === 'ALL' ? '' : approveStatuses
   })
 
+  console.log('📄 Current page params:', pageParams)
+
   // Загрузка продуктов
   const {
     data: pageResponse,
@@ -112,13 +122,34 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     isError,
     isFetching,
     resData
-  } = useProducts(pageParams, () => setPageParams((prev) => ({...prev, page: 0})), specialRoute, accessToken || '')
+  } = useProducts(
+    pageParams,
+    () => {
+      console.log('🔄 Reset triggered, setting page to 0')
+      setPageParams((prev) => ({...prev, page: 0}))
+    },
+    specialRoute,
+    accessToken || ''
+  )
+
+  console.log('📦 Products state:', {
+    totalProducts: resData.length,
+    isLoading,
+    isFetching,
+    hasMore,
+    isLoadingMore
+  })
 
   // Мемоизированные данные
-  const showSkeleton = useMemo(() => isLoading && resData.length === 0, [isLoading, resData.length])
+  const showSkeleton = useMemo(() => {
+    const result = isLoading && resData.length === 0
+    console.log('💀 Show skeleton:', result)
+    return result
+  }, [isLoading, resData.length])
 
   // Обработка продуктов
   const addProducts = useCallback((newProducts: Product[], replace: boolean = false) => {
+    console.log(`➕ Adding products: ${newProducts.length} items, replace: ${replace}`)
     setProductIds((prev) => {
       if (replace) {
         return new Set(newProducts.map((p) => p.id))
@@ -129,6 +160,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
             newIds.add(product.id)
           }
         })
+        console.log(`✅ Total unique products: ${newIds.size}`)
         return newIds
       }
     })
@@ -136,12 +168,14 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // Инициализация начальных продуктов
   useEffect(() => {
-    if (initialProducts.length > 0) {
+    if (initialProducts.length > 0 && isFirstRender.current) {
+      console.log('🎬 Initial products loaded:', initialProducts.length)
       addProducts(initialProducts, true)
       setPageParams((prev) => ({
         ...prev,
         page: 1
       }))
+      isFirstRender.current = false
     }
   }, [initialProducts, addProducts])
 
@@ -150,11 +184,13 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     const numericKeys = Object.keys(selectedFilters)
       .filter((key) => !isNaN(Number(key)))
       .map(Number)
+    console.log('🔢 Numeric filters updated:', numericKeys)
     setNumericFilters(numericKeys)
   }, [selectedFilters])
 
   // Сброс при изменении поискового запроса
   useEffect(() => {
+    console.log('🔍 Search title changed:', searchTitle)
     setProductIds(new Set())
     setPageParams((prev) => ({
       ...prev,
@@ -165,6 +201,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // Сброс при изменении фильтров
   useEffect(() => {
+    console.log('🎛️ Filters changed:', {numericFilters, priceRange, delivery})
     setProductIds(new Set())
     setPageParams((prev) => {
       const newParams: PageParams = {
@@ -188,6 +225,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   // Сброс для админки при изменении статусов
   useEffect(() => {
     if (isForAdmin) {
+      console.log('👨‍💼 Admin approve status changed:', approveStatuses)
       setProductIds(new Set())
       setPageParams((prev) => ({
         ...prev,
@@ -200,6 +238,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   // Сброс для админки при изменении направления
   useEffect(() => {
     if (isForAdmin) {
+      console.log('🔀 Admin direction changed:', direction)
       setProductIds(new Set())
       setPageParams((prev) => ({
         ...prev,
@@ -212,41 +251,39 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   // Обработка ответа от API
   useEffect(() => {
     if (pageResponse) {
+      console.log('📥 API response received:', {
+        page: pageParams.page,
+        contentLength: pageResponse.content.length,
+        isLast: pageResponse.last,
+        totalPages: pageResponse.totalPages
+      })
+
       if (pageParams.page === 0) {
         addProducts(pageResponse.content, true)
       } else {
         addProducts(pageResponse.content, false)
       }
-      setHasMore(!pageResponse.last && pageResponse.content.length > 0)
+
+      const newHasMore = !pageResponse.last && pageResponse.content.length > 0
+      console.log('🏁 Has more:', newHasMore)
+      setHasMore(newHasMore)
+      setIsLoadingMore(false)
+
+      if (instanceRef.current && previousSlideRef.current !== undefined) {
+        try {
+          // если текущий активный слайд не выходит за границы страниц
+          if (previousSlideRef.current < pages.length) {
+            instanceRef.current.moveToIdx(previousSlideRef.current)
+          }
+        } catch (error) {
+          console.error('Ошибка при восстановлении слайда:', error)
+        }
+      }
+
+      // Сбрасываем флаг после успешной загрузки
+      hasRequestedMoreRef.current = false
     }
   }, [pageResponse, pageParams.page, addProducts])
-
-  // Infinite Scroll
-  const lastElementRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (showSkeleton) return
-
-      if (observerRef.current) {
-        observerRef.current.disconnect()
-      }
-
-      lastProductRef.current = node
-
-      observerRef.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore && !isFetching) {
-          setPageParams((prev) => ({
-            ...prev,
-            page: prev.page + 1
-          }))
-        }
-      })
-
-      if (node) {
-        observerRef.current.observe(node)
-      }
-    },
-    [showSkeleton, hasMore, isFetching]
-  )
 
   // Разделение данных на страницы для слайдера
   const pages = useMemo(() => {
@@ -260,8 +297,20 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       }
       result[pageIndex].push(product)
     })
+
+    console.log('📑 Pages created:', {
+      totalPages: result.length,
+      productsPerPage: sliderPageSize,
+      totalProducts: resData.length
+    })
+
     return result
   }, [resData, sliderPageSize])
+
+  // КЛЮЧ для переинициализации слайдера
+  const sliderKey = useMemo(() => {
+    return `slider-${resData.length}-${pages.length}`
+  }, [resData.length, pages.length])
 
   // Конфигурация слайдера
   const [sliderRef, instanceRef] = useKeenSlider({
@@ -271,54 +320,148 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     },
     loop: false,
     renderMode: 'precision',
+    initial: currentSlideRedux,
     created: (s) => {
+      console.log('🎨 Slider created, initial slide:', s.track.details.rel)
       setIsSliderInitialized(true)
       setCurrentSlide(s.track.details.rel)
     },
     slideChanged: (slider) => {
+      const newSlide = slider.track.details.rel
+      console.log('🔄 Slide changed:', {
+        from: currentSlide,
+        to: newSlide,
+        totalSlides: pages.length
+      })
+      setCurrentSlide(newSlide)
+      setCurrentSlideRedux(slider.track.details.rel)
+    },
+    updated: (slider) => {
+      console.log('🔧 Slider updated, current slide:', slider.track.details.rel)
       setCurrentSlide(slider.track.details.rel)
+      setCurrentSlideRedux(slider.track.details.rel)
+      if (pages.length > 0) {
+        setIsSliderInitialized(true)
+      }
+    },
+    destroyed: () => {
+      console.log('💥 Slider destroyed')
+      setIsSliderInitialized(false)
+      setCurrentSlide(0)
+      setCurrentSlideRedux(0)
     }
   })
 
-  // Вычисление состояния стрелок
-  const canGoPrev = useMemo(() => {
-    return isSliderInitialized && currentSlide > 0
-  }, [isSliderInitialized, currentSlide])
-
-  const canGoNext = useMemo(() => {
-    return isSliderInitialized && currentSlide < pages.length - 1
-  }, [isSliderInitialized, currentSlide, pages.length])
-
-  // Принудительное обновление слайдера при изменении данных
   useEffect(() => {
-    if (instanceRef.current && pages.length > 0) {
-      const timer = setTimeout(() => {
-        try {
-          instanceRef.current?.update()
-          setIsSliderInitialized(true)
-        } catch (error) {
-          console.warn('Slider update failed:', error)
-        }
-      }, 100)
+    if (instanceRef.current) {
+      if (currentSlide < pages.length) {
+        instanceRef.current.moveToIdx(currentSlide)
+      }
+    }
+  }, [instanceRef, currentSlide, pages.length])
+  // Эффект для сброса состояния при изменении данных
+  useEffect(() => {
+    console.log('🔄 Data changed:', {dataLength: resData.length, pagesLength: pages.length})
 
+    if (resData.length === 0) {
+      console.log('🔄 Reset slider state - no data')
+      setIsSliderInitialized(false)
+      setCurrentSlide(0)
+      hasRequestedMoreRef.current = false // Сбрасываем флаг запроса
+    } else if (resData.length > 0 && !isSliderInitialized) {
+      console.log('🔄 Data loaded, waiting for slider init')
+      const timer = setTimeout(() => {
+        if (instanceRef.current) {
+          console.log('✅ Slider ready after data load')
+          setIsSliderInitialized(true)
+          setCurrentSlide(0)
+        }
+      }, 200)
       return () => clearTimeout(timer)
     }
-  }, [pages.length, instanceRef])
+  }, [resData.length, isSliderInitialized])
+
+  // НОВАЯ ЛОГИКА: Загрузка при достижении последнего слайда
+  // Когда пользователь доходит до последнего слайда (например, 7-й из 7),
+  // автоматически загружаем следующую порцию данных
+  useEffect(() => {
+    // Проверяем, что слайдер инициализирован и есть страницы
+    if (!isSliderInitialized || pages.length === 0) {
+      console.log('⏸️ Skip load check - slider not ready', {isSliderInitialized, pagesLength: pages.length})
+      return
+    }
+
+    // Проверяем, что текущий слайд - последний
+    const isLastSlide = currentSlide === pages.length - 1
+    console.log('🔍 Load check:', {
+      currentSlide,
+      totalPages: pages.length,
+      isLastSlide,
+      hasMore,
+      isFetching,
+      isLoadingMore,
+      hasRequestedMore: hasRequestedMoreRef.current
+    })
+
+    // Если достигли последнего слайда и есть ещё данные для загрузки
+    if (isLastSlide && hasMore && !isFetching && !isLoadingMore && !hasRequestedMoreRef.current) {
+      console.log('🚀 Loading next page - reached last slide')
+      hasRequestedMoreRef.current = true
+      setIsLoadingMore(true)
+
+      setPageParams((prev) => {
+        const newPage = prev.page + 1
+        console.log('📈 Page increment:', prev.page, '->', newPage)
+        return {
+          ...prev,
+          page: newPage
+        }
+      })
+    }
+  }, [currentSlide, pages.length, isSliderInitialized, hasMore, isFetching, isLoadingMore])
+
+  // Вычисление состояния стрелок
+  const canGoPrev = useMemo(() => {
+    const result = isSliderInitialized && currentSlide > 0 && pages.length > 1
+    console.log('⬅️ Can go prev:', result, {
+      isSliderInitialized,
+      currentSlide,
+      pagesLength: pages.length,
+      hasInstance: !!instanceRef.current
+    })
+    return result
+  }, [isSliderInitialized, currentSlide, pages.length])
+
+  const canGoNext = useMemo(() => {
+    const result = isSliderInitialized && currentSlide < pages.length - 1 && pages.length > 1
+    console.log('➡️ Can go next:', result, {
+      isSliderInitialized,
+      currentSlide,
+      pagesLength: pages.length,
+      hasInstance: !!instanceRef.current
+    })
+    return result
+  }, [isSliderInitialized, currentSlide, pages.length])
+
+  console.log('⬅️➡️ Navigation state:', {canGoPrev, canGoNext, currentSlide, totalPages: pages.length})
 
   // Расчет высоты активного слайда
   useEffect(() => {
     const updateHeight = () => {
       if (activeSlideRef.current) {
         const height = activeSlideRef.current.scrollHeight
+        console.log('📏 Updating slide height:', height)
         setSliderHeight(height)
       }
     }
 
-    // Обновляем высоту при изменении слайда
     updateHeight()
 
-    // Обновляем высоту при изменении размера окна
-    const resizeObserver = new ResizeObserver(updateHeight)
+    const resizeObserver = new ResizeObserver(() => {
+      console.log('📐 Resize detected, updating height')
+      updateHeight()
+    })
+
     if (activeSlideRef.current) {
       resizeObserver.observe(activeSlideRef.current)
     }
@@ -330,18 +473,29 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // Обработчики навигации
   const handlePrevClick = useCallback(() => {
+    console.log('⬅️ Previous slide clicked', {canGoPrev, hasInstance: !!instanceRef.current})
     if (canGoPrev && instanceRef.current) {
-      instanceRef.current.prev()
+      try {
+        instanceRef.current.prev()
+      } catch (error) {
+        console.error('❌ Prev failed:', error)
+      }
     }
-  }, [canGoPrev, instanceRef])
+  }, [canGoPrev])
 
   const handleNextClick = useCallback(() => {
+    console.log('➡️ Next slide clicked', {canGoNext, hasInstance: !!instanceRef.current})
     if (canGoNext && instanceRef.current) {
-      instanceRef.current.next()
+      try {
+        instanceRef.current.next()
+      } catch (error) {
+        console.error('❌ Next failed:', error)
+      }
     }
-  }, [canGoNext, instanceRef])
+  }, [canGoNext])
 
   if (isError) {
+    console.error('❌ Error loading products')
     return <div style={{marginBottom: '50px'}}>Not found</div>
   }
 
@@ -390,13 +544,13 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
         <div className={`${styled.swiper}`} id='popularprod-swiper' ref={containerRef}>
           <div
             ref={sliderRef}
+            key={sliderKey}
             className={`keen-slider ${styled.swiper_wrapper}`}
             style={{
               minHeight: sliderHeight ? `${sliderHeight}px` : 'auto'
             }}
           >
             {pages.map((page, pageIndex) => {
-              const isLastSlide = pageIndex === pages.length - 1
               const isActive = pageIndex === currentSlide
 
               return (
@@ -406,9 +560,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
                   ref={(node) => {
                     if (isActive) {
                       activeSlideRef.current = node
-                    }
-                    if (isLastSlide) {
-                      lastElementRef(node)
                     }
                   }}
                 >
@@ -443,13 +594,12 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
               )
             })}
 
-            {/* Скелетоны при загрузке */}
             {showSkeleton && (
               <div
                 className={`keen-slider__slide ${styled.slider__slide} ${styled.slider__slide_active}`}
                 ref={activeSlideRef}
               >
-                {Array.from({length: SLIDER_PAGE_SIZE}).map((_, index) => (
+                {Array.from({length: sliderPageSize}).map((_, index) => (
                   <div key={`skeleton-${index}`} className={styled.card_wrapper}>
                     <Card
                       isForAdmin={isForAdmin}
@@ -471,6 +621,21 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
                 ))}
               </div>
             )}
+
+            {/* Индикатор загрузки дополнительных данных */}
+            {isLoadingMore && !showSkeleton && hasMore && (
+              <div
+                className={`keen-slider__slide ${styled.slider__slide}`}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  minHeight: '400px'
+                }}
+              >
+                <div style={{fontSize: '18px', color: '#666'}}>Загрузка новых товаров...</div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -489,7 +654,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
             className={`${styled.popularprod__header_group} ${styled.popularprod__header_group__for_unvis}`}
             id='popularprod-navig-group'
           >
-            <Link href='#' className={`${styled.btn_accent}`}>
+            <Link href='#' className={`${styled.btn_accent} ${styled.btn_accent_bottom}`}>
               Смотреть все
             </Link>
           </div>

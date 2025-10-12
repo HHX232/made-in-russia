@@ -15,6 +15,11 @@
   }
 }
 
+.create__images__input__label img {
+  background-color: #fff !important;
+  mix-blend-mode: multiply !important;
+}
+
 .create__images__input {
   display: grid;
   width: 100%;
@@ -32,8 +37,8 @@
     max-height: 100px;
     align-items: center;
     justify-content: center;
-    border: 1px solid #2a2e46;
-    border-radius: 10px;
+    border: 1px solid rgb(47 47 47 / 20%);
+    border-radius: 0;
     aspect-ratio: 1;
     background-color: #fcfcfc;
     cursor: pointer;

@@ -1,6 +1,7 @@
 .dark,
 .lightBlue,
-.superWhite {
+.superWhite,
+.newWhite {
   .textarea__box {
     display: flex;
     flex-direction: column;
@@ -179,6 +180,15 @@
     border: 1px solid #2a2e46;
     background-color: #fff;
     box-shadow: 0 2px 4px #00000015;
+  }
+}
+
+.newWhite {
+  .textarea__inner__box {
+    border: 1px solid rgb(47 47 47 / 20%);
+    border-radius: 0 !important;
+    background-color: #fff;
+    box-shadow: none;
   }
 }
 

@@ -1,7 +1,8 @@
 .dark,
 .lightBlue,
 .superWhite,
-.newGray {
+.newGray,
+.newWhite {
   .input__box {
     display: flex;
     flex-direction: column;
@@ -152,6 +153,20 @@
     border: 1px solid #2f2f2f33;
     border-radius: 0;
     background-color: #f6f6f6;
+    padding-inline: 15px;
+  }
+
+  .titles_box {
+    padding: 0;
+  }
+}
+
+.newWhite {
+  .input__inner__box {
+    min-height: 48px;
+    border: 1px solid #2f2f2f33;
+    border-radius: 0;
+    background-color: #fff;
     padding-inline: 15px;
   }
 

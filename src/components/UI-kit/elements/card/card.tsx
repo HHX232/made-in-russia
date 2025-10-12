@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import {DeliveryMethod, Product} from '@/services/products/product.types'
 import {memo, useId, useState} from 'react'
@@ -54,7 +55,7 @@ const Card = memo<ICardProps>(
     discountedPrice = '10000',
     fullProduct = {} as Product,
     isLoading = false,
-    // onClickFunction,
+    onClickFunction,
     canUpdateProduct = false,
     onPreventCardClick,
     specialButtonText,
@@ -95,8 +96,8 @@ const Card = memo<ICardProps>(
             }
           }
         )
-      } catch (e) {
-        console.log(e)
+      } catch {
+        // console.log(e)
         toast.dismiss(loadingToast)
 
         toast.error(
@@ -184,7 +185,7 @@ const Card = memo<ICardProps>(
       const loadingToast = toast.loading('processing...')
       try {
         const res = await instance.delete(`/products/${id}`)
-        console.log(res)
+        // console.log(res)
         toast.dismiss(loadingToast)
         toast.success(
           <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
@@ -197,8 +198,8 @@ const Card = memo<ICardProps>(
             }
           }
         )
-      } catch (e) {
-        console.log(e)
+      } catch {
+        // console.log(e)
         toast.dismiss(loadingToast)
         toast.error(
           <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
@@ -251,7 +252,7 @@ const Card = memo<ICardProps>(
     const priceCurrency = fullProduct?.priceCurrency || 'RUB'
     const isInFavorite = productInFavorites.some((product) => product.id === (fullProduct.id ? fullProduct.id : {}))
 
-    console.log(isInFavorite)
+    // console.log(isInFavorite)
 
     return (
       <>
@@ -266,6 +267,7 @@ const Card = memo<ICardProps>(
             href={`/card/${id}`}
             className={`${styles.product_card} ${status === 'PENDING' ? styles.pending : ''}`}
             key={id + idFromHook}
+            onClick={(e) => onClickFunction?.(e)}
             itemScope
             itemType='https://schema.org/Product'
           >
@@ -354,6 +356,8 @@ const Card = memo<ICardProps>(
                       e.stopPropagation()
                       e.preventDefault()
                       toggleToFavorites(fullProduct as Product)
+                      console.log('toggleFav', productInFavorites)
+                      console.log('fullProduc was toggle to favorites', fullProduct)
                     }}
                   >
                     <svg className={`${styles.icon} ${styles.icon__star_e}`}>

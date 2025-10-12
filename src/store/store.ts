@@ -9,6 +9,7 @@ import multilingualDescriptionsSlice from './multilingualDescriptionsInCard/mult
 import multiLanguageCardPriceDataSlice from './multilingualDescriptionsInCard/multiLanguageCardPriceData.slice'
 import userSlice from './User/user.slice'
 import currentLangSlice from './сurrentLangStore/сurrentLangStore.slice'
+import sliderHomeSlice from './sliderHomeSlice/sliderHomeSlice'
 
 const rootReducer = combineReducers({
   filters: filtersSlice.reducer,
@@ -19,7 +20,8 @@ const rootReducer = combineReducers({
   multilingualDescriptions: multilingualDescriptionsSlice.reducer,
   multiLanguageCardPriceData: multiLanguageCardPriceDataSlice.reducer,
   user: userSlice.reducer,
-  currentLangSlice: currentLangSlice.reducer
+  currentLangSlice: currentLangSlice.reducer,
+  sliderHomeSlice: sliderHomeSlice.reducer
 })
 
 export const store = configureStore({

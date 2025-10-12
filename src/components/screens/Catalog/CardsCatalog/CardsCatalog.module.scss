@@ -91,6 +91,10 @@
   .popularprod.section {
     padding-block-start: 1.875rem;
   }
+
+  .btn_accent_bottom {
+    max-width: 190px;
+  }
 }
 
 .popularprod .section_flexheader {
@@ -195,7 +199,9 @@
 
   // 4 колонки на широких экранах с минимумом 270px
   grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, auto));
+
+  // grid-template-rows: repeat(2, minmax(0, 1fr));
   opacity: 0;
   pointer-events: none;
   transform: none !important;
@@ -229,7 +235,7 @@
   @media (max-width: 768px) {
     gap: 14px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(4, minmax(0, 1fr)); // 8 товаров = 4 ряда × 2 колонки
+    grid-template-rows: repeat(4, minmax(0, auto)); // 8 товаров = 4 ряда × 2 колонки
   }
 
   @media (max-width: 640px) {
@@ -303,7 +309,7 @@
   }
 
   &:hover {
-    background-color: var(--accent-hover);
+    background-color: #006bff;
     box-shadow: 0 4px 12px rgb(0 71 186 / 30%);
     transform: translateY(-1px);
   }

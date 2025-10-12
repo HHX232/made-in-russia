@@ -1,20 +1,180 @@
-.comment__box {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  padding: 18px 18px 19px 8px;
-  border-radius: 10px;
-  background-color: #f4f5f6;
-  box-shadow: -2px 4px 4px #00000015;
+/* --------------------------------------------------------------
+REVIEW ACCOUNT BLOCK
+---------------------------------------------------------------- */
+
+.review-acc {
+  padding: 30px 40px;
+  border: 1px solid rgb(47 47 47 / 10%);
+  margin-bottom: 0;
+  background-color: #fff;
+
+  @media (max-width: 768px) {
+    padding: 19px 13px 16px;
+  }
+
+  .rating-stars {
+    display: flex;
+    gap: 3px;
+
+    &__item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        width: 24px;
+        height: 24px;
+
+        @media (max-width: 768px) {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
 }
 
-.comment__user__data {
+.review-acc-header {
   display: flex;
-  width: 100%;
-  align-items: center;
-  margin-bottom: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  gap: 17px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 10px;
+  }
+
+  &__group {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+
+    @media (max-width: 768px) {
+      gap: 5px;
+    }
+  }
+
+  &__avatar {
+    display: flex;
+    overflow: hidden;
+    width: 71px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 !important;
+    aspect-ratio: 1/1;
+
+    @media (max-width: 768px) {
+      width: 45px;
+    }
+
+    img {
+      width: auto;
+      max-width: 100%;
+      height: 100%;
+      border-radius: 0 !important;
+      object-fit: cover;
+      object-position: center center;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    @media (max-width: 768px) {
+      gap: 3px;
+    }
+  }
+
+  &__info-group {
+    display: flex;
+    align-items: center;
+    margin-top: -3px;
+    gap: 10px;
+
+    .info-group__title {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.34;
+
+      @media (max-width: 768px) {
+        font-size: 12px;
+        line-height: 1.2;
+      }
+    }
+
+    .info-group__date {
+      font-size: 14px;
+      opacity: 0.5;
+
+      @media (max-width: 768px) {
+        font-size: 10px;
+      }
+    }
+  }
+
+  &__rating {
+    @media (max-width: 768px) {
+      img {
+        width: 10px !important;
+        aspect-ratio: 1/1;
+      }
+    }
+  }
 }
 
+.review-acc-body {
+  &__text {
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: 400;
+
+    @media (max-width: 768px) {
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.42;
+    }
+
+    p {
+      margin-top: 10px;
+    }
+
+    p:last-child {
+      margin-top: 0;
+    }
+  }
+
+  &__collection {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    a {
+      display: flex;
+      overflow: hidden;
+      width: 52px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      aspect-ratio: 1/1;
+
+      img,
+      video {
+        width: auto;
+        max-width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center center;
+      }
+    }
+  }
+}
+
+/* Status box for admin */
 .status__box {
   display: flex;
   align-items: center;
@@ -22,12 +182,36 @@
   padding: 10px 16px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  margin-bottom: auto;
   background-color: #f9f9f9;
   color: #333;
   font-size: 14px;
   font-weight: 600;
   gap: 12px;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    padding: 8px 12px;
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  &.approved {
+    border-color: #28a745;
+    background-color: #e6f7ed;
+    color: #28a745;
+  }
+
+  &.pending {
+    border-color: #e0a800;
+    background-color: #fff9e6;
+    color: #e0a800;
+  }
+
+  &.rejected {
+    border-color: #dc3545;
+    background-color: #fdeaea;
+    color: #dc3545;
+  }
 }
 
 .status__buttons__box {
@@ -48,164 +232,56 @@
   transition:
     background 0.2s ease,
     transform 0.1s ease;
+
+  @media (max-width: 768px) {
+    width: 32px;
+    height: 32px;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 }
 
-/* approve button */
 .status__buttons__box__button__approve {
   background-color: #e6f7ed;
+
+  &:hover {
+    background-color: #d4f3e3;
+    transform: scale(1.05);
+  }
 }
 
-.status__buttons__box__button__approve svg path {
-  stroke: #28a745;
-}
-
-.status__buttons__box__button__approve:hover {
-  background-color: #d4f3e3;
-  transform: scale(1.05);
-}
-
-/* reject button */
 .status__buttons__box__button__reject {
   background-color: #fdeaea;
+
+  &:hover {
+    background-color: #f9d7d7;
+    transform: scale(1.05);
+  }
 }
 
-.status__buttons__box__button__reject svg path {
-  stroke: #dc3545;
-}
-
-.status__buttons__box__button__reject:hover {
-  background-color: #f9d7d7;
-  transform: scale(1.05);
-}
-
-/* Цвет текста статуса */
-.status__box.approved {
-  color: #28a745;
-
-  /* зеленый */
-}
-
-.status__box.pending {
-  color: #e0a800;
-
-  /* желтовато-оранжевый */
-}
-
-.status__box.rejected {
-  color: #dc3545;
-
-  /* красный */
-}
-
-.user__image {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  aspect-ratio: 1/1;
-}
-
-.start__box {
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-  gap: 5px;
-}
-
-.comment__user__data__name {
-  margin-left: 12px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.comment__user__data__date {
-  margin-left: 25px;
-  color: #818181;
-  font-size: 14px;
-}
-
-.stars__image {
-  width: 18px;
-  height: 17px;
-}
-
-.start__count {
-  font-size: 16px;
-}
-
-.start__list__images {
-  display: flex;
-  gap: 5px;
-}
-
-.images__content__list {
-  display: flex;
-  max-width: fit-content;
-  margin-bottom: 10px;
-  gap: 15px;
-}
-
+/* Modal styles */
 .modal__text {
   max-width: 500px;
   margin-top: 15px;
   font-size: 15px;
 }
 
-.images__item__image__comment__content {
-  width: 70px;
-  height: 75px;
-  border-radius: 10px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
+.extra__class__slick__slider {
+  max-width: 600px;
+  margin: 0 auto;
 
-// Add these styles to your existing Comment.module.scss file
-
-.more__images__overlay {
-  position: relative;
-}
-
-.more__images__blur {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  backdrop-filter: blur(2px);
-  background-color: rgb(129 129 129 / 80%);
-  inset: 0;
-}
-
-.more__images__text {
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  text-shadow: 1px 1px 2px rgb(0 0 0 / 80%);
-}
-
-@media (max-width: 550px) {
-  .start__list__images > li {
-    display: none;
-  }
-
-  .extra__class__slick__slider {
+  @media (max-width: 550px) {
     max-width: 420px !important;
-    margin: 0 auto;
   }
 
-  .start__list__images > li:first-child {
-    display: block !important;
-  }
-}
-
-@media (max-width: 460px) {
-  .extra__class__slick__slider {
+  @media (max-width: 460px) {
     max-width: 350px !important;
   }
-}
 
-@media (max-width: 390px) {
-  .extra__class__slick__slider {
+  @media (max-width: 390px) {
     max-width: 310px !important;
   }
 }

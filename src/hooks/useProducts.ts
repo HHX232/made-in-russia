@@ -110,6 +110,16 @@ export const useProducts = (
     await queryClient.invalidateQueries({queryKey: [PRODUCTS_QUERY_KEY]})
     queryResult.refetch()
   }
+  // useEffect(() => {
+  //   // При монтировании или возврате на страницу
+  //   // Обеспечить обновление данных
+  //   // queryClient.invalidateQueries({queryKey: [PRODUCTS_QUERY_KEY], refetchType: 'all'})
+  //   queryClient.refetchQueries({queryKey: [PRODUCTS_QUERY_KEY]})
+
+  //   // Или напрямую вызвать refetch, если необходимо
+  //   queryResult.refetch()
+  //   console.log('🚀 ~ useEffect ~ queryResult:', queryResult)
+  // }, [])
 
   return {
     ...queryResult,

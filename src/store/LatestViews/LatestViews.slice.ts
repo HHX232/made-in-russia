@@ -33,10 +33,10 @@ const latestViewsSlice = createSlice({
       // Добавляем товар в конец массива (как самый новый)
       state.latestViews.push(product)
 
-      // Если длина превышает 20, удаляем самый старый элемент (первый)
-      if (state.latestViews.length > 20) {
-        state.latestViews.shift()
-      }
+      // Убираем ограничение на длину массива
+      // if (state.latestViews.length > 20) {
+      //   state.latestViews.shift()
+      // }
 
       // Обновляем флаг isEmpty
       state.isEmpty = state.latestViews.length === 0
@@ -55,10 +55,9 @@ const latestViewsSlice = createSlice({
       state.isEmpty = true
     },
 
-    // Установка списка просмотренных товаров (например, при загрузке из localStorage)
     setLatestViews: (state, action: PayloadAction<Product[]>) => {
-      // Ограничиваем массив 20 элементами, берем последние 20
-      state.latestViews = action.payload.slice(-20)
+      // Берем все переданные товары без ограничения по количеству
+      state.latestViews = action.payload
       state.isEmpty = state.latestViews.length === 0
     }
   }

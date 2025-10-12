@@ -5,6 +5,7 @@ import latestViewsSlice from './LatestViews/LatestViews.slice'
 import multiLanguageCardPriceDataSlice from './multilingualDescriptionsInCard/multiLanguageCardPriceData.slice'
 import multilingualDescriptionsSlice from './multilingualDescriptionsInCard/multilingualDescriptions.slice'
 import {registrationSlice} from './registerUser/registerUser.slice'
+import sliderHomeSlice from './sliderHomeSlice/sliderHomeSlice'
 import userSlice from './User/user.slice'
 import currentLangSlice from './сurrentLangStore/сurrentLangStore.slice'
 
@@ -17,5 +18,6 @@ export const rootActions = {
   ...multilingualDescriptionsSlice.actions,
   ...multiLanguageCardPriceDataSlice.actions,
   ...userSlice.actions,
-  ...currentLangSlice.actions
+  ...currentLangSlice.actions,
+  ...sliderHomeSlice.actions
 }

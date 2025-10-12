@@ -26,6 +26,7 @@ interface MultiDropSelectProps {
   onSetSearchInput?: (value: string) => void
   isCategories?: boolean
   extraDropListClass?: string
+  useNewTheme?: boolean
 }
 
 const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
@@ -40,7 +41,9 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   showSearchInput = false,
   onSetSearchInput,
   isCategories = false,
-  extraDropListClass
+  extraDropListClass,
+
+  useNewTheme = true
 }) => {
   const t = useTranslations('multiDrop')
   const [isOpen, setIsOpen] = useState(false)
@@ -288,16 +291,36 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   }
 
   // Компонент заголовка дропдауна
-  const DropdownTitle = () => (
-    <div className={`${styles.dropdownTitle} ${extraClass} ${isOnlyShow ? styles.readOnly : ''}`}>
+  // Полный компонент DropdownTitle с учётом useNewTheme
+  const DropdownTitle: React.FC = () => (
+    <div
+      className={`
+      ${styles.dropdownTitle}
+      ${extraClass}
+      ${isOnlyShow ? styles.readOnly : ''}
+      ${useNewTheme ? styles.newThemeTitle : ''}
+    `}
+      onClick={() => !isOnlyShow && setIsOpen(!isOpen)}
+    >
       {selectedValues.length === 0 ? (
         <span className={styles.placeholder}>{placeholder}</span>
       ) : (
-        <div className={styles.selectedItems}>
+        <div
+          className={`
+          ${styles.selectedItems}
+          ${useNewTheme ? styles.newThemeItems : ''}
+        `}
+        >
           {selectedValues.map((item, index) => (
-            <span key={`${getComparisonKey(item)}-${index}`} className={styles.selectedItem}>
+            <span
+              key={`${getComparisonKey(item)}-${index}`}
+              className={`
+              ${styles.selectedItem}
+              ${useNewTheme ? styles.newThemeSelectedItem : ''}
+            `}
+            >
               {(item.icon || item.imageUrl) && (
-                <img src={item.imageUrl || item.icon} alt='' className={styles.itemIcon} />
+                <img src={item.imageUrl || item.icon} alt={item.label} className={styles.itemIcon} />
               )}
               <span className={styles.itemLabel}>{item.label}</span>
               {!isOnlyShow && (
@@ -310,7 +333,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
                   <svg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'>
                     <path
                       d='M9 3L3 9M3 3L9 9'
-                      stroke='currentColor'
+                      stroke='#FFFFFF'
                       strokeWidth='1.5'
                       strokeLinecap='round'
                       strokeLinejoin='round'
@@ -439,33 +462,33 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
       : options.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase())).length > 0 ||
         !searchQuery)
       ? [
-          <div style={{pointerEvents: 'none'}} key='divider' className={styles.divider} />,
-          <div key='actions' className={styles.actions}>
-            <button
-              type='button'
-              className={styles.actionButton}
-              onClick={(e) => {
-                e.stopPropagation()
-                onChange([])
-                if (isCategories) {
-                  setExpandedCategories(new Set())
-                }
-              }}
-              disabled={selectedValues.length === 0}
-            >
-              {t('clearAll')}
-            </button>
-            <button
-              type='button'
-              className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
-              onClick={(e) => {
-                e.stopPropagation()
-                setIsOpen(false)
-              }}
-            >
-              {t('ready')} ({selectedValues.length})
-            </button>
-          </div>
+          // <div style={{pointerEvents: 'none'}} key='divider' className={styles.divider} />,
+          // <div key='actions' className={styles.actions}>
+          //   <button
+          //     type='button'
+          //     className={styles.actionButton}
+          //     onClick={(e) => {
+          //       e.stopPropagation()
+          //       onChange([])
+          //       if (isCategories) {
+          //         setExpandedCategories(new Set())
+          //       }
+          //     }}
+          //     disabled={selectedValues.length === 0}
+          //   >
+          //     {t('clearAll')}
+          //   </button>
+          //   <button
+          //     type='button'
+          //     className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
+          //     onClick={(e) => {
+          //       e.stopPropagation()
+          //       setIsOpen(false)
+          //     }}
+          //   >
+          //     {t('ready')} ({selectedValues.length})
+          //   </button>
+          // </div>
         ]
       : [])
   ]

@@ -22,7 +22,7 @@ interface ITextAreaProps {
   customIcon?: StaticImageData
   customIconOnAlternativeState?: StaticImageData
   linkToHelp?: Url
-  theme?: 'dark' | 'light' | 'superWhite' | 'lightBlue'
+  theme?: 'dark' | 'light' | 'superWhite' | 'lightBlue' | 'newWhite'
   // Дополнительные события для textarea
   onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
   onFocus?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
@@ -58,7 +58,7 @@ const TextAreaUI: FC<ITextAreaProps> = ({
   customIcon,
   customIconOnAlternativeState,
   linkToHelp = '',
-  theme = 'dark',
+  theme = 'newWhite',
   onBlur,
   onFocus,
   onKeyDown,
@@ -162,7 +162,8 @@ const TextAreaUI: FC<ITextAreaProps> = ({
         [styles.dark]: theme === 'dark',
         [styles.light]: theme === 'light',
         [styles.superWhite]: theme === 'superWhite',
-        [styles.lightBlue]: theme === 'lightBlue'
+        [styles.lightBlue]: theme === 'lightBlue',
+        [styles.newWhite]: theme === 'newWhite'
       })}
     >
       <div className={`${styles.titles_box}`}>

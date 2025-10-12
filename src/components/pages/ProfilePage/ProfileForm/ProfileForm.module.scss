@@ -10,16 +10,36 @@
   width: 100%;
 }
 
+.account_form {
+  display: grid;
+  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(max(210px, 48%), 1fr));
+}
+
+.editable {
+  display: flex;
+  flex-direction: column;
+}
+
+.editable_text {
+  margin-bottom: 6px;
+}
+
+.editable_input > div:last-child {
+  padding: 13px 25px !important;
+}
+
 .region__box__input {
   display: flex;
   width: 100%;
-  padding: 11px 15px;
-  border: 2px solid #2a2e46;
-  border-radius: 10px;
+  padding: 14px 15px;
+  border: 1px solid rgb(47 47 47 / 20%);
 }
 
 // !EXTRA
 .extra_extraDropListClass {
+  transform: none !important;
+
   & > li:hover {
     background-color: transparent !important;
   }
@@ -27,21 +47,24 @@
 
 .extra__phone__class {
   & > label {
-    border: 2px solid #2a2e46;
-    border-radius: 10px;
-    background-color: #f4f5f6 !important;
+    border: 1px solid rgb(47 47 47 / 20%);
+    background-color: #fff !important;
 
     & > div {
-      padding: 10px 15px;
-      border-radius: 8px;
-      border-top: 1.5px solid #2a2e46;
-      border-right: 2px solid #2a2e46;
-      border-bottom: 1.5px solid #2a2e46;
-      background-color: #81818120;
+      padding: 14px 15px;
+
+      // border-radius: 8px;
+
+      border-top: 0 solid rgb(47 47 47 / 20%);
+      border-right: 1px solid rgb(47 47 47 / 20%);
+      border-bottom: 0 solid rgb(47 47 47 / 20%);
+      border-left: 0 solid rgb(47 47 47 / 20%);
+      background-color: #fff;
     }
 
     & > input {
       min-height: 40px;
+      border: none !important;
     }
   }
 }
@@ -85,17 +108,11 @@
 .region__box__input {
   display: flex;
   width: 100%;
-  padding: 11px 15px;
-  border: 2px solid #2a2e46;
-  border-radius: 10px;
-}
+  padding: 14px 15px;
+  border: 1px solid rgb(47 47 47 / 20%);
+  background-color: #fff;
 
-.region__box__input {
-  display: flex;
-  width: 100%;
-  padding: 11px 15px;
-  border: 2px solid #2a2e46;
-  border-radius: 10px;
+  // border-radius: 10px;
 }
 
 .modal__text {
@@ -133,18 +150,22 @@
   z-index: 555555 !important;
 }
 
+.extra_none_transform {
+  transform: none !important;
+}
+
 .profile__region__dropdown__extra {
-  z-index: 99999999;
+  z-index: 999999999;
 
   & {
     padding: 8px 12px !important;
-    border: 2px solid #2a2e46 !important;
+    border: 1px solid #ccc !important;
     border-radius: 10px !important;
     background-color: transparent !important;
   }
 
   & > div > span {
-    background-color: #fff !important;
+    background-color: #0047ba !important;
   }
 }
 

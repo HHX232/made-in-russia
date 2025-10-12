@@ -70,16 +70,16 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
   const cleanedPhone = phone.replace(/\D/g, '')
   switch (country) {
     case 'Belarus':
-      return cleanedPhone.length === 9 // Пример: 291234567 (без +375)
+      return cleanedPhone.length === 9
 
     case 'China':
-      return cleanedPhone.length === 11 // Пример: 13800138000 (без +86)
+      return cleanedPhone.length === 11
 
     case 'Russia':
-      return cleanedPhone.length === 10 // Пример: 9123456789 (без +7)
+      return cleanedPhone.length === 10
 
     case 'Kazakhstan':
-      return cleanedPhone.length === 10 // Пример: 7012345678 (без +7)
+      return cleanedPhone.length === 10
 
     case 'other':
     default:
@@ -89,25 +89,17 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
 
 // Функция для безопасного преобразования altName в TNumberStart
 const getSafeNumberStart = (regionAltName: string): TNumberStart => {
-  // console.log('getSafeNumberStart called with:', regionAltName)
-
   const validTypes: TNumberStart[] = ['China', 'Belarus', 'Russia', 'Kazakhstan', 'other']
 
-  // Проверяем точное соответствие
   if (validTypes.includes(regionAltName as TNumberStart)) {
-    // console.log('Found exact match:', regionAltName)
     return regionAltName as TNumberStart
   }
 
-  // Проверяем с учетом регистра
   const normalizedAltName = regionAltName.charAt(0).toUpperCase() + regionAltName.slice(1).toLowerCase()
   if (validTypes.includes(normalizedAltName as TNumberStart)) {
-    // console.log('Found normalized match:', normalizedAltName)
     return normalizedAltName as TNumberStart
   }
 
-  // Если altName не соответствует TNumberStart, возвращаем 'other'
-  // console.log('No match found, returning other')
   return 'other'
 }
 
@@ -119,10 +111,6 @@ const PhoneInputSection: FC<PhoneInputSectionProps> = ({
   onChangeTelNumber
 }) => {
   const numberStartWith = getSafeNumberStart(selectedRegion.altName)
-  // console.log('PhoneInputSection:', {
-  //   selectedRegion: selectedRegion.altName,
-  //   numberStartWith: numberStartWith
-  // })
   const t = useTranslations('ProfilePage.ProfileForm')
   return (
     <div className={styles.phone__input__box}>
@@ -152,21 +140,19 @@ const ProfileForm: FC<ProfileFormProps> = ({
 }) => {
   const [password, setPassword] = useState('')
   const [telText, setTelText] = useState('')
-  // const [trueTelephoneNumber, setTrueTelephoneNumber] = useState('')
   const [isValidNumber, setIsValidNumber] = useState(true)
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [error, setError] = useState<string | null>(null)
   const currentLang = useCurrentLanguage()
   const t = useTranslations('ProfilePage.ProfileForm')
   const {updateVendorDetails: updateVendorDetailsAction, updateUserProfile, updateVendorAddress} = useActions()
-  // const user = useTypedSelector((s) => s.user.user)
   const vendorDetails = useTypedSelector((s) => s.user.user?.vendorDetails, shallowEqual)
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const categories = await CategoriesService.getAll(currentLang)
         setAllCategories(categories)
-
         setError(null)
       } catch (err) {
         setError(t('errorLoadingCAtegoryes'))
@@ -192,24 +178,20 @@ const ProfileForm: FC<ProfileFormProps> = ({
 
   const flattenedCategories = flattenCategories(allCategories)
 
-  // Функция для определения региона по номеру телефона
   const detectRegionFromPhone = (phoneNumber: string): string => {
     if (!phoneNumber) return 'other'
 
     const cleaned = phoneNumber.replace(/\D/g, '')
-    // console.log('detectRegionFromPhone - cleaned number:', cleaned)
 
-    // Проверяем известные коды стран
     if (cleaned.startsWith('375')) return 'Belarus'
     if (cleaned.startsWith('86')) return 'China'
     if (cleaned.startsWith('7')) {
-      // console.log('Detected Russia/Kazakhstan from phone starting with 7')
-      return 'Russia' // или Kazakhstan
+      return 'Russia'
     }
 
-    // Если номер не начинается с известного кода - это "other"
     return 'other'
   }
+
   const getOtherRegion = (regions: RegionType[]): RegionType => {
     return (
       regions.find((r) => r.altName === 'other') || {
@@ -221,16 +203,13 @@ const ProfileForm: FC<ProfileFormProps> = ({
   }
 
   const [selectedRegion, setSelectedRegion] = useState<RegionType>(() => {
-    // Для вендора проверяем количество стран
     if (isVendor && userData?.vendorDetails?.countries) {
       const countries = userData.vendorDetails.countries
 
-      // Если стран больше одной - используем 'other'
       if (countries.length > 1) {
         return getOtherRegion(regions)
       }
 
-      // Если одна страна - ищем соответствующий регион
       if (countries.length === 1) {
         const firstCountryName = countries[0].name
         const vendorRegion = regions.find(
@@ -242,7 +221,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
       }
     }
 
-    // Приоритет 1: Проверяем сохраненный регион пользователя (для обычных пользователей)
     if (userData?.region) {
       const userRegion = regions.find((region) => region.altName === userData.region)
       if (userRegion) {
@@ -250,7 +228,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
       }
     }
 
-    // Приоритет 2: Если регион не найден, пытаемся определить по номеру телефона
     if (userData?.phoneNumber) {
       const detectedRegionName = detectRegionFromPhone(userData.phoneNumber)
       const detectedRegion = regions.find((r) => r.altName === detectedRegionName)
@@ -260,7 +237,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
       }
     }
 
-    // Приоритет 3: Используем 'other' как значение по умолчанию
     return getOtherRegion(regions)
   })
 
@@ -275,17 +251,14 @@ const ProfileForm: FC<ProfileFormProps> = ({
   const [inn, setInn] = useState('')
   const [categories, setCategories] = useState<MultiSelectOption[]>([])
 
-  // Новый флаг для отслеживания взаимодействия пользователя
   const [userInteracted, setUserInteracted] = useState(false)
 
-  // Сохраняем оригинальные данные для сравнения
   const [originalData, setOriginalData] = useState<{
     phoneNumber: string
     region: string
     address: string
   } | null>(null)
 
-  // Функция для вызова колбэков с обновленными данными
   useEffect(() => {
     if (!userInteracted) return
 
@@ -308,12 +281,11 @@ const ProfileForm: FC<ProfileFormProps> = ({
     }
   }, [telText, selectedRegion.altName, password, isVendor, selectedCountries, inn, categories, userInteracted])
 
-  // Инициализация vendor данных
   useEffect(() => {
     if (userData?.vendorDetails?.inn) {
       setInn(userData?.vendorDetails?.inn)
     }
-    // console.log('userData?.vendorDetails?.countries', userData?.vendorDetails?.countries)
+
     if (userData?.vendorDetails?.countries) {
       const countryOptions = userData?.vendorDetails?.countries.map((country) => ({
         id: country.id,
@@ -332,6 +304,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
       }))
       setSelectedCountries(countryOptions)
     }
+
     if (userData?.vendorDetails?.productCategories) {
       const categoryOptions = userData?.vendorDetails?.productCategories.map((category) => ({
         id: category.id,
@@ -362,12 +335,8 @@ const ProfileForm: FC<ProfileFormProps> = ({
     }
   }
 
-  // Обновленная функция safeSetNeedToSave
   const safeSetNeedToSave = useCallback(
     (value: boolean) => {
-      // Устанавливаем needToSave только если:
-      // 1. Инициализация завершена
-      // 2. Пользователь взаимодействовал с формой
       if (isPhoneInitialized && userInteracted) {
         setNeedToSave(value)
       }
@@ -375,15 +344,11 @@ const ProfileForm: FC<ProfileFormProps> = ({
     [isPhoneInitialized, userInteracted, setNeedToSave]
   )
 
-  // Инициализация данных пользователя
   useEffect(() => {
     if (userData && !isPhoneInitialized) {
-      // Определяем правильный регион для оригинальных данных
       let originalRegion = userData.region
 
       if (!originalRegion || !regions.find((r) => r.altName === originalRegion)) {
-        // Если регион не указан или не найден в списке,
-        // определяем его по номеру телефона
         originalRegion = detectRegionFromPhone(userData.phoneNumber || '')
       }
 
@@ -399,31 +364,23 @@ const ProfileForm: FC<ProfileFormProps> = ({
         address: (userData as any)?.vendorDetails?.address || ''
       })
 
-      // Устанавливаем текущие значения
       setTelText(userData.phoneNumber || '')
       setIsPhoneInitialized(true)
     }
   }, [userData, isPhoneInitialized, regions])
 
-  // Проверка изменений
   useEffect(() => {
     if (!isPhoneInitialized || !userData || !originalData || !userInteracted) return
 
-    // Получаем национальные номера для текущего ввода и оригинальных данных
     const currentNational = getNationalNumber(telText, selectedRegion.altName)
     const originalNational = getNationalNumber(originalData.phoneNumber, originalData.region)
 
-    // Сравниваем регион
     const isRegionChanged = selectedRegion.altName !== originalData.region
-
-    // Сравниваем национальные номера
     const isPhoneChanged = currentNational !== originalNational
 
-    // ➕ Сравниваем адрес
     const currentAddress = vendorDetails?.address || ''
     const isAddressChanged = currentAddress !== originalData.address
 
-    // ➕ Учитываем изменение адреса в проверке
     safeSetNeedToSave(isRegionChanged || isPhoneChanged || isAddressChanged)
   }, [
     telText,
@@ -433,14 +390,13 @@ const ProfileForm: FC<ProfileFormProps> = ({
     userInteracted,
     originalData,
     safeSetNeedToSave,
-    vendorDetails?.address // ➕ Добавляем зависимость от адреса
+    vendorDetails?.address
   ])
-  // Установка региона из userData
+
   useEffect(() => {
     if (userData && !userInteracted) {
       let regionToSet: RegionType | undefined
 
-      // Для вендора сначала проверяем countries
       if (isVendor && userData?.vendorDetails && userData.vendorDetails?.countries?.length > 0) {
         const firstCountryName = userData.vendorDetails.countries[0].name
         regionToSet = regions.find((region) => region.altName === firstCountryName || region.title === firstCountryName)
@@ -449,12 +405,10 @@ const ProfileForm: FC<ProfileFormProps> = ({
         }
       }
 
-      // Если не нашли для вендора или это обычный пользователь
       if (!regionToSet && userData.region) {
         regionToSet = regions.find((region) => region.altName === userData.region)
       }
 
-      // Если не нашли - определяем по номеру телефона
       if (!regionToSet && userData.phoneNumber) {
         const detectedRegionName = detectRegionFromPhone(userData.phoneNumber)
         regionToSet = regions.find((r) => r.altName === detectedRegionName)
@@ -463,7 +417,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
         }
       }
 
-      // Если все еще не нашли - используем "other"
       if (!regionToSet) {
         regionToSet = regions.find((r) => r.altName === 'other')
       }
@@ -474,34 +427,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
     }
   }, [userData, regions, userInteracted, isVendor])
 
-  // Вычисление национального номера
-  // useEffect(() => {
-  //   const cleanedNumber = telText.replace(/\D/g, '')
-  //   let nationalNumber = cleanedNumber
-
-  //   switch (selectedRegion.altName) {
-  //     case 'Belarus':
-  //       if (cleanedNumber.startsWith('375')) {
-  //         nationalNumber = cleanedNumber.slice(3)
-  //       }
-  //       break
-  //     case 'China':
-  //       if (cleanedNumber.startsWith('86')) {
-  //         nationalNumber = cleanedNumber.slice(2)
-  //       }
-  //       break
-  //     case 'Russia':
-  //     case 'Kazakhstan':
-  //       if (cleanedNumber.startsWith('7')) {
-  //         nationalNumber = cleanedNumber.slice(1)
-  //       }
-  //       break
-  //   }
-
-  //   setTrueTelephoneNumber(nationalNumber)
-  // }, [telText, selectedRegion.altName])
-
-  // Очистка таймера при размонтировании
   useEffect(() => {
     return () => {
       if (timerRef.current) {
@@ -510,33 +435,17 @@ const ProfileForm: FC<ProfileFormProps> = ({
     }
   }, [])
 
-  // Для отладки
-  // useEffect(() => {
-  //   console.log('ProfileForm Debug:', {
-  //     userData_phoneNumber: userData?.phoneNumber,
-  //     userData_region: userData?.region,
-  //     detected_region: userData?.phoneNumber ? detectRegionFromPhone(userData.phoneNumber) : 'N/A',
-  //     selected_region: selectedRegion.altName,
-  //     regions_available: regions.map((r) => r.altName)
-  //   })
-  // }, [userData, selectedRegion, regions])
-
-  // Обновленный handleRegionSelect
   const handleRegionSelect = (region: RegionType) => {
-    // Устанавливаем флаг взаимодействия при выборе региона
     setUserInteracted(true)
     setSelectedRegion(region)
     setListIsOpen(false)
 
-    // При смене региона проверяем валидность текущего номера
     const cleanedNumber = telText.replace(/\D/g, '')
     const isValid = validatePhoneLength(cleanedNumber, getSafeNumberStart(region.altName))
     setIsValidNumber(isValid)
   }
 
-  // Обновленный onChangeTelNumber
   const onChangeTelNumber = (val: string) => {
-    // Устанавливаем флаг взаимодействия при вводе номера
     if (!userInteracted) {
       setUserInteracted(true)
     }
@@ -544,14 +453,12 @@ const ProfileForm: FC<ProfileFormProps> = ({
     const cleanedNumber = val.replace(/\D/g, '')
     const countryForValidation = getSafeNumberStart(selectedRegion.altName)
 
-    // Валидация должна происходить на очищенном номере БЕЗ форматирования
     const isValid = validatePhoneLength(cleanedNumber, countryForValidation)
 
     updateUserProfile({phoneNumber: cleanedNumber})
-    setTelText(cleanedNumber) // Сохраняем только цифры
+    setTelText(cleanedNumber)
     setIsValidNumber(isValid)
 
-    // Вычисляем национальный номер для других целей
     let nationalNumber = cleanedNumber
     switch (countryForValidation) {
       case 'Belarus':
@@ -571,8 +478,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
         }
         break
     }
-
-    // setTrueTelephoneNumber(nationalNumber)
   }
 
   const handlePasswordBlur = () => {
@@ -660,12 +565,10 @@ const ProfileForm: FC<ProfileFormProps> = ({
   ]
 
   const determineSelectedRegion = (selectedCountries: MultiSelectOption[], regions: RegionType[]): RegionType => {
-    // Если стран больше одной или нет - используем 'other'
     if (selectedCountries.length !== 1) {
       return getOtherRegion(regions)
     }
 
-    // Если одна страна - находим соответствующий регион
     const countryValue = selectedCountries[0].value
     const region = regions.find(
       (r) =>
@@ -674,15 +577,14 @@ const ProfileForm: FC<ProfileFormProps> = ({
 
     return region || getOtherRegion(regions)
   }
+
   useEffect(() => {
     if (isVendor && userInteracted) {
       const newSelectedRegion = determineSelectedRegion(selectedCountries, regions)
 
-      // Обновляем selectedRegion только если он изменился
       if (newSelectedRegion.altName !== selectedRegion.altName) {
         setSelectedRegion(newSelectedRegion)
 
-        // Проверяем валидность текущего номера для нового региона
         if (telText) {
           const cleanedNumber = telText.replace(/\D/g, '')
           const isValid = validatePhoneLength(cleanedNumber, getSafeNumberStart(newSelectedRegion.altName))
@@ -693,7 +595,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
   }, [selectedCountries, isVendor, userInteracted, regions, selectedRegion.altName, telText])
 
   return (
-    <div className={styles.create__box}>
+    <div className={styles.account_form}>
       <ModalWindowDefault isOpen={modalIsOpen} onClose={closeModal}>
         <p className={`${styles.modal__text}`}>{t('wannaChangePassword')}</p>
         <p className={`${styles.modal__text__mini}`}>{t('enterCodeFromEmail')}</p>
@@ -701,162 +603,196 @@ const ProfileForm: FC<ProfileFormProps> = ({
           <InputOtp length={4} onComplete={closeModalOtp} />
         </div>
       </ModalWindowDefault>
-      {isShowForOwner && (
-        <TextInputUI
-          extraClass={styles.extra__input}
-          theme='light'
-          currentValue={password}
-          onSetValue={(value) => {
-            setPassword(value)
-            if (value.length > 0) {
-              setUserInteracted(true)
-            }
-          }}
-          isSecret={true}
-          title={t('password')}
-          placeholder={t('createNewPassword')}
-          onBlur={handlePasswordBlur}
-          onFocus={handlePasswordFocus}
-        />
-      )}
-      <div className={styles.region__box}>
-        <p style={{cursor: 'pointer'}} onClick={() => setListIsOpen(!listIsOpen)} className={styles.input__title}>
-          {t('regions')}
-        </p>
-        {!isVendor ? (
-          <div className={styles.region__box__input}>
-            <RegionDropList
-              regions={regions}
-              selectedRegion={selectedRegion}
-              listIsOpen={listIsOpen}
-              setListIsOpen={setListIsOpen}
-              handleRegionSelect={handleRegionSelect}
-              extraClass={styles.profile__region__dropdown}
-            />
-          </div>
-        ) : (
-          <span>
-            <MultiDropSelect
-              isOnlyShow={!isShowForOwner}
-              extraClass={styles.profile__region__dropdown__extra}
-              options={countryOptions}
-              selectedValues={selectedCountries}
-              onChange={(values) => {
-                console.log('selected countries before change', selectedCountries)
-                setSelectedCountries(values)
-                setUserInteracted(true)
-                console.log('country values', values)
-                console.log('selected countries after change', selectedCountries)
-                updateVendorDetailsAction({
-                  ...vendorDetails,
-                  countries: values.map((el) => {
-                    return {name: el.label, value: el.value}
-                  })
-                })
 
-                // selectedRegion будет обновлен через useEffect выше
-              }}
-              placeholder={t('selectRegions')}
-              direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}
-            />
-            {/* <p>{vendorDetails?.countries?.map((value) => value?.name).join(', ')}</p> */}
-          </span>
-        )}
+      {/* <div className={styles.form_row}> */}
+      {isShowForOwner && (
+        <div className={styles.form_col_half}>
+          <div className={styles.editable}>
+            <span className={styles.editable_text}>{t('password')}</span>
+            <div className={styles.editable_wrap}>
+              <TextInputUI
+                extraClass={styles.editable_input}
+                theme='newWhite'
+                currentValue={password}
+                onSetValue={(value) => {
+                  setPassword(value)
+                  if (value.length > 0) {
+                    setUserInteracted(true)
+                  }
+                }}
+                isSecret={true}
+                placeholder={t('createNewPassword')}
+                onBlur={handlePasswordBlur}
+                onFocus={handlePasswordFocus}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.form_col_half}>
+        <div className={styles.editable}>
+          <span className={styles.editable_text}>{t('regions')}</span>
+          <div className={styles.editable_wrap}>
+            {!isVendor ? (
+              <div className={styles.region__box__input}>
+                <RegionDropList
+                  regions={regions}
+                  selectedRegion={selectedRegion}
+                  listIsOpen={listIsOpen}
+                  setListIsOpen={setListIsOpen}
+                  handleRegionSelect={handleRegionSelect}
+                  extraClass={styles.profile__region__dropdown}
+                />
+              </div>
+            ) : (
+              <MultiDropSelect
+                isOnlyShow={!isShowForOwner}
+                extraDropListClass={styles.extra_none_transform}
+                extraClass={styles.profile__region__dropdown__extra}
+                options={countryOptions}
+                selectedValues={selectedCountries}
+                onChange={(values) => {
+                  console.log('selected countries before change', selectedCountries)
+                  setSelectedCountries(values)
+                  setUserInteracted(true)
+                  console.log('country values', values)
+                  console.log('selected countries after change', selectedCountries)
+                  updateVendorDetailsAction({
+                    ...vendorDetails,
+                    countries: values.map((el) => {
+                      return {name: el.label, value: el.value}
+                    })
+                  })
+                }}
+                placeholder={t('selectRegions')}
+                direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'bottom'}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+      {/* </div> */}
+
+      {isVendor && (
+        <div className={styles.form_row}>
+          <div className={styles.form_col_full}>
+            <div className={styles.editable}>
+              <span className={styles.editable_text}>{t('address')}</span>
+              <div className={styles.editable_wrap}>
+                <TextInputUI
+                  disabled={!isShowForOwner}
+                  extraClass={styles.editable_input}
+                  theme='newWhite'
+                  readOnly={!!onlyShowAddress}
+                  currentValue={!isShowForOwner ? onlyShowAddress || '' : vendorDetails?.address || ''}
+                  onSetValue={(value) => {
+                    updateVendorAddress(value)
+                    updateVendorDetailsAction({...vendorDetails, address: value})
+                    console.log('value on set adress', value, 'vendorDetails after setter', vendorDetails)
+                    if (value.length > 0) {
+                      setUserInteracted(true)
+                    }
+                  }}
+                  placeholder={t('addressPlaceholder')}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.form_row}>
+        <div className={styles.form_col_half}>
+          <div className={styles.editable}>
+            <span className={styles.editable_text}>{t('phoneNumber')}</span>
+            <div className={styles.editable_wrap}>
+              <TelephoneInputUI
+                isOnlyShow={!isShowForOwner}
+                currentValue={telText}
+                extraClass={styles.extra__phone__class}
+                error={!isValidNumber ? 'error' : ''}
+                onSetValue={onChangeTelNumber}
+                numberStartWith={getSafeNumberStart(selectedRegion.altName)}
+              />
+            </div>
+          </div>
+        </div>
       </div>
       {isVendor && (
-        <div style={{margin: '5px 0 5px 0'}} className={styles.inn__box}>
-          <TextInputUI
-            disabled={!isShowForOwner}
-            extraClass={`${styles.extra__input} ${styles.extra__input__inn}`}
-            theme='light'
-            readOnly={!!onlyShowAddress}
-            currentValue={!isShowForOwner ? onlyShowAddress || '' : vendorDetails?.address || ''}
-            onSetValue={(value) => {
-              updateVendorAddress(value)
-              updateVendorDetailsAction({...vendorDetails, address: value})
-              console.log('value on set adress', value, 'vendorDetails after setter', vendorDetails)
-              if (value.length > 0) {
-                setUserInteracted(true)
-              }
-            }}
-            title={t('address')}
-            placeholder={t('addressPlaceholder')}
-          />
-        </div>
-      )}
-      <PhoneInputSection
-        telText={telText}
-        isShowForVendor={isShowForOwner}
-        isValidNumber={isValidNumber}
-        selectedRegion={selectedRegion}
-        onChangeTelNumber={onChangeTelNumber}
-      />
-      {isVendor && (
-        <div className={`${styles.region__box} ${styles.region__box__second}`}>
-          <p style={{cursor: 'pointer'}} onClick={() => setListIsOpen(!listIsOpen)} className={styles.input__title}>
-            {t('categoryes')}
-          </p>
-          <MultiDropSelect
-            extraDropListClass={styles.extra_extraDropListClass}
-            showSearchInput
-            isOnlyShow={!isShowForOwner}
-            extraClass={styles.profile__region__dropdown__extra}
-            options={allCategories.map((category) => ({
-              id: category.id,
-              label: category.name,
-              value: category.name,
-              imageUrl: category?.imageUrl,
-              children: category.children?.map((child) => ({
-                id: child.id,
-                label: child.name,
-                value: child.name,
-                imageUrl: child.imageUrl,
-                children: child.children?.map((grandChild) => ({
-                  id: grandChild?.id,
-                  label: grandChild?.name,
-                  value: grandChild?.name,
-                  imageUrl: grandChild?.imageUrl,
-                  children: grandChild?.children?.map((greatGrandChild) => ({
-                    id: greatGrandChild?.id,
-                    label: greatGrandChild?.name,
-                    value: greatGrandChild?.name,
-                    imageUrl: greatGrandChild?.imageUrl
+        <div className={styles.form_col_half}>
+          <div className={styles.editable}>
+            <span className={styles.editable_text}>{t('categoryes')}</span>
+            <div className={styles.editable_wrap}>
+              <MultiDropSelect
+                extraDropListClass={styles.extra_extraDropListClass}
+                showSearchInput
+                isOnlyShow={!isShowForOwner}
+                extraClass={styles.profile__region__dropdown__extra}
+                options={allCategories.map((category) => ({
+                  id: category.id,
+                  label: category.name,
+                  value: category.name,
+                  imageUrl: category?.imageUrl,
+                  children: category.children?.map((child) => ({
+                    id: child.id,
+                    label: child.name,
+                    value: child.name,
+                    imageUrl: child.imageUrl,
+                    children: child.children?.map((grandChild) => ({
+                      id: grandChild?.id,
+                      label: grandChild?.name,
+                      value: grandChild?.name,
+                      imageUrl: grandChild?.imageUrl,
+                      children: grandChild?.children?.map((greatGrandChild) => ({
+                        id: greatGrandChild?.id,
+                        label: greatGrandChild?.name,
+                        value: greatGrandChild?.name,
+                        imageUrl: greatGrandChild?.imageUrl
+                      }))
+                    }))
                   }))
-                }))
-              }))
-            }))}
-            isCategories={true}
-            selectedValues={categories}
-            onChange={(values) => {
-              setCategories(values)
-              setUserInteracted(true)
-              updateVendorDetailsAction({
-                ...vendorDetails,
-                productCategories: values.map((el) => {
-                  return {id: el?.id.toString(), name: el?.value, icon: el?.icon}
-                })
-              })
-            }}
-            placeholder={t('selectCategoryes')}
-            direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}
-          />
+                }))}
+                isCategories={true}
+                selectedValues={categories}
+                onChange={(values) => {
+                  setCategories(values)
+                  setUserInteracted(true)
+                  updateVendorDetailsAction({
+                    ...vendorDetails,
+                    productCategories: values.map((el) => {
+                      return {id: el?.id.toString(), name: el?.value, icon: el?.icon}
+                    })
+                  })
+                }}
+                placeholder={t('selectCategoryes')}
+                direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'bottom'}
+              />
+            </div>
+          </div>
         </div>
       )}
       {isVendor && (
-        <div style={{margin: '5px 0 0px 0'}} className={styles.inn__box}>
-          <TextInputUI
-            disabled={!isShowForOwner}
-            extraClass={`${styles.extra__input} ${styles.extra__input__inn}`}
-            theme='light'
-            currentValue={inn}
-            onSetValue={(value) => {
-              setInn(value)
-              setUserInteracted(true)
-              updateVendorDetailsAction({...vendorDetails, inn: value})
-            }}
-            title={t('inn')}
-            placeholder={t('innPlaceholder')}
-          />
+        <div className={styles.form_row}>
+          <div className={styles.form_col_full}>
+            <div className={styles.editable}>
+              <span className={styles.editable_text}>{t('inn')}</span>
+              <div className={styles.editable_wrap}>
+                <TextInputUI
+                  disabled={!isShowForOwner}
+                  extraClass={styles.editable_input}
+                  theme='newWhite'
+                  currentValue={inn}
+                  onSetValue={(value) => {
+                    setInn(value)
+                    setUserInteracted(true)
+                    updateVendorDetailsAction({...vendorDetails, inn: value})
+                  }}
+                  placeholder={t('innPlaceholder')}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

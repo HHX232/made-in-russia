@@ -251,7 +251,7 @@ interface PromoProps {
   baseUrl?: string
   siteTitle?: string
 }
-
+// url('./images/main/main-10-bg.webp' './images/main/main-12-bg.webp' ./images/main/main-13-bg.webp
 const Promo: FC<PromoProps> = ({
   ads,
   organizationName = 'Exporteru',

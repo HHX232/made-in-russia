@@ -1,127 +1,23 @@
 'use client'
 import {FC, useEffect, useState} from 'react'
 import styles from './ProfilePageBottom.module.scss'
-import Image from 'next/image'
 import {Review} from '@/services/card/card.types'
 import Comment from '@/components/UI-kit/elements/Comment/Comment'
 import {useTranslations} from 'next-intl'
 import instance from '@/api/api.interceptor'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
-type delStatus = 'Оформлен' | 'Доставлен' | 'Отменен' | 'Доставка'
-
-interface IDeliveryListItemProps {
-  count: number
-  title: string
-  imageUrl: string
-  miniDescription: string
-  price: number
-  priceByOne: number
-  status: delStatus
-  byDate: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DeliveryListItem: FC<IDeliveryListItemProps> = ({
-  count,
-  title,
-  imageUrl,
-  miniDescription,
-  price,
-  status,
-  byDate,
-  priceByOne
-}) => {
-  return (
-    <li className={`${styles.delivery__list__item}`}>
-      <Image className={`${styles.delivery__list__item__image}`} src={imageUrl} alt={title} width={105} height={105} />
-      <div className={`${styles.descr__box}`}>
-        <p className={`${styles.descr__box__title}`}>{title}</p>
-        <p className={`${styles.descr__box__miniDescription}`}>{miniDescription}</p>
-        <p className={`${styles.descr__box__status} ${status === 'Доставлен' ? styles.delivered : ''}`}>{status}</p>
-        <p className={`${styles.descr__box__byDate}`}>{'Оформлено: ' + byDate}</p>
-      </div>
-      <div className={`${styles.price__box}`}>
-        <div className={`${styles.price__text}`}>Итого:</div>
-        <div className={`${styles.prices}`}>
-          <div className={`${styles.full__price}`}>{price + ' RUB'}</div>
-          <div className={`${styles.one__box}`}>
-            <div className={`${styles.price__by__one} ${styles.price__by__one__start}`}>{priceByOne + ' RUB'}</div>
-            <div className={`${styles.price__by__one}`}>{' * ' + count}</div>
-          </div>
-        </div>
-      </div>
-    </li>
-  )
-}
-
-// const deliveryListData: IDeliveryListItemProps[] = [
-//   {
-//     count: 1,
-//     title: 'Фанера Fandok 12 мм 1525x1525 сорт 2/4  Фанера Fandok 12 мм 1525x1525 сорт 2/4 ',
-//     imageUrl: '/profile/image2.png',
-//     miniDescription: '10шт. 1525x1525 и еще какие нибудь важные слова описания, просто чтоб выглядело круто',
-//     price: 1000,
-//     priceByOne: 1000,
-//     status: 'Оформлен',
-//     byDate: '2025-06-03'
-//   },
-//   {
-//     count: 2,
-//     title: 'Панель ПВХ Europrofile Бамбук светлый ',
-//     imageUrl: '/profile/image1.png',
-//     miniDescription: '10шт. 1525x1525',
-//     price: 3000,
-//     priceByOne: 1500,
-//     status: 'Доставлен',
-//     byDate: '2025-06-03'
-//   },
-//   {
-//     count: 2,
-//     title: 'Панель ПВХ Europrofile Бамбук светлый ',
-//     imageUrl: '/profile/image1.png',
-//     miniDescription: '10шт. 1525x1525',
-//     price: 3000,
-//     priceByOne: 1500,
-//     status: 'Доставлен',
-//     byDate: '2025-06-03'
-//   },
-//   {
-//     count: 2,
-//     title: 'Панель ПВХ Europrofile Бамбук светлый ',
-//     imageUrl: '/profile/image1.png',
-//     miniDescription: '10шт. 1525x1525',
-//     price: 3000,
-//     priceByOne: 1500,
-//     status: 'Доставлен',
-//     byDate: '2025-06-03'
-//   },
-//   {
-//     count: 2,
-//     title: 'Панель ПВХ Europrofile Бамбук светлый ',
-//     imageUrl: '/profile/image1.png',
-//     miniDescription: '10шт. 1525x1525',
-//     price: 3000,
-//     priceByOne: 1500,
-//     status: 'Доставлен',
-//     byDate: '2025-06-03'
-//   },
-//   {
-//     count: 2,
-//     title: 'Панель ПВХ Europrofile Бамбук светлый ',
-//     imageUrl: '/profile/image1.png',
-//     miniDescription: '10шт. 1525x1525',
-//     price: 3000,
-//     priceByOne: 1500,
-//     status: 'Доставлен',
-//     byDate: '2025-06-03'
-//   }
-// ]
-
 const ProfilePageBottomDelivery: FC = () => {
   const t = useTranslations('ProfilePage.ProfilePageBottomDelivery')
   const [reviews, setReviews] = useState<Review[]>([])
+  const [isClient, setIsClient] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 3
   const currentLang = useCurrentLanguage()
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -139,18 +35,138 @@ const ProfilePageBottomDelivery: FC = () => {
     }
     fetchReviews()
   }, [currentLang])
+
+  const totalPages = Math.ceil(reviews.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentReviews = reviews.slice(startIndex, endIndex)
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page)
+      window.scrollTo({top: 0, behavior: 'smooth'})
+    }
+  }
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null
+
+    const pages = []
+
+    // Первая страница
+    pages.push(
+      <a
+        key={1}
+        href='#'
+        onClick={(e) => {
+          e.preventDefault()
+          handlePageChange(1)
+        }}
+        className={`${styles.exp_pagination__link} ${currentPage === 1 ? styles.exp_pagination__link_active : ''}`}
+      >
+        1
+      </a>
+    )
+
+    const startPage = Math.max(2, currentPage - 1)
+    const endPage = Math.min(totalPages - 1, currentPage + 1)
+
+    // Многоточие после первой страницы
+    if (startPage > 2) {
+      pages.push(
+        <span key='ellipsis-start' className={styles.exp_pagination__ellipsis}>
+          ...
+        </span>
+      )
+    }
+
+    // Страницы в середине
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <a
+          key={i}
+          href='#'
+          onClick={(e) => {
+            e.preventDefault()
+            handlePageChange(i)
+          }}
+          className={`${styles.exp_pagination__link} ${currentPage === i ? styles.exp_pagination__link_active : ''}`}
+        >
+          {i}
+        </a>
+      )
+    }
+
+    // Многоточие перед последней страницей
+    if (endPage < totalPages - 1) {
+      pages.push(
+        <span key='ellipsis-end' className={styles.exp_pagination__ellipsis}>
+          ...
+        </span>
+      )
+    }
+
+    // Последняя страница
+    if (totalPages > 1) {
+      pages.push(
+        <a
+          key={totalPages}
+          href='#'
+          onClick={(e) => {
+            e.preventDefault()
+            handlePageChange(totalPages)
+          }}
+          className={`${styles.exp_pagination__link} ${
+            currentPage === totalPages ? styles.exp_pagination__link_active : ''
+          }`}
+        >
+          {totalPages}
+        </a>
+      )
+    }
+
+    return (
+      <div className={styles.justify_content_center}>
+        <div className={styles.exp_pagination}>
+          <a
+            href='#'
+            onClick={(e) => {
+              e.preventDefault()
+              handlePageChange(currentPage - 1)
+            }}
+            className={`${styles.exp_pagination__link} ${styles.exp_pagination__link_prev} ${
+              currentPage === 1 ? styles.exp_pagination__link_disabled : ''
+            }`}
+          />
+          {pages}
+          <a
+            href='#'
+            onClick={(e) => {
+              e.preventDefault()
+              handlePageChange(currentPage + 1)
+            }}
+            className={`${styles.exp_pagination__link} ${styles.exp_pagination__link_next} ${
+              currentPage === totalPages ? styles.exp_pagination__link_disabled : ''
+            }`}
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className={`${styles.delivery__box}`}>
-      <h3 className={`${styles.delivery__box__title}`}>{t('title')}</h3>
-      <ul className={`${styles.delivery__list}`}>
-        {/* {deliveryListData.map((el, i) => {
-          return <DeliveryListItem key={i} {...el} />
-        })} */}
-        {reviews?.length === 0 && <p>{t('noReviews')}</p>}
-        {reviews?.map((el, i) => {
-          return <Comment key={i} {...el} />
-        })}
-      </ul>
+      {isClient && reviews?.length === 0 && <p className={styles.no_reviews_message}>{t('noReviews')}</p>}
+      {isClient && reviews?.length > 0 && (
+        <>
+          <ul className={`${styles.delivery__list}`}>
+            {currentReviews.map((el, i) => {
+              return <Comment key={el.id || i} {...el} />
+            })}
+          </ul>
+          {renderPagination()}
+        </>
+      )}
     </div>
   )
 }

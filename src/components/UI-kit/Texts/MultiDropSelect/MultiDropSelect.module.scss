@@ -12,7 +12,6 @@
   width: 100%;
   padding: 12px 16px;
   border: 2px solid #dee2e6;
-  border-radius: 8px;
   font-size: 14px;
   outline: none;
   transition: all 0.2s ease;
@@ -92,9 +91,23 @@
 .selectedItems {
   display: flex;
   flex: 1;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-right: 8px;
   gap: 6px;
+
+  & > span {
+    min-width: max-content;
+
+    & > span {
+      display: -webkit-box;
+      overflow: hidden;
+      max-width: 200px;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      text-overflow: ellipsis;
+      white-space: normal;
+    }
+  }
 }
 
 .selectedItem {
@@ -137,10 +150,12 @@
   background: transparent;
   color: #666;
   cursor: pointer;
+  opacity: 0.75;
   transition: color 0.2s;
 
   &:hover {
     color: #333;
+    opacity: 1;
   }
 }
 
@@ -446,4 +461,61 @@
   .notFoundSubtext {
     font-size: 13px;
   }
+}
+
+/* Новый дизайн для заголовка */
+.newThemeTitle {
+  border: 1px solid #ccc !important;
+  border-radius: 0 !important;
+  background-color: #fff !important;
+}
+
+/* Контейнер выбранных элементов — горизонтальный скролл */
+.newThemeItems {
+  display: flex;
+  padding-bottom: 4px;
+  gap: 8px;
+
+  /* Firefox */
+  -ms-overflow-style: none;
+  overflow-x: auto;
+
+  /* Скрыть скроллбар для всех браузеров */
+  scrollbar-width: none;
+  white-space: nowrap;
+
+  /* Internet Explorer и Edge */
+}
+
+.newThemeItems::-webkit-scrollbar {
+  display: none;
+
+  /* Chrome, Safari, Opera */
+}
+
+/* Оформление каждого выбранного элемента */
+.newThemeSelectedItem {
+  border-radius: 0 !important;
+  background-color: #0047ba !important;
+  color: #fff !important;
+}
+
+/* Убираем все закругления глобально при useNewTheme */
+.newThemeTitle,
+.newThemeSelectedItem,
+.newThemeItems,
+.multiDropSelect,
+.dropListContent,
+.optionItem,
+.categoryItem,
+.actionButton,
+.radioWrapper {
+  border-radius: 0 !important;
+}
+
+/* Отключаем усечение текста */
+.newThemeItems .itemLabel {
+  overflow: visible !important;
+  text-overflow: initial !important;
+  white-space: normal !important;
 }

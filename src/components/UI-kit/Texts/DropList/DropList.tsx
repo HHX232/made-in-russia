@@ -78,6 +78,7 @@ interface IDropListProps extends Pick<ArrowIconProps, 'color' | 'width' | 'heigh
   onChildHover?: (childId: string) => void
   closeOnScroll?: boolean
   scrollThreshold?: number
+  useNewTheme?: boolean
 }
 
 const DropList: FC<IDropListProps> = ({
@@ -105,7 +106,8 @@ const DropList: FC<IDropListProps> = ({
   parentDropListId,
   onChildHover,
   closeOnScroll = true,
-  scrollThreshold = 200
+  scrollThreshold = 200,
+  useNewTheme = true
 }) => {
   const [internalOpenState, setInternalOpenState] = useState(false)
   const openList = isOpen !== undefined ? isOpen : internalOpenState
@@ -581,14 +583,18 @@ const DropList: FC<IDropListProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className={cn(styles.list_box, extraClass)}
+      className={cn(styles.list_box, useNewTheme ? styles.list_box_new : '', extraClass)}
       style={extraStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       data-droplist-id={listId}
       data-parent-droplist-id={parentDropListId}
     >
-      <div ref={titleRef} onClick={handleClick} className={styles.list__title_box}>
+      <div
+        ref={titleRef}
+        onClick={handleClick}
+        className={`${styles.list__title_box} ${useNewTheme ? styles.list__title_box_new : ''}`}
+      >
         {typeof title === 'string' ? <span>{title}</span> : title}
         <ArrowIcon
           color={color}

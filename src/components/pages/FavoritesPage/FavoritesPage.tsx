@@ -21,6 +21,7 @@ const FavoritesPage: FC = () => {
   const currentLang = useCurrentLanguage()
   useEffect(() => {
     const ids = productInFavorites.map((product) => product.id)
+    console.log('productInFavorites', productInFavorites)
     setProductsIds(ids)
   }, [productInFavorites])
 
