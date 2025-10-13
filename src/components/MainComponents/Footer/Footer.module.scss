@@ -8,7 +8,7 @@
     display: flex;
     min-height: rem(165);
     justify-content: space-between;
-    gap: 15px;
+    gap: rem(10);
     padding-block: 22px;
 
     @include xl {
@@ -23,17 +23,13 @@
   }
 
   &__item {
-    .footer__title {
-      font-size: 1.05rem;
-    }
-
     &:nth-child(n + 2) {
       .footer__title {
         padding-left: 39px;
       }
 
       .footer__list {
-        font-size: 1rem;
+        padding-left: 41px;
       }
     }
 
@@ -81,7 +77,7 @@
 
     &:nth-child(2) {
       .footer__list {
-        gap: rem(18);
+        gap: 5px;
 
         @include sm {
           gap: 0;
@@ -119,7 +115,7 @@
   &__title {
     margin-bottom: rem(15);
     color: var(--white);
-    font-size: rem(16);
+    font-size: rem(18);
     font-weight: 500;
     line-height: 125%;
 
@@ -137,20 +133,20 @@
   &__list {
     display: flex;
     flex-direction: column;
-    gap: rem(17);
+    gap: rem(7);
 
-    // @include sm {
-    //   gap: 0;
-    // }
+    @include sm {
+      gap: 0;
+    }
   }
 
   &__link {
     display: inline-flex;
     align-items: center;
     color: var(--white);
-    font-size: rem(15);
+    font-size: rem(14);
     font-weight: 400;
-    gap: rem(16);
+    gap: rem(10);
     line-height: 200%;
 
     @include sm {
@@ -164,6 +160,10 @@
 
     svg {
       flex-shrink: 0;
+    }
+
+    span {
+      line-height: 200%;
     }
 
     .icon__phone {

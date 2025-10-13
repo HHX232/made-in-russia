@@ -25,17 +25,17 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
             <div className={`${styles.footer__item_row}`}>
               <ul className={`${styles.footer__list}`}>
                 <li>
-                  <Link className={`${styles.footer__link}`} href='#'>
+                  <Link className={`${styles.footer__link}`} href='/'>
                     Главная
                   </Link>
                 </li>
                 <li>
-                  <Link className={`${styles.footer__link}`} href='#'>
+                  <Link className={`${styles.footer__link}`} href='/'>
                     Каталог
                   </Link>
                 </li>
                 <li>
-                  <Link className={`${styles.footer__link}`} href='#'>
+                  <Link className={`${styles.footer__link}`} href='/help'>
                     Помощь
                   </Link>
                 </li>
@@ -43,17 +43,17 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
 
               <ul className={`${styles.footer__list}`}>
                 <li>
-                  <Link className={`${styles.footer__link}`} href='#'>
+                  <Link className={`${styles.footer__link}`} href='/about-us'>
                     О нас
                   </Link>
                 </li>
                 <li>
-                  <Link className={`${styles.footer__link}`} href='#'>
+                  <Link className={`${styles.footer__link}`} href='/about-us'>
                     Контакты
                   </Link>
                 </li>
                 <li>
-                  <Link className={`${styles.footer__link}`} href='#'>
+                  <Link className={`${styles.footer__link}`} href='/'>
                     Отзывы
                   </Link>
                 </li>
@@ -81,7 +81,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
                 </Link>
               </li>
               <li>
-                <Link className={`${styles.footer__link}`} href='#'>
+                <Link className={`${styles.footer__link}`} href='https://t.me/made_in_russia' target='_blank'>
                   <svg className={`${styles.icon} ${styles.icon__tg}`}>
                     <use href='/iconsNew/symbol/sprite.svg#tg'></use>
                   </svg>
@@ -95,7 +95,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
             <h3 className={`${styles.footer__title}`}>Информационный центр</h3>
             <ul className={`${styles.footer__list}`}>
               <li>
-                <Link href='#' className={`${styles.footer__link}`}>
+                <Link href='/terms' className={`${styles.footer__link}`}>
                   Правовая информация
                 </Link>
               </li>
@@ -106,12 +106,12 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
             <h3 className={`${styles.footer__title}`}>Мой профиль</h3>
             <ul className={`${styles.footer__list}`}>
               <li>
-                <Link href='#' className={`${styles.footer__link}`}>
+                <Link href='/login' className={`${styles.footer__link}`}>
                   Войти в личный кабинет
                 </Link>
               </li>
               <li>
-                <Link href='#' className={`${styles.footer__link}`}>
+                <Link href='/register' className={`${styles.footer__link}`}>
                   Регистрация
                 </Link>
               </li>
