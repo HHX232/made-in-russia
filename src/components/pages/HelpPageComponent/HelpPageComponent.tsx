@@ -1,194 +1,44 @@
 'use client'
-import {FC, useState} from 'react'
+import {FC} from 'react'
 import styles from './HelpPageComponent.module.scss'
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
-import {useTranslations} from 'next-intl'
-import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
-import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
-import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
-import {useTypedSelector} from '@/hooks/useTypedSelector'
-import {toast} from 'sonner'
-
-interface FormData {
-  name: string
-  email: string
-  subject: string
-  message: string
-  images: File[]
-}
-
-interface ValidationErrors {
-  name: string
-  email: string
-  message: string
-}
+import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
+import HelpPageSocialComponent from './HelpPageSocialComponent'
+import HelpPageFormComponent from './HelpPageFormComponent'
 
 const HelpPageComponent: FC = () => {
-  const t = useTranslations('HelpPage')
-  const user = useTypedSelector((state) => state.user.user)
-  const [formData, setFormData] = useState<FormData>({
-    name: user?.login || '',
-    email: user?.email || '',
-    subject: '',
-    message: '',
-    images: []
-  })
-  const [activeImages, setActiveImages] = useState<string[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null)
-  const [errors, setErrors] = useState<ValidationErrors>({
-    name: '',
-    email: '',
-    message: ''
-  })
-
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value
-    }))
-
-    // Очищаем ошибку при изменении поля
-    if (field in errors) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: ''
-      }))
-    }
-  }
-
-  const validateForm = (): boolean => {
-    const newErrors: ValidationErrors = {
-      name: '',
-      email: '',
-      message: ''
-    }
-
-    // Валидация имени
-    if (!formData.name.trim()) {
-      newErrors.name = t('nameError')
-    }
-
-    // Валидация email
-    if (!formData.email.trim()) {
-      newErrors.email = t('emailError')
-    } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!emailRegex.test(formData.email)) {
-        newErrors.email = t('emailFormatError')
-      }
-    }
-
-    // Валидация сообщения
-    if (!formData.message.trim()) {
-      newErrors.message = t('messageError')
-    }
-
-    setErrors(newErrors)
-
-    // Возвращаем true если нет ошибок
-    return !newErrors.name && !newErrors.email && !newErrors.message
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    // Валидация формы
-    if (!validateForm()) {
-      return
-    }
-
-    setIsSubmitting(true)
-    setSubmitStatus(null)
-
-    try {
-      const submitData = new FormData()
-
-      // JSON-данные
-      const data = {
-        username: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        body: formData.message
-      }
-      submitData.append('data', new Blob([JSON.stringify(data)], {type: 'application/json'}))
-
-      // Картинки
-      formData.images.forEach((image) => {
-        // Если image это File — просто добавляем
-        if (image instanceof File) {
-          submitData.append('media', image, image.name)
-        }
-      })
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/support`, {
-        method: 'POST',
-        body: submitData
-      })
-
-      if (response.ok) {
-        setSubmitStatus('success')
-        setFormData({
-          name: user?.login || '',
-          email: user?.email || '',
-          subject: '',
-          message: '',
-          images: []
-        })
-        setActiveImages([])
-        setErrors({
-          name: '',
-          email: '',
-          message: ''
-        })
-
-        toast.success(
-          <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successMessage')}</strong>
-          </div>,
-          {
-            style: {
-              background: '#2E7D32'
-            }
-          }
-        )
-      } else {
-        setSubmitStatus('error')
-        toast.error(
-          <div style={{lineHeight: 1.5}}>
-            <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
-          </div>,
-          {
-            style: {
-              background: '#AC2525'
-            }
-          }
-        )
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error)
-      setSubmitStatus('error')
-      toast.error(
-        <div style={{lineHeight: 1.5}}>
-          <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
-        </div>,
-        {
-          style: {
-            background: '#AC2525'
-          }
-        }
-      )
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   return (
     <div className={styles.helpPageComponent}>
       <Header />
-      <div className={styles.content}>
+      <main className='main'>
+        <div className='container'>
+          <div className={styles.breadcrumbs_wrapper}>
+            <BreadCrumbs className={styles.breadcrumbs} />
+          </div>
+        </div>
+        <div className={`${styles.contacts_container} container`}>
+          <div className={styles.contacts_layout}>
+            <div className={styles.layout_grid}>
+              <div className={`${styles.layout_col} ${styles.layout_col_order_1}`}>
+                <HelpPageSocialComponent />
+              </div>
+              <div className={`${styles.layout_col} ${styles.layout_col_order_2}`}>
+                <HelpPageFormComponent />
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+export default HelpPageComponent
+
+{
+  /* <div className={styles.content}>
         <div className={styles.formContainer}>
           <h1 className={styles.title}>{t('title')}</h1>
 
@@ -282,10 +132,5 @@ const HelpPageComponent: FC = () => {
             </div>
           </div>
         </div>
-      </div>
-      <Footer />
-    </div>
-  )
+      </div> */
 }
-
-export default HelpPageComponent

@@ -1,0 +1,235 @@
+@import '@/scss/config/mixins';
+
+/* ------------------------------------------------------------------------------------------------------------------------------
+CONTACT PAGE FORM
+-------------------------------------------------------------------------------------------------------------------------------- */
+.contacts_form {
+  padding-left: 63px;
+  color: #2f2f2f;
+
+  @include md {
+    padding-left: 0;
+  }
+
+  &__md_media {
+    display: none;
+    margin-bottom: 25px;
+    font-size: 46px;
+    font-weight: 500;
+    line-height: 100%;
+
+    @include md {
+      display: block;
+    }
+
+    @include sm {
+      margin-bottom: 20px;
+      font-size: 32px;
+      font-weight: 500;
+    }
+  }
+
+  &__title {
+    margin-top: -3px;
+    margin-bottom: 12px;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 100%;
+
+    @include sm {
+      margin-top: 0;
+      margin-bottom: 5px;
+      font-size: 20px;
+      font-weight: 500;
+    }
+  }
+
+  &__description {
+    margin-bottom: 20px;
+    color: rgb(47 47 47 / 50%);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 137%;
+
+    @include sm {
+      margin-bottom: 30px;
+      font-size: 12px;
+    }
+  }
+
+  &__input {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 15px;
+    border: 1px solid rgb(47 47 47 / 20%);
+    border-radius: 0;
+    background-color: transparent;
+    color: var(--text);
+    font-size: rem(13);
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.3s ease;
+
+    @include sm {
+      font-size: rem(12);
+    }
+
+    &::placeholder {
+      color: rgb(47 47 47 / 50%);
+    }
+
+    &:focus {
+      border-color: rgb(47 47 47 / 50%);
+    }
+  }
+
+  &__textarea {
+    width: 100%;
+    min-height: rem(134);
+    padding: 15px;
+    border: 1px solid rgb(47 47 47 / 20%);
+    border-radius: 0;
+    background-color: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: rem(13);
+    font-weight: 500;
+    outline: none;
+    resize: none;
+    transition: border-color 0.3s ease;
+
+    @include sm {
+      font-size: rem(12);
+    }
+
+    &::placeholder {
+      color: rgb(47 47 47 / 50%);
+    }
+
+    &:focus {
+      border-color: rgb(47 47 47 / 50%);
+    }
+  }
+
+  &__media {
+    display: inline-flex;
+    align-items: center;
+    border: none;
+    margin-top: -5px;
+    margin-bottom: 8px;
+    background: none;
+    color: #2f2f2f;
+    cursor: pointer;
+    font-size: rem(13);
+    font-weight: 500;
+    gap: rem(7);
+    text-decoration: underline;
+    text-decoration-skip-ink: none;
+    transition: text-decoration 0.3s ease;
+
+    @include sm {
+      margin-top: -3px;
+      margin-bottom: 8px;
+      font-size: rem(12);
+    }
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  &__icon {
+    width: rem(20);
+    height: rem(20);
+    flex-shrink: 0;
+  }
+
+  // Grid styles
+  &__grid {
+    display: grid;
+    gap: 11px;
+    grid-template-columns: repeat(12, 1fr);
+
+    @include sm {
+      gap: 8px;
+    }
+  }
+
+  &__col {
+    grid-column: span 12;
+
+    &_half {
+      grid-column: span 6;
+
+      @include sm {
+        grid-column: span 12;
+      }
+    }
+  }
+
+  // Form styles
+  form {
+    width: 100%;
+  }
+
+  // File input wrapper
+  &__file_wrapper {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 15px;
+  }
+
+  &__file_input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------- ACCENT BUTTON -------------------------------------------------------------------- */
+
+.btn_accent {
+  display: inline-flex;
+  width: 100%;
+  min-height: 54px;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent);
+  color: var(--white);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.2233;
+  padding-inline: rem(46);
+  transition: var(--transition);
+
+  &__max493 {
+    display: flex;
+    width: 100%;
+    max-width: 493px;
+    min-height: 53px;
+    justify-content: center;
+    margin-top: 20px;
+    font-size: 18px;
+    margin-inline: auto;
+
+    @include md {
+      width: 100%;
+      min-width: initial;
+    }
+  }
+
+  &:hover {
+    filter: var(--filter);
+  }
+
+  @include sm {
+    display: flex;
+    min-height: rem(45);
+    justify-content: center;
+    font-size: rem(14);
+  }
+}
