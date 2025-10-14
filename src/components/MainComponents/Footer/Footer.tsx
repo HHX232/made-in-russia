@@ -223,7 +223,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
           <Link href='main.html' className={`${styles.footer__logo}`}>
             <Image src='/imagesNew/logo.png' width={190} height={70} alt='Logo' />
           </Link>
-          <p className={`${styles.footer__copyright}`}>© 2021-2025 Exportru</p>
+          <p className={`${styles.footer__copyright}`}>© 2021-2025 Exporteru</p>
         </div>
       </div>
     </footer>
