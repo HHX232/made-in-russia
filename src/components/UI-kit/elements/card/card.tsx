@@ -4,7 +4,7 @@ import {DeliveryMethod, Product} from '@/services/products/product.types'
 import {memo, useId, useState} from 'react'
 import Image, {StaticImageData} from 'next/image'
 import styles from './card.module.scss'
-// import {createPriceWithDot} from '@/utils/createPriceWithDot'
+import {createPriceWithDot} from '@/utils/createPriceWithDot'
 // import BasketButtonUI from '../../buttons/BasketButtonUI/BasketButtonUI'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
@@ -252,7 +252,7 @@ const Card = memo<ICardProps>(
     const priceCurrency = fullProduct?.priceCurrency || 'RUB'
     const isInFavorite = productInFavorites.some((product) => product.id === (fullProduct.id ? fullProduct.id : {}))
 
-    // console.log(isInFavorite)
+    const fixProductPrice = (p: string | number) => createPriceWithDot((+p).toFixed(0))
 
     return (
       <>
@@ -338,12 +338,12 @@ const Card = memo<ICardProps>(
                     <span className={`${styles.product_card__price_old}`}>
                       от{' '}
                       <s>
-                        {price} {priceCurrency}
+                        {fixProductPrice(price)} {priceCurrency}
                       </s>
                     </span>
                   )}
                   <span className={`${styles.product_card__price_real}`}>
-                    {discountedPrice} {priceCurrency}
+                    {fixProductPrice(discountedPrice)} {priceCurrency}
                   </span>
                 </div>
 
