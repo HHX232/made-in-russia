@@ -30,6 +30,7 @@ interface ISearchProps {
   placeholder?: string
   disabled?: boolean
   vendorId?: string
+  useNewBorder?: boolean
 }
 
 // Функция для получения подсказок
@@ -59,7 +60,7 @@ const fetchHints = async ({
   return Array.isArray(res.data) ? res.data : []
 }
 
-const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId}) => {
+const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId, useNewBorder = false}) => {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [inputValue, setInputValue] = useState('')
   const [listIsOpen, setListIsOpen] = useState(false)
@@ -160,7 +161,10 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId}) => {
 
   return (
     <div ref={boxRef} className={`${styles.search__box} ${disabled ? styles.search__box_disabled : ''}`}>
-      <label htmlFor={'inputID' + id} className={styles.search__label}>
+      <label
+        htmlFor={'inputID' + id}
+        className={`${styles.search__label} ${useNewBorder && styles.search__label__border}`}
+      >
         <input
           type='text'
           id={'inputID' + id}

@@ -32,6 +32,11 @@ interface ButtonSizes {
 }
 
 interface RowsInputsProps {
+  hideTitles?: boolean
+  useNewTheme?: boolean
+  specialCreatePlaceholder?: string
+  extraTextareaClass?: string
+  extraGlobalClass?: string
   titles: string[]
   initialRowsCount?: number
   inputsInRowCount?: number
@@ -235,8 +240,9 @@ const Dropdown = ({
                   <TextInputUI
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     refProps={customInputRef as any}
-                    theme='superWhite'
+                    theme='newGray'
                     onKeyDown={handleCustomKeyPress}
+                    extraClass={styles.extra__text__input}
                     placeholder='Enter value...'
                     currentValue={customValue}
                     onSetValue={(value) => setCustomValue(value)}
@@ -301,6 +307,7 @@ interface SortableRowProps {
   rowIndex: number
   row: string[]
   titles: string[]
+  extraTextareaClass?: string
   inputsInRowCount: number
   idNames?: string[]
   extraClass?: string
@@ -313,7 +320,7 @@ interface SortableRowProps {
   inputType?: TInputType[]
   dropdownOptions?: string[][]
   canCreateNewOption?: boolean[]
-  inputsTheme?: 'dark' | 'light' | 'superWhite' | 'lightBlue'
+  inputsTheme?: 'dark' | 'light' | 'superWhite' | 'lightBlue' | 'newGray'
   textAreaProps?: {
     minRows?: number
     maxRows?: number
@@ -322,6 +329,7 @@ interface SortableRowProps {
   buttonSizes: ButtonSizes
   showDnDButton: boolean
   isOnlyShow?: boolean
+  useNewTheme?: boolean
   onBlur?: (rowIndex: number, inputIndex: number, value: string) => void
   onClick?: (rowIndex: number, inputIndex: number, value: string) => void
   onFocus?: (rowIndex: number, inputIndex: number, value: string) => void
@@ -331,6 +339,7 @@ interface SortableRowProps {
 const SortableRow = ({
   id,
   rowIndex,
+  extraTextareaClass,
   row,
   titles,
   inputsInRowCount,
@@ -353,7 +362,8 @@ const SortableRow = ({
   onBlur,
   onClick,
   onFocus,
-  onKeyUp
+  onKeyUp,
+  useNewTheme
 }: SortableRowProps) => {
   const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id})
 
@@ -392,8 +402,16 @@ const SortableRow = ({
       return (
         <TextAreaUI
           key={inputIndex}
-          extraClass={styles.area__extra__min__height}
-          theme={inputsTheme ? inputsTheme : 'lightBlue'}
+          extraClass={`${styles.area__extra__min__height} ${extraTextareaClass}`}
+          theme={
+            useNewTheme
+              ? 'newWhite'
+              : inputsTheme
+                ? inputsTheme === 'newGray'
+                  ? 'newWhite'
+                  : inputsTheme
+                : 'lightBlue'
+          }
           placeholder={titles[inputIndex] || 'value...'}
           currentValue={value}
           onSetValue={(newValue) => !isOnlyShow && onUpdateValue(rowIndex, inputIndex, newValue)}
@@ -415,7 +433,7 @@ const SortableRow = ({
         inputType={currentInputType}
         key={inputIndex}
         idForLabel={inputId}
-        theme={inputsTheme ? inputsTheme : 'lightBlue'}
+        theme={useNewTheme ? 'newWhite' : inputsTheme ? inputsTheme : 'lightBlue'}
         placeholder={titles[inputIndex] || 'value...'}
         currentValue={value}
         onSetValue={(newValue) => !isOnlyShow && onUpdateValue(rowIndex, inputIndex, newValue)}
@@ -432,7 +450,7 @@ const SortableRow = ({
   return (
     <div id={`cy-row-${idNames?.[0]}-${rowIndex}`} ref={setNodeRef} style={style}>
       <div
-        className={`${styles.rows__inputs__box} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''} ${!showDnDButton || isOnlyShow ? styles.no__drag : ''}`}
+        className={`${styles.rows__inputs__box} ${useNewTheme && styles.without__gap} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''} ${!showDnDButton || isOnlyShow ? styles.no__drag : ''}`}
       >
         {showDnDButton && !isOnlyShow && (
           <button
@@ -457,7 +475,7 @@ const SortableRow = ({
 
         {!isOnlyShow && (
           <button
-            className={`${styles.rows__inputs__remove} ${extraButtonMinusClass}`}
+            className={`${styles.rows__inputs__remove} ${extraButtonMinusClass} ${useNewTheme && styles.newButtonTheme}`}
             onClick={() => onRemoveRow(rowIndex)}
             id={`cy-create-card-row-remove-${rowIndex}`}
             type='button'
@@ -465,12 +483,31 @@ const SortableRow = ({
             disabled={!canRemove}
             style={{opacity: canRemove ? 1 : 0.3}}
           >
-            <Image
-              src={minusCircle}
-              alt='minus'
-              width={buttonSizes.minus?.width || 39}
-              height={buttonSizes.minus?.height || 39}
-            />
+            {useNewTheme ? (
+              <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <path
+                  d='M18 6L6 18'
+                  stroke='#2F2F2F'
+                  stroke-width='1.5'
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                />
+                <path
+                  d='M6 6L18 18'
+                  stroke='#2F2F2F'
+                  stroke-width='1.5'
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                />
+              </svg>
+            ) : (
+              <Image
+                src={minusCircle}
+                alt='minus'
+                width={buttonSizes.minus?.width || 39}
+                height={buttonSizes.minus?.height || 39}
+              />
+            )}
           </button>
         )}
       </div>
@@ -511,7 +548,12 @@ const RowsInputs = ({
   onBlur,
   onClick,
   onFocus,
-  onKeyUp
+  onKeyUp,
+  extraGlobalClass,
+  specialCreatePlaceholder = 'Create',
+  useNewTheme = true,
+  hideTitles = false,
+  extraTextareaClass
 }: RowsInputsProps) => {
   // Инициализация состояния с учетом controlled режима
   const [rows, setRows] = useState<string[][]>(() => {
@@ -744,18 +786,22 @@ const RowsInputs = ({
   }
 
   return (
-    <div className={`${styles.rows__inputs__wrapper} ${errorMessage && !isOnlyShow ? styles.has__error : ''}`}>
+    <div
+      className={`${styles.rows__inputs__wrapper} ${extraGlobalClass} ${errorMessage && !isOnlyShow ? styles.has__error : ''}`}
+    >
       <div className={styles.rows__inputs}>
-        <div
-          className={`${styles.rows__inputs__titles} ${!showDnDButton || isOnlyShow ? styles.no__drag : ''}`}
-          style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}
-        >
-          {titles.map((title, index) => (
-            <p key={index} className={styles.rows__inputs__title}>
-              {title}
-            </p>
-          ))}
-        </div>
+        {!hideTitles && (
+          <div
+            className={`${styles.rows__inputs__titles} ${!showDnDButton || isOnlyShow ? styles.no__drag : ''}`}
+            style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}
+          >
+            {titles.map((title, index) => (
+              <p key={index} className={styles.rows__inputs__title}>
+                {title}
+              </p>
+            ))}
+          </div>
+        )}
 
         <DndContext sensors={isOnlyShow ? [] : sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
@@ -769,7 +815,9 @@ const RowsInputs = ({
 
                 return (
                   <SortableRow
+                    useNewTheme={useNewTheme}
                     key={rowId}
+                    extraTextareaClass={extraTextareaClass}
                     inputsTheme={inputsTheme}
                     extraButtonMinusClass={extraButtonMinusClass}
                     inputType={inputType}
@@ -804,18 +852,41 @@ const RowsInputs = ({
 
         {currentRows.length < maxRows && !isOnlyShow && (
           <button
+            style={{width: useNewTheme ? '100%' : 'auto', transform: useNewTheme ? 'none' : 'inherit'}}
             id={`cy-create-card-row-plus-button-${idNames?.[0] || 'default'}`}
             className={`${styles.rows__inputs__add} ${extraButtonPlusClass}`}
             onClick={addRow}
             type='button'
             aria-label='Добавить строку'
           >
-            <Image
-              src={plusCircle}
-              alt='plus'
-              width={buttonSizes.plus?.width || 39}
-              height={buttonSizes.plus?.height || 39}
-            />
+            {useNewTheme ? (
+              <div className={styles.newButtonCreateTheme}>
+                <p className={styles.create_place_new}>{specialCreatePlaceholder}</p>
+                <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  <path
+                    d='M6 12H18'
+                    stroke='#2F2F2F'
+                    stroke-width='1.5'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                  />
+                  <path
+                    d='M12 18V6'
+                    stroke='#2F2F2F'
+                    stroke-width='1.5'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                  />
+                </svg>
+              </div>
+            ) : (
+              <Image
+                src={plusCircle}
+                alt='plus'
+                width={buttonSizes.plus?.width || 39}
+                height={buttonSizes.plus?.height || 39}
+              />
+            )}
           </button>
         )}
       </div>

@@ -63,6 +63,7 @@ const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
         inputsInRowCount={2}
         maxRows={15}
         initialRowsCount={1}
+        extraButtonPlusClass={`${styles.extra__button__plus}`}
         titles={[t('question'), t('answer')]}
         controlled={true}
         externalValues={values}

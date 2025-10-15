@@ -21,6 +21,19 @@
   }
 }
 
+.additional__inner {
+  display: grid;
+  width: 100%;
+  gap: 15px;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 576px) {
+  .additional__inner {
+    grid-template-columns: 1fr;
+  }
+}
+
 .vendor__additional__contacts__title {
   margin-bottom: 18px;
   font-size: 20px;
@@ -51,11 +64,15 @@
 .save__additional {
   max-width: fit-content;
   padding: 10px 60px;
-  border-radius: 10px;
   margin: 0 auto;
-  background-color: #4e5479;
+  background-color: #0047ba;
   color: #fff;
   font-size: 15px;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #006cff;
+  }
 }
 
 /* затемнение + стрелочка для раскрытия */

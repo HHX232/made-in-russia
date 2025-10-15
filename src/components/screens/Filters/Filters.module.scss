@@ -3,23 +3,26 @@
   z-index: 997;
   top: 10px;
   display: flex;
+
+  // max-width: 280px;
+  width: 100%;
   min-width: 260px;
-  max-width: 280px;
   height: 95vh;
   max-height: fit-content;
   max-height: 750px;
   flex-direction: column;
   padding: 18px 0 18px 25px;
-  border-radius: 20px;
-  background-color: #eff1f8;
-  box-shadow: -1px 4px 4px rgb(0 0 0 / 25%);
+  border-radius: 0;
+  background-color: #f6f6f6;
+
+  // box-shadow: -1px 4px 4px rgb(0 0 0 / 25%);
 }
 
 .span_over {
   padding-right: 25px;
   column-gap: 15px;
   overflow-y: scroll;
-  scrollbar-color: #2a2e46 #eff1f8;
+  scrollbar-color: #0047ba #eff1f8;
 
   /* Для Firefox */
   scrollbar-width: thin;
@@ -144,19 +147,26 @@
 }
 
 .clear__filters {
+  width: 100%;
+  height: 42px;
+  padding: 0 46px;
   padding-top: 4px;
   margin-top: auto;
-  margin-right: auto;
-  color: #ac2525;
+  margin-right: 25px;
+  background-color: #e1251b;
+  color: #fff;
   cursor: pointer;
-  font-size: 14px;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  font-size: 16px;
+  line-height: 20px;
+
+  // text-decoration: underline;
+  // text-underline-offset: 2px;
 
   @media (max-width: 900px) {
     margin-top: 0;
     margin-right: 20px;
-    margin-left: auto;
+
+    // margin-left: auto;
   }
 }
 
@@ -218,10 +228,17 @@
 @media (max-width: 1010px) {
   .filters__box {
     position: static;
-    width: 100%;
     max-width: none;
     height: fit-content;
     max-height: fit-content;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+
+    & > span {
+      flex-direction: column;
+    }
 
     // margin: 6px !important;
     // flex-direction: row;
@@ -251,13 +268,15 @@
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 500px) {
   .span_over {
     gap: 20px;
     grid-template-columns: repeat(1, 1fr);
     grid-template-rows: repeat(4, auto);
   }
+}
 
+@media (max-width: 420px) {
   .part__drop,
   .filters__part {
     margin-bottom: 0 !important;

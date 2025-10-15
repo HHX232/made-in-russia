@@ -48,6 +48,7 @@ const logoFavSmall = '/logos/logo_fav.svg'
 interface HeaderProps {
   isShowBottom?: boolean
   categories?: Category[]
+  useSticky?: boolean
 }
 
 export const renderCategoryItems = (
@@ -108,7 +109,7 @@ export const renderCategoryItems = (
   })
 }
 
-const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
+const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
   const emailUrl = `mailto:${process.env.NEXT_PUBLIC_EMAIL || 'info@exporteru.com'}`
   const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM || 'Exporteru'}`
   const telephoneUrl = `tel:${process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '88005553535'}`
@@ -254,7 +255,7 @@ const Header: FC<HeaderProps> = ({isShowBottom = true, categories}) => {
   }
 
   return (
-    <div className={` ${styles.header}`}>
+    <div style={{position: useSticky ? 'sticky' : 'relative', top: 0}} className={` ${styles.header}`}>
       <Head>
         <script
           type='application/ld+json'

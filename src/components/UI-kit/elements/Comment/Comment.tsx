@@ -145,6 +145,9 @@ const Comment: FC<CommentProps> = ({
           <div className={`${styles['review-acc-header__info']}`}>
             <div className={`${styles['review-acc-header__info-group']}`}>
               <span className={`${styles['info-group__title']}`}>{author.login}</span>
+              <span className={`${styles['info-group__date']}`}>
+                {formatDateToDayMonth(creationDate || Date.now().toString(), currentLang)}
+              </span>
             </div>
 
             <div className={`${styles['review-acc-header__info-group']}`}>
@@ -160,9 +163,6 @@ const Comment: FC<CommentProps> = ({
                   </div>
                 ))}
               </div>
-              <span className={`${styles['info-group__date']}`}>
-                {formatDateToDayMonth(creationDate || Date.now().toString(), currentLang)}
-              </span>
             </div>
           </div>
         </div>

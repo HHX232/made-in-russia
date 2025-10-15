@@ -1,15 +1,12 @@
 import {memo, useState, useCallback, useEffect} from 'react'
 import styles from './VendorAdditionalContacts.module.scss'
 import {useTranslations} from 'next-intl'
-import Image from 'next/image'
 import {useUpdateVendorDetails} from '@/api/useVendorApi'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {shallowEqual} from 'react-redux'
 import {toast} from 'sonner'
 import RowsInputs from '@/components/UI-kit/RowsInputs/RowsInputs'
-
-const arrowDark = '/arrow-dark.svg'
 
 export const VendorAdditionalContacts = memo(
   ({
@@ -23,7 +20,6 @@ export const VendorAdditionalContacts = memo(
     onlyShowPhones?: string[]
     onlyShowWebsites?: string[]
   }) => {
-    const [expanded, setExpanded] = useState(false)
     const t = useTranslations('VendorPage')
     const {mutate: updateVendorDetails} = useUpdateVendorDetails()
     const {updateVendorDetails: updateVendorDetailsAction} = useActions()
@@ -181,8 +177,8 @@ export const VendorAdditionalContacts = memo(
     )
 
     return (
-      <div className={`${styles.vendor__additional__contacts} ${expanded ? styles.expanded : ''}`}>
-        <h3 className={styles.vendor__additional__contacts__title}>{t('additionalContacts')}</h3>
+      <>
+        {/* <h3 className={styles.vendor__additional__contacts__title}>{t('additionalContacts')}</h3> */}
         {/* <p>Phones: {vendorDetails?.phoneNumbers?.join(', ')}</p>
         <p>Emails: {vendorDetails?.emails?.join(', ')}</p>
         <p>Sites: {vendorDetails?.sites?.join(', ')}</p> */}
@@ -190,7 +186,9 @@ export const VendorAdditionalContacts = memo(
           <div className={styles.additional__phones}>
             <h4 className={styles.additional__phones__title}>{t('phones')}</h4>
             <RowsInputs
+              useNewTheme
               controlled={true}
+              hideTitles
               isOnlyShow={isOnlyShow}
               onBlur={() => handleOnBlur('phones')}
               externalValues={phoneRows}
@@ -217,6 +215,7 @@ export const VendorAdditionalContacts = memo(
             <h4 className={styles.additional__phones__title}>{t('emails')}</h4>
             <RowsInputs
               isOnlyShow={isOnlyShow}
+              hideTitles
               onBlur={() => handleOnBlur('emails')}
               controlled={true}
               externalValues={emailRows}
@@ -243,6 +242,7 @@ export const VendorAdditionalContacts = memo(
             <h4 className={styles.additional__phones__title}>{t('sites')}</h4>
             <RowsInputs
               isOnlyShow={isOnlyShow}
+              hideTitles
               onBlur={() => handleOnBlur('sites')}
               controlled={true}
               externalValues={siteRows}
@@ -265,22 +265,15 @@ export const VendorAdditionalContacts = memo(
               inputType={['text']}
             />
           </div>
-
-          {!isOnlyShow && (
-            <div className={styles.additional__buttons}>
-              <button onClick={handleSave} className={styles.save__additional}>
-                {t('save')}
-              </button>
-            </div>
-          )}
         </div>
-
-        {!expanded && (
-          <div className={styles.expand__overlay} onClick={() => setExpanded(true)}>
-            <Image className={styles.arrow} alt='' src={arrowDark} width={20} height={20} />
+        {!isOnlyShow && (
+          <div className={styles.additional__buttons}>
+            <button onClick={handleSave} className={styles.save__additional}>
+              {t('save')}
+            </button>
           </div>
         )}
-      </div>
+      </>
     )
   }
 )

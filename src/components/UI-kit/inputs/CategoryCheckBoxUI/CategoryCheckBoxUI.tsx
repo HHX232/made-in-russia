@@ -62,7 +62,7 @@ const CategoryCheckBoxUI: FC<ICheckBoxUIProps> = ({
   return (
     <label style={{...extraStyles}} className={`${styles.checkbox__container} ${extraClass || ''}`} htmlFor={id}>
       <div
-        style={{minHeight: '20px', minWidth: '20px'}}
+        style={{minHeight: '24px', minWidth: '24px'}}
         className={`${styles.checkbox__visual} ${isChecked ? styles.checkbox__visual_checked : ''}`}
       ></div>
       <p className={`fontJaro ${styles.input__text || 'input__text'}`}>{title}</p>

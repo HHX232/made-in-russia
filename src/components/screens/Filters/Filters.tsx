@@ -44,8 +44,26 @@ const Arrow = ({isActive}: {isActive: boolean}) => {
   )
 }
 
-const Filters: FC = () => {
-  const [filtersIsOpen, setFiltersIsOpen] = useState(false)
+const Filters: FC<{
+  specialFilters?: {name: string; id: string}[]
+  extraBoxClass?: string
+  extraDeleteButtonClass?: string
+}> = ({
+  specialFilters = [
+    {name: '1 hello test', id: '1'},
+    {name: '2 hello test', id: '2'},
+    {name: '3 hello test', id: '3'},
+    {name: '4 hello test', id: '4'},
+    {name: '5 hello test', id: '5'},
+    {name: '6 hello test', id: '6'},
+    {name: '7 hello test', id: '7'},
+    {name: '8 hello test', id: '8'},
+    {name: '9 hello test', id: '9'}
+  ],
+  extraBoxClass,
+  extraDeleteButtonClass
+}) => {
+  const [filtersIsOpen, setFiltersIsOpen] = useState(true)
   const [isMounted, setIsMounted] = useState(false)
 
   const queryClient = useQueryClient()
@@ -65,6 +83,9 @@ const Filters: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const {data, isLoading} = useCategories(currentLang as any)
 
+  useEffect(() => {
+    console.log('data filters', data)
+  }, [data])
   // const {data: dataDel, isLoading: isDelLoading} = useQuery({
   //   queryKey: ['deliveris'],
   //   queryFn: () => FiltersService.getDeliveryMethodIds({currentLang})
@@ -111,12 +132,12 @@ const Filters: FC = () => {
   }
 
   return (
-    <div className={`${styles.filters__box}`}>
+    <div className={`${styles.filters__box} ${extraBoxClass}`}>
       <div className={getTitlesBoxClassName()}>
-        <div onClick={toggleFilters} className={`${styles.title__box}`}>
+        {/* <div onClick={toggleFilters} className={`${styles.title__box}`}>
           {shouldShowArrow() && <Arrow isActive={filtersIsOpen} />}
           <h4 className={`${styles.filters__title}`}>{t('filtersTitle')}</h4>
-        </div>
+        </div> */}
         {/* <button
           onClick={() => {
             clearFilters()
@@ -134,7 +155,7 @@ const Filters: FC = () => {
 
           <div className={`${styles.filters__part_checkboxes}`}>
             {!isLoading &&
-              data?.map((filter) => (
+              (specialFilters || data)?.map((filter) => (
                 <CategoryCheckBoxUI key={filter.id} title={filter.name} filterName={filter.id.toString()} />
               ))}
             {isLoading && (
@@ -204,30 +225,32 @@ const Filters: FC = () => {
           </div>
         </div> */}
       </span>
-      {windowWidth && windowWidth <= 500 && filtersIsOpen && (
-        <button
-          onClick={() => {
-            clearFilters()
-            clearDelivery()
-            setSearchTitle('')
-          }}
-          className={`${styles.clear__filters} ${styles.clear__filters__button__bottom}`}
-        >
-          {t('filtersReset')}
-        </button>
-      )}
-      {windowWidth && windowWidth > 500 && (
-        <button
-          onClick={() => {
-            clearFilters()
-            clearDelivery()
-            setSearchTitle('')
-          }}
-          className={`${styles.clear__filters} ${styles.clear__filters__button__bottom}`}
-        >
-          {t('filtersReset')}
-        </button>
-      )}
+      <div style={{paddingRight: '23px', marginTop: '10px'}} className=''>
+        {windowWidth && windowWidth <= 500 && filtersIsOpen && (
+          <button
+            onClick={() => {
+              clearFilters()
+              clearDelivery()
+              setSearchTitle('')
+            }}
+            className={`${styles.clear__filters} ${styles.clear__filters__button__bottom} ${extraDeleteButtonClass}`}
+          >
+            {t('filtersReset')}
+          </button>
+        )}
+        {windowWidth && windowWidth > 500 && (
+          <button
+            onClick={() => {
+              clearFilters()
+              clearDelivery()
+              setSearchTitle('')
+            }}
+            className={`${styles.clear__filters} ${styles.clear__filters__button__bottom} ${extraDeleteButtonClass}`}
+          >
+            {t('filtersReset')}
+          </button>
+        )}
+      </div>
     </div>
   )
 }

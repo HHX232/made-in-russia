@@ -43,11 +43,12 @@
   flex-direction: column;
   align-items: center;
   margin: 20px 0;
-  gap: 20px;
+  gap: 16px;
 
   & > p {
-    font-size: 17px;
+    font-size: 24px;
     font-weight: 500;
+    line-height: 28px;
     text-align: center;
   }
 }
@@ -72,17 +73,18 @@
   top: 10px;
   display: flex;
   width: 100%;
-  max-width: 400px;
+  max-width: 510px;
   max-height: fit-content;
   flex-direction: column;
   flex-shrink: 0;
-  border: 2px solid #818181;
-  border-radius: 10px;
+  padding: 30px;
+  border-radius: 0;
   margin-left: auto;
+  background-color: #f6f6f6;
 }
 
 .create__comment__box__text {
-  max-width: 360px;
+  max-width: 450px;
   margin: 50px auto;
   color: #818181;
   font-size: 16px;
@@ -93,19 +95,24 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  align-items: center;
-  padding: 27px 27px 20px;
-  border-radius: 15px 15px 9px 9px;
-  background-color: #eff1f8;
+
+  // align-items: center;
   gap: 15px;
 
   & > span {
     display: flex;
     width: 100%;
-    align-items: center;
-    border-radius: 15px 15px 9px 9px;
-    background-color: #eff1f8;
+
+    // align-items: center;
     gap: 15px;
+  }
+}
+
+.extra__textarea__width {
+  width: 100% !important;
+
+  & > div:last-child {
+    background-color: #f6f6f6 !important;
   }
 }
 
@@ -187,9 +194,15 @@
 }
 
 // .add__image__label,
-// .send__comment__button {
-
-// }
+.send__comment__button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 5px;
+  background-color: #0047ba;
+  color: #fff;
+  font-size: 18px;
+  line-height: 20px;
+}
 
 // Добавить в CardBottomPage.module.scss
 
@@ -244,6 +257,8 @@
 
 .questions__content {
   width: 100%;
+  padding: 20px;
+  background-color: #f6f6f6;
 }
 
 @media (max-width: 900px) {

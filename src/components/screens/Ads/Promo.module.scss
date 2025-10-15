@@ -102,6 +102,14 @@ NAVIGATION GROUP
   }
 }
 
+.fade_slider {
+  overflow: visible !important;
+
+  & > div {
+    overflow: visible !important;
+  }
+}
+
 .custom_pagination_bullet {
   position: absolute;
   top: 0;
@@ -215,7 +223,7 @@ MARKETING CARD
 
     &_overlay {
       position: absolute;
-      right: 0;
+      right: -80px;
       bottom: 0;
       height: 100%;
       aspect-ratio: 742/375;

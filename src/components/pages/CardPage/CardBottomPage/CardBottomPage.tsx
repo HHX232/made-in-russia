@@ -12,6 +12,9 @@ import {toast} from 'sonner'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {getAccessToken} from '@/services/auth/auth.helper'
+import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
+import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
+import CreateImagesInputMinimalistic from '@/components/UI-kit/inputs/CreateImagesInputMinimalistic/CreateImagesInputMinimalistic'
 
 interface ICardBottomPageProps {
   isLoading: boolean
@@ -115,28 +118,28 @@ const FilePreview = React.memo(({fileObj, onRemove}: {fileObj: IUploadedFile; on
 FilePreview.displayName = 'FilePreview'
 
 // Мемоизированный компонент для списка превью
-const FilesPreviewList = React.memo(
-  ({uploadedFiles, onRemoveFile}: {uploadedFiles: IUploadedFile[]; onRemoveFile: (id: string) => void}) => {
-    const memoizedRemoveFile = useCallback(
-      (id: string) => {
-        onRemoveFile(id)
-      },
-      [onRemoveFile]
-    )
+// const FilesPreviewList = React.memo(
+//   ({uploadedFiles, onRemoveFile}: {uploadedFiles: IUploadedFile[]; onRemoveFile: (id: string) => void}) => {
+//     const memoizedRemoveFile = useCallback(
+//       (id: string) => {
+//         onRemoveFile(id)
+//       },
+//       [onRemoveFile]
+//     )
 
-    if (uploadedFiles.length === 0) return null
+//     if (uploadedFiles.length === 0) return null
 
-    return (
-      <ul className={`${styles.files__preview__container}`}>
-        {uploadedFiles.map((fileObj) => (
-          <FilePreview key={fileObj.id} fileObj={fileObj} onRemove={memoizedRemoveFile} />
-        ))}
-      </ul>
-    )
-  }
-)
+//     return (
+//       <ul className={`${styles.files__preview__container}`}>
+//         {uploadedFiles.map((fileObj) => (
+//           <FilePreview key={fileObj.id} fileObj={fileObj} onRemove={memoizedRemoveFile} />
+//         ))}
+//       </ul>
+//     )
+//   }
+// )
 
-FilesPreviewList.displayName = 'FilesPreviewList'
+// FilesPreviewList.displayName = 'FilesPreviewList'
 
 const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICardBottomPageProps) => {
   const [activeIndex, setActiveIndex] = useState(1)
@@ -153,7 +156,16 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
   const t = useTranslations('CardPage.CardBottomPage')
   const currentLang = useCurrentLanguage()
   const [error, setError] = useState('')
-
+  const convertFilesToUploadedFiles = (files: File[]): IUploadedFile[] => {
+    return files.map((file) => {
+      const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)
+      return {
+        file,
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        type: isImage ? 'image' : 'video'
+      }
+    })
+  }
   // Мемоизируем функцию удаления файла
   const removeFile = useCallback((fileId: string) => {
     setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
@@ -438,10 +450,9 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
 
               <form onSubmit={handleSubmit} className={`${styles.create__comment__form}`}>
                 {/* Используем мемоизированный компонент для превью */}
-                <FilesPreviewList uploadedFiles={uploadedFiles} onRemoveFile={removeFile} />
+                {/* <FilesPreviewList uploadedFiles={uploadedFiles} onRemoveFile={removeFile} /> */}
 
-                <span>
-                  <label
+                {/* <label
                     className={`${styles.add__image__label} ${
                       uploadedFiles.length >= MAX_FILES_COUNT ? styles.disabled : ''
                     }`}
@@ -479,28 +490,32 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
                       multiple
                       disabled={uploadedFiles.length >= MAX_FILES_COUNT}
                     />
-                  </label>
-                  <AutoResizeTextarea
+                  </label> */}
+                {/* <AutoResizeTextarea
                     onChange={(e) => setCommentValue(e.target.value)}
                     value={commentValue}
                     placeholder={t('writeCommentPlaceholder')}
-                  />
-                  <button type='submit' className={`${styles.send__comment__button}`} disabled={!commentValue.trim()}>
-                    <svg
-                      className={`${styles.send__comment__image}`}
-                      width='20'
-                      height='20'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'
-                    >
-                      <path
-                        d='M19.0781 2.76851C19.5282 1.52372 18.3219 0.317467 17.0771 0.768509L1.86357 6.27059C0.614607 6.72267 0.463565 8.42684 1.61252 9.09247L6.46877 11.9039L10.8052 7.56747C11.0017 7.37772 11.2648 7.27272 11.5379 7.2751C11.8111 7.27747 12.0723 7.38702 12.2655 7.58016C12.4586 7.77329 12.5681 8.03455 12.5705 8.30767C12.5729 8.5808 12.4679 8.84392 12.2781 9.04038L7.94169 13.3768L10.7542 18.2331C11.4188 19.382 13.1229 19.23 13.575 17.982L19.0781 2.76851Z'
-                        fill='#2A2E46'
-                      />
-                    </svg>
-                  </button>
-                </span>
+                  /> */}
+                <TextAreaUI
+                  minRows={2}
+                  maxRows={10}
+                  theme='newWhite'
+                  autoResize
+                  placeholder={t('writeCommentPlaceholder')}
+                  onSetValue={(e) => setCommentValue(e)}
+                  extraClass={styles.extra__textarea__width}
+                  currentValue={commentValue}
+                />
+                <CreateImagesInputMinimalistic
+                  onFilesChange={(files) => {
+                    const uploadedFilesArray = convertFilesToUploadedFiles(files)
+                    setUploadedFiles(uploadedFilesArray)
+                  }}
+                />
+
+                <button type='submit' className={`${styles.send__comment__button}`} disabled={!commentValue.trim()}>
+                  Отправить
+                </button>
               </form>
             </div>
           </>

@@ -399,7 +399,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
         )}
       </ModalWindowDefault>
 
-      <Header />
+      <Header useSticky={false} />
       <div className={'container'}>
         <div className={`${styles.create__inner}`}>
           <h1 className={`${styles.create__title}`}>{t('createCardTitle')}</h1>
@@ -475,7 +475,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 placeholder={t('name')}
                 currentValue={getValueForLang(cardTitle, 'title')}
                 onSetValue={handleTitleChange}
-                theme='superWhite'
+                theme='newWhite'
               />
             </span>
 
@@ -526,33 +526,36 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 inputIdPrefix='product-images'
               />
             </div>
-            <div className={`${styles.label__title__box}`}>
-              <h3 className={`${styles.create__similar__products__box__title}`}>{t('similarProducts')}</h3>
-              <DropList
-                direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
-                safeAreaEnabled
-                positionIsAbsolute={false}
-                trigger='hover'
-                extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
-                arrowClassName={`${styles.arrow__none}`}
-                title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                items={[
-                  <Image
-                    className={`${styles.drop__extra__image}`}
-                    src={HELP_IMAGES.similarProducts}
-                    alt={t('altHelpWithSimilarProducts')}
-                    width={300}
-                    height={300}
-                    key={1}
-                    onClick={() => openModal(HELP_IMAGES.similarProducts)}
-                  />
-                ]}
+            <div style={{display: 'none'}}>
+              <div className={`${styles.label__title__box}`}>
+                <h3 className={`${styles.create__similar__products__box__title}`}>{t('similarProducts')}</h3>
+                <DropList
+                  direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+                  safeAreaEnabled
+                  positionIsAbsolute={false}
+                  trigger='hover'
+                  extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
+                  arrowClassName={`${styles.arrow__none}`}
+                  title={<Image src={vopros} alt='vopros' width={27} height={27} />}
+                  items={[
+                    <Image
+                      className={`${styles.drop__extra__image}`}
+                      src={HELP_IMAGES.similarProducts}
+                      alt={t('altHelpWithSimilarProducts')}
+                      width={300}
+                      height={300}
+                      key={1}
+                      onClick={() => openModal(HELP_IMAGES.similarProducts)}
+                    />
+                  ]}
+                />
+              </div>
+
+              <CreateSimilarProducts
+                // initialProducts={initialData?.similarProducts}
+                onUpdateProductsSet={setSimilarProducts}
               />
             </div>
-            <CreateSimilarProducts
-              // initialProducts={initialData?.similarProducts}
-              onUpdateProductsSet={setSimilarProducts}
-            />
             {/* CreateCardPriceElements */}
             <CreateCardPriceElements
               inputType={['text', 'number', 'number', 'dropdown', 'dropdown']}

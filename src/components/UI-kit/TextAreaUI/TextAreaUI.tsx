@@ -43,6 +43,7 @@ interface ITextAreaProps {
   autoResize?: boolean // Новый пропс для автоподстройки высоты
   maxRows?: number // Максимальное количество строк при автоподстройке
   minRows?: number // Минимальное количество строк при автоподстройке
+  minHeight?: number // Минимальная высота в пикселях
 }
 
 const TextAreaUI: FC<ITextAreaProps> = ({
@@ -77,7 +78,8 @@ const TextAreaUI: FC<ITextAreaProps> = ({
   resize = 'none',
   autoResize = false,
   maxRows,
-  minRows = 1
+  minRows = 1,
+  minHeight
 }) => {
   const [textIsShow, setTextIsShow] = useState(false)
   const [displayValue, setDisplayValue] = useState(isSecret ? currentValue.replace(/./g, '*') : currentValue)
@@ -98,11 +100,11 @@ const TextAreaUI: FC<ITextAreaProps> = ({
     textarea.style.height = 'auto'
 
     const scrollHeight = textarea.scrollHeight
-    const minHeight = minRows * lineHeight + paddingTop + paddingBottom
+    const calculatedMinHeight = minHeight !== undefined ? minHeight : minRows * lineHeight + paddingTop + paddingBottom
     const maxHeight = maxRows ? maxRows * lineHeight + paddingTop + paddingBottom : Infinity
 
     // Вычисляем новую высоту с учетом ограничений
-    const newHeight = Math.max(minHeight, Math.min(scrollHeight, maxHeight))
+    const newHeight = Math.max(calculatedMinHeight, Math.min(scrollHeight, maxHeight))
 
     textarea.style.height = `${newHeight}px`
   }
@@ -199,7 +201,8 @@ const TextAreaUI: FC<ITextAreaProps> = ({
           })}
           style={{
             resize: autoResize ? 'none' : resize,
-            overflow: autoResize && maxRows ? 'auto' : 'hidden'
+            overflow: autoResize && maxRows ? 'auto' : 'hidden',
+            minHeight: minHeight !== undefined ? `${minHeight}px` : undefined
           }}
           id={idForLabel ? idForLabel : id}
         />

@@ -20,6 +20,7 @@ interface VendorUpdatePayload {
   categories?: string[]
   phoneNumbers?: string[]
   emails?: string[]
+  address?: string
 }
 
 export const useUpdateVendorDetails = () => {

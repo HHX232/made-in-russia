@@ -20,6 +20,22 @@
   gap: 50px;
 }
 
+.textarea__extra__padding {
+  & > div:last-child {
+    padding: 12px 21px;
+  }
+}
+
+.delete__minus__button {
+  & > div > div:first-child {
+    padding-right: 14px !important;
+  }
+
+  & > div > div:nth-child(2) > div > div > button:last-child {
+    display: none !important;
+  }
+}
+
 .create__label__title__box {
   display: flex;
   align-items: center;
@@ -110,8 +126,12 @@
   display: flex;
   flex-direction: column;
   padding: 20px 25px;
-  border: 1px solid #2a2e46;
-  border-radius: 10px;
+  border: 1px solid #969696;
+  border-radius: 0;
+}
+
+.extra__plus__button__class {
+  border: 1px solid rgb(47 47 47 / 20%) !important;
 }
 
 .drop__extra__image__modal__second {

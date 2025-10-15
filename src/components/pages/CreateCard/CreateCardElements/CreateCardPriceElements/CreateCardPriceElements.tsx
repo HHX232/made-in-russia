@@ -377,8 +377,11 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               />
             </div>
             <RowsInputs
+              useNewTheme
               inputsInRowCount={5}
-              maxRows={5}
+              maxRows={1}
+              extraButtonPlusClass={styles.extra__plus__button__class}
+              extraGlobalClass={styles.delete__minus__button}
               dropdownOptions={preparedDropdownOptions}
               canCreateNewOption={preparedCanCreateNewOption}
               inputType={inputType}
@@ -400,6 +403,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 safeAreaEnabled
                 positionIsAbsolute={false}
                 trigger='hover'
+                useNewTheme
                 arrowClassName={`${styles.arrow__none}`}
                 title={<Image src={vopros} alt='vopros' width={27} height={27} />}
                 items={[
@@ -418,7 +422,10 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               key={`characteristics-${characteristicsKey}`}
               inputsInRowCount={2}
               maxRows={20}
+              extraButtonPlusClass={styles.extra__plus__button__class}
+              useNewTheme
               inputType={['text', 'textarea']}
+              extraTextareaClass={styles.textarea__extra__padding}
               textAreaProps={{
                 minRows: 1,
                 maxRows: 5,
@@ -468,6 +475,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 extraClass={`${styles.drop__extra}`}
                 positionIsAbsolute={false}
                 trigger='hover'
+                useNewTheme
                 arrowClassName={`${styles.arrow__none}`}
                 title={<Image src={vopros} alt='question' width={27} height={27} />}
                 items={[
@@ -491,7 +499,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                   inputType='number'
                   currentValue={currentData.priceInfo.daysBeforeSale}
                   onSetValue={handleSaleDateChange}
-                  theme='lightBlue'
+                  theme='newWhite'
                   placeholder={t('daysCountBeforeSalePlaceholder')}
                   errorValue={currentErrors.saleDateError}
                 />
@@ -503,7 +511,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                   inputType='number'
                   currentValue={currentData.priceInfo.minimalVolume}
                   onSetValue={handleMinVolumeChange}
-                  theme='lightBlue'
+                  theme='newWhite'
                   placeholder={t('minimalVolumePlaceholder')}
                   errorValue={currentErrors.minVolumeError}
                 />
@@ -535,6 +543,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             </div>
             <RowsInputs
               key={`delivery-${deliveryKey}`}
+              useNewTheme
+              extraButtonPlusClass={styles.extra__plus__button__class}
               extraButtonMinusClass={styles.minus__extra}
               extraClasses={[
                 styles.rows__extra__del,
@@ -584,6 +594,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               key={`packaging-${packagingKey}`}
               idNames={['title-packaging', 'price-packaging']}
               inputType={['text', 'number']}
+              extraButtonPlusClass={styles.extra__plus__button__class}
+              useNewTheme
               extraButtonMinusClass={styles.minus__extra}
               extraClasses={[
                 styles.rows__extra__del,

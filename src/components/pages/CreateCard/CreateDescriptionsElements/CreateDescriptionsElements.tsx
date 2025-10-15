@@ -141,7 +141,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
               onSetValue={(val) => setDescriptionOne({language: currentDynamicLang, description: val})}
               currentValue={descriptions[currentDynamicLang].description}
               placeholder={t('writeDescription')}
-              theme='superWhite'
+              theme='newWhite'
             />
           </div>
           {showDescriptionError && <p className={styles.error__message}>{descriptionError}</p>}
@@ -174,7 +174,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
           </div>
 
           <TextAreaUI
-            theme='superWhite'
+            theme='newWhite'
             rows={15}
             extraClass={`${styles.editor__extra__text}`}
             onSetValue={(val) => setAdditionalDescription({language: currentDynamicLang, additionalDescription: val})}

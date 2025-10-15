@@ -290,7 +290,7 @@ const Promo: FC<PromoProps> = ({
         />
       </Head>
 
-      <section className={styles.marketing}>
+      <section style={{overflow: 'hidden'}} className={styles.marketing}>
         <h2 className={styles.visually_hidden}>Популярные категории</h2>
         <div className={`${styles.container_full} container`}>
           <DynamicSlider ads={ads} isLoading={!isPageLoaded} />

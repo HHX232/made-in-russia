@@ -10,6 +10,19 @@
   }
 }
 
+.newButtonCreateTheme {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 4px 12px 15px;
+  background-color: #fff;
+
+  & > p {
+    color: #2f2f2fbe;
+  }
+}
+
 .rows__inputs {
   width: 100%;
 
@@ -76,6 +89,19 @@
     &:hover {
       opacity: 0.7;
     }
+  }
+
+  .without__gap {
+    gap: 0 !important;
+  }
+
+  .newButtonTheme {
+    height: 48px;
+    padding: 0 4px;
+    border-top: 1px solid rgb(47 47 47 / 20%);
+    border-right: 1px solid rgb(47 47 47 / 20%);
+    border-bottom: 1px solid rgb(47 47 47 / 20%);
+    background-color: #fff;
   }
 
   &__add {
@@ -180,8 +206,8 @@
     }
 
     &__box {
-      flex-direction: column;
-      align-items: stretch;
+      // flex-direction: column;
+      // align-items: stretch;
       gap: 10px;
     }
 
@@ -194,7 +220,8 @@
 
     &__remove {
       align-self: center;
-      margin-top: 5px;
+
+      // margin-top: 5px;
     }
 
     &__drag {
@@ -219,16 +246,16 @@
     align-items: center;
     justify-content: space-between;
     padding: 14px 21px;
-    border: 1px solid #2a2e46;
-    border-radius: 15px;
-    background-color: #f3f6fa;
+    border: 1px solid rgb(47 47 47 / 20%);
+    border-radius: 0;
+    background-color: #fff;
     cursor: pointer;
     text-align: center;
     transition: all 0.3s ease;
 
-    &:hover {
-      border-color: #1a1d35;
-    }
+    // &:hover {
+    //   border-color: #1a1d35;
+    // }
   }
 
   &__value {

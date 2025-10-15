@@ -58,11 +58,11 @@ REVIEW ACCOUNT BLOCK
   &__avatar {
     display: flex;
     overflow: hidden;
-    width: 71px;
+    width: 50px;
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    border-radius: 0 !important;
+    border-radius: 50% !important;
     aspect-ratio: 1/1;
 
     @media (max-width: 768px) {
@@ -73,7 +73,7 @@ REVIEW ACCOUNT BLOCK
       width: auto;
       max-width: 100%;
       height: 100%;
-      border-radius: 0 !important;
+      border-radius: 50% !important;
       object-fit: cover;
       object-position: center center;
     }

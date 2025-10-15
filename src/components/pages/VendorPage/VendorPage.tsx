@@ -39,23 +39,7 @@ import {useUserQuery, useLogout} from '@/hooks/useUserApi'
 import DeleteAccountButton from '@/components/UI-kit/buttons/DeleteAccountButton/DeleteAccountButton'
 import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
 
-const yellowStars = '/comments/yellow__start.svg'
-
 type TCurrentTab = 'personalData' | 'contacts' | 'sessions' | 'reviews' | 'faq'
-
-// Компонент для IntersectionObserver
-const IntersectionObserverElement = ({observerRef}: {observerRef: (node: HTMLDivElement | null) => void}) => {
-  return (
-    <div
-      style={{
-        height: '20px',
-        width: '100%',
-        background: 'transparent'
-      }}
-      ref={observerRef}
-    />
-  )
-}
 
 export interface IVendorData {
   id: number
@@ -157,7 +141,6 @@ const Sidebar: FC<{
   userData?: IVendorData
   isPageForVendor: boolean
   sidebarShow: boolean
-
   setShowSidebar: (val: boolean) => void
 }> = ({currentTab, onTabChange, onLogout, userData, isPageForVendor, sidebarShow, setShowSidebar}) => {
   const t = useTranslations('VendorPage')
@@ -215,7 +198,6 @@ const Sidebar: FC<{
                     strokeLinejoin='round'
                   />
                 </svg>
-                {/* <span>Личные данные</span> */}
                 <span>{t('personalData')}</span>
               </a>
             </li>
@@ -248,40 +230,42 @@ const Sidebar: FC<{
             </li>
 
             {/* Мои сессии */}
-            <li
-              onClick={() => {
-                setShowSidebar(false)
-              }}
-              className={currentTab === 'sessions' ? styles.active : ''}
-            >
-              <a
-                href='#'
-                onClick={(e) => {
-                  e.preventDefault()
-                  onTabChange('sessions')
+            {isPageForVendor && (
+              <li
+                onClick={() => {
+                  setShowSidebar(false)
                 }}
+                className={currentTab === 'sessions' ? styles.active : ''}
               >
-                <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z'
-                    stroke={currentTab === 'sessions' ? '#0047BA' : '#2F2F2F'}
-                    strokeOpacity={currentTab === 'sessions' ? (sidebarShow ? '1' : '0.5') : '0.5'}
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                  <path
-                    d='M15.7109 15.1798L12.6109 13.3298C12.0709 13.0098 11.6309 12.2398 11.6309 11.6098V7.50977'
-                    stroke={currentTab === 'sessions' ? '#0047BA' : '#2F2F2F'}
-                    strokeOpacity={currentTab === 'sessions' ? (sidebarShow ? '1' : '0.5') : '0.5'}
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-                <span>{t('mySessions')}</span>
-              </a>
-            </li>
+                <a
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    onTabChange('sessions')
+                  }}
+                >
+                  <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z'
+                      stroke={currentTab === 'sessions' ? '#0047BA' : '#2F2F2F'}
+                      strokeOpacity={currentTab === 'sessions' ? (sidebarShow ? '1' : '0.5') : '0.5'}
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M15.7109 15.1798L12.6109 13.3298C12.0709 13.0098 11.6309 12.2398 11.6309 11.6098V7.50977'
+                      stroke={currentTab === 'sessions' ? '#0047BA' : '#2F2F2F'}
+                      strokeOpacity={currentTab === 'sessions' ? (sidebarShow ? '1' : '0.5') : '0.5'}
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                  <span>{t('mySessions')}</span>
+                </a>
+              </li>
+            )}
 
             {/* Отзывы */}
             <li
@@ -374,28 +358,20 @@ const Sidebar: FC<{
                 <Link href='/create-card'>
                   <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
                     <path
-                      d='M8 12H16'
+                      d='M6 12H18'
                       stroke='#2F2F2F'
-                      strokeOpacity='0.5'
-                      strokeWidth='1.5'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
+                      stroke-opacity='0.5'
+                      stroke-width='1.5'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
                     />
                     <path
-                      d='M12 16V8'
+                      d='M12 18V6'
                       stroke='#2F2F2F'
-                      strokeOpacity='0.5'
-                      strokeWidth='1.5'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                    <path
-                      d='M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z'
-                      stroke='#2F2F2F'
-                      strokeOpacity='0.5'
-                      strokeWidth='1.5'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
+                      stroke-opacity='0.5'
+                      stroke-width='1.5'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
                     />
                   </svg>
                   <span>{t('createProduct')}</span>
@@ -405,46 +381,48 @@ const Sidebar: FC<{
           </ul>
 
           {/* Нижние кнопки */}
-          <ul className={styles.menu_company__list}>
-            {isPageForVendor && <DeleteAccountButton buttonText='delete' />}
-            <li>
-              <a
-                href='#'
-                onClick={(e) => {
-                  e.preventDefault()
-                  onLogout()
-                }}
-              >
-                <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M8.90039 7.56023C9.21039 3.96023 11.0604 2.49023 15.1104 2.49023H15.2404C19.7104 2.49023 21.5004 4.28023 21.5004 8.75023V15.2702C21.5004 19.7402 19.7104 21.5302 15.2404 21.5302H15.1104C11.0904 21.5302 9.24039 20.0802 8.91039 16.5402'
-                    stroke='#2F2F2F'
-                    strokeOpacity='0.5'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                  <path
-                    d='M14.9991 12H3.61914'
-                    stroke='#2F2F2F'
-                    strokeOpacity='0.5'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                  <path
-                    d='M5.85 8.6499L2.5 11.9999L5.85 15.3499'
-                    stroke='#2F2F2F'
-                    strokeOpacity='0.5'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-                <span>{t('logout')}</span>
-              </a>
-            </li>
-          </ul>
+          {isPageForVendor && (
+            <ul className={styles.menu_company__list}>
+              <DeleteAccountButton buttonText='delete' />
+              <li>
+                <a
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    onLogout()
+                  }}
+                >
+                  <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M8.90039 7.56023C9.21039 3.96023 11.0604 2.49023 15.1104 2.49023H15.2404C19.7104 2.49023 21.5004 4.28023 21.5004 8.75023V15.2702C21.5004 19.7402 19.7104 21.5302 15.2404 21.5302H15.1104C11.0904 21.5302 9.24039 20.0802 8.91039 16.5402'
+                      stroke='#2F2F2F'
+                      strokeOpacity='0.5'
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M14.9991 12H3.61914'
+                      stroke='#2F2F2F'
+                      strokeOpacity='0.5'
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M5.85 8.6499L2.5 11.9999L5.85 15.3499'
+                      stroke='#2F2F2F'
+                      strokeOpacity='0.5'
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                  <span>{t('logout')}</span>
+                </a>
+              </li>
+            </ul>
+          )}
         </div>
       </nav>
     </div>
@@ -560,17 +538,26 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const [startAnimation, setStartAnimation] = useState(false)
   const [wantQuite, setWantQuite] = useState(false)
-
+  const [currentReviewPage, setCurrentReviewPage] = useState(1)
+  const [openFaqId, setOpenFaqId] = useState<number | null>(null)
   const {data: userData, isLoading: loading} = useUserQuery()
   const {mutate: logout, isPending: isLogoutPending} = useLogout()
-  const router = useRouter()
-  const windowWidth = useWindowWidth()
+
   const t = useTranslations('VendorPage')
   const currentLang = useCurrentLanguage()
-
+  const [isQuestOpen, setIsQuestOpen] = useState(false)
+  const [editingFaqId, setEditingFaqId] = useState<string | null>(null)
+  const [editQuestion, setEditQuestion] = useState('')
+  const [editAnswer, setEditAnswer] = useState('')
   const {user} = useTypedSelector((state) => state.user)
   const {updateVendorDetails} = useActions()
   const {mutate: updateVendorDetailsAPI} = useUpdateVendorDetails()
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingFaqId(null)
+    setEditQuestion('')
+    setEditAnswer('')
+  }, [])
 
   // Медиа-файлы
   const canUpdateVendorMedia = useRef(false)
@@ -585,7 +572,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const [activeFaq, setActiveFaq] = useState(vendorData?.vendorDetails?.faq)
   const [newQuestionValue, setNewQuestionValue] = useState('')
   const [newAnswerValue, setNewAnswerValue] = useState('')
-  const [isQuestOpen, setIsQuestOpen] = useState(false)
 
   // Состояния для текущих значений
   const [userPhoneNumber, setUserPhoneNumber] = useState(vendorData?.phoneNumber)
@@ -605,20 +591,27 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
     {imageSrc: ASSETS_COUNTRIES.russiaSvg, title: t('russia'), altName: 'Russia'}
   ]
 
-  // Reviews
+  // Reviews с пагинацией
   const reviewsParams = useMemo(
     () => ({
-      size: 10,
+      size: 2,
+      page: currentReviewPage - 1, // API использует 0-индексацию
       ...(!isPageForVendor && vendorData?.id ? {specialRoute: `vendor/${vendorData.id}`} : {})
     }),
-    [isPageForVendor, vendorData?.id]
+    [isPageForVendor, vendorData?.id, currentReviewPage]
   )
 
-  const {reviews, isLoading: reviewsLoading, hasMore, loadMoreReviews, totalElements} = useProductReviews(reviewsParams)
+  const {reviews, isLoading: reviewsLoading, totalElements, fullResponseData} = useProductReviews(reviewsParams)
 
-  const observerRef = useRef<IntersectionObserver | null>(null)
-  const scrollContainerRef = useRef<HTMLUListElement | null>(null)
-  const observerTargetRef = useRef<HTMLDivElement | null>(null)
+  // Вычисляем количество страниц
+  const totalPages = Math.ceil(totalElements / 2)
+
+  // Сброс страницы при смене таба
+  useEffect(() => {
+    if (currentTab === 'reviews') {
+      setCurrentReviewPage(1)
+    }
+  }, [currentTab])
 
   // Анимированные счетчики
   const viewsCount = useMemo(
@@ -703,6 +696,56 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
     saveMedia
   ])
 
+  const handleFaqEdit = useCallback(
+    (itemId: string) => {
+      const faqItem = activeFaq?.find((item) => item.id === itemId)
+      if (faqItem) {
+        setEditingFaqId(itemId)
+        setEditQuestion(faqItem.question)
+        setEditAnswer(faqItem.answer)
+        setOpenFaqId(Number(itemId))
+      }
+    },
+    [activeFaq]
+  )
+
+  const handleFaqSave = useCallback(
+    async (itemId: string) => {
+      const loadingToast = toast.loading(t('saving'))
+      try {
+        await instance.put(
+          `/vendor/faq/${itemId}`,
+          {
+            question: editQuestion,
+            answer: editAnswer
+          },
+          {
+            headers: {
+              'Accept-Language': currentLang
+            }
+          }
+        )
+
+        // Обновляем локальный стейт
+        setActiveFaq((prev) =>
+          prev?.map((item) => (item.id === itemId ? {...item, question: editQuestion, answer: editAnswer} : item))
+        )
+
+        setEditingFaqId(null)
+        setEditQuestion('')
+        setEditAnswer('')
+
+        toast.dismiss(loadingToast)
+        toast.success(t('successUpdatedFaq'))
+      } catch (e) {
+        console.error(e)
+        toast.dismiss(loadingToast)
+        toast.error(t('errorUpdatingFaq'))
+      }
+    },
+    [editQuestion, editAnswer, currentLang, t]
+  )
+
   const handleCreateNewQuestion = useCallback(() => {
     try {
       instance.post(
@@ -783,38 +826,112 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
     [activeFaq]
   )
 
-  // IntersectionObserver для отзывов
-  useEffect(() => {
-    if (observerRef.current) {
-      observerRef.current.disconnect()
-    }
+  // Функция рендера пагинации для отзывов
+  const renderReviewsPagination = () => {
+    if (totalPages <= 1) return null
 
-    if (!scrollContainerRef.current || !observerTargetRef.current || !hasMore || reviewsLoading) {
-      return
-    }
+    const pages = []
 
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries
-        if (entry.isIntersecting && hasMore && !reviewsLoading) {
-          loadMoreReviews()
-        }
-      },
-      {
-        root: scrollContainerRef.current,
-        rootMargin: '150px',
-        threshold: 0.1
-      }
+    // Первая страница
+    pages.push(
+      <a
+        key={1}
+        href='#'
+        onClick={(e) => {
+          e.preventDefault()
+          setCurrentReviewPage(1)
+        }}
+        className={`${styles.exp_pagination__link} ${currentReviewPage === 1 ? styles.exp_pagination__link_active : ''}`}
+      >
+        1
+      </a>
     )
 
-    observerRef.current.observe(observerTargetRef.current)
+    const startPage = Math.max(2, currentReviewPage - 1)
+    const endPage = Math.min(totalPages - 1, currentReviewPage + 1)
 
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect()
-      }
+    // Многоточие после первой страницы
+    if (startPage > 2) {
+      pages.push(
+        <span key='ellipsis-start' className={styles.exp_pagination__ellipsis}>
+          ...
+        </span>
+      )
     }
-  }, [hasMore, reviewsLoading, loadMoreReviews])
+
+    // Страницы в середине
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <a
+          key={i}
+          href='#'
+          onClick={(e) => {
+            e.preventDefault()
+            setCurrentReviewPage(i)
+          }}
+          className={`${styles.exp_pagination__link} ${currentReviewPage === i ? styles.exp_pagination__link_active : ''}`}
+        >
+          {i}
+        </a>
+      )
+    }
+
+    // Многоточие перед последней страницей
+    if (endPage < totalPages - 1) {
+      pages.push(
+        <span key='ellipsis-end' className={styles.exp_pagination__ellipsis}>
+          ...
+        </span>
+      )
+    }
+
+    // Последняя страница
+    if (totalPages > 1) {
+      pages.push(
+        <a
+          key={totalPages}
+          href='#'
+          onClick={(e) => {
+            e.preventDefault()
+            setCurrentReviewPage(totalPages)
+          }}
+          className={`${styles.exp_pagination__link} ${
+            currentReviewPage === totalPages ? styles.exp_pagination__link_active : ''
+          }`}
+        >
+          {totalPages}
+        </a>
+      )
+    }
+
+    return (
+      <div className={styles.justify_content_center}>
+        <div className={styles.exp_pagination}>
+          <a
+            href='#'
+            onClick={(e) => {
+              e.preventDefault()
+              if (currentReviewPage > 1) setCurrentReviewPage(currentReviewPage - 1)
+            }}
+            className={`${styles.exp_pagination__link} ${styles.exp_pagination__link_prev} ${
+              currentReviewPage === 1 ? styles.exp_pagination__link_disabled : ''
+            }`}
+          />
+          {pages}
+          <a
+            href='#'
+            onClick={(e) => {
+              e.preventDefault()
+              if (currentReviewPage < totalPages) setCurrentReviewPage(currentReviewPage + 1)
+            }}
+            className={`${styles.exp_pagination__link} ${styles.exp_pagination__link_next} ${
+              currentReviewPage === totalPages ? styles.exp_pagination__link_disabled : ''
+            }`}
+          />
+        </div>
+      </div>
+    )
+  }
 
   const getTabTitle = () => {
     switch (currentTab) {
@@ -839,9 +956,11 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
       <div className='container'>
         <div className={styles.account_human}>
-          <div className={styles.section_header}>
-            <div className={styles.section_header__title}>{isPageForVendor ? t('myAccount') : vendorData?.login}</div>
-          </div>
+          {isPageForVendor && (
+            <div className={styles.section_header}>
+              <div className={styles.section_header__title}>{t('myAccount')}</div>
+            </div>
+          )}
 
           <div className={styles.account_layout}>
             <Sidebar
@@ -910,8 +1029,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                   {/* Структура: заголовок + статистика */}
                   <div className={styles.account_tile__accgrid}>
                     <div className={styles.account_tile__accgrid__short}>
-                      <div className={styles.account_tile__title}>Личные данные</div>
-                      {/* <div className={styles.account_tile__title}>{t('personalData')}</div> */}
+                      <div className={styles.account_tile__title}>{t('personalData')}</div>
                     </div>
                     <div className={styles.account_tile__accgrid__long}>
                       <div className={styles.account_stats_grid}>
@@ -947,20 +1065,30 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                         <div className={styles.account_stat_card}>
                           <div className={styles.account_stat_card__header}>
                             <svg
-                              width='24'
-                              height='24'
-                              viewBox='0 0 24 24'
+                              width='28'
+                              height='28'
+                              viewBox='0 0 28 28'
                               fill='none'
                               xmlns='http://www.w3.org/2000/svg'
                             >
                               <path
-                                d='M22 6.25V11.35C22 12.62 21.58 13.69 20.83 14.43C20.09 15.18 19.02 15.6 17.75 15.6V17.41C17.75 18.09 16.99 18.5 16.43 18.12L15.46 17.48C15.55 17.17 15.59 16.83 15.59 16.47V12.4C15.59 10.36 14.23 9 12.19 9H5.39999C5.25999 9 5.13 9.01002 5 9.02002V6.25C5 3.7 6.7 2 9.25 2H17.75C20.3 2 22 3.7 22 6.25Z'
+                                d='M25.6673 7.29167V13.2416C25.6673 14.7233 25.1773 15.9717 24.3023 16.835C23.439 17.71 22.1907 18.2 20.709 18.2V20.3116C20.709 21.105 19.8223 21.5833 19.169 21.14L18.0373 20.3933C18.1423 20.0316 18.189 19.635 18.189 19.215V14.4667C18.189 12.0867 16.6023 10.5 14.2223 10.5H6.30064C6.13731 10.5 5.98565 10.5117 5.83398 10.5234V7.29167C5.83398 4.31667 7.81732 2.33334 10.7923 2.33334H20.709C23.684 2.33334 25.6673 4.31667 25.6673 7.29167Z'
                                 stroke='#0047BA'
-                                strokeWidth='1.5'
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
+                                stroke-width='1.5'
+                                stroke-miterlimit='10'
+                                stroke-linecap='round'
+                                stroke-linejoin='round'
+                              />
+                              <path
+                                d='M18.189 14.4667V19.215C18.189 19.635 18.1423 20.0316 18.0373 20.3933C17.6057 22.1083 16.1823 23.1817 14.2223 23.1817H11.049L7.52565 25.5267C7.00065 25.8883 6.30064 25.5033 6.30064 24.8733V23.1817C5.11064 23.1817 4.11899 22.785 3.43065 22.0967C2.73065 21.3967 2.33398 20.405 2.33398 19.215V14.4667C2.33398 12.25 3.71065 10.7217 5.83398 10.5234C5.98565 10.5117 6.13731 10.5 6.30064 10.5H14.2223C16.6023 10.5 18.189 12.0867 18.189 14.4667Z'
+                                stroke='#0047BA'
+                                stroke-width='1.5'
+                                stroke-miterlimit='10'
+                                stroke-linecap='round'
+                                stroke-linejoin='round'
                               />
                             </svg>
+
                             <h3>{t('accountComments')}</h3>
                           </div>
                           <div className={styles.account_stat_card__value}>{animatedComments.toLocaleString()}</div>
@@ -969,18 +1097,37 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                         <div className={styles.account_stat_card}>
                           <div className={styles.account_stat_card__header}>
                             <svg
-                              width='24'
-                              height='24'
-                              viewBox='0 0 24 24'
+                              width='28'
+                              height='28'
+                              viewBox='0 0 28 28'
                               fill='none'
                               xmlns='http://www.w3.org/2000/svg'
                             >
                               <path
-                                d='M13.7309 3.51014L15.4909 7.03014C15.7309 7.52014 16.3709 7.99014 16.9109 8.08014L20.1009 8.61014C22.1409 8.95014 22.6209 10.4301 21.1509 11.8901L18.6709 14.3701C18.2509 14.7901 18.0209 15.6001 18.1509 16.1801L18.8609 19.2501C19.4209 21.6801 18.1309 22.6201 15.9809 21.3501L12.9909 19.5801C12.4509 19.2601 11.5609 19.2601 11.0109 19.5801L8.02089 21.3501C5.88089 22.6201 4.58089 21.6701 5.14089 19.2501L5.85089 16.1801C5.98089 15.6001 5.75089 14.7901 5.33089 14.3701L2.85089 11.8901C1.39089 10.4301 1.86089 8.95014 3.90089 8.61014L7.09089 8.08014C7.62089 7.99014 8.26089 7.52014 8.50089 7.03014L10.2609 3.51014C11.2209 1.60014 12.7809 1.60014 13.7309 3.51014Z'
+                                d='M5.74023 23.66L7.80524 25.2583C8.07357 25.5267 8.66857 25.655 9.0769 25.655H11.6086C12.4136 25.655 13.2769 25.06 13.4752 24.255L15.0736 19.39C15.4119 18.4566 14.8052 17.6516 13.8019 17.6516H11.1302C10.7336 17.6516 10.3952 17.3132 10.4652 16.8466L10.8036 14.7116C10.9319 14.1166 10.5352 13.4399 9.94023 13.2416C9.40357 13.0433 8.73857 13.3116 8.47024 13.7083L5.74023 17.78'
                                 stroke='#0047BA'
-                                strokeWidth='1.5'
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
+                                stroke-width='1.5'
+                                stroke-miterlimit='10'
+                              />
+                              <path
+                                d='M2.33398 23.66V17.1267C2.33398 16.1934 2.73065 15.855 3.66398 15.855H4.32898C5.26232 15.855 5.65898 16.1934 5.65898 17.1267V23.66C5.65898 24.5934 5.26232 24.9317 4.32898 24.9317H3.66398C2.73065 24.9317 2.33398 24.605 2.33398 23.66Z'
+                                stroke='#0047BA'
+                                stroke-width='1.5'
+                                stroke-linecap='round'
+                                stroke-linejoin='round'
+                              />
+                              <path
+                                d='M22.2596 4.33996L20.1946 2.74164C19.9263 2.4733 19.3313 2.34501 18.923 2.34501H16.3913C15.5863 2.34501 14.723 2.93995 14.5246 3.74495L12.9263 8.61C12.588 9.54334 13.1946 10.3483 14.198 10.3483H16.8696C17.2663 10.3483 17.6046 10.6867 17.5346 11.1534L17.1963 13.2883C17.068 13.8833 17.4646 14.56 18.0596 14.7584C18.5963 14.9567 19.2613 14.6883 19.5296 14.2917L22.2596 10.22'
+                                stroke='#0047BA'
+                                stroke-width='1.5'
+                                stroke-miterlimit='10'
+                              />
+                              <path
+                                d='M25.6668 4.33996V10.8733C25.6668 11.8066 25.2701 12.145 24.3368 12.145H23.6718C22.7385 12.145 22.3418 11.8066 22.3418 10.8733V4.33996C22.3418 3.40663 22.7385 3.06834 23.6718 3.06834H24.3368C25.2701 3.06834 25.6668 3.39496 25.6668 4.33996Z'
+                                stroke='#0047BA'
+                                stroke-width='1.5'
+                                stroke-linecap='round'
+                                stroke-linejoin='round'
                               />
                             </svg>
                             <h3>{t('rating')}</h3>
@@ -988,7 +1135,18 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                           <div className={styles.account_stat_card__value_row}>
                             <span className={styles.account_stat_card__value}>{averageRating}</span>
                             <span className={styles.account_stat_card__star}>
-                              <Image src={yellowStars} width={24} height={24} alt='rating' />
+                              <svg
+                                width='24'
+                                height='22'
+                                viewBox='0 0 24 22'
+                                fill='none'
+                                xmlns='http://www.w3.org/2000/svg'
+                              >
+                                <path
+                                  d='M12 0L15.1811 7.6216L23.4127 8.2918L17.1471 13.6724L19.0534 21.7082L12 17.412L4.94658 21.7082L6.85288 13.6724L0.587322 8.2918L8.81891 7.6216L12 0Z'
+                                  fill='#EEB611'
+                                />
+                              </svg>
                             </span>
                           </div>
                         </div>
@@ -1044,7 +1202,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                       />
                     </div>
 
-                    {canUpdateVendorMedia.current && (
+                    {(canUpdateVendorMedia.current || needToSave) && (
                       <button
                         className={styles.vendor__save__button}
                         onClick={() => {
@@ -1058,7 +1216,8 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                             region: user?.region,
                             phoneNumbers: user?.vendorDetails?.phoneNumbers,
                             emails: user?.vendorDetails?.emails,
-                            sites: user?.vendorDetails?.sites
+                            sites: user?.vendorDetails?.sites,
+                            address: user?.vendorDetails?.address || ''
                           })
                         }}
                         disabled={isSavingMedia}
@@ -1101,52 +1260,50 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                   <div className={styles.account__header}>
                     <h2 className={styles.account__title}>{t('reviews')}</h2>
                   </div>
-                  <ul className={styles.vendor__comments__list} ref={scrollContainerRef}>
+                  <div className={styles.vendor__comments__wrapper}>
                     {reviewsLoading && reviews.length === 0 ? (
-                      <li className={styles.vendor__comments__loading}>{t('loadComments')}</li>
+                      <div className={styles.vendor__comments__loading}>{t('loadComments')}</div>
                     ) : reviews.length === 0 && !reviewsLoading ? (
-                      <li className={styles.vendor__comments__empty}>{t('noComments')}</li>
+                      <div className={styles.vendor__comments__empty}>{t('noComments')}</div>
                     ) : (
                       <>
-                        {reviews.map((review) => (
-                          <li key={review.id}>
-                            <Comment {...review} />
-                          </li>
-                        ))}
-                        {hasMore && !reviewsLoading && reviews.length > 0 && (
-                          <li style={{listStyle: 'none'}}>
-                            <IntersectionObserverElement
-                              observerRef={(node) => {
-                                observerTargetRef.current = node
-                              }}
-                            />
-                          </li>
-                        )}
-                        {reviewsLoading && reviews.length > 0 && (
-                          <li className={styles.vendor__comments__loading__more}>{t('loadMoreCommets')}</li>
-                        )}
+                        <ul className={styles.vendor__comments__list}>
+                          {reviews.map((review) => (
+                            <li key={review.id}>
+                              <Comment {...review} />
+                            </li>
+                          ))}
+                        </ul>
+                        {renderReviewsPagination()}
                       </>
                     )}
-                  </ul>
+                  </div>
                 </div>
               )}
 
               {/* FAQ */}
               {currentTab === 'faq' && (
                 <div className={styles.account_tile}>
-                  <div className={styles.account__header}>
-                    <h2 className={styles.account__title}>{t('faq')}</h2>
+                  {/* Header */}
+                  <div className={styles.account_tile__header}>
+                    <h2 className={styles.account_tile__title}>{t('faq')}</h2>
                   </div>
+
+                  {/* Add FAQ Form (only for vendor) */}
                   {isPageForVendor && (
                     <div className={styles.vendor__faq__add__box}>
                       <TextInputUI
-                        theme='lightBlue'
+                        theme='newWhite'
                         placeholder={t('question')}
                         currentValue={newQuestionValue}
                         onSetValue={setNewQuestionValue}
                       />
-                      <TextInputUI
-                        theme='lightBlue'
+                      <TextAreaUI
+                        theme='newWhite'
+                        minRows={1}
+                        maxRows={5}
+                        extraClass={styles.extra__area__class}
+                        autoResize
                         placeholder={t('answer')}
                         currentValue={newAnswerValue}
                         onSetValue={setNewAnswerValue}
@@ -1156,11 +1313,173 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                       </button>
                     </div>
                   )}
-                  {isPageForVendor ? (
-                    <Accordion needDeleteButton={true} onDelete={handleFaqDelete} items={faqItems} />
-                  ) : (
-                    <Accordion items={faqItems} />
-                  )}
+
+                  {/* FAQ Accordion */}
+                  <div className={styles.accordion}>
+                    {faqItems.length === 0 ? (
+                      <div className={styles.vendor__comments__empty}>{t('noFaqYet')}</div>
+                    ) : (
+                      faqItems.map((item) => {
+                        const isEditing = editingFaqId === item.id
+                        return (
+                          <div
+                            key={item.id}
+                            className={`${styles.accordion__item} ${openFaqId && openFaqId?.toString() === item.id.toString() ? styles.accordion__item_open : ''} ${isEditing ? styles.accordion__item_editing : ''}`}
+                          >
+                            <div
+                              className={styles.accordion__header}
+                              onClick={() =>
+                                !isEditing &&
+                                setOpenFaqId(
+                                  openFaqId && openFaqId.toString() === item.id.toString() ? null : Number(item.id)
+                                )
+                              }
+                            >
+                              {isEditing ? (
+                                <TextInputUI
+                                  theme='newWhite'
+                                  placeholder={t('question')}
+                                  currentValue={editQuestion}
+                                  onSetValue={setEditQuestion}
+                                  extraClass={styles.edit_faq_input}
+                                />
+                              ) : (
+                                <h2 className={styles.accordion__title}>{item.title}</h2>
+                              )}
+                              <div className={styles.accordion__controls}>
+                                {isPageForVendor && !isEditing && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleFaqDelete(item.id)
+                                    }}
+                                    className={styles.accordion__delete_button}
+                                  >
+                                    <svg
+                                      width='20'
+                                      height='20'
+                                      viewBox='0 0 20 20'
+                                      fill='none'
+                                      xmlns='http://www.w3.org/2000/svg'
+                                    >
+                                      <path
+                                        d='M17.5 4.98332C14.725 4.70832 11.9333 4.56665 9.15 4.56665C7.5 4.56665 5.85 4.64998 4.2 4.81665L2.5 4.98332'
+                                        stroke='#AC2525'
+                                        strokeWidth='1.5'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                      />
+                                      <path
+                                        d='M7.08301 4.14167L7.26634 3.05C7.39967 2.25833 7.49967 1.66667 8.90801 1.66667H11.0913C12.4997 1.66667 12.608 2.29167 12.733 3.05833L12.9163 4.14167'
+                                        stroke='#AC2525'
+                                        strokeWidth='1.5'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                      />
+                                      <path
+                                        d='M15.708 7.61667L15.1663 16.0083C15.0747 17.3167 14.9997 18.3333 12.6747 18.3333H7.32467C4.99967 18.3333 4.92467 17.3167 4.83301 16.0083L4.29134 7.61667'
+                                        stroke='#AC2525'
+                                        strokeWidth='1.5'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                      />
+                                      <path
+                                        d='M8.60986 13.75H11.3849'
+                                        stroke='#AC2525'
+                                        strokeWidth='1.5'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                      />
+                                      <path
+                                        d='M7.91699 10.4167H12.0837'
+                                        stroke='#AC2525'
+                                        strokeWidth='1.5'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
+                                {isPageForVendor && !isEditing && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleFaqEdit(item.id)
+                                    }}
+                                    className={styles.accordion__delete_button}
+                                  >
+                                    <svg
+                                      width='22'
+                                      height='22'
+                                      viewBox='0 0 22 22'
+                                      fill='none'
+                                      xmlns='http://www.w3.org/2000/svg'
+                                    >
+                                      <path
+                                        d='M12.1554 3.29963L4.62956 11.2655C4.34539 11.568 4.07039 12.1638 4.01539 12.5763L3.67623 15.5463C3.55706 16.6188 4.32706 17.3521 5.39039 17.1688L8.34206 16.6646C8.75456 16.5913 9.33206 16.2888 9.61623 15.9771L17.1421 8.0113C18.4437 6.6363 19.0304 5.0688 17.0046 3.15296C14.9879 1.25546 13.4571 1.92463 12.1554 3.29963Z'
+                                        stroke='#2F2F2F'
+                                        strokeWidth='1.5'
+                                        strokeMiterlimit='10'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                      />
+                                      <path
+                                        d='M10.8984 4.62891C11.2926 7.15891 13.3459 9.09307 15.8943 9.34974'
+                                        stroke='#2F2F2F'
+                                        strokeWidth='1.5'
+                                        strokeMiterlimit='10'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                      />
+                                      <path
+                                        d='M2.75 20.167H19.25'
+                                        stroke='#2F2F2F'
+                                        strokeWidth='1.5'
+                                        strokeMiterlimit='10'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
+                                {!isEditing && <span className={styles.accordion__toggle}></span>}
+                              </div>
+                            </div>
+                            <div className={styles.accordion__content}>
+                              {isEditing ? (
+                                <div className={styles.edit_faq_content}>
+                                  <TextAreaUI
+                                    theme='newWhite'
+                                    minRows={3}
+                                    maxRows={10}
+                                    autoResize
+                                    placeholder={t('answer')}
+                                    currentValue={editAnswer}
+                                    onSetValue={setEditAnswer}
+                                    extraClass={styles.edit_faq_textarea}
+                                  />
+                                  <div className={styles.edit_faq_buttons}>
+                                    <button onClick={handleCancelEdit} className={styles.edit_faq_cancel}>
+                                      {t('cancel')}
+                                    </button>
+                                    <button
+                                      onClick={() => handleFaqSave(item.id)}
+                                      className={styles.edit_faq_save}
+                                      disabled={!editQuestion.trim() || !editAnswer.trim()}
+                                    >
+                                      {t('save')}
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <p>{item.value}</p>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -1172,7 +1491,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
               <h3 className={styles.vendor__products__title}>
                 {isPageForVendor ? t('myProducts') : t('companyProducts')}
               </h3>
-              <SearchInputUI vendorId={vendorData?.id?.toString()} />
+              <SearchInputUI useNewBorder vendorId={vendorData?.id?.toString()} />
             </div>
             <div className={styles.products__list}>
               <Filters />

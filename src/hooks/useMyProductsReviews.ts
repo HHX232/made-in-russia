@@ -53,6 +53,7 @@ interface SpecialRouteResponse {
 
 interface UseProductReviewsOptions {
   size?: number
+  page?: number // Добавляем параметр page
   minRating?: number
   maxRating?: number
   specialRoute?: string
@@ -61,13 +62,14 @@ interface UseProductReviewsOptions {
 type ResponseData = ProductReviewsResponse | SpecialRouteResponse
 
 export function useProductReviews(options: UseProductReviewsOptions = {}) {
-  const {size = 10, minRating, maxRating, specialRoute} = options
+  const {size = 10, page: requestedPage, minRating, maxRating, specialRoute} = options
 
   const [reviews, setReviews] = useState<Review[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
   const [fullResponseData, setFullResponseData] = useState<ResponseData | null>(null)
   const loadingRef = useRef(false)
   const initialLoadDone = useRef(false)
@@ -81,82 +83,69 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
   // Вспомогательная функция для получения content из ResponseData
   const getContentFromData = (data: ResponseData): Review[] => {
     if ('page' in data) {
-      // SpecialRouteResponse
       return data?.page?.content || []
     }
-    // ProductReviewsResponse
     return data.content || []
   }
 
-  // Вспомогательная функция для получения totalElements из ResponseData
+  // Вспомогательная функция для получения totalElements
   const getTotalElementsFromData = (data: ResponseData): number => {
     if ('page' in data) {
-      // SpecialRouteResponse
       return data?.page?.totalElements || data?.page?.page?.totalElements || 0
     }
-    // ProductReviewsResponse
     return data?.totalElements || data?.page?.totalElements || 0
   }
 
-  const currentLang = useCurrentLanguage()
-  // Логирование входных параметров
-  useEffect(() => {
-    console.log('=== useProductReviews HOOK DEBUG ===')
-    console.log('Options received:', options)
-    console.log('specialRoute:', specialRoute)
-    console.log('size:', size)
-    console.log('===================================')
-  }, [specialRoute, size])
+  // Вспомогательная функция для получения totalPages
+  const getTotalPagesFromData = (data: ResponseData): number => {
+    console.log('data for getTotalPagesFromData', data)
+    if ('page' in data) {
+      return data?.page?.totalPages || data?.page?.page?.totalPages || 0
+    }
+    return data?.totalPages || data?.page?.totalPages || 0
+  }
 
-  // Загрузка первой страницы с возможностью повторной попытки
+  const currentLang = useCurrentLanguage()
+
+  // Загрузка отзывов (с учетом requestedPage)
   useEffect(() => {
-    const loadInitialReviews = async (retryCount = 0) => {
+    const loadReviews = async (retryCount = 0) => {
       try {
         setIsLoading(true)
-        setReviews([])
-        setHasMore(true)
-        setPage(0)
-        loadingRef.current = false
-        initialLoadDone.current = false
+        loadingRef.current = true
 
-        // console.log('Calling commentsService.getCommentsByMyProducts...')
+        // Используем requestedPage если он передан, иначе 0
+        const pageToLoad = requestedPage !== undefined ? requestedPage : 0
+
         const response = await commentsService.getCommentsByMyProducts({
-          page: 0,
+          page: pageToLoad,
           size,
           minRating,
           maxRating,
           specialRoute,
           currentLang
         })
-        // console.log('Service call completed')
 
-        console.log('Response received:', response)
         const data = extractDataFromResponse(response)
-
         const content = getContentFromData(data)
         const totalElementsValue = getTotalElementsFromData(data)
+        const totalPagesValue = getTotalPagesFromData(data)
 
-        // Сохраняем полный ответ сервера
         setFullResponseData(data)
+        setTotalPages(totalPagesValue)
 
-        // Проверяем, если ответ пустой и это первая попытка
         if (content.length === 0 && totalElementsValue === 0 && retryCount === 0) {
-          // Делаем повторную попытку через 200мс
           setTimeout(() => {
-            // console.log('Executing retry...')
-            loadInitialReviews(1)
+            loadReviews(1)
           }, 200)
           return
         }
 
         if (content.length > 0) {
-          console.log('Setting reviews with content:', content)
           setReviews(content)
-
-          // Проверяем по количеству элементов
-          const loadedCount = content.length
           setTotalElements(totalElementsValue)
-          const hasMoreElements = loadedCount < totalElementsValue
+          setPage(pageToLoad)
+          const hasMoreElements = content.length < totalElementsValue
           setHasMore(hasMoreElements)
         } else {
           setReviews([])
@@ -165,50 +154,32 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
         }
 
         initialLoadDone.current = true
-        console.log('Initial load completed')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
+      } catch (error) {
         console.error('Full error object:', error)
-
         setReviews([])
         setHasMore(false)
         setTotalElements(0)
+        setTotalPages(0)
         setFullResponseData(null)
       } finally {
         setIsLoading(false)
-        console.log('Loading state set to false')
+        loadingRef.current = false
       }
     }
 
-    loadInitialReviews()
-  }, [size, minRating, maxRating, specialRoute, currentLang])
+    loadReviews()
+  }, [size, requestedPage, minRating, maxRating, specialRoute, currentLang])
 
-  // Загрузка следующих страниц
+  // Загрузка следующих страниц (для бесконечного скролла - оставляем для обратной совместимости)
   const loadMoreReviews = useCallback(async () => {
-    // Проверяем только loadingRef и hasMore
-    if (loadingRef.current || !hasMore) {
-      console.log('Skipping load - already loading or no more items')
-      return
-    }
-
-    // Дополнительная проверка: если первая загрузка еще не завершена
-    if (!initialLoadDone.current) {
-      console.log('Initial load not done yet')
-      return
-    }
+    if (loadingRef.current || !hasMore) return
+    if (!initialLoadDone.current) return
 
     try {
       loadingRef.current = true
       setIsLoading(true)
 
       const nextPage = page + 1
-      console.log(`Loading page ${nextPage} with params:`, {
-        page: nextPage,
-        size,
-        minRating,
-        maxRating,
-        specialRoute
-      })
 
       const response = await commentsService.getCommentsByMyProducts({
         page: nextPage,
@@ -220,41 +191,33 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
       })
 
       const data = extractDataFromResponse(response)
-
       const content = getContentFromData(data)
+      const totalElementsValue = getTotalElementsFromData(data)
+      const totalPagesValue = getTotalPagesFromData(data)
 
-      // Обновляем полный ответ сервера
       setFullResponseData(data)
+      setTotalElements(totalElementsValue)
+      setTotalPages(totalPagesValue)
 
       if (content.length > 0) {
         setReviews((prev) => {
           const existingIds = new Set(prev.map((review) => review.id))
           const newReviews = content.filter((review) => !existingIds.has(review.id))
-
           return [...prev, ...newReviews]
         })
-
         setPage(nextPage)
 
-        // Проверяем по общему количеству загруженных элементов
         const totalLoaded = reviews.length + content.length
-        const totalElementsValue = getTotalElementsFromData(data)
-        setTotalElements(totalElementsValue)
-        const hasMoreElements = totalLoaded < totalElementsValue
-        setHasMore(hasMoreElements)
+        setHasMore(totalLoaded < totalElementsValue)
       } else {
-        // console.log('No content in response or empty content array')
         setHasMore(false)
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error('Error response:', error?.response)
-      console.error('=========================')
+    } catch (error) {
+      console.error('Error response:', error)
       setHasMore(false)
     } finally {
       setIsLoading(false)
       loadingRef.current = false
-      console.log('Load more completed')
     }
   }, [page, hasMore, size, minRating, maxRating, specialRoute, reviews.length, currentLang])
 
@@ -264,6 +227,7 @@ export function useProductReviews(options: UseProductReviewsOptions = {}) {
     hasMore,
     loadMoreReviews,
     totalElements,
+    totalPages,
     fullResponseData
   }
 }

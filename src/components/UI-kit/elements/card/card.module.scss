@@ -20,6 +20,10 @@
   }
 }
 
+.card__box:hover .product_card__title {
+  color: #0047ba !important;
+}
+
 .pending {
   border: 2px solid #fcc54a;
 }
@@ -197,8 +201,8 @@
     background: #fff;
     box-shadow: 0 0 32px 0 rgb(18 18 18 / 12%);
 
-    .poroduct_card__title {
-      color: var(--accent);
+    .product_card__title {
+      color: #0047ba;
     }
   }
 

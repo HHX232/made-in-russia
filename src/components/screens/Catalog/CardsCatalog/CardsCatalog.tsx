@@ -555,7 +555,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
               return (
                 <div
-                  className={`keen-slider__slide ${styled.slider__slide} ${isActive ? styled.slider__slide_active : ''}`}
+                  className={`keen-slider__slide spec__keen-slider__slide ${styled.slider__slide} ${isActive ? styled.slider__slide_active : ''}`}
                   key={`page-${pageIndex}`}
                   ref={(node) => {
                     if (isActive) {

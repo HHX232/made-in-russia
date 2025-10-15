@@ -71,6 +71,7 @@
 
     @media (max-width: 1024px) {
       width: 100%;
+
       // display: none;
       flex-shrink: 1;
       background-color: #f6f6f6;
@@ -558,7 +559,7 @@
   background-color: #fff;
   gap: 35px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1200px) {
     flex-wrap: wrap;
     padding: 12px;
     gap: 15px;
@@ -977,8 +978,9 @@
   z-index: 99999999;
 
   & {
-    padding: 8px 12px !important;
-    border: 2px solid #2a2e46 !important;
+    min-height: 48px !important;
+    padding: 8.75px 12px !important;
+    border: 1px solid rgb(47 47 47 / 20%);
     border-radius: 10px !important;
     background-color: transparent !important;
   }
@@ -992,7 +994,7 @@
   .showPhoneSidebar,
   .showPhoneTitleSide,
   .showPhoneMainContent {
-    display: block !important;
+    display: flex !important;
   }
 
   .hidePhoneSidebar,
