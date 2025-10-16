@@ -13,7 +13,8 @@ const HomePage: FC<CatalogProps & {categories: Category[]; ads: IPromoFromServer
   initialProducts = [],
   initialHasMore = false,
   categories = [],
-  ads = []
+  ads = [],
+  isShowFilters = false
   // /Users/nikitatisevic/Desktop/made-in-russia/.next/static
 }) => {
   return (
@@ -22,7 +23,7 @@ const HomePage: FC<CatalogProps & {categories: Category[]; ads: IPromoFromServer
       <Ads ads={ads} />
       <PopularCategories />
       <AdvantagesSection />
-      <Catalog isShowFilters={false} initialProducts={initialProducts} initialHasMore={initialHasMore} />
+      <Catalog isShowFilters={isShowFilters} initialProducts={initialProducts} initialHasMore={initialHasMore} />
       <Exports />
       <Footer />
     </>

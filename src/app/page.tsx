@@ -51,6 +51,7 @@ export default async function Home() {
       initialProducts={products.content}
       initialHasMore={!products.last}
       categories={categories}
+      isShowFilters={false}
     />
   )
 }

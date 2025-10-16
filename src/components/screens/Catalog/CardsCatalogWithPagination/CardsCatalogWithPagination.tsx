@@ -57,17 +57,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   sortField = 'creationDate',
   approveStatuses = 'ALL',
   pageSize = DEFAULT_PAGE_SIZE,
-  specialFilters = [
-    {name: '1 hello test', id: '1'},
-    {name: '2 hello test', id: '2'},
-    {name: '3 hello test', id: '3'},
-    {name: '4 hello test', id: '4'},
-    {name: '5 hello test', id: '5'},
-    {name: '6 hello test', id: '6'},
-    {name: '7 hello test', id: '7'},
-    {name: '8 hello test', id: '8'},
-    {name: '9 hello test', id: '9'}
-  ]
+  specialFilters
 }) => {
   // console.log('🎯 CardsCatalogWithPagination: Component render')
 

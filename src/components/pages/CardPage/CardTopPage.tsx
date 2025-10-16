@@ -594,7 +594,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             </p>
           )}
           {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
-            <p className={styles.disc__days}>{cardData?.daysBeforeDiscountExpires} дней до окончания акции</p>
+            <p className={styles.disc__days}>{cardData?.daysBeforeDiscountExpires} дней до конца акции</p>
           )}
         </div>
         <div className={styles.buttons__box__new}>

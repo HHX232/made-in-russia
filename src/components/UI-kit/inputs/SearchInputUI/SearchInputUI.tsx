@@ -1,8 +1,9 @@
 'use client'
-import {FC, useRef, ChangeEvent, useCallback, useState, useEffect, useId} from 'react'
+import {FC, useRef, ChangeEvent, useCallback, useState, useEffect, useId, KeyboardEvent} from 'react'
 import styles from './SearchInputUI.module.scss'
 import Image from 'next/image'
 import Link from 'next/link'
+import {useRouter} from 'next/navigation'
 import {useActions} from '@/hooks/useActions'
 import {useDebounce} from '@/utils/debounce'
 import {useTranslations, useLocale} from 'next-intl'
@@ -67,6 +68,7 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId, useNe
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
   const boxRef = useRef<HTMLDivElement | null>(null)
   const id = useId()
+  const router = useRouter()
   const {setSearchTitle, clearSearchTitle} = useActions()
   const t = useTranslations('HomePage')
   const locale = useLocale()
@@ -101,6 +103,15 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId, useNe
     }
   }, [clearSearchTitle])
 
+  // Функция перенаправления на страницу поиска
+  const handleSearch = useCallback(() => {
+    const searchText = inputValue.trim()
+    if (searchText) {
+      router.push(`/search?textParams=${encodeURIComponent(searchText)}`)
+      setListIsOpen(false)
+    }
+  }, [inputValue, router])
+
   // Обработка изменения инпута
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -116,6 +127,17 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId, useNe
       debouncedSetSearchText(value)
     },
     [debouncedSetSearchTitle, debouncedSetSearchText]
+  )
+
+  // Обработка нажатия Enter
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        handleSearch()
+      }
+    },
+    [handleSearch]
   )
 
   // Функция очистки инпута
@@ -171,13 +193,23 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId, useNe
           ref={inputRef}
           onClick={() => setListIsOpen(true)}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
           placeholder={`${placeholder || t('search')}`}
           disabled={disabled}
           className={styles.search__input}
           autoComplete='off'
           value={inputValue}
         />
-        <Image src={loop} width={16} height={16} alt='search icon' className={styles.search__icon} />
+
+        <button
+          type='button'
+          onClick={handleSearch}
+          className={styles.search__icon__button}
+          aria-label='Search'
+          disabled={disabled || !inputValue.trim()}
+        >
+          <Image src={loop} width={16} height={16} alt='search icon' className={styles.search__icon} />
+        </button>
 
         {/* Кнопка очистки */}
         {showClearButton && (

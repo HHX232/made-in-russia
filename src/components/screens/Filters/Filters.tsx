@@ -5,12 +5,11 @@ import styles from './Filters.module.scss'
 import CategoryCheckBoxUI from '@/components/UI-kit/inputs/CategoryCheckBoxUI/CategoryCheckBoxUI'
 // import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import RangeInput from '@/components/UI-kit/inputs/RangeInputUI/RangeInputUI'
-import {useQuery, useQueryClient} from '@tanstack/react-query'
-import FiltersService from '@/services/filters/Filters.service'
+import {useQueryClient} from '@tanstack/react-query'
 import Skeleton from 'react-loading-skeleton'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-import CategoriesService, {useCategories} from '@/services/categoryes/categoryes.service'
+import {useCategories} from '@/services/categoryes/categoryes.service'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
@@ -48,21 +47,7 @@ const Filters: FC<{
   specialFilters?: {name: string; id: string}[]
   extraBoxClass?: string
   extraDeleteButtonClass?: string
-}> = ({
-  specialFilters = [
-    {name: '1 hello test', id: '1'},
-    {name: '2 hello test', id: '2'},
-    {name: '3 hello test', id: '3'},
-    {name: '4 hello test', id: '4'},
-    {name: '5 hello test', id: '5'},
-    {name: '6 hello test', id: '6'},
-    {name: '7 hello test', id: '7'},
-    {name: '8 hello test', id: '8'},
-    {name: '9 hello test', id: '9'}
-  ],
-  extraBoxClass,
-  extraDeleteButtonClass
-}) => {
+}> = ({specialFilters, extraBoxClass, extraDeleteButtonClass}) => {
   const [filtersIsOpen, setFiltersIsOpen] = useState(true)
   const [isMounted, setIsMounted] = useState(false)
 
