@@ -31,9 +31,10 @@ const processMarkdown = (markdown: string) => {
 
 interface IShowMarkdownProps {
   markValue: string | null
+  extraClass?: string
 }
 
-const ShowMarkdown: FC<IShowMarkdownProps> = ({markValue}) => {
+const ShowMarkdown: FC<IShowMarkdownProps> = ({markValue, extraClass}) => {
   if (!markValue || typeof markValue !== 'string') {
     return <div className='mark_box'></div>
   }
@@ -42,7 +43,7 @@ const ShowMarkdown: FC<IShowMarkdownProps> = ({markValue}) => {
 
   return (
     <div
-      className='mark_box'
+      className={`mark_box ${extraClass}`}
       style={{
         whiteSpace: 'pre-wrap',
         wordBreak: 'break-word',

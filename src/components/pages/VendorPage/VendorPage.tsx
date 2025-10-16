@@ -38,6 +38,7 @@ import {useSaveVendorMedia} from '@/utils/saveVendorDescriptionWithMedia'
 import {useUserQuery, useLogout} from '@/hooks/useUserApi'
 import DeleteAccountButton from '@/components/UI-kit/buttons/DeleteAccountButton/DeleteAccountButton'
 import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
+import Catalog from '@/components/screens/Catalog/Catalog'
 
 type TCurrentTab = 'personalData' | 'contacts' | 'sessions' | 'reviews' | 'faq'
 
@@ -603,6 +604,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
   const {reviews, isLoading: reviewsLoading, totalElements, fullResponseData} = useProductReviews(reviewsParams)
 
+  useEffect(() => {
+    console.log('reviews log hi', reviews)
+  }, [reviews])
   // Вычисляем количество страниц
   const totalPages = Math.ceil(totalElements / 2)
 
@@ -1270,7 +1274,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                         <ul className={styles.vendor__comments__list}>
                           {reviews.map((review) => (
                             <li key={review.id}>
-                              <Comment {...review} />
+                              <Comment isForVendor={true} {...review} product={review.product} />
                             </li>
                           ))}
                         </ul>
@@ -1487,20 +1491,23 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
           {/* Товары компании */}
           <div className={styles.vendor__products__box}>
-            <div className={styles.products__titles__box}>
+            {/* <div className={styles.products__titles__box}>
               <h3 className={styles.vendor__products__title}>
                 {isPageForVendor ? t('myProducts') : t('companyProducts')}
               </h3>
               <SearchInputUI useNewBorder vendorId={vendorData?.id?.toString()} />
-            </div>
+            </div> */}
             <div className={styles.products__list}>
-              <Filters />
+              <div className={styles.full_width}>
+                {/* <Filters />
               <CardsCatalog
                 extraButtonsBoxClass={styles.extraButtonsBoxClass}
                 initialProducts={initialProductsForView}
                 canCreateNewProduct={isPageForVendor}
                 specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}
-              />
+              /> */}
+                <Catalog initialHasMore initialProducts={[]} />
+              </div>
             </div>
           </div>
         </div>

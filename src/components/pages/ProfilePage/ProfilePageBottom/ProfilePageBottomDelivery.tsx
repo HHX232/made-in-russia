@@ -161,7 +161,7 @@ const ProfilePageBottomDelivery: FC = () => {
         <>
           <ul className={`${styles.delivery__list}`}>
             {currentReviews.map((el, i) => {
-              return <Comment key={el.id || i} {...el} />
+              return <Comment isForOwner key={el.id || i} {...el} />
             })}
           </ul>
           {renderPagination()}

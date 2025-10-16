@@ -369,7 +369,8 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
                   <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
                     <Image
                       src={(allFlags as any)[languageToLocale?.[activeLanguage]]}
-                      alt='English'
+                      alt={languageToLocale?.[activeLanguage]}
+                      style={{minWidth: '30px', minHeight: '20px'}}
                       width={34}
                       height={24}
                     />

@@ -7,6 +7,8 @@ import Skeleton from 'react-loading-skeleton'
 import ICardFull from '@/services/card/card.types'
 import {useTranslations} from 'next-intl'
 import ShowMarkdown from '@/components/UI-kit/Texts/ShowMarkdown/ShowMarkdown'
+import Image from 'next/image'
+import Link from 'next/link'
 
 const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoading, cardData}) => {
   useEffect(() => {
@@ -21,7 +23,18 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
       <div className={`${styles.descr__box}`}>
         <div className={`${styles.mark__span__box}`}>
           {!isLoading ? (
-            <ShowMarkdown markValue={cardData.mainDescription} />
+            <StringDescriptionGroup
+              extraBoxClass={`${styles.extra__group__class}`}
+              titleFontSize='16'
+              listGap='20'
+              items={cardData.characteristics.map((el) => ({title: el.name, value: el.value}))}
+              titleMain={t('technicalCharacteristics')}
+            />
+          ) : (
+            <></>
+          )}
+          {!isLoading ? (
+            <ShowMarkdown extraClass={styles.margin__bottom__mark} markValue={cardData.mainDescription} />
           ) : (
             <>
               {' '}
@@ -48,73 +61,67 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
               <Skeleton height={29} count={1} />
             </>
           )}
-          {!isLoading ? (
-            <StringDescriptionGroup
-              extraBoxClass={`${styles.extra__group__class}`}
-              titleFontSize='16'
-              listGap='20'
-              items={cardData.characteristics.map((el) => ({title: el.name, value: el.value}))}
-              titleMain={t('technicalCharacteristics')}
-            />
-          ) : (
-            <></>
-          )}
           {!isLoading ? <ShowMarkdown markValue={cardData.furtherDescription} /> : <></>}
         </div>
-        {/* <div className={`${styles.spec__description__box}`}>
-          {!isLoading ? (
-            <h3 className={`${styles.spec__description__title}`}>{t('companyDescription')}</h3>
-          ) : (
-            <Skeleton height={29} count={1} style={{marginBottom: '15px'}} />
-          )}
-          {!isLoading ? (
-            <p className={`${styles.spec__description__text}`}>{cardData.aboutVendor?.mainDescription}</p>
-          ) : (
-            <Skeleton height={100} count={1} style={{marginBottom: '15px'}} />
-          )}
-          <ul className={`${styles.spec__description__images__box}`}>
-            {cardData.aboutVendor?.media?.map((el, index) => (
-              <li className={`${styles.spec__description__list_item}`} key={index}>
-                {!isLoading ? (
-                  el.url.includes('mov') || el.url.includes('mp4') ? (
-                    <div className={styles.videoContainer}>
-                      <video
-                        src={el.url}
-                        autoPlay
-                        controls={false}
-                        loop
-                        muted
-                        playsInline
-                        preload='metadata'
-                        className={`${styles.spec__description__list_item__image} ${styles.video}`}
-                      />
-                    </div>
-                  ) : (
-                    <Image
-                      className={`${styles.spec__description__list_item__image}`}
-                      src={el.url}
-                      alt=''
-                      width={170}
-                      height={170}
-                    />
-                  )
+        <div className={styles.all__info__box}>
+          <Link href={`/data-vendor/${cardData?.user?.id}`} className={styles.about__vendor}>
+            <h3 className={styles.vendor__title}>Информация о поставщике</h3>
+            <div className={styles.vendor__box__info}>
+              <div className={styles.vendor__avatar}>
+                {!!cardData.user.avatarUrl ? (
+                  <Image
+                    className={styles.avatar__image}
+                    width={80}
+                    height={80}
+                    src={cardData.user.avatarUrl}
+                    alt='avatar'
+                  />
                 ) : (
-                  <Skeleton style={{width: 100000, maxWidth: '170px', marginBottom: '10px'}} height={110} />
+                  <div className={styles.char__box}>
+                    {' '}
+                    <p className={styles.avatar__char}>
+                      {!!cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                        ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                        : cardData.user.login.charAt(0).toUpperCase()}
+                    </p>
+                  </div>
                 )}
-                {!isLoading ? (
-                  <p className={`${styles.spec__description__list_item__image__text}`}>{el.altText} </p>
-                ) : (
-                  <Skeleton style={{width: 100000, maxWidth: '170px'}} height={20} />
-                )}
-              </li>
-            ))}
-          </ul>
-          {!isLoading ? (
-            <p className={`${styles.spec__description__text}`}>{cardData.aboutVendor?.furtherDescription}</p>
-          ) : (
-            <Skeleton height={20} count={5} />
-          )}
-        </div> */}
+                <p className={styles.vendor__name}>{cardData.user.login}</p>
+              </div>
+              <p className={styles.vendor__inn}>ИНН: {cardData.user.vendorDetails?.inn}</p>
+            </div>
+          </Link>
+          <div className={styles.about__vendor}>
+            <h3 className={styles.vendor__title}>Информация о доставке</h3>
+            <div className={styles.vendor__box__del__info}>
+              <div className={styles.loc__box}>
+                <svg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  <path
+                    d='M15.9998 17.9067C18.2973 17.9067 20.1598 16.0442 20.1598 13.7467C20.1598 11.4492 18.2973 9.58667 15.9998 9.58667C13.7023 9.58667 11.8398 11.4492 11.8398 13.7467C11.8398 16.0442 13.7023 17.9067 15.9998 17.9067Z'
+                    stroke='#0047BA'
+                    stroke-width='1.5'
+                  />
+                  <path
+                    d='M4.8266 11.32C7.45327 -0.226643 24.5599 -0.21331 27.1733 11.3334C28.7066 18.1067 24.4933 23.84 20.7999 27.3867C18.1199 29.9734 13.8799 29.9734 11.1866 27.3867C7.5066 23.84 3.29327 18.0934 4.8266 11.32Z'
+                    stroke='#0047BA'
+                    stroke-width='1.5'
+                  />
+                </svg>
+                <p className={styles.del__title}>{cardData?.user?.vendorDetails?.address || 'адрес не указан'}</p>
+              </div>
+
+              <div className={styles.underline}></div>
+              <ul className={styles.del__list}>
+                {cardData.deliveryMethodsDetails?.map((el, i) => (
+                  <li className={styles.del__list__item} key={i}>
+                    <p>{el.name}</p>
+                    <p>{el.value + ' ' + cardData.prices[0].currency}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

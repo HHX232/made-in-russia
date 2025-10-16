@@ -11,8 +11,7 @@
     width: 100%;
     padding: 32px;
     border-radius: 16px;
-    background: white;
-    box-shadow: 0 20px 40px rgb(0 0 0 / 10%);
+    background: transparent;
   }
 
   .modalTitle {
@@ -25,7 +24,6 @@
 
   .productInfo {
     padding: 16px;
-    border-radius: 12px;
     margin-bottom: 24px;
     background: #f8f9fa;
 
@@ -73,7 +71,6 @@
   .priceSection {
     padding: 20px;
     border: 1px solid #e0f2fe;
-    border-radius: 12px;
     margin-bottom: 24px;
     background: #fefefe;
 
@@ -151,7 +148,6 @@
     button {
       padding: 12px 24px;
       border: none;
-      border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
       font-weight: 500;
@@ -173,11 +169,11 @@
     }
 
     .submitButton {
-      background: #3b82f6;
+      background: #0047ba;
       color: white;
 
       &:hover:not(:disabled) {
-        background: #2563eb;
+        background: #004fce;
       }
 
       &:disabled {

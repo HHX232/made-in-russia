@@ -21,6 +21,8 @@ import BreadForCard from './breadForCard/breadForCard'
 import PurchaseModal from './PurchaseModal/PurchaseModal'
 import instance, {axiosClassic} from '@/api/api.interceptor'
 import {toast} from 'sonner'
+import {useActions} from '@/hooks/useActions'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
 // import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
 // import {useCachedNode} from '@dnd-kit/core/dist/hooks/utilities'
 // import {useCategories} from '@/services/categoryes/categoryes.service'
@@ -383,6 +385,11 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   const [showPhone, setShowPhone] = useState(false)
   const currentLang = useLocale()
   const [purchaseModalOpen, setPurchaseModalOpen] = useState(false)
+  const {toggleToFavorites} = useActions()
+  const {productInFavorites} = useTypedSelector((state) => state.favorites)
+  useEffect(() => {
+    console.log('productInFavorites', productInFavorites)
+  }, [productInFavorites])
   const handlePurchaseSubmit = async (data: {
     name: string
     email: string
@@ -558,268 +565,363 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     </>
   )
 
-  // Общий компонент для информации о цене и доставке
-  const PriceAndDeliveryInfo = () => {
-    const priceUnitRef = useRef<HTMLParagraphElement>(null)
-    const [isWide, setIsWide] = useState(false)
+  const NewFullTopInfo = () => {
+    const t = useTranslations('CardPage.CardTopPage')
 
-    useLayoutEffect(() => {
-      if (priceUnitRef.current) {
-        setIsWide(priceUnitRef.current.offsetWidth >= 190)
-      }
-    }, [cardData])
-
-    const urlForLogo = useMemo(() => cardData?.user.avatarUrl || ava || '', [])
     return (
-      <div className={`${styles.card__state}`}>
-        <ModalWindowDefault
-          extraClass={styles.vendor__modal__extra}
-          isOpen={vendorModalOpen}
-          onClose={() => setVendorModalOpen(false)}
-        >
-          <div className={`${styles.modal__vendor__box__first}`}>
-            <h2 className={styles.vendor__modal__title}>{cardData?.user.login}</h2>
-            <div className={`${styles.modal__vendor__content}`}>
-              <Image
-                style={{borderRadius: '20px'}}
-                src={urlForLogo}
-                alt={cardData?.user.login || ''}
-                width={200}
-                height={200}
-              />
-              <div className={`${styles.texts__box}`}>
-                <div className={`${styles.inn__box}`}>
-                  <span>
-                    {' '}
-                    <b className={styles.mini__title__vendor}> {t('innTitle')}</b>
-                  </span>{' '}
-                  {cardData?.user.vendorDetails?.inn}
-                </div>
-                <div className={`${styles.inn__box}`}>
-                  <span>
-                    {' '}
-                    <b className={styles.mini__title__vendor}> {t('countriesTitle')}</b>{' '}
-                  </span>{' '}
-                  <ul className={`${styles.countries__list}`}>
-                    {cardData?.user.vendorDetails?.countries?.map((el, i) => (
-                      <li key={i + el?.id}>{el?.name}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className={`${styles.inn__box}`}>
-                  <span>
-                    {' '}
-                    <b className={styles.mini__title__vendor}> {t('addressTitle')}</b>{' '}
-                  </span>{' '}
-                  <p className={`${styles.countries__list}`}>
-                    {cardData?.user?.vendorDetails?.address || t('addressAlternative')}
-                  </p>
-                </div>
-                {cardData?.user.vendorDetails?.description?.length !== 0 && (
-                  <TextAreaUI
-                    currentValue={cardData?.user.vendorDetails?.description || ''}
-                    onSetValue={() => {}}
-                    readOnly
-                    maxRows={10}
-                    theme='superWhite'
-                    minRows={2}
-                    autoResize
-                    placeholder={t('description')}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-          <div className={styles.buttons__box}>
-            <button
-              className={`${styles.telephone__button} ${!showPhone ? styles.telephone__button__hidden : styles.telephone__button__show} `}
-              onClick={() => setShowPhone(true)}
-            >
-              {showPhone
-                ? cardData?.user?.phoneNumber || cardData?.user.vendorDetails?.phoneNumbers?.[0] || 'Without phone'
-                : t('showTelephone')}
-            </button>
-            <button className={styles.button__vendor__bottom} onClick={() => {}}>
-              {t('showOnEmail')}
-            </button>
-            <button
-              className={styles.button__vendor__bottom}
-              onClick={(e) => {
-                handkeRequestCallback(e)
-              }}
-            >
-              {t('RequestCallback')}
-            </button>
-          </div>
-        </ModalWindowDefault>
-        <div className={`${styles.card__state__big}`}>
-          <ul className={`${styles.prices__list}`}>
-            {cardData?.prices.map((el, i) => {
-              return (
-                <li className={`${styles.prices__list_item}`} key={i}>
-                  {!isReallyLoading ? (
-                    <div className={`${styles.price__list__title}`}>
-                      <span className={`${styles.price__range}`}>
-                        {el.to == 999999
-                          ? el.from + '+'
-                          : el.from === el.to
-                            ? el.from
-                            : el.from + '\u00AD-\u00AD' + el.to}
-                      </span>
-                      <span className={`${styles.price__unit}`}>{el.unit}</span>
-                    </div>
-                  ) : (
-                    <Skeleton style={{width: 100000, maxWidth: '45px'}} height={30} />
-                  )}
-                  {!isReallyLoading ? (
-                    <p
-                      style={{flexWrap: isWide ? 'wrap' : 'nowrap', justifyContent: isWide ? 'end' : 'center'}}
-                      ref={priceUnitRef}
-                      className={`${styles.price__list__value__start}`}
-                    >
-                      <span
-                        className={`${styles.price__original__price} ${el.discountedPrice !== el.originalPrice && styles.price__original__with__discount}`}
-                      >
-                        {createPriceWithDot(el.originalPrice.toString())}
-                      </span>
-                      {el.originalPrice !== el.discountedPrice ? (
-                        <span className={`${styles.discount__price}`}>
-                          {createPriceWithDot(el.discountedPrice.toString())}
-                        </span>
-                      ) : (
-                        ''
-                      )}
-                      <span className={`${styles.price__unit}`}>
-                        {renderPriceUnit(
-                          el.currency + `/` + el.unit,
-                          [
-                            styles.price__currency__first,
-                            el.discountedPrice !== el.originalPrice ? styles.price__currency__first__active : ''
-                          ],
-                          [styles.price__unitMeasure]
-                        )}
-                      </span>
-                    </p>
-                  ) : (
-                    <Skeleton style={{width: '100%', maxWidth: '150px'}} height={30} />
-                  )}
-                </li>
-              )
-            })}
-          </ul>
-          {!(Number(cardData?.daysBeforeDiscountExpires) <= 0) && (
-            <div className={`${styles.discount__date__box}`}>
-              <span className={`${styles.date__count}`}>
-                {!isReallyLoading ? (
-                  cardData?.daysBeforeDiscountExpires?.toString() + t('days')
-                ) : (
-                  <Skeleton style={{width: 100000, maxWidth: '45px'}} height={16} />
-                )}
-              </span>
-              <span className={`${styles.date__text__end}`}>
-                {!isReallyLoading ? (
-                  ' ' + ' ' + t('discountDate')
-                ) : (
-                  <Skeleton style={{width: 100000, maxWidth: '100%'}} height={16} />
-                )}
-              </span>
-            </div>
-          )}
-          <div
-            style={{marginTop: Number(cardData?.daysBeforeDiscountExpires) <= 0 ? '15px' : '0'}}
-            className={`${styles.min__weight}`}
-          >
-            {!isReallyLoading ? (
-              `${t('minimumOrderQuantity')} ${cardData?.minimumOrderQuantity} ${cardData?.prices[0].unit}`
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '100%'}} height={16} />
-            )}
-          </div>
-
-          <div className={`${styles.buttons__box}`}>
-            {!isReallyLoading ? (
-              <button onClick={() => setPurchaseModalOpen(true)} className={`${styles.by__now__button}`}>
-                {t('byNow')}
-              </button>
-            ) : (
-              <Skeleton height={48} width={150} />
-            )}
-          </div>
-          <div className={`${styles.buttons__box}`}>
-            {!isReallyLoading ? (
-              <div
-                onClick={(event) => {
-                  event.preventDefault()
-                  setVendorModalOpen(true)
-                }}
-                className={`${styles.by__now__button} ${styles.by__now__button__vendor}`}
-              >
-                {t('showVendorData')}
-              </div>
-            ) : (
-              <Skeleton height={48} width={150} />
-            )}
-          </div>
+      <div className={styles.full__info__box}>
+        <h1 className={styles.productTitle}>{cardData?.title}</h1>
+        <div className={styles.reviews}>
+          <p className={styles.ratingNumber}>{cardData?.rating}</p>
+          <svg width='16' height='16' viewBox='0 0 24 22' fill='none' xmlns='http://www.w3.org/2000/svg'>
+            <path
+              d='M12 0L15.1811 7.6216L23.4127 8.2918L17.1471 13.6724L19.0534 21.7082L12 17.412L4.94658 21.7082L6.85288 13.6724L0.587322 8.2918L8.81891 7.6216L12 0Z'
+              fill='#EEB611'
+            />
+          </svg>
+          <div className={styles.gray__dot}></div>
+          <p className={styles.reviews__count}>
+            {cardData?.reviewsCount} {t('revues')}
+          </p>
         </div>
-        {(!!cardData?.deliveryMethodsDetails?.length || !!cardData?.packagingOptions?.length) && (
-          <div className={`${styles.card__state__mini}`}>
-            {!isReallyLoading ? (
-              <h4 className={`${styles.state__mini__title}`}>{t('deliveryMethodsInfo')}</h4>
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
-            )}
-            <ul className={`${styles.state__mini__list}`}>
-              {cardData?.deliveryMethodsDetails?.map((el, i) => {
-                return (
-                  <li key={el.name.toString() + i} className={`${styles.state__mini__list__item}`}>
-                    {!isReallyLoading ? (
-                      <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
-                    ) : (
-                      <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-                    )}
-                    {!isReallyLoading ? (
-                      <p className={`${styles.state__mini__list__item__value}`}>{el.value}</p>
-                    ) : (
-                      <Skeleton style={{width: 100000, maxWidth: '100px'}} height={16} />
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
-            {!isReallyLoading ? (
-              <h4 className={`${styles.state__mini__title}`}>{t('packagingOptions')}</h4>
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
-            )}
+        <div className={styles.prices__box__new}>
+          <p className={styles.main__price}>
+            от {cardData?.prices[0].discountedPrice} {cardData?.prices[0].currency}/{cardData?.prices[0].unit}
+          </p>
+          {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
+            <p className={styles.original__price}>
+              {cardData?.prices[0].originalPrice} {cardData?.prices[0].currency}/{cardData?.prices[0].unit}
+            </p>
+          )}
+          {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
+            <p className={styles.disc__days}>{cardData?.daysBeforeDiscountExpires} дней до окончания акции</p>
+          )}
+        </div>
+        <div className={styles.buttons__box__new}>
+          <button className={styles.byNow} onClick={() => setPurchaseModalOpen(true)}>
+            {t('byNow')}
+          </button>
+          <button
+            onClick={() => {
+              toggleToFavorites(cardData as any)
+            }}
+            className={styles.fav__button}
+          >
+            <svg
+              className={
+                !productInFavorites.find((item) => item?.id?.toString() === cardData?.id?.toString())
+                  ? styles.active__star
+                  : ''
+              }
+              width='28'
+              height='28'
+              viewBox='0 0 28 28'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M16.0187 4.09499L18.072 8.20165C18.352 8.77332 19.0987 9.32165 19.7287 9.42665L23.4504 10.045C25.8304 10.4417 26.3904 12.1683 24.6754 13.8717L21.782 16.765C21.292 17.255 21.0237 18.2 21.1754 18.8767L22.0037 22.4583C22.657 25.2933 21.152 26.39 18.6437 24.9083L15.1554 22.8433C14.5254 22.47 13.487 22.47 12.8454 22.8433L9.35705 24.9083C6.86038 26.39 5.34372 25.2817 5.99705 22.4583L6.82538 18.8767C6.97705 18.2 6.70872 17.255 6.21872 16.765L3.32538 13.8717C1.62205 12.1683 2.17038 10.4417 4.55038 10.045L8.27205 9.42665C8.89038 9.32165 9.63705 8.77332 9.91705 8.20165L11.9704 4.09499C13.0904 1.86665 14.9104 1.86665 16.0187 4.09499Z'
+                stroke={
+                  !productInFavorites.find((item) => item?.id?.toString() === cardData?.id?.toString())
+                    ? 'transparent'
+                    : '#FFFFFF'
+                }
+                fill={
+                  productInFavorites.find((item) => item?.id?.toString() === cardData?.id?.toString())
+                    ? '#FF0000'
+                    : 'none'
+                }
+                strokeWidth={
+                  !productInFavorites.find((item) => item?.id?.toString() === cardData?.id?.toString()) ? '1.5' : '0'
+                }
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+          </button>
+        </div>
 
-            <ul className={`${styles.state__mini__list}`}>
-              {cardData?.packagingOptions?.map((el, i) => {
-                return (
-                  <li className={`${styles.state__mini__list__item}`} key={el.name.toString() + i}>
-                    {!isReallyLoading ? (
-                      <>
-                        <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
-                        <p className={`${styles.state__mini__list__item__text}`}>{el.price + ' ' + el.priceUnit}</p>
-                      </>
-                    ) : (
-                      <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-                    )}
-                  </li>
-                )
-              })}
-              {/* <li className={`${styles.state__mini__list__item}`}>
-            {!isReallyLoading ? (
-              <p className={`${styles.state__mini__list__item__text}`}>Коробки</p>
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-            )}
-          </li> */}
-            </ul>
-          </div>
-        )}
+        <div className={styles.characteristics__list}>
+          <StringDescriptionGroup
+            extraBoxClass={`${styles.extra__group__class}`}
+            titleFontSize='16'
+            listGap='10'
+            items={[
+              {title: 'Article', value: cardData?.article || ''},
+              ...(cardData?.characteristics?.slice(0, 4)?.map((el) => ({
+                title: el.name,
+                value: el.value
+              })) || [])
+            ]}
+            titleMain={t('technicalCharacteristics')}
+          />
+        </div>
       </div>
     )
   }
+
+  // Общий компонент для информации о цене и доставке
+  // const PriceAndDeliveryInfo = () => {
+  //   const priceUnitRef = useRef<HTMLParagraphElement>(null)
+  //   const [isWide, setIsWide] = useState(false)
+
+  //   useLayoutEffect(() => {
+  //     if (priceUnitRef.current) {
+  //       setIsWide(priceUnitRef.current.offsetWidth >= 190)
+  //     }
+  //   }, [cardData])
+
+  //   const urlForLogo = useMemo(() => cardData?.user.avatarUrl || ava || '', [])
+  //   return (
+  //     <div className={`${styles.card__state}`}>
+  //       <ModalWindowDefault
+  //         extraClass={styles.vendor__modal__extra}
+  //         isOpen={vendorModalOpen}
+  //         onClose={() => setVendorModalOpen(false)}
+  //       >
+  //         <div className={`${styles.modal__vendor__box__first}`}>
+  //           <h2 className={styles.vendor__modal__title}>{cardData?.user.login}</h2>
+  //           <div className={`${styles.modal__vendor__content}`}>
+  //             <Image
+  //               style={{borderRadius: '20px'}}
+  //               src={urlForLogo}
+  //               alt={cardData?.user.login || ''}
+  //               width={200}
+  //               height={200}
+  //             />
+  //             <div className={`${styles.texts__box}`}>
+  //               <div className={`${styles.inn__box}`}>
+  //                 <span>
+  //                   {' '}
+  //                   <b className={styles.mini__title__vendor}> {t('innTitle')}</b>
+  //                 </span>{' '}
+  //                 {cardData?.user.vendorDetails?.inn}
+  //               </div>
+  //               <div className={`${styles.inn__box}`}>
+  //                 <span>
+  //                   {' '}
+  //                   <b className={styles.mini__title__vendor}> {t('countriesTitle')}</b>{' '}
+  //                 </span>{' '}
+  //                 <ul className={`${styles.countries__list}`}>
+  //                   {cardData?.user.vendorDetails?.countries?.map((el, i) => (
+  //                     <li key={i + el?.id}>{el?.name}</li>
+  //                   ))}
+  //                 </ul>
+  //               </div>
+  //               <div className={`${styles.inn__box}`}>
+  //                 <span>
+  //                   {' '}
+  //                   <b className={styles.mini__title__vendor}> {t('addressTitle')}</b>{' '}
+  //                 </span>{' '}
+  //                 <p className={`${styles.countries__list}`}>
+  //                   {cardData?.user?.vendorDetails?.address || t('addressAlternative')}
+  //                 </p>
+  //               </div>
+  //               {cardData?.user.vendorDetails?.description?.length !== 0 && (
+  //                 <TextAreaUI
+  //                   currentValue={cardData?.user.vendorDetails?.description || ''}
+  //                   onSetValue={() => {}}
+  //                   readOnly
+  //                   maxRows={10}
+  //                   theme='superWhite'
+  //                   minRows={2}
+  //                   autoResize
+  //                   placeholder={t('description')}
+  //                 />
+  //               )}
+  //             </div>
+  //           </div>
+  //         </div>
+  //         <div className={styles.buttons__box}>
+  //           <button
+  //             className={`${styles.telephone__button} ${!showPhone ? styles.telephone__button__hidden : styles.telephone__button__show} `}
+  //             onClick={() => setShowPhone(true)}
+  //           >
+  //             {showPhone
+  //               ? cardData?.user?.phoneNumber || cardData?.user.vendorDetails?.phoneNumbers?.[0] || 'Without phone'
+  //               : t('showTelephone')}
+  //           </button>
+  //           <button className={styles.button__vendor__bottom} onClick={() => {}}>
+  //             {t('showOnEmail')}
+  //           </button>
+  //           <button
+  //             className={styles.button__vendor__bottom}
+  //             onClick={(e) => {
+  //               handkeRequestCallback(e)
+  //             }}
+  //           >
+  //             {t('RequestCallback')}
+  //           </button>
+  //         </div>
+  //       </ModalWindowDefault>
+  //       <div className={`${styles.card__state__big}`}>
+  //         <ul className={`${styles.prices__list}`}>
+  //           {cardData?.prices.map((el, i) => {
+  //             return (
+  //               <li className={`${styles.prices__list_item}`} key={i}>
+  //                 {!isReallyLoading ? (
+  //                   <div className={`${styles.price__list__title}`}>
+  //                     <span className={`${styles.price__range}`}>
+  //                       {el.to == 999999
+  //                         ? el.from + '+'
+  //                         : el.from === el.to
+  //                           ? el.from
+  //                           : el.from + '\u00AD-\u00AD' + el.to}
+  //                     </span>
+  //                     <span className={`${styles.price__unit}`}>{el.unit}</span>
+  //                   </div>
+  //                 ) : (
+  //                   <Skeleton style={{width: 100000, maxWidth: '45px'}} height={30} />
+  //                 )}
+  //                 {!isReallyLoading ? (
+  //                   <p
+  //                     style={{flexWrap: isWide ? 'wrap' : 'nowrap', justifyContent: isWide ? 'end' : 'center'}}
+  //                     ref={priceUnitRef}
+  //                     className={`${styles.price__list__value__start}`}
+  //                   >
+  //                     <span
+  //                       className={`${styles.price__original__price} ${el.discountedPrice !== el.originalPrice && styles.price__original__with__discount}`}
+  //                     >
+  //                       {createPriceWithDot(el.originalPrice.toString())}
+  //                     </span>
+  //                     {el.originalPrice !== el.discountedPrice ? (
+  //                       <span className={`${styles.discount__price}`}>
+  //                         {createPriceWithDot(el.discountedPrice.toString())}
+  //                       </span>
+  //                     ) : (
+  //                       ''
+  //                     )}
+  //                     <span className={`${styles.price__unit}`}>
+  //                       {renderPriceUnit(
+  //                         el.currency + `/` + el.unit,
+  //                         [
+  //                           styles.price__currency__first,
+  //                           el.discountedPrice !== el.originalPrice ? styles.price__currency__first__active : ''
+  //                         ],
+  //                         [styles.price__unitMeasure]
+  //                       )}
+  //                     </span>
+  //                   </p>
+  //                 ) : (
+  //                   <Skeleton style={{width: '100%', maxWidth: '150px'}} height={30} />
+  //                 )}
+  //               </li>
+  //             )
+  //           })}
+  //         </ul>
+  //         {!(Number(cardData?.daysBeforeDiscountExpires) <= 0) && (
+  //           <div className={`${styles.discount__date__box}`}>
+  //             <span className={`${styles.date__count}`}>
+  //               {!isReallyLoading ? (
+  //                 cardData?.daysBeforeDiscountExpires?.toString() + t('days')
+  //               ) : (
+  //                 <Skeleton style={{width: 100000, maxWidth: '45px'}} height={16} />
+  //               )}
+  //             </span>
+  //             <span className={`${styles.date__text__end}`}>
+  //               {!isReallyLoading ? (
+  //                 ' ' + ' ' + t('discountDate')
+  //               ) : (
+  //                 <Skeleton style={{width: 100000, maxWidth: '100%'}} height={16} />
+  //               )}
+  //             </span>
+  //           </div>
+  //         )}
+  //         <div
+  //           style={{marginTop: Number(cardData?.daysBeforeDiscountExpires) <= 0 ? '15px' : '0'}}
+  //           className={`${styles.min__weight}`}
+  //         >
+  //           {!isReallyLoading ? (
+  //             `${t('minimumOrderQuantity')} ${cardData?.minimumOrderQuantity} ${cardData?.prices[0].unit}`
+  //           ) : (
+  //             <Skeleton style={{width: 100000, maxWidth: '100%'}} height={16} />
+  //           )}
+  //         </div>
+
+  //         <div className={`${styles.buttons__box}`}>
+  //           {!isReallyLoading ? (
+  //             <button onClick={() => setPurchaseModalOpen(true)} className={`${styles.by__now__button}`}>
+  //               {t('byNow')}
+  //             </button>
+  //           ) : (
+  //             <Skeleton height={48} width={150} />
+  //           )}
+  //         </div>
+  //         <div className={`${styles.buttons__box}`}>
+  //           {!isReallyLoading ? (
+  //             <div
+  //               onClick={(event) => {
+  //                 event.preventDefault()
+  //                 setVendorModalOpen(true)
+  //               }}
+  //               className={`${styles.by__now__button} ${styles.by__now__button__vendor}`}
+  //             >
+  //               {t('showVendorData')}
+  //             </div>
+  //           ) : (
+  //             <Skeleton height={48} width={150} />
+  //           )}
+  //         </div>
+  //       </div>
+  //       {(!!cardData?.deliveryMethodsDetails?.length || !!cardData?.packagingOptions?.length) && (
+  //         <div className={`${styles.card__state__mini}`}>
+  //           {!isReallyLoading ? (
+  //             <h4 className={`${styles.state__mini__title}`}>{t('deliveryMethodsInfo')}</h4>
+  //           ) : (
+  //             <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
+  //           )}
+  //           <ul className={`${styles.state__mini__list}`}>
+  //             {cardData?.deliveryMethodsDetails?.map((el, i) => {
+  //               return (
+  //                 <li key={el.name.toString() + i} className={`${styles.state__mini__list__item}`}>
+  //                   {!isReallyLoading ? (
+  //                     <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
+  //                   ) : (
+  //                     <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
+  //                   )}
+  //                   {!isReallyLoading ? (
+  //                     <p className={`${styles.state__mini__list__item__value}`}>{el.value}</p>
+  //                   ) : (
+  //                     <Skeleton style={{width: 100000, maxWidth: '100px'}} height={16} />
+  //                   )}
+  //                 </li>
+  //               )
+  //             })}
+  //           </ul>
+  //           {!isReallyLoading ? (
+  //             <h4 className={`${styles.state__mini__title}`}>{t('packagingOptions')}</h4>
+  //           ) : (
+  //             <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
+  //           )}
+
+  //           <ul className={`${styles.state__mini__list}`}>
+  //             {cardData?.packagingOptions?.map((el, i) => {
+  //               return (
+  //                 <li className={`${styles.state__mini__list__item}`} key={el.name.toString() + i}>
+  //                   {!isReallyLoading ? (
+  //                     <>
+  //                       <p className={`${styles.state__mini__list__item__text}`}>{el.name}</p>
+  //                       <p className={`${styles.state__mini__list__item__text}`}>{el.price + ' ' + el.priceUnit}</p>
+  //                     </>
+  //                   ) : (
+  //                     <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
+  //                   )}
+  //                 </li>
+  //               )
+  //             })}
+  //             {/* <li className={`${styles.state__mini__list__item}`}>
+  //           {!isReallyLoading ? (
+  //             <p className={`${styles.state__mini__list__item__text}`}>Коробки</p>
+  //           ) : (
+  //             <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
+  //           )}
+  //         </li> */}
+  //           </ul>
+  //         </div>
+  //       )}
+  //     </div>
+  //   )
+  // }
 
   return (
     <>
@@ -854,27 +956,29 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
       {/* Первая секция */}
       <span className={`${styles.card__row__info} ${styles.card__col__info__first}`}>
-        <div className={`${styles.card__mini__info}`}>
+        {/* <div className={`${styles.card__mini__info}`}>
           <CardContent />
-        </div>
-        <PriceAndDeliveryInfo />
+        </div> */}
+        {/* <PriceAndDeliveryInfo /> */}
+        <NewFullTopInfo />
       </span>
 
       {/* Вторая секция */}
-      <span className={`${styles.card__col__info} ${styles.card__col__info__secondary}`}>
+      {/* <span className={`${styles.card__col__info} ${styles.card__col__info__secondary}`}>
         <div className={`${styles.card__mini__info}`}>
           <CardContent />
         </div>
         <PriceAndDeliveryInfo />
-        <PurchaseModal
-          isOpen={purchaseModalOpen}
-          onClose={() => setPurchaseModalOpen(false)}
-          productTitle={cardMiniData?.title || ''}
-          prices={cardMiniData?.prices || []}
-          minimumOrderQuantity={cardMiniData?.minimumOrderQuantity || 1}
-          onSubmit={handlePurchaseSubmit}
-        />
-      </span>
+        
+      </span> */}
+      <PurchaseModal
+        isOpen={purchaseModalOpen}
+        onClose={() => setPurchaseModalOpen(false)}
+        productTitle={cardMiniData?.title || ''}
+        prices={cardMiniData?.prices || []}
+        minimumOrderQuantity={cardMiniData?.minimumOrderQuantity || 1}
+        onSubmit={handlePurchaseSubmit}
+      />
     </>
   )
 }

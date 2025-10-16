@@ -21,12 +21,6 @@ interface ArrowButtonProps {
   direction: 'left' | 'right'
 }
 
-// interface SliderImage {
-//   src: string
-//   alt?: string
-//   type: 'image' | 'video'
-// }
-
 interface SlickCardSliderProps {
   isLoading: boolean
   imagesCustom?: string[]
@@ -62,10 +56,10 @@ const getMediaUrl = (media: string): string => {
 }
 
 const calculateSlidesToShow = (containerWidth: number, imagesLength: number): number => {
-  if (containerWidth < 350) return Math.min(imagesLength, 2)
-  if (containerWidth < 400) return Math.min(imagesLength, 2)
-  if (containerWidth < 500) return Math.min(imagesLength, 3)
-  return Math.min(imagesLength, 4)
+  const thumbnailWidth = 140 // ширина одной миниатюры
+  const gap = 16 // отступ между миниатюрами
+  const availableSlides = Math.floor((containerWidth + gap) / (thumbnailWidth + gap))
+  return Math.min(Math.max(availableSlides, 1), imagesLength)
 }
 
 // Компоненты
@@ -126,11 +120,8 @@ ZoomImage.displayName = 'ZoomImage'
 
 const ArrowButton: React.FC<ArrowButtonProps> = React.memo(({onClick, disabled, extraClass = '', direction}) => {
   const arrowClass = useMemo(
-    () =>
-      `${styles.customArrow} ${styles[`customArrow${direction === 'left' ? 'Left' : 'Right'}`]} ${
-        disabled ? styles.customArrowDisabled : ''
-      } ${extraClass}`,
-    [direction, disabled, extraClass]
+    () => `${styles.customArrow} ${disabled ? styles.customArrowDisabled : ''} ${extraClass}`,
+    [disabled, extraClass]
   )
 
   const svgStyle = direction === 'left' ? {transform: 'rotate(180deg)'} : {}
@@ -395,11 +386,6 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
 
   // Генерация структурированных данных
   const structuredData = useMemo(() => {
-    // const baseUrl =
-    //   typeof window !== 'undefined'
-    //     ? process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
-    //     : 'https://exporteru.com'
-
     const mediaObjects = images.map((media, index) => {
       const isVideo = getMediaType(media) === 'video'
       const fullUrl = getMediaUrl(media)
@@ -618,6 +604,27 @@ const ImageGallery: React.FC<{
       />
     )}
 
+    {!isSingleImage && mainLoaded && mainInstanceRef.current && (
+      <div className={styles.imageSlider__navigation}>
+        <ArrowButton
+          direction='left'
+          onClick={(e: React.MouseEvent) => {
+            e.stopPropagation()
+            mainInstanceRef.current?.prev()
+          }}
+          disabled={false}
+        />
+        <ArrowButton
+          direction='right'
+          onClick={(e: React.MouseEvent) => {
+            e.stopPropagation()
+            mainInstanceRef.current?.next()
+          }}
+          disabled={false}
+        />
+      </div>
+    )}
+
     <ProductStructuredData productName={productName} productId={productId} />
   </div>
 )
@@ -631,7 +638,7 @@ const MainSlider: React.FC<{
   mainInstanceRef: any
   isSingleImage: boolean
   onDoubleClick: (index: number) => void
-}> = ({images, activeIndex, productName, mainSliderRef, mainLoaded, mainInstanceRef, isSingleImage, onDoubleClick}) => (
+}> = ({images, activeIndex, productName, mainSliderRef, onDoubleClick}) => (
   <div className={styles.imageSlider__main}>
     <div ref={mainSliderRef} className='keen-slider'>
       {images.map((image, index) => {
@@ -652,27 +659,6 @@ const MainSlider: React.FC<{
         )
       })}
     </div>
-
-    {!isSingleImage && mainLoaded && mainInstanceRef.current && (
-      <>
-        <ArrowButton
-          direction='left'
-          onClick={(e: React.MouseEvent) => {
-            e.stopPropagation()
-            mainInstanceRef.current?.prev()
-          }}
-          disabled={false}
-        />
-        <ArrowButton
-          direction='right'
-          onClick={(e: React.MouseEvent) => {
-            e.stopPropagation()
-            mainInstanceRef.current?.next()
-          }}
-          disabled={false}
-        />
-      </>
-    )}
   </div>
 )
 
@@ -733,15 +719,7 @@ const ThumbnailSlider: React.FC<{
   thumbnailLoaded: boolean
   onThumbnailClick: (index: number) => void
   onDoubleClick: (index: number) => void
-}> = ({
-  images,
-  activeIndex,
-  productName,
-  thumbnailSliderRef,
-  // thumbnailLoaded,
-  onThumbnailClick,
-  onDoubleClick
-}) => (
+}> = ({images, activeIndex, productName, thumbnailSliderRef, onThumbnailClick, onDoubleClick}) => (
   <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
     <div ref={thumbnailSliderRef} className='keen-slider'>
       {images.map((image, index) => {

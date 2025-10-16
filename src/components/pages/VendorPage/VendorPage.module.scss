@@ -1079,9 +1079,17 @@
   @media (max-width: 1010px) {
     flex-direction: column;
   }
+}
+
+.full_width {
+  grid-column: 1 / -1;
 
   & > div {
-    grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+    padding: 0 !important;
+  }
+
+  & > div:first-child {
+    margin-top: 0 !important;
   }
 }
 

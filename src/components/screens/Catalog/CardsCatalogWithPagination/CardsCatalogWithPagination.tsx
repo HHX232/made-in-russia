@@ -20,6 +20,7 @@ interface CardsCatalogWithPaginationProps {
   initialCurrentPage?: number
   specialRoute?: string
   canCreateNewProduct?: boolean
+  sortField?: string
   onPreventCardClick?: (item: Product) => void
   extraButtonsBoxClass?: string
   approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL'
@@ -53,6 +54,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   extraButtonsBoxClass,
   isForAdmin = false,
   direction = 'desc',
+  sortField = 'creationDate',
   approveStatuses = 'ALL',
   pageSize = DEFAULT_PAGE_SIZE,
   specialFilters = [
@@ -67,7 +69,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     {name: '9 hello test', id: '9'}
   ]
 }) => {
-  console.log('🎯 CardsCatalogWithPagination: Component render')
+  // console.log('🎯 CardsCatalogWithPagination: Component render')
 
   // Селекторы и состояния
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
@@ -81,7 +83,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
       if (filtersContainerRef.current && gridContainerRef.current) {
         const gridWidth = gridContainerRef.current.getBoundingClientRect().width
         filtersContainerRef.current.style.maxWidth = `${gridWidth}px`
-        console.log('📏 Filters width updated:', gridWidth)
+        // console.log('📏 Filters width updated:', gridWidth)
       }
     }
 
@@ -116,12 +118,19 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     maxPrice: priceRange?.max,
     deliveryMethodIds: delivery?.join(',') || '',
     title: searchTitle,
-    sort: 'creationDate',
+    sort: sortField || 'creationDate',
     direction: direction,
     approveStatuses: approveStatuses === 'ALL' ? '' : approveStatuses
   })
+  useEffect(() => {
+    setPageParams((prev) => ({
+      ...prev,
+      sort: sortField,
+      direction: direction
+    }))
+  }, [direction, sortField])
 
-  console.log('📄 Current page params:', pageParams)
+  // console.log('📄 Current page params:', pageParams)
 
   // Загрузка продуктов
   const {
@@ -132,18 +141,23 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     isFetching
   } = useProductsWithPagination(pageParams, undefined, specialRoute, accessToken || undefined)
 
-  console.log('📦 Products state:', {
-    productsOnPage: products.length,
-    isLoading,
-    isFetching,
-    currentPage: pageParams.page,
-    totalPages: pageResponse?.totalPages || 0
-  })
+  // console.log('📦 Products state:', {
+  //   productsOnPage: products.length,
+  //   isLoading,
+  //   isFetching,
+  //   currentPage: pageParams.page,
+  //   totalPages: pageResponse?.totalPages || 0
+  // })
 
+  useEffect(() => {
+    console.log('products in catalog', products)
+    // originalPrice
+    // creationDate
+  }, [products])
   // Мемоизированные данные
   const showSkeleton = useMemo(() => {
     const result = isLoading && products.length === 0
-    console.log('💀 Show skeleton:', result)
+    // console.log('💀 Show skeleton:', result)
     return result
   }, [isLoading, products.length])
 
@@ -153,7 +167,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   // Инициализация начальных продуктов
   useEffect(() => {
     if (initialProducts.length > 0 && isFirstRender.current) {
-      console.log('🎬 Initial products loaded:', initialProducts.length)
+      // console.log('🎬 Initial products loaded:', initialProducts.length)
       isFirstRender.current = false
     }
   }, [initialProducts])
@@ -163,13 +177,13 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     const numericKeys = Object.keys(selectedFilters)
       .filter((key) => !isNaN(Number(key)))
       .map(Number)
-    console.log('🔢 Numeric filters updated:', numericKeys)
+    // console.log('🔢 Numeric filters updated:', numericKeys)
     setNumericFilters(numericKeys)
   }, [selectedFilters])
 
   // Сброс при изменении поискового запроса
   useEffect(() => {
-    console.log('🔍 Search title changed:', searchTitle)
+    // console.log('🔍 Search title changed:', searchTitle)
     setCurrentPage(0)
     setPageParams((prev) => ({
       ...prev,
@@ -180,7 +194,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
 
   // Сброс при изменении фильтров
   useEffect(() => {
-    console.log('🎛️ Filters changed:', {numericFilters, priceRange, delivery})
+    // console.log('🎛️ Filters changed:', {numericFilters, priceRange, delivery})
     setCurrentPage(0)
     setPageParams((prev) => {
       const newParams: PageParams = {
@@ -204,7 +218,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   // Сброс для админки при изменении статусов
   useEffect(() => {
     if (isForAdmin) {
-      console.log('👨‍💼 Admin approve status changed:', approveStatuses)
+      // console.log('👨‍💼 Admin approve status changed:', approveStatuses)
       setCurrentPage(0)
       setPageParams((prev) => ({
         ...prev,
@@ -217,7 +231,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   // Сброс для админки при изменении направления
   useEffect(() => {
     if (isForAdmin) {
-      console.log('🔀 Admin direction changed:', direction)
+      // console.log('🔀 Admin direction changed:', direction)
       setCurrentPage(0)
       setPageParams((prev) => ({
         ...prev,
@@ -277,7 +291,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     (page: number) => {
       if (page < 0 || page >= totalPages || page === currentPage) return
 
-      console.log('📄 Page change:', currentPage, '->', page)
+      // console.log('📄 Page change:', currentPage, '->', page)
       setCurrentPage(page)
       setPageParams((prev) => ({
         ...prev,
@@ -298,14 +312,14 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
 
   // Обработчики навигации
   const handlePrevClick = useCallback(() => {
-    console.log('⬅️ Previous page clicked')
+    // console.log('⬅️ Previous page clicked')
     if (currentPage > 0) {
       handlePageChange(currentPage - 1)
     }
   }, [currentPage, handlePageChange])
 
   const handleNextClick = useCallback(() => {
-    console.log('➡️ Next page clicked')
+    // console.log('➡️ Next page clicked')
     if (currentPage < totalPages - 1) {
       handlePageChange(currentPage + 1)
     }

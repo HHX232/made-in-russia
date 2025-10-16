@@ -148,6 +148,7 @@ interface Author {
 
 interface Review {
   id: number
+  product: {title: string; previewImageUrl: string}
   approveStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
   media?: {
     id: number

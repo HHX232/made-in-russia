@@ -19,6 +19,8 @@ export interface CatalogProps {
 
 const Catalog: FC<CatalogProps> = ({initialProducts, initialHasMore, isShowFilters = true}) => {
   const [activeFilter, setActiveFilter] = useState('По новизне')
+  const [activeFilterName, setActiveFilterName] = useState<'originPrice' | 'creationDate'>('creationDate')
+  const [activeFilterDirect, setActiveFilterDirect] = useState<'asc' | 'desc'>('desc')
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const {clearFilters, clearDelivery, setSearchTitle} = useActions()
 
@@ -95,6 +97,8 @@ const Catalog: FC<CatalogProps> = ({initialProducts, initialHasMore, isShowFilte
                   style={{width: '100%'}}
                   onClick={() => {
                     setActiveFilter('По новизне')
+                    setActiveFilterName('creationDate')
+                    setActiveFilterDirect('desc')
                   }}
                 >
                   По новизне
@@ -104,6 +108,8 @@ const Catalog: FC<CatalogProps> = ({initialProducts, initialHasMore, isShowFilte
                   key={2}
                   onClick={() => {
                     setActiveFilter('Вначале дешевле')
+                    setActiveFilterName('originPrice')
+                    setActiveFilterDirect('asc')
                   }}
                 >
                   Вначале дешевле
@@ -113,6 +119,8 @@ const Catalog: FC<CatalogProps> = ({initialProducts, initialHasMore, isShowFilte
                   key={3}
                   onClick={() => {
                     setActiveFilter('Вначале дороже')
+                    setActiveFilterName('originPrice')
+                    setActiveFilterDirect('desc')
                   }}
                 >
                   Вначале дороже
@@ -186,6 +194,8 @@ const Catalog: FC<CatalogProps> = ({initialProducts, initialHasMore, isShowFilte
           pageSize={9}
           initialProducts={initialProducts}
           initialCurrentPage={0}
+          sortField={activeFilterName}
+          direction={activeFilterDirect}
           initialTotalPages={100}
           canCreateNewProduct={false}
         />

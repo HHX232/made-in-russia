@@ -135,8 +135,7 @@
 
 .imageSlider {
   width: 100%;
-  min-width: 400px;
-  max-width: 450px;
+  max-width: 100%;
   height: fit-content;
 
   @media (max-width: 600px) {
@@ -147,9 +146,7 @@
     position: relative;
     overflow: hidden;
     width: 100%;
-    border-radius: 8px;
     margin-bottom: 16px;
-    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 
     // KeenSlider основные стили
     .keen-slider {
@@ -158,9 +155,7 @@
   }
 
   &__main > div > div {
-    @media (min-width: 900px) {
-      min-width: 450px !important;
-    }
+    width: 100% !important;
   }
 
   &__slide {
@@ -169,10 +164,9 @@
 
   &__imageWrapper {
     position: relative;
+    overflow: hidden;
     width: 100%;
-    height: 0;
-    padding-bottom: 100%;
-    aspect-ratio: 1/1;
+    aspect-ratio: 650/350;
   }
 
   &__mainImage {
@@ -180,8 +174,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: calc(100% + 4.5px);
-    border-radius: 10px;
+    height: 100%;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -194,8 +187,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: calc(100% + 4.5px);
-    border-radius: 10px;
+    height: 100%;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -207,7 +199,6 @@
   .imageSlider__thumbnailVideo {
     width: 100%;
     height: 100%;
-    border-radius: 10px;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -215,31 +206,11 @@
     transition: transform 0.3s ease;
   }
 
-  // &__thumbnails {
-  //    margin-top: 16px;
-  //    padding: 0;
-
-  //    // KeenSlider стили для миниатюр
-  //    .keen-slider {
-  //       position: relative;
-  //    }
-
-  //    .keen-slider__slide {
-  //       min-height: 0;
-  //       // Убираем стандартные отступы keen-slider для миниатюр
-  //       padding: 0;
-  //       // Принудительно задаем размер для миниатюр
-  //       width: 100px !important;
-  //       flex: 0 0 100px;
-  //    }
-  // }
-
   &__thumbnail {
     overflow: hidden;
-    width: 100px;
-    height: 100px;
+    width: 140px;
+    height: 90px;
     border: 2px solid transparent;
-    border-radius: 0 !important;
     cursor: pointer;
     opacity: 0.7;
     outline: none;
@@ -252,15 +223,13 @@
   }
 
   &__thumbnailActive {
-    border: none;
-    box-shadow: -2px 2px 4px #2a2e4644;
+    border: 2px solid #2a2e46;
     opacity: 1;
   }
 
   .customArrow {
-    position: absolute;
+    position: static;
     z-index: 2;
-    top: 50%;
     display: flex;
     width: 30px;
     height: 30px;
@@ -271,7 +240,6 @@
     background: #ffffff2d;
     box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
     cursor: pointer;
-    transform: translateY(-50%);
     transition: all 0.2s ease;
 
     &:hover {
@@ -291,15 +259,14 @@
     }
   }
 
-  .customArrowLeft {
-    left: 10px;
+  // Контейнер для стрелок навигации
+  &__navigation {
+    display: flex;
+    margin-top: 20px;
+    gap: 14px;
   }
 
-  .customArrowRight {
-    right: 10px;
-  }
-
-  // Стили для стрелок в миниатюрах (если понадобятся)
+  // Стили для стрелок в миниатюрах
   &__thumbnails {
     padding: 0;
     margin-top: 16px;
@@ -311,32 +278,13 @@
 
     .keen-slider__slide {
       // Принудительно задаем размер для миниатюр
-      width: 100px !important;
+      width: 140px !important;
+      height: 90px !important;
       min-height: 0;
-      flex: 0 0 100px;
+      flex: 0 0 140px;
 
       // Убираем стандартные отступы keen-slider для миниатюр
       padding: 0;
-    }
-
-    .customArrow {
-      top: 50%;
-      width: 24px;
-      height: 24px;
-      transform: translateY(-50%);
-
-      svg {
-        width: 10px;
-        height: 14px;
-      }
-    }
-
-    .customArrowLeft {
-      left: -5px;
-    }
-
-    .customArrowRight {
-      right: -5px;
     }
   }
 

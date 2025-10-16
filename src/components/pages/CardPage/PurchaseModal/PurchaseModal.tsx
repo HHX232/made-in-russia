@@ -220,7 +220,7 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               placeholder={t('placeholders.name')}
               onSetValue={(value) => handleInputChange('name', value)}
               onBlur={() => handleInputBlur('name')}
-              theme='superWhite'
+              theme='newWhite'
               inputType='text'
               errorValue={getFieldError('name')}
             />
@@ -236,7 +236,7 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               placeholder={t('placeholders.email')}
               onSetValue={(value) => handleInputChange('email', value)}
               onBlur={() => handleInputBlur('email')}
-              theme='superWhite'
+              theme='newWhite'
               inputType='email'
               errorValue={getFieldError('email')}
             />
@@ -249,7 +249,7 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               currentValue={formData.phone}
               placeholder={t('placeholders.phone')}
               onSetValue={(value) => handleInputChange('phone', value)}
-              theme='superWhite'
+              theme='newWhite'
               inputType='text'
             />
           </div>
@@ -263,7 +263,7 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               placeholder={t('placeholders.quantity', {minimum: minimumOrderQuantity})}
               onSetValue={(value) => handleInputChange('quantity', value)}
               onBlur={() => handleInputBlur('quantity')}
-              theme='superWhite'
+              theme='newWhite'
               inputType='number'
               errorValue={getFieldError('quantity')}
             />
