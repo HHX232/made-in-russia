@@ -1,3 +1,4 @@
+'use client'
 import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
 import ICardFull from '@/services/card/card.types'
 import {useCategories} from '@/services/categoryes/categoryes.service'

@@ -925,7 +925,6 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
   return (
     <>
-      <BreadForCard cardData={cardData} currentLang={currentLang} />
       {/* Микроразметка Schema.org */}
       <ProductSchema
         cardData={cardMiniData}

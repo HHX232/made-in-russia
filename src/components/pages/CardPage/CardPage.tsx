@@ -11,6 +11,7 @@ import CommentsSection from './CommentSection/CommentSection'
 import CardBottomPage from './CardBottomPage/CardBottomPage'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {getCurrentLocale} from '@/lib/locale-detection'
+import BreadForCard from './breadForCard/breadForCard'
 
 // import SEOHeader from '@/components/MainComponents/SEOHeader/SEOHeader'
 
@@ -32,6 +33,7 @@ async function CardContent({id}: {id: string}) {
 
   return (
     <>
+      <BreadForCard cardData={cardData} currentLang={locale} />
       <div className={`${styles.card__inner} ${styles.card__inner__main}`}>
         <CardTopPage isLoading={false} cardData={cardData} />
       </div>

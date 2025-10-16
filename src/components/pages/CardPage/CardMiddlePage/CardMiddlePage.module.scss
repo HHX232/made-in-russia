@@ -5,11 +5,15 @@
 
 .card__middle__box {
   margin-top: 60px;
+
+  @media (max-width: 860px) {
+    margin-top: 0;
+  }
 }
 
 .mark__span__box {
   display: flex;
-  width: 61% !important;
+  width: 59% !important;
   flex-direction: column;
   flex-shrink: 0;
 }
@@ -21,13 +25,17 @@
 .descr__box {
   display: flex;
   justify-content: space-between;
-  gap: 40px;
+  gap: 20px;
 }
 
 .all__info__box {
   display: flex;
-  width: 37%;
+  width: 38%;
   flex-direction: column;
+
+  @media (max-width: 860px) {
+    width: 100%;
+  }
 }
 
 .about__vendor {
@@ -70,6 +78,11 @@
 
     & > p {
       font-size: 17px;
+
+      @media (max-width: 860px) {
+        font-size: 14px;
+        line-height: 16px;
+      }
     }
   }
 }
@@ -77,12 +90,22 @@
 .del__title {
   font-size: 18px;
   line-height: 21px;
+
+  @media (max-width: 860px) {
+    font-size: 14px;
+    line-height: 16px;
+  }
 }
 
 .vendor__title {
   margin-bottom: 18px;
   font-size: 24px;
   line-height: 28px;
+
+  @media (max-width: 860px) {
+    font-size: 18px;
+    line-height: 22px;
+  }
 }
 
 .vendor__box__info {
@@ -103,6 +126,10 @@
 .avatar__image {
   border-radius: 50%;
   aspect-ratio: 1/1;
+
+  @media (max-width: 960px) {
+    max-width: 55px !important;
+  }
 }
 
 .char__box {
@@ -121,6 +148,11 @@
   font-size: 18px;
   line-height: 21px;
   text-transform: uppercase;
+
+  @media (max-width: 960px) {
+    font-size: 14px;
+    line-height: 18px;
+  }
 }
 
 .vendor__name {
@@ -129,6 +161,11 @@
   font-weight: 500;
   line-height: 21px;
   text-transform: uppercase;
+
+  @media (max-width: 960px) {
+    font-size: 14px;
+    line-height: 18px;
+  }
 }
 
 .avatar__char {
@@ -216,7 +253,7 @@
   text-align: center;
 }
 
-@media (max-width: 950px) {
+@media (max-width: 860px) {
   .descr__box {
     flex-direction: column;
   }

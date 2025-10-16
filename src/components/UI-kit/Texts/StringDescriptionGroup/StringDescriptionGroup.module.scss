@@ -60,51 +60,91 @@
   &_14 {
     font-size: 14px;
     text-align: end;
+
+    @media (max-width: 580px) {
+      font-size: 12px;
+    }
   }
 
   &_15 {
     font-size: 15px;
     text-align: end;
+
+    @media (max-width: 580px) {
+      font-size: 13px;
+    }
   }
 
   &_16 {
     font-size: 16px;
     text-align: end;
+
+    @media (max-width: 580px) {
+      font-size: 14px;
+    }
   }
 
   &_17 {
     font-size: 17px;
     text-align: end;
+
+    @media (max-width: 580px) {
+      font-size: 15px;
+    }
   }
 
   &_18 {
     font-size: 18px;
     text-align: end;
+
+    @media (max-width: 580px) {
+      font-size: 16px;
+    }
   }
 
   &_20 {
     font-size: 20px;
     text-align: end;
+
+    @media (max-width: 580px) {
+      font-size: 18px;
+    }
   }
 
   &_22 {
     font-size: 22px;
     text-align: end;
+
+    @media (max-width: 580px) {
+      font-size: 20px;
+    }
   }
 
   &_23 {
     font-size: 23px;
     text-align: end;
+
+    @media (max-width: 580px) {
+      font-size: 21px;
+    }
   }
 
   &_24 {
     font-size: 24px;
     text-align: end;
+
+    @media (max-width: 580px) {
+      font-size: 22px;
+    }
   }
 
   &_25 {
     font-size: 25px;
     text-align: end;
+
+    @media (max-width: 580px) {
+      font-size: 23px;
+    }
   }
 }
 

@@ -63,9 +63,19 @@
 }
 
 .tabs__box__content {
-  display: flex;
+  display: grid;
   width: 100%;
   gap: 40px;
+  grid-template-columns: 1.5fr 1fr;
+
+  @media (max-width: 1150px) {
+    grid-template-columns: 1fr;
+
+    & > div:last-child {
+      order: -1;
+      margin: 0 auto;
+    }
+  }
 }
 
 .create__comment__box {
