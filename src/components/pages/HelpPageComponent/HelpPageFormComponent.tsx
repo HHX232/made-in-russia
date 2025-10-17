@@ -3,13 +3,12 @@ import styles from './HelpPageFormComponent.module.scss'
 import {useTranslations} from 'next-intl'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {toast} from 'sonner'
-import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
+import CreateImagesInputMinimalistic from '@/components/UI-kit/inputs/CreateImagesInputMinimalistic/CreateImagesInputMinimalistic'
 
 const HelpPageFormComponent: FC = () => {
   const t = useTranslations('HelpPage')
   const user = useTypedSelector((state) => state.user.user)
 
-  const [activeImages, setActiveImages] = useState<string[]>()
   const [images, setImages] = useState<File[]>([])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,7 +57,6 @@ const HelpPageFormComponent: FC = () => {
   const clearForm = (elem: HTMLFormElement) => {
     elem.reset()
     setImages([])
-    setActiveImages([])
   }
 
   const handleSuccess = () => {
@@ -143,16 +141,7 @@ const HelpPageFormComponent: FC = () => {
             <div className={styles.contacts_form__file_wrapper}>
               <span>Добавить медиафайлы</span>
             </div>
-            <CreateImagesInput
-              extraClass={styles.imagesInput}
-              maxFiles={8}
-              allowMultipleFiles
-              showBigFirstItem={false}
-              inputIdPrefix='contact'
-              onActiveImagesChange={setActiveImages}
-              activeImages={activeImages}
-              onFilesChange={setImages}
-            />
+            <CreateImagesInputMinimalistic onFilesChange={setImages} />
           </div>
           <div className={styles.contacts_form__col}>
             <button type='submit' className={styles.btn_accent}>
