@@ -19,8 +19,9 @@ import CreateImagesInputMinimalistic from '@/components/UI-kit/inputs/CreateImag
 interface ICardBottomPageProps {
   isLoading: boolean
   comments: Review[]
-  specialLastElement: React.ReactNode
   cardData: ICardFull | null
+  hasMore: boolean
+  onLoadMore: () => void
 }
 
 interface IUploadedFile {
@@ -29,57 +30,13 @@ interface IUploadedFile {
   type: 'image' | 'video'
 }
 
-const AutoResizeTextarea = ({
-  value,
-  onChange,
-  placeholder = 'Напишите отзыв...',
-  ...props
-}: {
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
-  placeholder?: string
-}) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const autoResize = () => {
-    const textarea = textareaRef.current
-    if (textarea) {
-      textarea.style.height = 'auto'
-      textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px'
-    }
-  }
-
-  useEffect(() => {
-    autoResize()
-  }, [value])
-
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onChange?.(e)
-    autoResize()
-  }
-
-  return (
-    <textarea
-      ref={textareaRef}
-      className={styles.create__comment__textarea}
-      value={value}
-      onChange={handleChange}
-      placeholder={placeholder}
-      rows={1}
-      {...props}
-    />
-  )
-}
-
-// Мемоизированный компонент для превью файла
 const FilePreview = React.memo(({fileObj, onRemove}: {fileObj: IUploadedFile; onRemove: (id: string) => void}) => {
   const [objectURL, setObjectURL] = useState<string>('')
 
-  // Создаем URL при монтировании компонента
   useEffect(() => {
     const url = URL.createObjectURL(fileObj.file)
     setObjectURL(url)
 
-    // Очищаем URL при размонтировании компонента
     return () => {
       URL.revokeObjectURL(url)
     }
@@ -89,7 +46,6 @@ const FilePreview = React.memo(({fileObj, onRemove}: {fileObj: IUploadedFile; on
     onRemove(fileObj.id)
   }, [fileObj.id, onRemove])
 
-  // Не рендерим, пока URL не создан
   if (!objectURL) return null
 
   return (
@@ -117,32 +73,7 @@ const FilePreview = React.memo(({fileObj, onRemove}: {fileObj: IUploadedFile; on
 
 FilePreview.displayName = 'FilePreview'
 
-// Мемоизированный компонент для списка превью
-// const FilesPreviewList = React.memo(
-//   ({uploadedFiles, onRemoveFile}: {uploadedFiles: IUploadedFile[]; onRemoveFile: (id: string) => void}) => {
-//     const memoizedRemoveFile = useCallback(
-//       (id: string) => {
-//         onRemoveFile(id)
-//       },
-//       [onRemoveFile]
-//     )
-
-//     if (uploadedFiles.length === 0) return null
-
-//     return (
-//       <ul className={`${styles.files__preview__container}`}>
-//         {uploadedFiles.map((fileObj) => (
-//           <FilePreview key={fileObj.id} fileObj={fileObj} onRemove={memoizedRemoveFile} />
-//         ))}
-//       </ul>
-//     )
-//   }
-// )
-
-// FilesPreviewList.displayName = 'FilesPreviewList'
-
-const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICardBottomPageProps) => {
-  const [activeIndex, setActiveIndex] = useState(1)
+const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: ICardBottomPageProps) => {
   const [commentValue, setCommentValue] = useState('')
   const [uploadedFiles, setUploadedFiles] = useState<IUploadedFile[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -156,6 +87,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
   const t = useTranslations('CardPage.CardBottomPage')
   const currentLang = useCurrentLanguage()
   const [error, setError] = useState('')
+
   const convertFilesToUploadedFiles = (files: File[]): IUploadedFile[] => {
     return files.map((file) => {
       const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)
@@ -166,7 +98,7 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
       }
     })
   }
-  // Мемоизируем функцию удаления файла
+
   const removeFile = useCallback((fileId: string) => {
     setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
   }, [])
@@ -278,7 +210,6 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
       setUploadedFiles((prev) => [...prev, ...validFiles])
     }
 
-    // Очистка input
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -292,29 +223,24 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
   const publishComment = async () => {
     const loadingToast = toast.loading(t('publishing'))
     try {
-      // Get access token
       const token = getAccessToken()
 
       const formDataToSend = new FormData()
 
-      // Prepare the data object
       const dataPayload = {
         text: commentValue.trim(),
         rating: starsCountSet
       }
 
-      // Create Blob for JSON data with correct content type
       const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
       formDataToSend.append('data', jsonBlob)
 
-      // Append media files
       if (uploadedFiles.length > 0) {
         uploadedFiles.forEach((fileObj) => {
           formDataToSend.append('media', fileObj.file)
         })
       }
 
-      // Send request using fetch with authorization token
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/products/${cardData?.id}/reviews`,
         {
@@ -322,7 +248,6 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
           headers: {
             Authorization: `Bearer ${token}`,
             'Accept-Language': currentLang
-            // Don't set Content-Type, browser will set correct type for FormData
           },
           body: formDataToSend
         }
@@ -330,8 +255,8 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.log('Error data from server:', errorData) // для отладки
-        throw new Error(JSON.stringify(errorData)) // передаем полные данные об ошибке
+        console.log('Error data from server:', errorData)
+        throw new Error(JSON.stringify(errorData))
       }
 
       const result = await response.json()
@@ -351,7 +276,6 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
         }
       )
 
-      // Clear form after successful submission
       setCommentValue('')
       setUploadedFiles([])
       setStarsCountSet(4)
@@ -359,18 +283,15 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
       console.log('Error caught:', e)
       toast.dismiss(loadingToast)
 
-      // Парсим ошибку из сервера
-      let errorMessage = t('errorPublishedText') // дефолтное сообщение
+      let errorMessage = t('errorPublishedText')
 
       try {
-        // Пытаемся распарсить JSON из сообщения об ошибке
         const parsedError = JSON.parse(e.message)
         if (parsedError && parsedError.message) {
           errorMessage = parsedError.message
-          setError(parsedError) // сохраняем полную ошибку в state для других целей
+          setError(parsedError)
         }
       } catch (parseError) {
-        // Если не удалось распарсить, проверяем другие возможные форматы
         if (e.message && e.message !== 'Failed to fetch') {
           errorMessage = e.message
         }
@@ -392,38 +313,19 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
 
   return (
     <div id='cardCommentsSection' className={`${styles.card__bottom__box}`}>
-      <div className={`${styles.tabs__box}`}>
-        <div
-          onClick={() => setActiveIndex(1)}
-          className={`fontInstrument ${styles.tabs__box__item} ${
-            activeIndex === 1 ? styles.tabs__box__item__active : ''
-          }`}
-        >
+      <div className={`${styles.section__title}`}>
+        <h2 className={`fontInstrument`}>
           {t('revues')}
-          <span className={`${styles.tabs__box__item__count__comments}`}>
-            {cardData?.reviewsCount ? cardData?.reviewsCount : '0'}
-          </span>
-        </div>
-        <div
-          onClick={() => setActiveIndex(2)}
-          className={`fontInstrument ${styles.tabs__box__item} ${
-            activeIndex === 2 ? styles.tabs__box__item__active : ''
-          }`}
-        >
-          {t('questions')}
-          <span className={`${styles.tabs__box__item__count__comments}`}>
-            {' '}
-            {cardData?.faq.length ? cardData?.faq.length : '0'}
-          </span>
-        </div>
+          {/* <span className={`${styles.count__badge}`}>{cardData?.reviewsCount ? cardData?.reviewsCount : '0'}</span> */}
+        </h2>
       </div>
 
-      <div className={`${styles.tabs__box__content}`}>
-        {activeIndex === 1 && (
-          <>
-            {isLoading ? (
-              <Skeleton height={100} count={3} style={{marginBottom: '16px', width: '90%', maxWidth: '400px'}} />
-            ) : (
+      <div className={`${styles.content__wrapper}`}>
+        <div className={`${styles.comments__section}`}>
+          {isLoading && comments.length === 0 ? (
+            <Skeleton height={100} count={3} style={{marginBottom: '16px', width: '90%', maxWidth: '400px'}} />
+          ) : (
+            <>
               <ul className={`${styles.comments__list}`}>
                 {comments.length > 0 ? (
                   comments.map((el, i) => (
@@ -433,108 +335,66 @@ const CardBottomPage = ({isLoading, comments, specialLastElement, cardData}: ICa
                   ))
                 ) : (
                   <li className={`${styles.no__comments}`}>
-                    <p id='cardCommentsSection' className={`${styles.create__first__comment}`}>
-                      {t('noComments')}
-                    </p>
+                    <p className={`${styles.create__first__comment}`}>{t('noComments')}</p>
                   </li>
                 )}
-                {specialLastElement}
               </ul>
-            )}
 
-            <div className={`${styles.create__comment__box}`}>
-              <div className={`${styles.create__comment__box__rating}`}>
-                <p>{t('pleaseCreateComment')}</p>
-                <StarRating starsCountSet={starsCountSet} setStarsCountSet={setStarsCountSet} />
+              {hasMore && (
+                <div className={`${styles.load__more__container}`}>
+                  <button onClick={onLoadMore} className={`${styles.load__more__button}`} disabled={isLoading}>
+                    {isLoading ? t('loading') || 'Загрузка...' : t('loadMore') || 'Просмотреть еще'}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {cardData?.faq && cardData.faq.length > 0 && (
+            <div className={`${styles.questions__section}`}>
+              <h3 className={`fontInstrument ${styles.questions__title}`}>
+                {t('questions')}
+                {/* <span className={`${styles.count__badge}`}>{cardData.faq.length}</span> */}
+              </h3>
+              <div className={`${styles.questions__content}`}>
+                <Accordion
+                  items={cardData.faq.map((el) => ({title: el.question, value: el.answer, id: el.id.toString()})) || []}
+                  multiActive={false}
+                />
               </div>
-
-              <form onSubmit={handleSubmit} className={`${styles.create__comment__form}`}>
-                {/* Используем мемоизированный компонент для превью */}
-                {/* <FilesPreviewList uploadedFiles={uploadedFiles} onRemoveFile={removeFile} /> */}
-
-                {/* <label
-                    className={`${styles.add__image__label} ${
-                      uploadedFiles.length >= MAX_FILES_COUNT ? styles.disabled : ''
-                    }`}
-                    htmlFor='image__input'
-                  >
-                    <svg
-                      className={`${styles.add__image__image}`}
-                      width='25'
-                      height='25'
-                      viewBox='0 0 25 25'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'
-                    >
-                      <path
-                        d='M4.16671 5.20833H17.7084V12.5H19.7917V5.20833C19.7917 4.05937 18.8573 3.125 17.7084 3.125H4.16671C3.01775 3.125 2.08337 4.05937 2.08337 5.20833V17.7083C2.08337 18.8573 3.01775 19.7917 4.16671 19.7917H12.5V17.7083H4.16671V5.20833Z'
-                        fill='#2A2E46'
-                      />
-                      <path
-                        d='M8.33337 11.4583L5.20837 15.625H16.6667L12.5 9.375L9.37504 13.5417L8.33337 11.4583Z'
-                        fill='#2A2E46'
-                      />
-                      <path
-                        d='M19.7917 14.5833H17.7084V17.7083H14.5834V19.7917H17.7084V22.9167H19.7917V19.7917H22.9167V17.7083H19.7917V14.5833Z'
-                        fill='#2A2E46'
-                      />
-                    </svg>
-
-                    <input
-                      ref={fileInputRef}
-                      className={`${styles.add__image__input}`}
-                      id='image__input'
-                      type='file'
-                      accept={`${ALLOWED_IMAGE_TYPES.join(',')},${ALLOWED_VIDEO_TYPES.join(',')}`}
-                      onChange={handleFilesChange}
-                      multiple
-                      disabled={uploadedFiles.length >= MAX_FILES_COUNT}
-                    />
-                  </label> */}
-                {/* <AutoResizeTextarea
-                    onChange={(e) => setCommentValue(e.target.value)}
-                    value={commentValue}
-                    placeholder={t('writeCommentPlaceholder')}
-                  /> */}
-                <TextAreaUI
-                  minRows={2}
-                  maxRows={10}
-                  theme='newWhite'
-                  autoResize
-                  placeholder={t('writeCommentPlaceholder')}
-                  onSetValue={(e) => setCommentValue(e)}
-                  extraClass={styles.extra__textarea__width}
-                  currentValue={commentValue}
-                />
-                <CreateImagesInputMinimalistic
-                  onFilesChange={(files) => {
-                    const uploadedFilesArray = convertFilesToUploadedFiles(files)
-                    setUploadedFiles(uploadedFilesArray)
-                  }}
-                />
-
-                <button type='submit' className={`${styles.send__comment__button}`} disabled={!commentValue.trim()}>
-                  Отправить
-                </button>
-              </form>
             </div>
-          </>
-        )}
+          )}
+        </div>
 
-        {activeIndex === 2 && (
-          <div className={`${styles.questions__content}`}>
-            {isLoading ? (
-              <div className={`${styles.skeleton__container}`}>
-                <Skeleton height={80} count={4} style={{marginBottom: '12px'}} />
-              </div>
-            ) : (
-              <Accordion
-                items={cardData?.faq.map((el) => ({title: el.question, value: el.answer, id: el.id.toString()})) || []}
-                multiActive={false}
-              />
-            )}
+        <div className={`${styles.create__comment__box}`}>
+          <div className={`${styles.create__comment__box__rating}`}>
+            <p>{t('pleaseCreateComment')}</p>
+            <StarRating starsCountSet={starsCountSet} setStarsCountSet={setStarsCountSet} />
           </div>
-        )}
+
+          <form onSubmit={handleSubmit} className={`${styles.create__comment__form}`}>
+            <TextAreaUI
+              minRows={2}
+              maxRows={10}
+              theme='newWhite'
+              autoResize
+              placeholder={t('writeCommentPlaceholder')}
+              onSetValue={(e) => setCommentValue(e)}
+              extraClass={styles.extra__textarea__width}
+              currentValue={commentValue}
+            />
+            <CreateImagesInputMinimalistic
+              onFilesChange={(files) => {
+                const uploadedFilesArray = convertFilesToUploadedFiles(files)
+                setUploadedFiles(uploadedFilesArray)
+              }}
+            />
+
+            <button type='submit' className={`${styles.send__comment__button}`} disabled={!commentValue.trim()}>
+              Отправить
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   )

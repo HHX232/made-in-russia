@@ -52,7 +52,9 @@ export default async function CardPage({params}: {params: Promise<{id: string}>}
       <div className='container'>
         <CardContent id={id} />
         <Suspense
-          fallback={<CardBottomPage cardData={null} isLoading={true} comments={[]} specialLastElement={null} />}
+          fallback={
+            <CardBottomPage cardData={null} isLoading={true} comments={[]} hasMore={false} onLoadMore={() => {}} />
+          }
         >
           <CommentsSection cardId={id} />
         </Suspense>

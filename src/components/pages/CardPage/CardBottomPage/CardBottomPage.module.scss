@@ -5,23 +5,48 @@
   gap: 20px;
 }
 
-.tabs__box__item {
-  position: relative;
-  color: #818181;
-  cursor: pointer;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.tabs__box__item__active {
-  color: #000;
-}
-
-.tabs__box {
-  display: flex;
+.section__title {
   margin-top: 40px;
-  margin-bottom: 60px;
-  gap: 100px;
+  margin-bottom: 40px;
+
+  & > h2 {
+    position: relative;
+    color: #000;
+    font-size: 32px;
+    font-weight: 600;
+  }
+}
+
+.count__badge {
+  position: absolute;
+  top: -9px;
+  left: calc(100% + 10px);
+  color: #818181;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.content__wrapper {
+  display: grid;
+  width: 100%;
+  gap: 40px;
+  grid-template-columns: 1.5fr 1fr;
+
+  @media (max-width: 1150px) {
+    grid-template-columns: 1fr;
+
+    & > div:last-child {
+      order: -1;
+      margin: 0 auto;
+    }
+  }
+}
+
+.comments__section {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 25px;
 }
 
 .add__image__input {
@@ -62,22 +87,6 @@
   line-height: 40px;
 }
 
-.tabs__box__content {
-  display: grid;
-  width: 100%;
-  gap: 40px;
-  grid-template-columns: 1.5fr 1fr;
-
-  @media (max-width: 1150px) {
-    grid-template-columns: 1fr;
-
-    & > div:last-child {
-      order: -1;
-      margin: 0 auto;
-    }
-  }
-}
-
 .create__comment__box {
   position: sticky;
   top: 10px;
@@ -105,15 +114,11 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-
-  // align-items: center;
   gap: 15px;
 
   & > span {
     display: flex;
     width: 100%;
-
-    // align-items: center;
     gap: 15px;
   }
 }
@@ -178,7 +183,6 @@
     }
   }
 
-  // Убираем стандартные стили браузера
   &::-webkit-scrollbar {
     width: 2px;
   }
@@ -203,18 +207,26 @@
   height: 25px;
 }
 
-// .add__image__label,
 .send__comment__button {
   width: 100%;
   padding: 15px;
   margin-top: 5px;
   background-color: #0047ba;
   color: #fff;
+  cursor: pointer;
   font-size: 18px;
   line-height: 20px;
-}
+  transition: background-color 0.2s ease;
 
-// Добавить в CardBottomPage.module.scss
+  &:hover:not(:disabled) {
+    background-color: #003a9a;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+}
 
 .files__preview__container {
   display: flex;
@@ -257,12 +269,48 @@
   }
 }
 
-.tabs__box__item__count__comments {
-  position: absolute;
-  top: -9px;
-  left: calc(100% + 5px);
-  color: #818181;
-  font-size: 14px;
+.load__more__container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.load__more__button {
+  padding: 15px 40px;
+  border: 2px solid #0047ba;
+  background-color: transparent;
+  color: #0047ba;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #0047ba;
+    color: #fff;
+  }
+
+  &:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.questions__section {
+  width: 100%;
+
+  // margin-top: 60px;
+}
+
+.questions__title {
+  position: relative;
+  margin-bottom: 30px;
+  color: #000;
+  font-size: 28px;
+  font-weight: 600;
 }
 
 .questions__content {
@@ -271,8 +319,12 @@
   background-color: #f6f6f6;
 }
 
+.no__comments {
+  width: 100%;
+}
+
 @media (max-width: 900px) {
-  .tabs__box__content {
+  .content__wrapper {
     flex-direction: column;
   }
 
@@ -281,5 +333,21 @@
     max-width: 100%;
     order: -1;
     margin: 0 auto;
+  }
+
+  .section__title {
+    margin-bottom: 30px;
+
+    & > h2 {
+      font-size: 28px;
+    }
+  }
+
+  .count__badge {
+    font-size: 16px;
+  }
+
+  .questions__title {
+    font-size: 24px;
   }
 }

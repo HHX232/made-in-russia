@@ -16,6 +16,7 @@ import {useKeenSlider} from 'keen-slider/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import {useTranslations} from 'next-intl'
 
 interface CardsCatalogProps {
   initialProducts?: Product[]
@@ -57,7 +58,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   approveStatuses = 'ALL'
 }) => {
   console.log('🎯 CardsCatalog: Component render')
-
+  const t = useTranslations('CardsCatalogNew')
   const {setCurrentSlide: setCurrentSlideRedux} = useActions()
   const {currentSlide: currentSlideRedux} = useTypedSelector((state) => state.sliderHomeSlice)
 
@@ -400,21 +401,21 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   if (isError) {
     console.error('❌ Error loading products')
-    return <div style={{marginBottom: '50px'}}>Not found</div>
+    return <div style={{marginBottom: '50px'}}>{t('notFound')}</div>
   }
 
   return (
     <section className={`section ${styled.popularprod}`}>
       <div>
         <div className={`${styled.section_flexheader}`}>
-          <div className={`${styled.section_flexheader__title}`}>Популярные товары</div>
+          <div className={`${styled.section_flexheader__title}`}>{t('popularProducts')}</div>
 
           <div
             className={`${styled.popularprod__header_group} ${styled.popularprod__header_group__for_vis}`}
             id='popularprod-navig-group'
           >
             <Link href='#' className={`${styled.btn_accent}`}>
-              Смотреть все
+              {t('viewAll')}
             </Link>
           </div>
           <div className={`${styled.popularprod__navigation_wrap} ${styled.popularprod__navigation_wrap__for_vis}`}>
@@ -544,7 +545,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
             id='popularprod-navig-group'
           >
             <Link href='#' className={`${styled.btn_accent} ${styled.btn_accent_bottom}`}>
-              Смотреть все
+              {t('viewAll')}
             </Link>
           </div>
           <div className={`${styled.popularprod__navigation_wrap} ${styled.popularprod__navigation_wrap__for_unvis}`}>

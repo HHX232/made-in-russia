@@ -87,7 +87,6 @@ export interface IVendorPageProps {
   onlyShowWebsites?: string[]
   onlyShowEmail?: string[]
 }
-
 const formatDateLocalized = (dateString: string, currentLang: string = 'ru'): string => {
   const date = new Date(dateString)
   if (isNaN(date.getTime())) return 'Invalid date'
@@ -124,13 +123,19 @@ const formatDateLocalized = (dateString: string, currentLang: string = 'ru'): st
       'October',
       'November',
       'December'
-    ]
+    ],
+    zh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
   }
 
-  if (currentLang === 'en') {
-    return `${months.en[month]} ${day}, ${year}`
+  switch (currentLang) {
+    case 'en':
+      return `${months.en[month]} ${day}, ${year}`
+    case 'zh':
+      // В китайском обычно используют формат: YYYY年M月D日
+      return `${year}年${month + 1}月${day}日`
+    default:
+      return `${day} ${months.ru[month]} ${year} года`
   }
-  return `${day} ${months.ru[month]} ${year} года`
 }
 
 // Компонент Sidebar
@@ -434,6 +439,7 @@ const Sidebar: FC<{
 const SessionsTab: FC = () => {
   const t = useTranslations('VendorPage')
   const currentLang = useCurrentLanguage()
+
   const [sessions, setSessions] = useState<
     {
       id: string
@@ -1506,7 +1512,11 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 canCreateNewProduct={isPageForVendor}
                 specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}
               /> */}
-                <Catalog initialHasMore initialProducts={[]} />
+                <Catalog
+                  initialHasMore
+                  initialProducts={[]}
+                  specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}
+                />
               </div>
             </div>
           </div>
@@ -1521,11 +1531,10 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
         <div style={{display: 'flex', justifyContent: 'center', gap: '40px'}}>
           <button
             style={{
-              borderRadius: '10px',
               padding: '10px 20px',
               fontSize: '16px',
               fontWeight: '500',
-              backgroundColor: '#2A2E46',
+              backgroundColor: '#0047BA',
               color: '#fff'
             }}
             onClick={() => setWantQuite(false)}
@@ -1534,11 +1543,10 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
           </button>
           <button
             style={{
-              borderRadius: '10px',
               padding: '10px 35px',
               fontSize: '16px',
               fontWeight: '500',
-              backgroundColor: '#AC2525',
+              backgroundColor: '#E1251B',
               color: '#fff'
             }}
             onClick={handleLogout}

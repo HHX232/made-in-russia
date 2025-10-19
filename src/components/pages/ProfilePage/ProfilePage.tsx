@@ -16,7 +16,7 @@ import {User} from '@/services/users.types'
 import {useRouter} from 'next/navigation'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {toast} from 'sonner'
-import {useTranslations} from 'next-intl'
+import {useLocale, useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
 import {useLogout} from '@/hooks/useUserApi'
@@ -43,7 +43,7 @@ export const ASSETS_COUNTRIES = {
 
 type TCurrentLang = 'ru' | 'en' | 'zh'
 
-function formatDateLocalized(dateString: string, currentLang: TCurrentLang = 'ru'): string {
+function formatDateLocalized(dateString: string, currentLang: TCurrentLang): string {
   const date = new Date(dateString)
 
   if (isNaN(date.getTime())) {
@@ -744,6 +744,7 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
 const SessionsTab: FC = () => {
   const t = useTranslations('ProfilePage')
   const currentLang = useCurrentLanguage()
+  const locale = useLocale()
   const [sessions, setSessions] = useState<
     {
       id: string
@@ -852,8 +853,8 @@ const SessionsTab: FC = () => {
                   <span className={`${styles.sessions__item__title}`}> {t('lastLoginDate')}:</span>{' '}
                   <span className={`${styles.sessions__item__value}`}>
                     {typeof el.lastLoginDate === 'string'
-                      ? formatDateLocalized(el.lastLoginDate, (currentLang as TCurrentLang) || 'en')
-                      : formatDateLocalized(el.lastLoginDate.toISOString(), (currentLang as TCurrentLang) || 'en')}
+                      ? formatDateLocalized(el.lastLoginDate, (locale || currentLang) as TCurrentLang)
+                      : formatDateLocalized(el.lastLoginDate.toISOString(), (locale || currentLang) as TCurrentLang)}
                   </span>
                 </p>
                 <button
@@ -886,7 +887,7 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
   const [currentTab, setCurrentTab] = useState<'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions'>(
     'profile'
   )
-
+  const currentLang = useCurrentLanguage()
   const handleLogout = () => {
     if (isLogoutPending) return
     logout()
@@ -983,7 +984,12 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
                   <div className={styles.account__date}>
                     <span>{t('registrationDate')}</span>
                     <span>
-                      {userData?.registrationDate ? formatDateLocalized(userData.registrationDate, 'ru') : ''}
+                      {userData?.registrationDate
+                        ? formatDateLocalized(
+                            userData.registrationDate,
+                            (currentLang as TCurrentLang) || ('en' as TCurrentLang)
+                          )
+                        : ''}
                     </span>
                   </div>
                 )}
@@ -1024,7 +1030,12 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
                       <div className={styles.account__date}>
                         <span>{t('registrationDate')}</span>
                         <span>
-                          {userData?.registrationDate ? formatDateLocalized(userData.registrationDate, 'ru') : ''}
+                          {userData?.registrationDate
+                            ? formatDateLocalized(
+                                userData.registrationDate,
+                                (currentLang as TCurrentLang) || ('en' as TCurrentLang)
+                              )
+                            : ''}
                         </span>
                       </div>
                     </div>
@@ -1092,11 +1103,10 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
         <div style={{display: 'flex', justifyContent: 'center', gap: '40px'}}>
           <button
             style={{
-              borderRadius: '10px',
               padding: '10px 20px',
               fontSize: '16px',
               fontWeight: '500',
-              backgroundColor: '#2A2E46',
+              backgroundColor: '#0047BA',
               color: '#fff'
             }}
             onClick={() => setWantQuite(false)}
@@ -1105,11 +1115,10 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
           </button>
           <button
             style={{
-              borderRadius: '10px',
               padding: '10px 35px',
               fontSize: '16px',
               fontWeight: '500',
-              backgroundColor: '#AC2525',
+              backgroundColor: '#E1251B',
               color: '#fff'
             }}
             onClick={handleLogout}

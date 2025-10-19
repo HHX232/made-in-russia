@@ -9,6 +9,7 @@ import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputU
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import {useActions} from '@/hooks/useActions'
 import ProductService from '@/services/products/product.service'
+import {useTranslations} from 'next-intl'
 
 export interface CatalogProps {
   initialProducts: Product[]
@@ -20,6 +21,8 @@ export interface CatalogProps {
   showSpecialSearchFilters?: boolean
   resultTitle?: string
   showSearchTitle?: boolean
+  specialRoute?: string
+  useContainer?: boolean
   searchParams?: {[key: string]: string | string[] | undefined}
 }
 
@@ -32,15 +35,17 @@ const Catalog: FC<CatalogProps> = ({
   showCardsCount = false,
   showSearchTitle = false,
   resultTitle,
+  specialRoute,
   showSpecialSearchFilters = false,
-  searchParams = {}
+  searchParams = {},
+  useContainer = true
 }) => {
-  const [activeFilter, setActiveFilter] = useState('По новизне')
   const [activeFilterName, setActiveFilterName] = useState<'originPrice' | 'creationDate'>('creationDate')
   const [activeFilterDirect, setActiveFilterDirect] = useState<'asc' | 'desc'>('desc')
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const {clearFilters, clearDelivery, setSearchTitle} = useActions()
   const [productsCountGlobal, setProductsCountGlobal] = useState(0)
+  const t = useTranslations('CatalogNew')
 
   const textParams = typeof searchParams.textParams === 'string' ? searchParams.textParams : undefined
 
@@ -87,7 +92,7 @@ const Catalog: FC<CatalogProps> = ({
   return (
     <>
       <div
-        className={`container  ${styles.top__fliters__container} ${showSpecialSearchFilters && styles.without__big__top__margin}`}
+        className={`${useContainer ? 'container' : ''}  ${styles.top__fliters__container} ${showSpecialSearchFilters && styles.without__big__top__margin}`}
       >
         {isShowFilters && !showSpecialSearchFilters && (
           <div className={`${styles.top__fliters__container__inner}`}>
@@ -147,7 +152,7 @@ const Catalog: FC<CatalogProps> = ({
               </svg>
               <DropList
                 extraClass={styles.min__drop__extra}
-                title={activeFilter}
+                title={t(activeFilterName)}
                 useNewTheme
                 extraListClass={styles.extra__extra__drop__list}
                 items={[
@@ -155,41 +160,41 @@ const Catalog: FC<CatalogProps> = ({
                     key={1}
                     style={{width: '100%'}}
                     onClick={() => {
-                      setActiveFilter('По новизне')
                       setActiveFilterName('creationDate')
                       setActiveFilterDirect('desc')
                     }}
                   >
-                    По новизне
+                    {t('new')}
                   </p>,
                   <p
                     style={{width: '100%'}}
                     key={2}
                     onClick={() => {
-                      setActiveFilter('Вначале дешевле')
                       setActiveFilterName('originPrice')
                       setActiveFilterDirect('asc')
                     }}
                   >
-                    Вначале дешевле
+                    {t('cheapest')}
                   </p>,
                   <p
                     style={{width: '100%'}}
                     key={3}
                     onClick={() => {
-                      setActiveFilter('Вначале дороже')
                       setActiveFilterName('originPrice')
                       setActiveFilterDirect('desc')
                     }}
                   >
-                    Вначале дороже
+                    {t('expensive')}
                   </p>
                 ]}
               />
             </div>
             {showSearchInput && <SearchInputUI useNewBorder />}
             {showCardsCount && (
-              <p style={{fontSize: '14px', color: '#2F2F2F'}}>Найдено {productsCountGlobal} товаров</p>
+              <p style={{fontSize: '14px', color: '#2F2F2F'}}>
+                {/* Найдено 123 товаров */}
+                {t('found')} {productsCountGlobal} {t('products')}
+              </p>
             )}
           </div>
         )}
@@ -199,7 +204,10 @@ const Catalog: FC<CatalogProps> = ({
           >
             {/* Кнопка фильтра для мобильных устройств */}
             {showSearchTitle && (
-              <h2 className={styles.search__title__big}>Результат поиска по запросу: {resultTitle || textParams}</h2>
+              <h2 className={styles.search__title__big}>
+                {t('resultTitle')}: {resultTitle || textParams}
+              </h2>
+              // <h2 className={styles.search__title__big}>Результат поиска по запросу: {resultTitle || textParams}</h2>
             )}
             <div className={styles.spec__search__line}>
               <button className={styles.mobile__filter__button} onClick={() => setIsMobileFilterOpen(true)}>
@@ -213,7 +221,8 @@ const Catalog: FC<CatalogProps> = ({
                     fill='#2F2F2F'
                   />
                 </svg>
-                Фильтр
+                {/* Фильтр */}
+                {t('filter')}
               </button>
 
               <div className={styles.drop__list__filter__box}>
@@ -256,7 +265,7 @@ const Catalog: FC<CatalogProps> = ({
                 </svg>
                 <DropList
                   extraClass={styles.min__drop__extra}
-                  title={activeFilter}
+                  title={t(activeFilterName)}
                   useNewTheme
                   extraListClass={styles.extra__extra__drop__list}
                   items={[
@@ -264,46 +273,52 @@ const Catalog: FC<CatalogProps> = ({
                       key={1}
                       style={{width: '100%'}}
                       onClick={() => {
-                        setActiveFilter('По новизне')
                         setActiveFilterName('creationDate')
                         setActiveFilterDirect('desc')
                       }}
                     >
-                      По новизне
+                      {t('new')}
                     </p>,
                     <p
                       style={{width: '100%'}}
                       key={2}
                       onClick={() => {
-                        setActiveFilter('Вначале дешевле')
                         setActiveFilterName('originPrice')
                         setActiveFilterDirect('asc')
                       }}
                     >
-                      Вначале дешевле
+                      {t('cheapest')}
                     </p>,
                     <p
                       style={{width: '100%'}}
                       key={3}
                       onClick={() => {
-                        setActiveFilter('Вначале дороже')
                         setActiveFilterName('originPrice')
                         setActiveFilterDirect('desc')
                       }}
                     >
-                      Вначале дороже
+                      {t('expensive')}
                     </p>
                   ]}
                 />
               </div>
               {showSearchInput && <SearchInputUI useNewBorder />}
-              {showCardsCount && <p className={styles.global_count__cards}>Найдено {productsCountGlobal} товаров</p>}
+              {showCardsCount && (
+                <p className={styles.global_count__cards}>
+                  {' '}
+                  {/* Найдено 123 товаров */}
+                  {t('found')} {productsCountGlobal} {t('products')}
+                </p>
+              )}
             </div>
           </div>
         )}
       </div>
 
-      <div style={{overflowY: 'visible', overflowX: 'clip'}} className={`container ${styles.catalog__box}`}>
+      <div
+        style={{overflowY: 'visible', overflowX: 'clip'}}
+        className={`${useContainer ? 'container' : ''} ${styles.catalog__box}`}
+      >
         {/* Десктопный фильтр */}
         {isShowFilters && (
           <div className={styles.desktop__filter}>
@@ -319,7 +334,7 @@ const Catalog: FC<CatalogProps> = ({
 
             <div className={styles.mobile__filter__panel}>
               <div className={styles.mobile__filter__header}>
-                <h2>Фильтр</h2>
+                <h2>{t('filter')}</h2>
                 <button className={styles.mobile__filter__close} onClick={handleCloseMobileFilter}>
                   <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
                     <path
@@ -346,7 +361,8 @@ const Catalog: FC<CatalogProps> = ({
 
               <div className={styles.mobile__filter__footer}>
                 <button className={styles.mobile__filter__apply__btn} onClick={handleCloseMobileFilter}>
-                  Применить
+                  {/* Применить */}
+                  {t('apply')}
                 </button>
                 <button
                   className={styles.mobile__filter__clear__btn}
@@ -356,7 +372,8 @@ const Catalog: FC<CatalogProps> = ({
                     setSearchTitle('')
                   }}
                 >
-                  Сбросить
+                  {/* Сбросить */}
+                  {t('reset')}
                 </button>
               </div>
             </div>
@@ -374,7 +391,9 @@ const Catalog: FC<CatalogProps> = ({
             canCreateNewProduct={false}
           />
         )}
-        {!usePagesCatalog && <CardsCatalog initialProducts={initialProducts} initialHasMore={initialHasMore} />}
+        {!usePagesCatalog && (
+          <CardsCatalog specialRoute={specialRoute} initialProducts={initialProducts} initialHasMore={initialHasMore} />
+        )}
       </div>
     </>
   )

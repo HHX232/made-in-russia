@@ -3,6 +3,7 @@ import {CSSProperties, FC} from 'react'
 import styles from './Footer.module.scss'
 import Link from 'next/link'
 import Image from 'next/image'
+import {useTranslations} from 'next-intl'
 
 export function getHaveLangStartFromCookie(): boolean {
   if (typeof document === 'undefined') return false // если вызов на сервере
@@ -15,28 +16,29 @@ interface IFooterProps {
 }
 
 const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
+  const t = useTranslations('FooterNew')
   return (
     <footer style={{...extraStyle}} className={`${styles.footer} ${extraClass}`}>
       <div className={`container`}>
         <div className={`${styles.footer__top}`}>
           <div className={`${styles.footer__item}`}>
-            <h3 className={`${styles.footer__title}`}>Основные разделы</h3>
+            <h3 className={`${styles.footer__title}`}>{t('sections.title')}</h3>
 
             <div className={`${styles.footer__item_row}`}>
               <ul className={`${styles.footer__list}`}>
                 <li>
                   <Link className={`${styles.footer__link}`} href='/'>
-                    Главная
+                    {t('sections.main')}
                   </Link>
                 </li>
                 <li>
                   <Link className={`${styles.footer__link}`} href='/'>
-                    Каталог
+                    {t('sections.catalog')}
                   </Link>
                 </li>
                 <li>
                   <Link className={`${styles.footer__link}`} href='/help'>
-                    Помощь
+                    {t('sections.help')}
                   </Link>
                 </li>
               </ul>
@@ -44,17 +46,17 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
               <ul className={`${styles.footer__list}`}>
                 <li>
                   <Link className={`${styles.footer__link}`} href='/about-us'>
-                    О нас
+                    {t('sections.about')}
                   </Link>
                 </li>
                 <li>
                   <Link className={`${styles.footer__link}`} href='/about-us'>
-                    Контакты
+                    {t('sections.contacts')}
                   </Link>
                 </li>
                 <li>
                   <Link className={`${styles.footer__link}`} href='/'>
-                    Отзывы
+                    {t('sections.reviews')}
                   </Link>
                 </li>
               </ul>
@@ -62,64 +64,64 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
           </div>
 
           <div className={`${styles.footer__item}`}>
-            <h3 className={`${styles.footer__title}`}>Техническая поддержка</h3>
+            <h3 className={`${styles.footer__title}`}>{t('support.title')}</h3>
             <ul className={`${styles.footer__list}`}>
               <li>
-                <Link className={`${styles.footer__link}`} href='tel:89991234567'>
+                <Link className={`${styles.footer__link}`} href='tel:74959833888'>
                   <svg className={`${styles.icon} ${styles.icon__phone}`}>
                     <use href='/iconsNew/symbol/sprite.svg#phone'></use>
                   </svg>
-                  <span>8 999 123 45 67</span>
+                  <span>7 495 983 38 88</span>
                 </Link>
               </li>
               <li>
-                <Link className={`${styles.footer__link}`} href='mailto:info@mail.ru'>
+                <Link className={`${styles.footer__link}`} href='mailto:info@exporteru.com'>
                   <svg className={`${styles.icon} ${styles.icon__email}`}>
                     <use href='/iconsNew/symbol/sprite.svg#email'></use>
                   </svg>
-                  <span>info@mail.ru</span>
+                  <span>info@exporteru.com</span>
                 </Link>
               </li>
               <li>
-                <Link className={`${styles.footer__link}`} href='https://t.me/made_in_russia' target='_blank'>
+                <Link className={`${styles.footer__link}`} href='https://t.me/exporteru' target='_blank'>
                   <svg className={`${styles.icon} ${styles.icon__tg}`}>
                     <use href='/iconsNew/symbol/sprite.svg#tg'></use>
                   </svg>
-                  <span>made_in_russia</span>
+                  <span>exporteru</span>
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className={`${styles.footer__item}`}>
-            <h3 className={`${styles.footer__title}`}>Информационный центр</h3>
+            <h3 className={`${styles.footer__title}`}>{t('info.title')}</h3>
             <ul className={`${styles.footer__list}`}>
               <li>
                 <Link href='/terms' className={`${styles.footer__link}`}>
-                  Правовая информация
+                  {t('info.legal')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className={`${styles.footer__item}`}>
-            <h3 className={`${styles.footer__title}`}>Мой профиль</h3>
+            <h3 className={`${styles.footer__title}`}>{t('profile.title')}</h3>
             <ul className={`${styles.footer__list}`}>
               <li>
                 <Link href='/login' className={`${styles.footer__link}`}>
-                  Войти в личный кабинет
+                  {t('profile.login')}
                 </Link>
               </li>
               <li>
                 <Link href='/register' className={`${styles.footer__link}`}>
-                  Регистрация
+                  {t('profile.register')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className={`${styles.footer__item} ${styles.footer__item_social}`}>
-            <h3 className={`${styles.footer__title} ${styles.footer__title_social}`}>Социальные сети</h3>
+            <h3 className={`${styles.footer__title} ${styles.footer__title_social}`}>{t('social.title')}</h3>
             <div className={`${styles.footer__social}`}>
               <Link
                 href='#'

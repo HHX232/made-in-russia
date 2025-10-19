@@ -27,6 +27,7 @@
     "filtersReset": "重置"
 },
 "LoginPage": {
+  "loginWithTelegram": "通过 Telegram 登录",
     "loginTitle": "登录账户",
     "loginAccount": "账户",
     "loginPassword": "密码",
@@ -44,6 +45,7 @@
     "loading":"加载中..."
 },
 "RegisterUserPage": {
+  "register": "下一步",
   "adressPlaceholder": "输入地址...",
 "adress": "公司地址",
   "successTitleTG": "成功！",
@@ -116,6 +118,10 @@
     "fifthParagraph": "立即加入我们开始出口业务，您将自动获得来自中国、土耳其和东南亚国家买家的关注。"
 },
 "ProfilePage": {
+  "personalData": "个人资料",
+  "registrationDate": "注册日期",
+  "myReviews": "我的评论",
+
   "belarus": "白俄罗斯",
     "白俄罗斯":"白俄罗斯",
     "kazakhstan": "哈萨克斯坦",
@@ -208,7 +214,27 @@
     "questNotFoundValue": "请稍后再查看该版块，或联系技术支持！"
 }
 },
+
 "VendorPage": {
+  "personalData": "个人资料",
+  "rating": "评分",
+  "description": "描述",
+  "photos": "照片",
+  "contacts": "联系方式",
+  "mySessions": "我的课程",
+  "reviews": "评价",
+  "faq": "常见问题",
+  "createProduct": "创建商品",
+
+  "deviceType": "设备类型",
+  "browser": "浏览器",
+  "os": "操作系统",
+  "lastLoginDate": "上次登录",
+  "wannaGetOut": "您确定要退出吗？",
+  "logout": "退出",
+  "cancel": "取消",
+
+
   "invalidPhone": "电话号码必须至少有7个字符",
   "invalidEmail": "电子邮件必须包含 @ 和 .",
   "descriptionPlaceholder":"公司描述",
@@ -453,12 +479,17 @@
     "faqTitle":"빠른 질문"
 },
 "CategoryMenu": {
-    "isEmptyAll": "未找到类别",
-    "categoryBack": "☰ 类别",
-    "backButton": "← 返回",
-    "subCategoryEmpty": "无子类别",
-    "categoryTitle": "类别"
-},
+      "isEmptyAll": "未找到分类",
+      "categoryBack": "☰ 分类",
+      "backButton": "← 返回",
+      "subCategoryEmpty": "无子分类",
+      "categoryTitle": "分类",
+      "noElements": "暂无内容"
+    },
+    "PromoItem": {
+      "goToCategory": "进入分类",
+      "title": "热门分类"
+    },
 "CardComponent": {
     "defaultTitle": "优惠商品",
     "cardImageAlt": "商品图片",
@@ -695,7 +726,9 @@
     "modalDescription": "请输入发送到您邮箱的验证码",
     "checkingCode": "正在验证验证码...",
     "errorDelete": "删除账户时发生错误",
-    "errorOtp": "验证码无效"
+    "errorOtp": "验证码无效",
+    "deleteTitle": "删除账户"
+
   },
   "multiDrop": {
       "notFoundCategories": "未找到类别",
@@ -768,6 +801,95 @@
     "inn": "税号",
     "experience": "经验",
     "years": "年"
-}
+},
+"PopularCategories": {
+      "more": "更多",
+      "sectionTitleT": "热门分类",
+      "viewAllTextT": "查看全部",
+      "cat1": "冶金产品",
+      "cat2": "木材",
+      "cat3": "矿产品",
+      "cat4": "矿物"
+    },
+    "AdvantagesSection": {
+    "sectionTitle": "与我们合作的优势",
+    "title": "与我们合作的优势",
+    "description": "为什么选择我们？因为我们让复杂的变得简单，让可靠的变得触手可及！",
+    "advantage1": "与可信赖的制造商签订直接合同",
+    "advantage2": "可访问来自俄罗斯的广泛商品目录",
+    "advantage3": "一个渠道即可采购来自俄罗斯不同地区和行业的商品",
+    "advantage4": "为合作伙伴提供制造商的独家优惠和配额",
+    "advantage5": "降低采购成本和汇率风险"
+  },
+  "Exports": {
+    "sectionTitle": "遍布全国的出口商",
+    "title": "遍布全国的出口商",
+    "description": "您不再需要在每个地区单独寻找供应商。我们为您汇集了来自全俄罗斯的可靠出口商。"
+  },
+
+    "FooterNew": {
+      "sections": {
+        "title": "主要版块",
+        "main": "首页",
+        "catalog": "目录",
+        "help": "帮助",
+        "about": "关于我们",
+        "contacts": "联系方式",
+        "reviews": "评价"
+      },
+      "support": {
+        "title": "技术支持",
+        "phone": "8 999 123 45 67",
+        "email": "info@mail.ru",
+        "telegram": "made_in_russia"
+      },
+      "info": {
+        "title": "信息中心",
+        "legal": "法律信息"
+      },
+      "profile": {
+        "title": "我的账户",
+        "login": "登录账户",
+        "register": "注册"
+      },
+      "social": {
+        "title": "社交媒体"
+      }
+    },  
+  "CatalogNew": {
+    "originPrice": "按价格",
+    "creationDate": "按日期",
+    "new": "最新优先",
+    "cheapest": "最便宜优先",
+    "expensive": "最贵优先",
+    "found": "找到",
+    "products": "件商品",
+    "resultTitle": "搜索结果",
+    "filter": "筛选",
+    "apply": "应用",
+    "reset": "重置"
+  },
+  "CardsCatalogNew": {
+      "notFound": "未找到",
+      "popularProducts": "热门商品",
+      "viewAll": "查看全部"
+    },
+    "CardsCatalogWithPagination": {
+    "notFound": "未找到商品",
+    "prevPage": "上一页",
+    "nextPage": "下一页",
+    "loadingCards": "正在加载商品...",
+    "viewAll": "查看全部"
+  },
+  "LoginSlider": {
+    "slide1Title": "遍布全俄的认证供应商",
+    "slide1Description": "与经过质量和信誉审核的可靠公司合作，覆盖全国范围。",
+    "slide2Title": "为您企业提供专属经理",
+    "slide2Description": "您的专属顾问将帮助您选择最佳方案，加快合作进程。",
+    "slide3Title": "获取批发价格",
+    "slide3Description": "直接从制造商处获得最优惠报价，节省采购成本，无需中间商。",
+    "slide4Title": "独特的资源数据库",
+    "slide4Description": "我们汇集了成千上万的供应商，让您轻松找到企业所需的产品和服务。"
+  }
 
 }

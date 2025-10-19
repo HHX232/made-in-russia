@@ -40,7 +40,8 @@
 //       'exporteru.b-cdn.net',
 //       'exporteru.com',
 //       'en.exporteru.com',
-//       'cn.exporteru.com'
+//       'cn.exporteru.com',
+// 'i.pravatar.cc'
 //     ]
 //   },
 
@@ -122,7 +123,9 @@ const nextConfig: NextConfig = {
       'exporteru.b-cdn.net',
       'en.exporteru.com',
       'exporteru.com',
-      'cn.exporteru.com'
+      'cn.exporteru.com',
+      'i.pravatar.cc',
+      'via.placeholder.com'
     ]
   },
 

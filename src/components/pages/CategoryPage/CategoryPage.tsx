@@ -406,11 +406,11 @@ const CategoryPage = ({
             </>
           )}
 
-          <Catalog isShowFilters={false} initialProducts={[]} initialHasMore={false} />
+          <Catalog useContainer={false} isShowFilters={false} initialProducts={[]} initialHasMore={false} />
 
           {/* Секция компаний */}
           {companyes && companyes.length > 0 && (
-            <div className={`${styles.companies__section} container`}>
+            <div className={`${styles.companies__section}`}>
               <div className={styles.navigation__box}>
                 <h2 className={styles.companies__title}>{t('companies')}</h2>
                 <div className={styles.arrows_box}>
@@ -481,8 +481,12 @@ const CategoryPage = ({
                                 <h3 className={styles['companys-card__name']}>{company.name}</h3>
                               </div>
                               <div className={styles['companys-card__bottom']}>
-                                <span className={styles['companys-card__inn']}>ИНН: {company.inn}</span>
-                                <span className={styles['companys-card__practice']}>Опыт: {company.ageInYears}</span>
+                                <span className={styles['companys-card__inn']}>
+                                  {t('inn')}: {company.inn}
+                                </span>
+                                <span className={styles['companys-card__practice']}>
+                                  {t('experience')}: {company.ageInYears}
+                                </span>
                               </div>
                             </div>
                           ))}

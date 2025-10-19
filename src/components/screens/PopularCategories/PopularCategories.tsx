@@ -2,6 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './PopularCategories.module.scss'
+import {useTranslations} from 'next-intl'
 
 interface CategoryItem {
   id: number
@@ -17,49 +18,48 @@ interface PopularCategoriesProps {
   sectionTitle?: string
 }
 
-const defaultCategories: CategoryItem[] = [
-  {
-    id: 1,
-    title: 'Металлургическая продукция',
-    image: '/imagesNew/main/main-2-1.webp',
-    link: '/categories/metallurgy'
-  },
-  {
-    id: 2,
-    title: 'Древесина',
-    image: '/imagesNew/main/main-2-2.webp',
-    link: '/categories/wood-and-wood-products'
-  },
-  {
-    id: 3,
-    title: 'Минеральная продукция',
-    image: '/imagesNew/main/main-2-3.webp',
-    link: '/categories/other-non-metallic-mineral-products'
-  },
-  {
-    id: 4,
-    title: 'Полезные ископаемые',
-    image: '/imagesNew/main/main-2-4.webp',
-    link: '/categories/poleznye-iskopaemye'
-  }
-]
-
-const PopularCategories: React.FC<PopularCategoriesProps> = ({
-  categories = defaultCategories,
-  viewAllLink = '#',
-  viewAllText = 'Смотреть все',
-  sectionTitle = 'Популярные категории'
-}) => {
-  const [cat1, cat2, cat3, cat4] = categories
+const PopularCategories: React.FC<PopularCategoriesProps> = ({categories, viewAllLink = '#'}) => {
+  const t = useTranslations('PopularCategories')
+  const defaultCategories: CategoryItem[] = [
+    {
+      id: 1,
+      title: t('cat1'),
+      // title: 'Металлургическая продукция',
+      image: '/imagesNew/main/main-2-1.webp',
+      link: '/categories/metallurgy'
+    },
+    {
+      id: 2,
+      title: t('cat2'),
+      // title: 'Древесина',
+      image: '/imagesNew/main/main-2-2.webp',
+      link: '/categories/wood-and-wood-products'
+    },
+    {
+      id: 3,
+      title: t('cat3'),
+      // title: 'Минеральная продукция',
+      image: '/imagesNew/main/main-2-3.webp',
+      link: '/categories/other-non-metallic-mineral-products'
+    },
+    {
+      id: 4,
+      title: t('cat4'),
+      // title: 'Полезные ископаемые',
+      image: '/imagesNew/main/main-2-4.webp',
+      link: '/categories/poleznye-iskopaemye'
+    }
+  ]
+  const [cat1, cat2, cat3, cat4] = categories || defaultCategories
 
   return (
     <section className={`${styles.section} ${styles.popularcats}`}>
-      <h2 className={styles.visuallyHidden}>{sectionTitle}</h2>
+      <h2 className={styles.visuallyHidden}>{t('sectionTitleT')}</h2>
       <div className={`container ${styles.container}`}>
         <div className={styles.sectionFlexheader}>
-          <div className={styles.sectionFlexheaderTitle}>{sectionTitle}</div>
+          <div className={styles.sectionFlexheaderTitle}>{t('sectionTitleT')}</div>
           <Link href={viewAllLink} id='popularcats-button' className={styles.btnAccent}>
-            {viewAllText}
+            {t('viewAllTextT')}
           </Link>
         </div>
 
@@ -78,7 +78,7 @@ const PopularCategories: React.FC<PopularCategoriesProps> = ({
                   <h3 className={styles.popularcatsTitle}>{cat1.title}</h3>
                   <div className={styles.popularcatsMore}>
                     <Link href={cat1.link} className={styles.popularcatsMorelink}>
-                      <span>Подробнее</span>
+                      <span>{t('more')}</span>
                       <svg className={`${styles.icon} ${styles.iconRightLong}`}>
                         <use href='/iconsNew/arrow-right.svg'></use>
                       </svg>
@@ -105,7 +105,7 @@ const PopularCategories: React.FC<PopularCategoriesProps> = ({
                       <h3 className={styles.popularcatsTitle}>{cat2.title}</h3>
                       <div className={styles.popularcatsMore}>
                         <Link href={cat2.link} className={styles.popularcatsMorelink}>
-                          <span>Подробнее</span>
+                          <span>{t('more')}</span>
                           <svg className={`${styles.icon} ${styles.iconRightLong}`}>
                             <use href='/iconsNew/arrow-right.svg'></use>
                           </svg>
@@ -130,7 +130,7 @@ const PopularCategories: React.FC<PopularCategoriesProps> = ({
                       <h3 className={styles.popularcatsTitle}>{cat3.title}</h3>
                       <div className={styles.popularcatsMore}>
                         <Link href={cat3.link} className={styles.popularcatsMorelink}>
-                          <span>Подробнее</span>
+                          <span>{t('more')}</span>
                           <svg className={`${styles.icon} ${styles.iconRightLong}`}>
                             <use href='/iconsNew/arrow-right.svg'></use>
                           </svg>
@@ -155,7 +155,7 @@ const PopularCategories: React.FC<PopularCategoriesProps> = ({
                       <h3 className={styles.popularcatsTitle}>{cat4.title}</h3>
                       <div className={styles.popularcatsMore}>
                         <Link href={cat4.link} className={styles.popularcatsMorelink}>
-                          <span>Подробнее</span>
+                          <span>{t('more')}</span>
                           <svg className={`${styles.icon} ${styles.iconRightLong}`}>
                             <use href='/iconsNew/arrow-right.svg'></use>
                           </svg>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {axiosClassic} from '@/api/api.interceptor'
 import instance from '@/api/api.interceptor'
@@ -6,8 +7,10 @@ import {getAccessToken} from '@/services/auth/auth.helper'
 export interface Category {
   id: number
   slug: string
+
   name: string
   imageUrl?: string
+  iconUrl?: string | null
   children: Category[]
   creationDate: string
   lastModificationDate: string
@@ -19,9 +22,11 @@ export interface EditingCategory {
   slug: string
   name: string
   imageUrl?: string
+  iconUrl?: string | null
   children: Category[]
   parentId?: number | null
   image?: File
+  icon?: File
   okvedCategories?: string[]
 }
 
@@ -35,7 +40,10 @@ export interface CreateCategoryPayload {
     zh: string
   }
   okvedCategories?: string[]
-  image?: File
+  image?: File | string
+  icon?: File | string
+  saveImage?: boolean
+  saveIcon?: boolean
 }
 
 export interface UpdateCategoryPayload extends CreateCategoryPayload {
@@ -63,6 +71,7 @@ const cleanCategorySlug = (category: Category): Category => {
   return {
     ...category,
     slug: cleanSlug(category.slug),
+    iconUrl: category.iconUrl || null,
     children: category.children.map(cleanCategorySlug)
   }
 }
@@ -109,11 +118,26 @@ const CategoriesAPI = {
     const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
     formData.append('data', jsonBlob)
 
-    if (payload.image) {
+    if (payload.image && payload.image instanceof File) {
       formData.append('image', payload.image)
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/categories`, {
+    if (payload.icon && payload.icon instanceof File) {
+      formData.append('icon', payload.icon)
+    }
+
+    // Формируем query параметры
+    const queryParams = new URLSearchParams()
+    if (payload.saveImage !== undefined) {
+      queryParams.append('saveImage', String(payload.saveImage))
+    }
+    if (payload.saveIcon !== undefined) {
+      queryParams.append('saveIcon', String(payload.saveIcon))
+    }
+
+    const url = `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/categories${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`
@@ -148,10 +172,30 @@ const CategoriesAPI = {
     const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
     formData.append('data', jsonBlob)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    formData.append('image', payload?.image || (null as any))
+    if (payload.image && payload.image instanceof File) {
+      formData.append('image', payload.image)
+    } else {
+      formData.append('image', null as any)
+    }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/categories/${payload.id}`, {
+    if (payload.icon && payload.icon instanceof File) {
+      formData.append('icon', payload.icon)
+    } else {
+      formData.append('icon', null as any)
+    }
+
+    // Формируем query параметры
+    const queryParams = new URLSearchParams()
+    if (payload.saveImage !== undefined) {
+      queryParams.append('saveImage', String(payload.saveImage))
+    }
+    if (payload.saveIcon !== undefined) {
+      queryParams.append('saveIcon', String(payload.saveIcon))
+    }
+
+    const url = `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/categories/${payload.id}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+
+    const response = await fetch(url, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`

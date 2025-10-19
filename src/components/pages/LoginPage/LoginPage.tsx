@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Image from 'next/image'
 import styles from './LoginPage.module.scss'
-import MinimalHeader from '@/components/MainComponents/MinimalHeader/MinimalHeader'
 import {SetStateAction, MouseEvent, useEffect, useState, useRef, useId} from 'react'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {axiosClassic} from '@/api/api.interceptor'
@@ -19,8 +18,8 @@ import {useRouter} from 'next/navigation'
 import Link from 'next/link'
 import {useUserQuery} from '@/hooks/useUserApi'
 import LoginSlider from './LoginSlider/LoginSlider'
+import Header from '@/components/MainComponents/Header/Header'
 
-const google = '/google_registr.svg'
 const tg = 'iconsNew/telegram.svg'
 
 const LoginPage = ({categories}: {categories: Category[]}) => {
@@ -160,7 +159,8 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
 
   return (
     <div className={`${styles.login__box}`}>
-      <MinimalHeader categories={categories} />
+      {/* <MinimalHeader categories={categories} /> */}
+      <Header categories={categories} />
       <div className={`${styles.login__container} container`}>
         <div className={`${styles.login__inner}`}>
           {showResetForm ? (
@@ -214,7 +214,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                         <div className={styles.line_soc}></div>
                       </div>
                       <div className={`${styles.apps__images}`}>
-                        {currentLang === 'en' && (
+                        {/* {currentLang === 'en' && (
                           <Link
                             className={`${styles.registr__image}`}
                             href={`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/oauth2/google`}
@@ -227,7 +227,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                               alt='registr with google'
                             />
                           </Link>
-                        )}
+                        )} */}
 
                         <div className={styles.telegram__button__container}>
                           <Image
@@ -237,7 +237,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                             height={20}
                             alt='registr with telegram'
                           />
-                          <p className={styles.tg_text}>Войти через Telegram</p>
+                          <p className={styles.tg_text}>{t('loginWithTelegram')}</p>
                           <TelegramLoginWidget
                             onAuth={handleTelegramAuth}
                             className={styles.telegram__widget__overlay}

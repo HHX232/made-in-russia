@@ -4,6 +4,7 @@ import styles from './CategoryesMenuDesktop.module.scss'
 import {Category} from '@/services/categoryes/categoryes.service'
 import Link from 'next/link'
 import {useTranslations} from 'next-intl'
+import Image from 'next/image'
 
 interface ICategoryesMenuDesktopProps {
   categories: Category[] | undefined
@@ -12,16 +13,6 @@ interface ICategoryesMenuDesktopProps {
   onToggle?: () => void
 }
 
-// const ValuesItem: FC<Category & {parentPath: string}> = ({children, name, slug, parentPath}) => {
-//   return (
-//     <div className={`${styles.subtitles__box__item}`}>
-//       <Link href={`/categories/${parentPath}/${slug}`}>
-//         <p className={`${styles.subtitles__box__item__title}`}>{name}</p>
-//       </Link>
-//     </div>
-//   )
-// }
-
 type MenuLevel = 'main' | 'subcategory' | 'subsubcategory'
 
 interface BreadcrumbItem {
@@ -29,15 +20,11 @@ interface BreadcrumbItem {
   level: MenuLevel
 }
 
-const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
-  categories,
-  setCategoryListIsOpen,
-  isOpen = true
-  // onToggle
-}) => {
+const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({categories, setCategoryListIsOpen, isOpen = true}) => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeSlug, setActiveSlug] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [isTablet, setIsTablet] = useState(false)
   const [menuLevel, setMenuLevel] = useState<MenuLevel>('main')
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [selectedSubcategory, setSelectedSubcategory] = useState<Category | null>(null)
@@ -55,7 +42,9 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
 
   useEffect(() => {
     const checkWidth = () => {
-      setIsMobile(window.innerWidth < 600)
+      const width = window.innerWidth
+      setIsMobile(width < 600)
+      setIsTablet(width >= 600 && width < 992)
     }
 
     checkWidth()
@@ -65,7 +54,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
   }, [])
 
   useEffect(() => {
-    if (isMobile && isMenuOpen) {
+    if ((isMobile || isTablet) && isMenuOpen) {
       const handleClickOutside = (event: MouseEvent) => {
         const target = event.target as HTMLElement
 
@@ -75,30 +64,56 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
           target.className.includes('mobile_menu_item_arrow') ||
           target.classList.contains('back_button') ||
           target.closest('.back_button') !== null ||
-          target.className.includes('back_button')
+          target.className.includes('back_button') ||
+          target.closest('[class*="exp_catalog__cat_arrow"]') !== null
 
-        if (menuRef.current && !menuRef.current.contains(target) && !isArrowClick) {
-          handleCloseMenu()
+        const isSearchInput =
+          target.closest('[class*="SearchInputUI"]') ||
+          target.closest('[class*="search__box"]') ||
+          target.closest('[class*="new_search_box"]') ||
+          target.closest('input[type="text"]') ||
+          target.closest('input[placeholder]') ||
+          target.closest('button[aria-label="Search"]') ||
+          target.closest('button[aria-label="Clear search"]')
+
+        const isCatalogButton = target.closest('[id="catalog-btn"]') || target.closest('[class*="btn_catalog"]')
+
+        if (menuRef.current && menuRef.current.contains(target)) {
+          return
         }
+
+        if (isArrowClick || isSearchInput || isCatalogButton) {
+          return
+        }
+
+        handleCloseMenu()
       }
 
-      setTimeout(() => {
-        document.addEventListener('click', handleClickOutside)
+      const timeoutId = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside)
       }, 100)
 
-      return () => document.removeEventListener('click', handleClickOutside)
+      return () => {
+        clearTimeout(timeoutId)
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
     }
-  }, [isMobile, isMenuOpen])
+  }, [isMobile, isTablet, isMenuOpen])
 
   useEffect(() => {
-    if (!isMobile && isOpen !== undefined) {
+    if (!isMobile && !isTablet && isOpen !== undefined) {
       if (!isOpen) {
         // Menu closed
       }
     }
-  }, [isOpen, isMobile])
+  }, [isOpen, isMobile, isTablet])
 
-  const handleCategoryClick = (category: Category) => {
+  const handleCategoryClick = (category: Category, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
     if (!category.children || category.children.length === 0) {
       window.location.href = `/categories/${category.slug}`
       return
@@ -108,7 +123,12 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
     setBreadcrumbs([{name: category.name, level: 'main'}])
   }
 
-  const handleSubcategoryClick = (subcategory: Category) => {
+  const handleSubcategoryClick = (subcategory: Category, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
     if (!subcategory.children || subcategory.children.length === 0) {
       window.location.href = `/categories/${selectedCategory?.slug}/${subcategory.slug}`
       return
@@ -131,7 +151,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
   }
 
   const handleCloseMenu = () => {
-    if (isMobile) {
+    if (isMobile || isTablet) {
       setIsMenuOpen(false)
       setMenuLevel('main')
       setSelectedCategory(null)
@@ -144,10 +164,16 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
   }
 
   const handleCategoryHover = (categoryName: string, categorySlug: string) => {
-    if (!isMobile) {
+    if (!isMobile && !isTablet) {
       setActiveCategory(categoryName)
       setActiveSlug(categorySlug)
     }
+  }
+
+  const getIconSize = () => {
+    if (isMobile) return 20
+    if (isTablet) return 20
+    return 24
   }
 
   if (!categories || categories.length === 0) {
@@ -158,7 +184,8 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
     )
   }
 
-  if (isMobile) {
+  // Мобильная и планшетная версия с уровнями
+  if (isMobile || isTablet) {
     return (
       <div className={styles.mobile_menu} ref={menuRef}>
         <div className={styles.mobile_menu_header}>
@@ -197,6 +224,15 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                   className={styles.mobile_menu_item_content}
                   onClick={() => handleCloseMenu()}
                 >
+                  {category.iconUrl && (
+                    <Image
+                      src={category.iconUrl}
+                      alt={category.name}
+                      width={getIconSize()}
+                      height={getIconSize()}
+                      className={styles.category_icon}
+                    />
+                  )}
                   <span>{category.name}</span>
                 </Link>
                 {category.children && category.children.length > 0 && (
@@ -204,7 +240,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                     className={styles.mobile_menu_item_arrow}
                     onClick={(e) => {
                       e.stopPropagation()
-                      handleCategoryClick(category)
+                      handleCategoryClick(category, e)
                     }}
                   >
                     →
@@ -223,6 +259,15 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                   className={styles.mobile_menu_item_content}
                   onClick={() => handleCloseMenu()}
                 >
+                  {subcategory.iconUrl && (
+                    <Image
+                      src={subcategory.iconUrl}
+                      alt={subcategory.name}
+                      width={getIconSize()}
+                      height={getIconSize()}
+                      className={styles.category_icon}
+                    />
+                  )}
                   <span>{subcategory.name}</span>
                 </Link>
                 {subcategory.children && subcategory.children.length > 0 && (
@@ -230,7 +275,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                     className={styles.mobile_menu_item_arrow}
                     onClick={(e) => {
                       e.stopPropagation()
-                      handleSubcategoryClick(subcategory)
+                      handleSubcategoryClick(subcategory, e)
                     }}
                   >
                     →
@@ -241,7 +286,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
 
           {menuLevel === 'subcategory' && (!selectedCategory?.children || selectedCategory.children.length === 0) && (
             <li className={styles.mobile_menu_item}>
-              <span>Нет подкатегорий</span>
+              <span>{t('subCategoryEmpty')}</span>
             </li>
           )}
 
@@ -255,6 +300,15 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                   className={styles.mobile_menu_item_full}
                   onClick={() => handleCloseMenu()}
                 >
+                  {item.iconUrl && (
+                    <Image
+                      src={item.iconUrl}
+                      alt={item.name}
+                      width={getIconSize()}
+                      height={getIconSize()}
+                      className={styles.category_icon}
+                    />
+                  )}
                   <span>{item.name}</span>
                 </Link>
               </li>
@@ -263,7 +317,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
           {menuLevel === 'subsubcategory' &&
             (!selectedSubcategory?.children || selectedSubcategory.children.length === 0) && (
               <li className={styles.mobile_menu_item}>
-                <span>Нет элементов</span>
+                <span>{t('noElements')}</span>
               </li>
             )}
         </ul>
@@ -271,6 +325,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
     )
   }
 
+  // Десктопная версия с hover
   if (isOpen === false) {
     return null
   }
@@ -288,6 +343,9 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                   key={el.id}
                 >
                   <Link href={`/categories/${el.slug}`} className={`${styles.exp_catalog__cat_link}`}>
+                    {el.iconUrl && (
+                      <Image src={el.iconUrl} alt={el.name} width={24} height={24} className={styles.category_icon} />
+                    )}
                     <span>{el.name}</span>
                   </Link>
                   <span className={`${styles.exp_catalog__cat_arrow}`}></span>
@@ -318,6 +376,15 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({
                             href={`/categories/${el.slug}/${child.slug}`}
                             className={`${styles.exp_catalog__subcats_link}`}
                           >
+                            {child.iconUrl && (
+                              <Image
+                                src={child.iconUrl}
+                                alt={child.name}
+                                width={24}
+                                height={24}
+                                className={styles.subcategory_icon}
+                              />
+                            )}
                             {child.name}
                           </Link>
                         </li>

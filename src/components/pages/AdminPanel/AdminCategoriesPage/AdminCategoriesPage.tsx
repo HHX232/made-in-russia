@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import {FC, useState} from 'react'
+import {FC, useState, useRef} from 'react'
 import styles from './AdminCategoriesPage.module.scss'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
@@ -11,17 +11,113 @@ import {
   useDeleteCategory
 } from '@/services/categoryes/categoryes.service'
 import {SupportedLanguage} from '@/store/multilingualDescriptionsInCard/multilingualDescriptions.types'
+import Image from 'next/image'
 
 export interface Category {
   id: number
   slug: string
   name: string
   imageUrl?: string
+  iconUrl?: string | null
   okved: string[] | null
   children: Category[]
   childrenCount: number
   creationDate: string
   lastModificationDate: string
+}
+
+// Компонент для загрузки SVG/PNG иконок
+const IconUploader: FC<{
+  iconUrl: string | null
+  onIconChange: (file: File | null) => void
+  onIconUrlChange: (url: string | null) => void
+  disabled?: boolean
+}> = ({iconUrl, onIconChange, onIconUrlChange, disabled}) => {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [preview, setPreview] = useState<string | null>(iconUrl)
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    console.log('Selected file:', file)
+    console.log('File type:', file.type)
+    console.log('File size:', file.size)
+
+    // Проверка типа файла
+    if (!['image/svg+xml', 'image/png'].includes(file.type)) {
+      alert('Пожалуйста, выберите файл формата SVG или PNG')
+      return
+    }
+
+    // Проверка размера файла (макс 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Размер файла не должен превышать 2MB')
+      return
+    }
+
+    // Создаем preview
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const result = event.target?.result as string
+      setPreview(result)
+      onIconUrlChange(result)
+    }
+    reader.readAsDataURL(file)
+
+    console.log('Calling onIconChange with file:', file)
+    onIconChange(file)
+  }
+
+  const handleRemove = () => {
+    setPreview(null)
+    onIconChange(null)
+    onIconUrlChange(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  return (
+    <div className={styles.icon__uploader}>
+      <input
+        ref={fileInputRef}
+        type='file'
+        accept='.svg,.png,image/svg+xml,image/png'
+        onChange={handleFileSelect}
+        disabled={disabled}
+        className={styles.icon__uploader__input}
+      />
+
+      {preview ? (
+        <div className={styles.icon__uploader__preview}>
+          <div className={styles.icon__preview__container}>
+            <img src={preview} alt='Icon preview' className={styles.icon__preview__image} />
+          </div>
+          <div className={styles.icon__preview__actions}>
+            <button type='button' onClick={handleClick} disabled={disabled} className={styles.icon__change__button}>
+              Изменить
+            </button>
+            <button type='button' onClick={handleRemove} disabled={disabled} className={styles.icon__remove__button}>
+              Удалить
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button type='button' onClick={handleClick} disabled={disabled} className={styles.icon__uploader__button}>
+          <svg className={styles.icon__uploader__icon} viewBox='0 0 24 24' fill='none' stroke='currentColor'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' />
+          </svg>
+          <span>Выберите SVG или PNG файл</span>
+          <span className={styles.icon__uploader__hint}>Максимальный размер: 2MB</span>
+        </button>
+      )}
+    </div>
+  )
 }
 
 const AdminCategoriesPage: FC = () => {
@@ -47,13 +143,6 @@ const AdminCategoriesPage: FC = () => {
     updateCategoryMutation.isPending ||
     deleteCategoryMutation.isPending
 
-  // Валидация формата ОКВЭД кодов
-  // const validateOkvedCode = (code: string): boolean => {
-  //   // ОКВЭД коды имеют формат XX.XX или XX.XX.X или XX.XX.XX
-  //   const okvedPattern = /^\d{2}\.\d{2}(\.\d{1,2})?$/
-  //   return okvedPattern.test(code)
-  // }
-
   const toggleCategoryExpansion = (categoryId: number) => {
     const newExpanded = new Set(expandedCategories)
     if (newExpanded.has(categoryId)) {
@@ -70,10 +159,13 @@ const AdminCategoriesPage: FC = () => {
       slug: category.slug,
       name: category.name,
       imageUrl: category.imageUrl,
+      iconUrl: category.iconUrl || null,
       children: category.children as any,
       parentId: parentId ?? null,
-      okvedString: (category.okved || []).join(', '), // Сохраняем как строку
-      okvedCategories: category.okved || []
+      okvedString: (category.okved || []).join(', '),
+      okvedCategories: category.okved || [],
+      initialImageUrl: category.imageUrl, // Сохраняем начальное значение
+      initialIconUrl: category.iconUrl || null // Сохраняем начальное значение
     })
     setIsCreating(false)
   }
@@ -84,8 +176,9 @@ const AdminCategoriesPage: FC = () => {
       name: '',
       children: [],
       parentId: parentId ?? null,
-      okvedString: '', // Пустая строка для нового элемента
-      okvedCategories: []
+      okvedString: '',
+      okvedCategories: [],
+      iconUrl: null
     })
     setIsCreating(true)
   }
@@ -97,20 +190,31 @@ const AdminCategoriesPage: FC = () => {
       const nameTranslations = {en: '', ru: '', zh: ''}
       nameTranslations[activeLanguage] = editingCategory.name
 
-      // Разделяем строку ОКВЭД на массив только при сохранении
       const okvedCodes = (editingCategory.okvedString || '')
         .split(',')
         .map((code: any) => code.trim())
         .filter((code: any) => code.length > 0)
 
-      // const invalidOkvedCodes = okvedCodes.filter((code: any) => !validateOkvedCode(code))
+      // Определяем, нужно ли сохранять изображение и иконку
+      // Логика:
+      // 1. Если создаем новую категорию - всегда true
+      // 2. Если редактируем:
+      //    - saveImage = false ТОЛЬКО если была картинка изначально И сейчас её удалили (imageUrl === null)
+      //    - saveIcon = false ТОЛЬКО если была иконка изначально И сейчас её удалили (iconUrl === null)
+      let saveImage = true
+      let saveIcon = true
 
-      // if (invalidOkvedCodes.length > 0) {
-      //   alert(
-      //     `Неверный формат ОКВЭД кодов: ${invalidOkvedCodes.join(', ')}\nФормат должен быть: XX.XX или XX.XX.X или XX.XX.XX`
-      //   )
-      //   return
-      // }
+      if (!isCreating) {
+        // Проверяем изображение: было ли оно изначально и удалили ли его
+        if (editingCategory.initialImageUrl && editingCategory.imageUrl === null) {
+          saveImage = false
+        }
+
+        // Проверяем иконку: была ли она изначально и удалили ли её
+        if (editingCategory.initialIconUrl && editingCategory.iconUrl === null) {
+          saveIcon = false
+        }
+      }
 
       const payload = {
         name: editingCategory.name,
@@ -118,10 +222,21 @@ const AdminCategoriesPage: FC = () => {
         parentId: editingCategory.parentId || null,
         nameTranslations,
         okvedCategories: okvedCodes,
-        image: editingCategory.image ? editingCategory.image : ''
+        image: editingCategory.image || '',
+        icon: editingCategory.icon || '',
+        saveImage,
+        saveIcon
       }
 
       console.log('payload save', payload)
+      console.log('editingCategory.icon:', editingCategory.icon)
+      console.log('editingCategory.image:', editingCategory.image)
+      console.log('editingCategory.iconUrl:', editingCategory.iconUrl)
+      console.log('editingCategory.imageUrl:', editingCategory.imageUrl)
+      console.log('editingCategory.initialIconUrl:', editingCategory.initialIconUrl)
+      console.log('editingCategory.initialImageUrl:', editingCategory.initialImageUrl)
+      console.log('saveImage:', saveImage, 'saveIcon:', saveIcon)
+
       if (isCreating) {
         await createCategoryMutation.mutateAsync(payload)
         alert('Категория создана успешно!')
@@ -161,7 +276,6 @@ const AdminCategoriesPage: FC = () => {
   const handleOkvedChange = (value: string) => {
     if (!editingCategory) return
 
-    // Просто сохраняем строку как есть, без разделения
     setEditingCategory({
       ...editingCategory,
       okvedString: value
@@ -196,6 +310,22 @@ const AdminCategoriesPage: FC = () => {
             {category.okved && category.okved.length > 0 && (
               <div style={{fontSize: '13px'}} className={styles.category__okved}>
                 ОКВЭД: {category.okved.join(', ')}
+              </div>
+            )}
+            {category.iconUrl && (
+              <div
+                style={{backgroundColor: '#000000', maxWidth: 'fit-content'}}
+                className={styles.category__icon__info}
+              >
+                <Image
+                  src={category.iconUrl}
+                  alt='Category icon'
+                  className={styles.category__icon__preview}
+                  crossOrigin='anonymous'
+                  unoptimized
+                  width={15}
+                  height={15}
+                />
               </div>
             )}
           </div>
@@ -267,40 +397,16 @@ const AdminCategoriesPage: FC = () => {
           </div>
 
           <div className={styles.form__field}>
-            <label className={styles.form__label}>
-              ОКВЭД коды (через запятую)
-              {/* <span className={styles.form__hint}>Формат: XX.XX или XX.XX.X (например: 01.11, 47.19, 01.13.2)</span> */}
-            </label>
+            <label className={styles.form__label}>ОКВЭД коды (через запятую)</label>
 
-            {/* Использование обычного input вместо TextInputUI для ОКВЭД */}
             <TextInputUI
               inputType='text'
               currentValue={okvedValue}
               onSetValue={(e) => handleOkvedChange(e)}
               placeholder='Введите ОКВЭД коды через запятую (например: 01.11, 01.12, 47.19)'
-              // className={`${styles.form__input} ${styles.okved__input}`}
               theme='superWhite'
               disabled={isLoading}
             />
-
-            {/* {okvedValue.trim() && (
-              <div className={styles.okved__preview}>
-                Превью кодов:{' '}
-                {okvedValue.split(',').map((code: any, index: any) => {
-                  const trimmedCode = code.trim()
-                  if (!trimmedCode) return null
-
-                  return (
-                    <span
-                      key={index}
-                      className={`${styles.okved__code} ${validateOkvedCode(trimmedCode) ? styles.valid : styles.invalid}`}
-                    >
-                      {trimmedCode}
-                    </span>
-                  )
-                })}
-              </div>
-            )} */}
           </div>
 
           <div className={styles.form__field}>
@@ -310,20 +416,44 @@ const AdminCategoriesPage: FC = () => {
               maxFiles={1}
               inputIdPrefix='category'
               onActiveImagesChange={(images) => {
+                console.log('CreateImagesInput onActiveImagesChange:', images)
                 if (images.length > 0) {
-                  setEditingCategory({...editingCategory, imageUrl: images[0]})
+                  setEditingCategory((prev: any) => ({...prev, imageUrl: images[0]}))
                 } else {
-                  setEditingCategory({...editingCategory, imageUrl: undefined})
+                  // Если массив пустой - изображение удалено
+                  setEditingCategory((prev: any) => ({...prev, imageUrl: null}))
                 }
               }}
               activeImages={editingCategory.imageUrl ? [editingCategory.imageUrl] : []}
               onFilesChange={(files) => {
+                console.log('CreateImagesInput onFilesChange:', files)
                 if (files.length > 0) {
-                  setEditingCategory({...editingCategory, image: files[0]})
+                  setEditingCategory((prev: any) => ({...prev, image: files[0]}))
                 } else {
-                  setEditingCategory({...editingCategory, image: undefined})
+                  setEditingCategory((prev: any) => ({...prev, image: undefined}))
                 }
               }}
+            />
+          </div>
+
+          <div className={styles.form__field}>
+            <label className={styles.form__label}>Иконка категории (SVG или PNG)</label>
+            <IconUploader
+              iconUrl={editingCategory.iconUrl}
+              onIconChange={(file) => {
+                console.log('IconUploader onIconChange called with:', file)
+                setEditingCategory((prev: any) => {
+                  console.log('Previous editingCategory:', prev)
+                  const updated = {...prev, icon: file}
+                  console.log('Updated editingCategory:', updated)
+                  return updated
+                })
+              }}
+              onIconUrlChange={(url) => {
+                console.log('IconUploader onIconUrlChange called with:', url)
+                setEditingCategory((prev: any) => ({...prev, iconUrl: url}))
+              }}
+              disabled={isLoading}
             />
           </div>
 
@@ -420,7 +550,6 @@ const AdminCategoriesPage: FC = () => {
 }
 
 export default AdminCategoriesPage
-
 // import {FC, useEffect, useState} from 'react'
 // import styles from './AdminCategoriesPage.module.scss'
 // import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'

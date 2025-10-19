@@ -2,6 +2,7 @@
 import {FC, useState} from 'react'
 import {useKeenSlider} from 'keen-slider/react'
 import styles from './AdvantagesSection.module.scss'
+import {useTranslations} from 'next-intl'
 
 interface Advantage {
   id: number
@@ -10,41 +11,42 @@ interface Advantage {
   imageUrl: string
 }
 
-const advantages: Advantage[] = [
-  {
-    id: 1,
-    count: '01',
-    text: 'Прямые контракты с проверенными производителями',
-    imageUrl: '/imagesNew/main/main-3-1.webp'
-  },
-  {
-    id: 2,
-    count: '02',
-    text: 'Доступ к широкому каталогу товаров из России',
-    imageUrl: '/imagesNew/main/main-3-2.webp'
-  },
-  {
-    id: 3,
-    count: '03',
-    text: 'Единый канал для закупки из разных отраслей и регионов России',
-    imageUrl: '/imagesNew/main/main-3-3.webp'
-  },
-  {
-    id: 4,
-    count: '04',
-    text: 'Эксклюзивные условия и квоты от производителей для партнёров',
-    imageUrl: '/imagesNew/main/main-3-4.webp'
-  },
-  {
-    id: 5,
-    count: '05',
-    text: 'Снижение затрат на закупки и валютные риски',
-    imageUrl: '/imagesNew/main/main-3-5.webp'
-  }
-]
-
 const AdvantagesSection: FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const t = useTranslations('AdvantagesSection')
+
+  const advantages: Advantage[] = [
+    {
+      id: 1,
+      count: '01',
+      text: t('advantage1'),
+      imageUrl: '/imagesNew/main/main-3-1.webp'
+    },
+    {
+      id: 2,
+      count: '02',
+      text: t('advantage2'),
+      imageUrl: '/imagesNew/main/main-3-2.webp'
+    },
+    {
+      id: 3,
+      count: '03',
+      text: t('advantage3'),
+      imageUrl: '/imagesNew/main/main-3-3.webp'
+    },
+    {
+      id: 4,
+      count: '04',
+      text: t('advantage4'),
+      imageUrl: '/imagesNew/main/main-3-4.webp'
+    },
+    {
+      id: 5,
+      count: '05',
+      text: t('advantage5'),
+      imageUrl: '/imagesNew/main/main-3-5.webp'
+    }
+  ]
 
   const [sliderRef, instanceRef] = useKeenSlider({
     slides: {
@@ -84,19 +86,14 @@ const AdvantagesSection: FC = () => {
 
   return (
     <section className={`section ${styles.advantages}`}>
-      <h2 className={styles['visually-hidden']}>Преимущества работы с нами</h2>
+      <h2 className={styles['visually-hidden']}>{t('sectionTitle')}</h2>
       <div className='container'>
         <div className={styles.advantages__grid}>
           {/* Первый блок - заголовок и описание */}
           <div className={styles['advantages__grid-item']}>
             <div className={styles.advantages__flex}>
-              <div className={styles.advantages__title}>Преимущества работы с нами</div>
-              <p className={styles.advantages__description}>
-                Почему выбирают нас? <br className='desktop-vs' />
-                Потому что мы делаем <br className='desktop-vs' />
-                сложное - простым,
-                <br className='desktop-vs' />а надежное - доступным!
-              </p>
+              <div className={styles.advantages__title}>{t('title')}</div>
+              <p className={styles.advantages__description}>{t('description')}</p>
             </div>
           </div>
 
@@ -119,7 +116,7 @@ const AdvantagesSection: FC = () => {
             {/* Слайдер */}
             <div ref={sliderRef} className={`keen-slider ${styles[`keen-slider__slide__spec`]}`}>
               {advantages.map((advantage) => (
-                <div key={advantage.id} className='keen-slider__slide '>
+                <div key={advantage.id} className='keen-slider__slide'>
                   <div className={styles['advantages-card']}>
                     <div className={styles['advantages-card__count']}>{advantage.count}</div>
                     <div className={styles['advantages-card__group']}>

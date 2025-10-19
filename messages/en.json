@@ -27,6 +27,7 @@
     "filtersReset": "Reset"
 },
 "LoginPage": {
+  "loginWithTelegram": "Log in with Telegram",
     "loginTitle": "Log in to your account",
     "loginAccount": "Account",
     "loginPassword": "Password",
@@ -44,6 +45,7 @@
     "loading":"Loading..."
 },
 "RegisterUserPage": {
+  "register": "Next",
   "adressPlaceholder": "Enter address...",
 "adress": "Company address",
   "successTitleTG": "Success!",
@@ -113,6 +115,10 @@
     "fifthParagraph": "Start exporting with us today, and you'll automatically gain visibility among buyers from China, Turkey, and Southeast Asian countries."
 },
 "ProfilePage": {
+  "personalData": "Personal data",
+  "registrationDate": "Registration date",
+  "myReviews": "My reviews",
+
   "belarus": "Belarus",
   "kazakhstan": "Kazakhstan", 
   "china": "China",
@@ -196,6 +202,22 @@
 }
 },
 "VendorPage": { 
+  "personalData": "Personal data",
+  "rating": "Rating",
+  "description": "Description",
+  "photos": "Photos",
+  "contacts": "Contacts",
+  "mySessions": "My sessions",
+  "reviews": "Reviews",
+  "faq": "FAQ",
+  "createProduct": "Create product",
+  "deviceType": "Device Type",
+  "browser": "Browser",
+  "os": "Operating System",
+  "lastLoginDate": "Last Login",
+  "wannaGetOut": "Are you sure you want to log out?",
+  "logout": "Log Out",
+  "cancel": "Cancel",
   "invalidPhone": "Phone number must be at least 7 characters long",
   "invalidEmail": "Email must contain @ and .",
   "descriptionPlaceholder":"Company description",
@@ -441,12 +463,17 @@
     "faqTitle":"Quick questions"
 },
 "CategoryMenu": {
-    "isEmptyAll": "No categories found",
-    "categoryBack": "☰ Categories",
-    "backButton": "← Back",
-    "subCategoryEmpty": "No subcategories",
-    "categoryTitle": "Categories"
+  "isEmptyAll": "No categories found",
+  "categoryBack": "☰ Categories",
+  "backButton": "← Back",
+  "subCategoryEmpty": "No subcategories",
+  "categoryTitle": "Categories",
+  "noElements": "No items"
 },
+"PromoItem": {
+      "goToCategory": "Go to category",
+      "title": "Popular categories"
+    },
 "CardComponent": {
     "defaultTitle": "Best Deal",
     "cardImageAlt": "Product Image", 
@@ -675,6 +702,7 @@
       "accessDeniedDescription": "Your role is not sufficient to view this page. Your role:"
     },
     "DeleteButton":{ 
+        "deleteTitle": "Delete account",
       "loading": "Loading...",
       "modalTitle": "Account Deletion Confirmation",
       "modalDescription": "Enter the confirmation code sent to your email",
@@ -753,7 +781,97 @@
     "inn": "Tax ID",
     "experience": "Experience",
     "years": "years"
-}
+},
+"PopularCategories": {
+      "more": "More",
+      "sectionTitleT": "Popular Categories",
+      "viewAllTextT": "View All",
+      "cat1": "Metal Products",
+      "cat2": "Timber",
+      "cat3": "Mineral Products",
+      "cat4": "Minerals"
+    },
+    "AdvantagesSection": {
+    "sectionTitle": "Our Advantages",
+    "title": "Our Advantages",
+    "description": "Why do clients choose us? Because we make the complex simple and the reliable affordable!",
+    "advantage1": "Direct contracts with trusted manufacturers",
+    "advantage2": "Access to a wide catalog of products from Russia",
+    "advantage3": "A single channel for procurement from various industries and regions of Russia",
+    "advantage4": "Exclusive conditions and quotas from manufacturers for partners",
+    "advantage5": "Reduced purchasing costs and currency risks"
+  },
+  "Exports": {
+    "sectionTitle": "Exporters Across the Country",
+    "title": "Exporters Across the Country",
+    "description": "You no longer need to search for suppliers in each region separately. We’ve gathered trusted exporters from all over Russia for you."
+  },
+  "FooterNew": {
+    "sections": {
+      "title": "Main Sections",
+      "main": "Home",
+      "catalog": "Catalog",
+      "help": "Help",
+      "about": "About Us",
+      "contacts": "Contacts",
+      "reviews": "Reviews"
+    },
+    "support": {
+      "title": "Technical Support",
+      "phone": "+7 999 123 45 67",
+      "email": "info@mail.ru",
+      "telegram": "made_in_russia"
+    },
+    "info": {
+      "title": "Information Center",
+      "legal": "Legal Information"
+    },
+    "profile": {
+      "title": "My Profile",
+      "login": "Login",
+      "register": "Register"
+    },
+    "social": {
+      "title": "Social Networks"
+    }
+  },
+  
+
+  "CatalogNew": {
+      "originPrice": "By price",
+      "creationDate": "By date",
+      "new": "Newest first",
+      "cheapest": "Cheapest first",
+      "expensive": "Most expensive first",
+      "found": "Found",
+      "products": "products",
+      "resultTitle": "Search results for",
+      "filter": "Filter",
+      "apply": "Apply",
+      "reset": "Reset"
+    },
+    "CardsCatalogNew": {
+      "notFound": "Not found",
+      "popularProducts": "Popular products",
+      "viewAll": "View all"
+    },
+    "CardsCatalogWithPagination": {
+    "notFound": "No products found",
+    "prevPage": "Previous page",
+    "nextPage": "Next page",
+    "loadingCards": "Loading products...",
+    "viewAll": "View all"
+  },
+  "LoginSlider": {
+    "slide1Title": "Verified suppliers across Russia",
+    "slide1Description": "Work only with trusted companies that have passed quality and reputation checks throughout the country.",
+    "slide2Title": "Personal manager for your company",
+    "slide2Description": "Your dedicated specialist will help you choose the best solutions and speed up the cooperation process.",
+    "slide3Title": "Access to wholesale prices",
+    "slide3Description": "Get the best offers directly from manufacturers and save on purchases without middlemen.",
+    "slide4Title": "Unique resource database",
+    "slide4Description": "We’ve gathered thousands of suppliers so you can easily find the products and services your business needs."
+  }
 
 }
 

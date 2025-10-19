@@ -198,7 +198,7 @@
   }
 
   .account_layout {
-    padding-top: 30px;
+    // padding-top: 30px;
     margin-bottom: 25px;
 
     @media (max-width: 1024px) {
@@ -1082,6 +1082,7 @@
 }
 
 .full_width {
+  width: 100%;
   grid-column: 1 / -1;
 
   & > div {

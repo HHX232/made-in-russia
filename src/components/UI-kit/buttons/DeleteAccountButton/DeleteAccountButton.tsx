@@ -11,7 +11,7 @@ interface DeleteAccountButtonProps {
   buttonText: string
 }
 
-const DeleteAccountButton: React.FC<DeleteAccountButtonProps> = ({buttonText}) => {
+const DeleteAccountButton: React.FC<DeleteAccountButtonProps> = () => {
   const [wantQuite, setWantQuite] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
@@ -82,7 +82,7 @@ const DeleteAccountButton: React.FC<DeleteAccountButtonProps> = ({buttonText}) =
           />
           <path d='M9.5 12.5H14.5' stroke='#E1251B' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
         </svg>
-        <span>{isLoading ? t('loading') : buttonText}</span>
+        <span>{isLoading ? t('loading') : t('deleteTitle')}</span>
       </button>
 
       {error && <div style={{color: '#E1251B', marginTop: '10px', fontSize: '14px'}}>{error}</div>}

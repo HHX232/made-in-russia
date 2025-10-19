@@ -16,6 +16,7 @@ import {
 } from './ads.helpers'
 
 import {useKeenSlider} from 'keen-slider/react'
+import {useTranslations} from 'next-intl'
 
 interface PromoItemOptimizedProps {
   ad: IPromoFromServer
@@ -24,6 +25,7 @@ interface PromoItemOptimizedProps {
 }
 
 const PromoItemOptimized: FC<PromoItemOptimizedProps> = ({ad}) => {
+  const t = useTranslations('PromoItem')
   return (
     <div className={styles.marketing_card}>
       <div className={styles.marketing_card__container}>
@@ -33,7 +35,7 @@ const PromoItemOptimized: FC<PromoItemOptimizedProps> = ({ad}) => {
           <p className={styles.marketing_card__description} dangerouslySetInnerHTML={{__html: ad.subtitle}} />
 
           <Link href={ad.link} className={styles.btn_accent}>
-            Перейти в категорию
+            {t('goToCategory')}
           </Link>
         </div>
         <div className={styles.marketing_card__overlay} />
@@ -259,7 +261,7 @@ const Promo: FC<PromoProps> = ({
   siteTitle = 'Exporteru.com'
 }) => {
   const [isPageLoaded, setIsPageLoaded] = useState(false)
-
+  const t = useTranslations('PromoItem')
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsPageLoaded(true)
@@ -291,7 +293,7 @@ const Promo: FC<PromoProps> = ({
       </Head>
 
       <section style={{overflow: 'hidden'}} className={styles.marketing}>
-        <h2 className={styles.visually_hidden}>Популярные категории</h2>
+        <h2 className={styles.visually_hidden}>{t('title')}</h2>
         <div className={`${styles.container_full} container`}>
           <DynamicSlider ads={ads} isLoading={!isPageLoaded} />
         </div>

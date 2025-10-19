@@ -1,7 +1,6 @@
 'use client'
 
 import styles from './RegisterPage.module.scss'
-import MinimalHeader from '@/components/MainComponents/MinimalHeader/MinimalHeader'
 import {useEffect, useState, useId} from 'react'
 import {TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import {useActions} from '@/hooks/useActions'
@@ -20,6 +19,7 @@ import LoginSlider from '../LoginPage/LoginSlider/LoginSlider'
 import RegisterUserUnified from './RegisterUserUnified/RegisterUserUnified'
 import {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import RegisterVendorUnified from './RegisterVendorUnified/RegisterVendorUnified'
+import Header from '@/components/MainComponents/Header/Header'
 
 const russiaSvg = '/countries/russia.svg'
 
@@ -196,7 +196,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             avatarUrl: avatarUrl
           }
 
-      await axiosClassic.post(isUser ? '/auth/register' : '/auth/register-vendor', registrationData, {
+      axiosClassic.post(isUser ? '/auth/register' : '/auth/register-vendor', registrationData, {
         headers: {'Accept-Language': currentLang}
       })
 
@@ -240,7 +240,11 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
 
       const {accessToken, refreshToken} = data
       saveTokenStorage({accessToken, refreshToken})
-      await refetch()
+      try {
+        await refetch()
+      } catch {
+        router.push('/')
+      }
       router.push('/')
     } catch (e) {
       console.log(e)
@@ -255,7 +259,8 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
 
   return (
     <div className={`${styles.login__box}`}>
-      <MinimalHeader categories={categories} />
+      {/* <MinimalHeader categories={categories} /> */}
+      <Header categories={categories} />
       <div className='container'>
         <div className={`${styles.login__inner}`}>
           <form onSubmit={(e) => e.preventDefault()} className={`${styles.login__form__box}`} id={id}>

@@ -22,7 +22,13 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
         'x-language': currentLang
       }
     })
-    console.log('vendorData after:', vendorData)
+    console.log(
+      'vendorData after:',
+      currentLang,
+      vendorData.data.vendorDetails.productCategories,
+      vendorData.data.vendorDetails.countries,
+      vendorData.data
+    )
   } catch (e) {
     console.log('vendorData dy', e)
   }

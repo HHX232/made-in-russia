@@ -13,6 +13,7 @@ import {getAccessToken} from '@/services/auth/auth.helper'
 import Link from 'next/link'
 import useProductsWithPagination from './useProductsWithPagination'
 import Image from 'next/image'
+import {useTranslations} from 'next-intl'
 
 interface CardsCatalogWithPaginationProps {
   initialProducts?: Product[]
@@ -60,7 +61,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   specialFilters
 }) => {
   // console.log('🎯 CardsCatalogWithPagination: Component render')
-
+  const t = useTranslations('CardsCatalogWithPagination')
   // Селекторы и состояния
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
@@ -317,7 +318,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
 
   if (isError) {
     console.error('❌ Error loading products')
-    return <div style={{marginBottom: '50px'}}>Not found</div>
+    return <div style={{marginBottom: '50px'}}>{t('notFound')}</div>
   }
 
   return (
@@ -419,7 +420,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
                 className={`${styled.exp_pagination__link} ${styled.exp_pagination__link_prev} ${
                   currentPage === 0 ? styled.exp_pagination__link_disabled : ''
                 }`}
-                aria-label='Предыдущая страница'
+                aria-label={t('prevPage')}
               >
                 <Image
                   style={{transform: 'rotate(180deg)'}}
@@ -461,7 +462,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
                 className={`${styled.exp_pagination__link} ${styled.exp_pagination__link_next} ${
                   currentPage === totalPages - 1 ? styled.exp_pagination__link_disabled : ''
                 }`}
-                aria-label='Следующая страница'
+                aria-label={t('nextPage')}
               >
                 <Image width={24} height={24} alt='next button' src={'/iconsNew/arrow-right-def.svg'} />
               </button>
@@ -473,7 +474,8 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
         {isFetching && !showSkeleton && (
           <div className={styled.loading_indicator}>
             <div className={styled.loading_spinner} />
-            <span>Загрузка товаров...</span>
+            <span>{t('loadingCards')}</span>
+            {/* <span>Загрузка товаров...</span> */}
           </div>
         )}
 
@@ -483,7 +485,8 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
           id='catalog-header-group-mobile'
         >
           <Link href='#' className={`${styled.btn_accent} ${styled.btn_accent_bottom}`}>
-            Смотреть все
+            {t('viewAll')}
+            {/* Смотреть все */}
           </Link>
         </div>
       </div>

@@ -1,3 +1,5 @@
+/* stylelint-disable no-duplicate-selectors */
+
 @import '@/scss/config/mixins';
 
 /* ------------------------------------------------------------------------------------------------------------------------------
@@ -47,7 +49,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
 .exp_catalog__cat {
   max-height: calc(100vh - 160px);
   box-sizing: content-box;
-  padding-right: rem(25);
+  padding-right: rem(20);
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -81,7 +83,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     align-items: center;
     justify-content: space-between;
     border-radius: rem(0);
-    padding-inline: rem(23);
+    padding-inline: 1rem;
     transition: background-color 0.2s ease-in-out;
 
     @include lg {
@@ -353,7 +355,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   .mobile_menu {
     overflow: hidden;
     width: 100%;
-    border-radius: 5px;
+    border-radius: 0;
     background: #0047ba;
   }
 
@@ -369,7 +371,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   .back_button {
     padding: 5px 10px;
     border: 1px solid rgb(255 255 255 / 30%);
-    border-radius: 5px;
+    border-radius: 0;
     background: rgb(255 255 255 / 10%);
     color: white;
     cursor: pointer;
@@ -388,7 +390,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     align-items: center;
     justify-content: center;
     border: 1px solid rgb(255 255 255 / 30%);
-    border-radius: 5px;
+    border-radius: 0;
     margin-left: auto;
     background: rgb(255 255 255 / 10%);
     color: white;
@@ -480,5 +482,262 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
 @media (min-width: 600px) {
   .mobile_menu {
     display: none;
+  }
+}
+
+// Добавьте эти стили в конец вашего CategoryesMenuDesktop.module.scss
+
+// Планшетная версия (600px - 992px)
+@media (min-width: 600px) and (max-width: 991px) {
+  .exp_catalog__menu {
+    display: none;
+  }
+
+  .mobile_menu {
+    display: block;
+    overflow: hidden;
+    width: 100%;
+    border-radius: 0;
+    margin-top: 10px;
+    background: #0047ba;
+  }
+
+  .mobile_menu_header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid rgb(255 255 255 / 20%);
+    background: rgb(0 0 0 / 10%);
+    gap: 15px;
+  }
+
+  .back_button {
+    padding: 8px 15px;
+    border: 1px solid rgb(255 255 255 / 30%);
+    border-radius: 0;
+    background: rgb(255 255 255 / 10%);
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    white-space: nowrap;
+
+    &:hover {
+      background: rgb(255 255 255 / 20%);
+    }
+  }
+
+  .close_button {
+    display: flex;
+    width: 35px;
+    height: 35px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(255 255 255 / 30%);
+    border-radius: 0;
+    margin-left: auto;
+    background: rgb(255 255 255 / 10%);
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+
+    &:hover {
+      background: rgb(255 255 255 / 20%);
+    }
+  }
+
+  .breadcrumbs {
+    overflow: hidden;
+    flex: 1;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile_menu_list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .mobile_menu_item {
+    display: flex;
+    border-bottom: 1px solid rgb(255 255 255 / 10%);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .mobile_menu_item_content {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    padding: 18px 20px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+
+    &:hover {
+      background: rgb(255 255 255 / 10%);
+    }
+  }
+
+  .mobile_menu_item_arrow {
+    display: flex;
+    width: 60px;
+    min-width: 60px;
+    min-height: 55px;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-left: 1px solid rgb(255 255 255 / 10%);
+    background: rgb(0 0 0 / 10%);
+    color: white;
+    cursor: pointer;
+    font-size: 24px;
+    text-decoration: none;
+
+    &:hover {
+      background: rgb(255 255 255 / 10%);
+    }
+  }
+
+  .mobile_menu_item_full {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    color: white;
+    font-size: 16px;
+    text-decoration: none;
+
+    &:hover {
+      background: rgb(255 255 255 / 10%);
+    }
+  }
+}
+
+// Обновляем существующий медиазапрос для десктопа
+@media (min-width: 992px) {
+  .mobile_menu {
+    display: none;
+  }
+}
+
+// Стили для иконок категорий
+.category_icon {
+  flex-shrink: 0;
+  margin-right: 8px;
+  object-fit: contain;
+
+  @media (max-width: 767px) {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.subcategory_icon {
+  display: inline-block;
+  flex-shrink: 0;
+  margin-right: 8px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+// Обновляем существующие стили для лучшего отображения с иконками
+.exp_catalog__cat_link {
+  display: inline-flex;
+  width: 100%;
+  min-height: rem(47);
+  align-items: center;
+  color: var(--white);
+  font-size: rem(16);
+  font-weight: 500;
+  gap: 0;
+
+  & > span {
+    font-size: 16px;
+  }
+
+  transition: color 0.2s ease-in-out;
+
+  @include lg {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  @include sm {
+    font-size: rem(14);
+  }
+}
+
+.mobile_menu_item_content {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding: 15px;
+  color: white;
+  cursor: pointer;
+  gap: 0;
+
+  @media (min-width: 600px) and (max-width: 991px) {
+    padding: 18px 20px;
+    font-size: 16px;
+  }
+
+  &:hover {
+    background: rgb(255 255 255 / 10%);
+  }
+}
+
+.mobile_menu_item_full {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px 3px;
+  color: white;
+  gap: 0;
+  text-decoration: none;
+
+  @media (min-width: 600px) and (max-width: 991px) {
+    padding: 15px 20px;
+    font-size: 16px;
+  }
+
+  & > span:first-child {
+    padding: 0 15px;
+  }
+
+  &:hover {
+    background: rgb(255 255 255 / 10%);
+  }
+}
+
+.exp_catalog__subcats_link {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  color: var(--white);
+  font-size: rem(16);
+  font-weight: 500;
+  gap: 0;
+  line-height: 160%;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @include sm {
+    margin-bottom: rem(10);
+    font-size: rem(14);
+    font-weight: normal;
+    line-height: 140%;
   }
 }
