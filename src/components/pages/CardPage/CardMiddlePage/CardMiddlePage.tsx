@@ -65,7 +65,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
         </div>
         <div className={styles.all__info__box}>
           <Link href={`/data-vendor/${cardData?.user?.id}`} className={styles.about__vendor}>
-            <h3 className={styles.vendor__title}>Информация о поставщике</h3>
+            <h3 className={styles.vendor__title}>{t('companyDescription')}</h3>
             <div className={styles.vendor__box__info}>
               <div className={styles.vendor__avatar}>
                 {!!cardData.user.avatarUrl ? (
@@ -88,11 +88,13 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
                 )}
                 <p className={styles.vendor__name}>{cardData.user.login}</p>
               </div>
-              <p className={styles.vendor__inn}>ИНН: {cardData.user.vendorDetails?.inn}</p>
+              <p className={styles.vendor__inn}>
+                {t('INN')}: {cardData.user.vendorDetails?.inn}
+              </p>
             </div>
           </Link>
           <div className={styles.about__vendor}>
-            <h3 className={styles.vendor__title}>Информация о доставке</h3>
+            <h3 className={styles.vendor__title}>{t('deliveryDescription')}</h3>
             <div className={styles.vendor__box__del__info}>
               <div className={styles.loc__box}>
                 <svg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -107,7 +109,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
                     stroke-width='1.5'
                   />
                 </svg>
-                <p className={styles.del__title}>{cardData?.user?.vendorDetails?.address || 'адрес не указан'}</p>
+                <p className={styles.del__title}>{cardData?.user?.vendorDetails?.address || t('emptyAddress')}</p>
               </div>
 
               <div className={styles.underline}></div>

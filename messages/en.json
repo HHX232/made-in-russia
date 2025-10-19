@@ -11,9 +11,9 @@
     "help": "Help",
     "contacts": "Contacts",
     "more": "More",
-     "noResults": "No results found",
-     "searchLoading": "Searching...",
-     "noResultsCatalog": "No results found for your query"
+    "noResults": "No results found",
+    "searchLoading": "Searching...",
+    "noResultsCatalog": "No results found for your query"
   },
   "Footer": {
     "ugreement": "User agreement",
@@ -25,9 +25,8 @@
     "filtersCategory": "Categories",
     "filtersPrice": "Price",
     "filtersReset": "Reset"
-},
-"LoginPage": {
-  "loginWithTelegram": "Log in with Telegram",
+  },
+  "LoginPage": {
     "loginTitle": "Log in to your account",
     "loginAccount": "Account",
     "loginPassword": "Password",
@@ -39,26 +38,25 @@
     "writePassword": "Enter password",
     "passwordError": "Password must be at least 6 characters",
     "nicknameError": "Please enter your username or email",
- "autorithationError": "Incorrect login or password",
- "authorizationErrorTelegram": "Telegram authorization error",
+    "autorithationError": "Incorrect login or password",
+    "authorizationErrorTelegram": "Telegram authorization error",
     "decorationImage": "decorative image 'Wide range of materials'",
-    "loading":"Loading..."
-},
-"RegisterUserPage": {
-  "register": "Next",
-  "adressPlaceholder": "Enter address...",
-"adress": "Company address",
-  "successTitleTG": "Success!",
-  "successBodyTG": "The bot has written to you on Telegram! Please check your messages.",
-  "errorTitleTG": "Telegram Error",
-  "errorPrefixTG": "The bot couldn't send you a message",
-  "Belarus": "Belarus",
-  "Kazakhstan": "Kazakhstan",
-  "chooseUserType": "Choose account type",
-  "imBuyer": "I am a buyer",
-  "imExporter": "I am an exporter company",
-  "China": "China",
-  "Russia": "Russia",
+    "loading": "Loading..."
+  },
+  "RegisterUserPage": {
+    "adressPlaceholder": "Enter address...",
+    "adress": "Company address",
+    "successTitleTG": "Success!",
+    "successBodyTG": "The bot has written to you on Telegram! Please check your messages.",
+    "errorTitleTG": "Telegram Error",
+    "errorPrefixTG": "The bot couldn't send you a message",
+    "Belarus": "Belarus",
+    "Kazakhstan": "Kazakhstan",
+    "chooseUserType": "Choose account type",
+    "imBuyer": "I am a buyer",
+    "imExporter": "I am an exporter company",
+    "China": "China",
+    "Russia": "Russia",
     "registerTitle": "Registration",
     "registerTitleCompany": "Company Registration",
     "registerRegion": "Country/Region",
@@ -82,29 +80,28 @@
     "next": "Next",
     "emailNext": "Email verification",
     "confirm": "Confirm",
-      "inn": "Company Tax ID",
-      "innPlaceholder": "Enter company Tax ID",
-      "innError": "Tax ID must contain at least 9 digits",
-      "companyCountryes": "Operating Countries",
-      "companyCountryesPlaceholder": "Select countries...",
-      "companyName": "Company Name",
-      "companyNamePlaceholder": "Enter company name...",
-      "companyNameError": "Company name must be at least 3 characters",
-      "companyTel": "Contact Phone Number",
-      "corporateEmail": "Corporate email",
-  "corporateEmailPlaceholder": "Enter corporate email...",
-  "categories": "Product categories",
-  "categoriesPlaceholder": "Select product categories...",
-  "categoriesSubtext":"Select the main categories of products your company works with"
-    
-}, 
-"MinimalHeader":{
-  "category": "Categories",
-  "reviews": "Reviews",
-  "delivery": "Delivery",
-  "about-us": "About us",
-  "help": "Help",
-  "contacts": "Contacts"
+    "inn": "Company Tax ID",
+    "innPlaceholder": "Enter company Tax ID",
+    "innError": "Tax ID must contain at least 9 digits",
+    "companyCountryes": "Operating Countries",
+    "companyCountryesPlaceholder": "Select countries...",
+    "companyName": "Company Name",
+    "companyNamePlaceholder": "Enter company name...",
+    "companyNameError": "Company name must be at least 3 characters",
+    "companyTel": "Contact Phone Number",
+    "corporateEmail": "Corporate email",
+    "corporateEmailPlaceholder": "Enter corporate email...",
+    "categories": "Product categories",
+    "categoriesPlaceholder": "Select product categories...",
+    "categoriesSubtext": "Select the main categories of products your company works with"
+  },
+  "MinimalHeader": {
+    "category": "Categories",
+    "reviews": "Reviews",
+    "delivery": "Delivery",
+    "about-us": "About us",
+    "help": "Help",
+    "contacts": "Contacts"
   },
   "AboutUsPage": {
     "title": "About Us",
@@ -113,16 +110,12 @@
     "thirdParagraph": "We provide comprehensive support and guidance throughout all stages - from product listing on our platform to signing export contracts. For the entire duration of your service use, you'll be assigned a dedicated account manager.",
     "fourthParagraph": "Our primary goal is to boost your international sales! We identify your key requirements for export operations and make every effort to fulfill them.",
     "fifthParagraph": "Start exporting with us today, and you'll automatically gain visibility among buyers from China, Turkey, and Southeast Asian countries."
-},
-"ProfilePage": {
-  "personalData": "Personal data",
-  "registrationDate": "Registration date",
-  "myReviews": "My reviews",
-
-  "belarus": "Belarus",
-  "kazakhstan": "Kazakhstan", 
-  "china": "China",
-  "russia": "Russia",
+  },
+  "ProfilePage": {
+    "belarus": "Belarus",
+    "kazakhstan": "Kazakhstan",
+    "china": "China",
+    "russia": "Russia",
     "mySessions": "My Sessions",
     "createAvatarSuccess": "Avatar created successfully!",
     "deleteAvatarSuccess": "Avatar deleted successfully!",
@@ -153,146 +146,129 @@
     "favorites": "Favorites",
     "recentlyViewed": "Recently viewed",
     "notHaveRecentlyViewed": "No viewed items",
-    "shopping":"{memberSince, date, short}",
-   "saw": "Registration date",
+    "shopping": "{memberSince, date, short}",
+    "saw": "Registration date",
     "errorLoadingProfile": "Error loading profile",
     "products": "products",
     "deletedSuccess": "Successfully deleted!",
     "deletedError": "Deletion error!",
     "deleting": "Deleting...",
     "defaultError": "Error!",
-    
+
     "ProfileForm": {
       "address": "Address",
-"addressPlaceholder": "Enter address",
+      "addressPlaceholder": "Enter address",
       "belarus": "Belarus",
-  "kazakhstan": "Kazakhstan", 
-  "china": "China",
-  "russia": "Russia",
-    "phoneNumber": "Mobile phone number",
-    "errorLoadingCAtegoryes": "Error loading categories",
-    "codeInEmail": "Code sent to email",
-    "errorUpdatePassword": "Error changing password!",
-    "dontChangePassword": "Password not changed!",
-    "passwordChangeSuccess": "Password successfully changed!",
-    "wannaChangePassword": "Change password?",
-    "enterCodeFromEmail": "Enter the code sent to your email",
-    "password": "Password",
-    "createNewPassword": "Create new password?",
-    "regions": "Country/Region",
-    "selectRegions": "Select countries...",
-    "categoryes": "Product categories",
-    "selectCategoryes": "Select product categories...",
-    "inn": "Tax ID",
-    "innPlaceholder": "Enter Tax ID",
-    "innError": "Tax ID must contain at least 9 digits",
-    "congratulations":"Congratulations!"
-},
-"ProfilePageBottomDelivery": {
-    "title": "My Comments",
-    "noReviews":"No reviews"
-},
-"ProfilePageBottomHelp": {
-    "title": "Frequently Asked Questions",
-    "service": "Service and Help",
-    "support": "Contact Support",
-    "quest": "FAQ",
-    "questNotFoundTitle": "No questions found",
-    "questNotFoundValue": "Check back later or contact technical support!"
-}
-},
-"VendorPage": { 
-  "personalData": "Personal data",
-  "rating": "Rating",
-  "description": "Description",
-  "photos": "Photos",
-  "contacts": "Contacts",
-  "mySessions": "My sessions",
-  "reviews": "Reviews",
-  "faq": "FAQ",
-  "createProduct": "Create product",
-  "deviceType": "Device Type",
-  "browser": "Browser",
-  "os": "Operating System",
-  "lastLoginDate": "Last Login",
-  "wannaGetOut": "Are you sure you want to log out?",
-  "logout": "Log Out",
-  "cancel": "Cancel",
-  "invalidPhone": "Phone number must be at least 7 characters long",
-  "invalidEmail": "Email must contain @ and .",
-  "descriptionPlaceholder":"Company description",
-
-  "additionalContacts": "Additional contacts",
-  "phones": "Phones",
-  "phoneInputTitle": "Enter phone number",
-  "emails": "Emails",
-  "emailInputTitle": "Enter email",
-  "sites": "Websites",
-  "siteInputTitle": "Enter website",
-  "save": "Save",
-  "create": "Create product",
-  "belarus": "Belarus",
-  "kazakhstan": "Kazakhstan", 
-  "china": "China",
-  "russia": "Russia",
-  "favorites": "Favorites",
-  "help": "Support",
-  "quest": "Frequently Asked Questions",
-  "addQuest": "Add a Question",
-  "questNotFoundTitle": "No Questions Found",
-  "questNotFoundValue": "Check back later or contact support!",
-  "accountViews": "Account views this month",
-  "accountComments": "Comments and rating this month",
-  "comments": "Comments",
-  "loadComments": "Loading comments...",
-  "noComments": "No product reviews yet",
-  "loadMoreCommets": "Loading more reviews...",
-  "myProducts": "My Products",
-  "noMyProducts": "Seller's Products",
-  "question": "Question",  
-"answer": "Answer"  ,
-"success": "Success!",
-"successPublishedNewQuest": "Q&A published",
-"errorCreatFaq": "Error creating question",
-"sucessDeleatFaq": "Question deleted successfully", 
-"errorDeleatFaq": "Error deleting question"
-},
-"Favorites": {
-  "title": "Favorites",
-  "noFavorites": "No favorite products"
-},
-"CardPage": {
-  "PurchaseModal": {
-    "title": "Place Order",
-    "fields": {
-      "name": "Name",
-      "email": "Email",
-      "phone": "Phone Number",
-      "quantity": "Quantity"
+      "kazakhstan": "Kazakhstan",
+      "china": "China",
+      "russia": "Russia",
+      "phoneNumber": "Mobile phone number",
+      "errorLoadingCAtegoryes": "Error loading categories",
+      "codeInEmail": "Code sent to email",
+      "errorUpdatePassword": "Error changing password!",
+      "dontChangePassword": "Password not changed!",
+      "passwordChangeSuccess": "Password successfully changed!",
+      "wannaChangePassword": "Change password?",
+      "enterCodeFromEmail": "Enter the code sent to your email",
+      "password": "Password",
+      "createNewPassword": "Create new password?",
+      "regions": "Country/Region",
+      "selectRegions": "Select countries...",
+      "categoryes": "Product categories",
+      "selectCategoryes": "Select product categories...",
+      "inn": "Tax ID",
+      "innPlaceholder": "Enter Tax ID",
+      "innError": "Tax ID must contain at least 9 digits",
+      "congratulations": "Congratulations!"
     },
-    "placeholders": {
-      "name": "Enter your name",
-      "email": "example@email.com",
-      "phone": "+7 (999) 123-45-67",
-      "quantity": "Minimum {minimum}"
+    "ProfilePageBottomDelivery": {
+      "title": "My Comments",
+      "noReviews": "No reviews"
     },
-    "errors": {
-      "nameRequired": "Name is required",
-      "emailRequired": "Email is required",
-      "emailInvalid": "Invalid email format",
-      "quantityMinimum": "Minimum quantity: {minimum}"
-    },
-    "priceInfo": {
-      "range": "Range",
-      "unitPrice": "Unit price",
-      "totalPrice": "Total amount"
-    },
-    "buttons": {
-      "cancel": "Cancel",
-      "submit": "Submit Application"
+    "ProfilePageBottomHelp": {
+      "title": "Frequently Asked Questions",
+      "service": "Service and Help",
+      "support": "Contact Support",
+      "quest": "FAQ",
+      "questNotFoundTitle": "No questions found",
+      "questNotFoundValue": "Check back later or contact technical support!"
     }
-  }
-,
+  },
+  "VendorPage": {
+    "invalidPhone": "Phone number must be at least 7 characters long",
+    "invalidEmail": "Email must contain @ and .",
+    "descriptionPlaceholder": "Company description",
+
+    "additionalContacts": "Additional contacts",
+    "phones": "Phones",
+    "phoneInputTitle": "Enter phone number",
+    "emails": "Emails",
+    "emailInputTitle": "Enter email",
+    "sites": "Websites",
+    "siteInputTitle": "Enter website",
+    "save": "Save",
+    "create": "Create product",
+    "belarus": "Belarus",
+    "kazakhstan": "Kazakhstan",
+    "china": "China",
+    "russia": "Russia",
+    "favorites": "Favorites",
+    "help": "Support",
+    "quest": "Frequently Asked Questions",
+    "addQuest": "Add a Question",
+    "questNotFoundTitle": "No Questions Found",
+    "questNotFoundValue": "Check back later or contact support!",
+    "accountViews": "Account views this month",
+    "accountComments": "Comments and rating this month",
+    "comments": "Comments",
+    "loadComments": "Loading comments...",
+    "noComments": "No product reviews yet",
+    "loadMoreCommets": "Loading more reviews...",
+    "myProducts": "My Products",
+    "noMyProducts": "Seller's Products",
+    "question": "Question",
+    "answer": "Answer",
+    "success": "Success!",
+    "successPublishedNewQuest": "Q&A published",
+    "errorCreatFaq": "Error creating question",
+    "sucessDeleatFaq": "Question deleted successfully",
+    "errorDeleatFaq": "Error deleting question"
+  },
+  "Favorites": {
+    "title": "Favorites",
+    "noFavorites": "No favorite products"
+  },
+  "CardPage": {
+    "PurchaseModal": {
+      "title": "Place Order",
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "quantity": "Quantity"
+      },
+      "placeholders": {
+        "name": "Enter your name",
+        "email": "example@email.com",
+        "phone": "+7 (999) 123-45-67",
+        "quantity": "Minimum {minimum}"
+      },
+      "errors": {
+        "nameRequired": "Name is required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Invalid email format",
+        "quantityMinimum": "Minimum quantity: {minimum}"
+      },
+      "priceInfo": {
+        "range": "Range",
+        "unitPrice": "Unit price",
+        "totalPrice": "Total amount"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "submit": "Submit Application"
+      }
+    },
     "CardTopPage": {
       "successCreateOrder": "Order created successfully!",
       "successCreateBody": "Please wait, the seller will contact you shortly.",
@@ -300,8 +276,8 @@
       "addressTitle": "Address",
       "addressAlternative": "Address not specified",
       "innTitle": "Tax ID",
-      "countriesTitle": "Countries of presence", 
-      "description": "Description", 
+      "countriesTitle": "Countries of presence",
+      "description": "Description",
       "showTelephone": "Show phone",
       "showOnEmail": "Write to email",
       "RequestCallback": "Request callback",
@@ -320,55 +296,58 @@
       "packagingOptions": "Packaging options"
     },
     "CardMiddlePage": {
-  "description": "Description",
-  "technicalCharacteristics": "Technical specifications:",
-  "companyDescription": "Company information"
-},
-"CardBottomPage": {
-  "success": "Success!",
-  "successPublished": "Review has been submitted for moderation",
-  "errorPublished": "Error publishing review",
-  "errorPublishedText": "Before publishing, you must contact the seller and your account must be at least 7 days old",
-  "revues": "Reviews",
-  "questions": "Questions",
-  "noComments": "No reviews yet. Be the first!",
-  "pleaseCreateComment": "Please share your experience with this product",
-  "writeCommentPlaceholder": "Write a review...",
- "publishing":"Publishing...",
-  "defaultError": "Error",
-  "fileUploadErrorType": "File {fileName} has an unsupported format",
-  "fileUploadErrorTypeSubtext": "The file format is not supported",
-  "svgError": "SVG files are not supported",
-  "bigImage": "The image exceeds the 5MB size limit",
-  "bigVideo": "The video exceeds the 200MB size limit",
-  "bigFiles": "You can upload no more than {maxFilesCount} files"
-}
-},
-"NotFoundPage": {
+      "description": "Description",
+      "technicalCharacteristics": "Technical specifications:",
+      "companyDescription": "Supplier Information",
+      "deliveryDescription": "Shipping Information",
+      "emptyAddress": "address is not specified",
+      "INN": "INN"
+    },
+    "CardBottomPage": {
+      "success": "Success!",
+      "successPublished": "Review has been submitted for moderation",
+      "errorPublished": "Error publishing review",
+      "errorPublishedText": "Before publishing, you must contact the seller and your account must be at least 7 days old",
+      "revues": "Reviews",
+      "questions": "Questions",
+      "noComments": "No reviews yet. Be the first!",
+      "pleaseCreateComment": "Please share your experience with this product",
+      "writeCommentPlaceholder": "Write a review...",
+      "publishing": "Publishing...",
+      "defaultError": "Error",
+      "fileUploadErrorType": "File {fileName} has an unsupported format",
+      "fileUploadErrorTypeSubtext": "The file format is not supported",
+      "svgError": "SVG files are not supported",
+      "bigImage": "The image exceeds the 5MB size limit",
+      "bigVideo": "The video exceeds the 200MB size limit",
+      "bigFiles": "You can upload no more than {maxFilesCount} files"
+    }
+  },
+  "NotFoundPage": {
     "goBack": "Go back to homepage",
     "mainText": "Page not found or deleted. Please check the URL or return to the homepage."
-},
-"createCard": {
-  "mg": "milligram",
-  "g": "gram",
-  "kg": "kilogram",
-  "c": "centner",
-  "t": "ton",
-  "ml": "milliliter",
-  "l": "liter",
-  "hl": "hectoliter",
-  "m3": "meter³",
-  "m2": "meter²",
-  "cm2": "centimeter²",
-  "pcs": "piece",
-  "pack": "package",
-  "m": "meter",
-  "cm": "centimeter",
-  "pair": "pair",
-  "set": "set",
-  "box": "box",
-  "languageForInput":"Language for input",
-   "languageForInputSubtitle":"At least 1 language must be filled in",
+  },
+  "createCard": {
+    "mg": "milligram",
+    "g": "gram",
+    "kg": "kilogram",
+    "c": "centner",
+    "t": "ton",
+    "ml": "milliliter",
+    "l": "liter",
+    "hl": "hectoliter",
+    "m3": "meter³",
+    "m2": "meter²",
+    "cm2": "centimeter²",
+    "pcs": "piece",
+    "pack": "package",
+    "m": "meter",
+    "cm": "centimeter",
+    "pair": "pair",
+    "set": "set",
+    "box": "box",
+    "languageForInput": "Language for input",
+    "languageForInputSubtitle": "At least 1 language must be filled in",
     "alternativeMainDescr": "Main description",
     "alternativeAdditionalDescr": "Additional optional description",
     "validateError": "Validation error",
@@ -392,21 +371,20 @@
     "similarProducts": "Similar products",
     "altHelpWithSimilarProducts": "Help with similar products",
     "save": "Save",
-      "titleError": "Product title is required",
-      "minimumImages": "Minimum 1 images",
-      "now": "Now",
-      "onePriceError": "Add at least one price",
-      "descriptionError": "Description is required",
-      "characteristicError": "At least one row in the characteristics table must be filled",
-      "topDescrError": "Company top description is required",
-      "bottomError": "Company bottom description is required",
-      "companyImagesError": "At least one company image must be uploaded",
-      "altTextImagesError": "All uploaded images must have descriptions",
-      "oneFaqError": "At least one question and answer must be added",
-      "fullFaqError": "Every question must have an answer and vice versa"
-  
-},
-"CreateCardPriceElementsText": {
+    "titleError": "Product title is required",
+    "minimumImages": "Minimum 1 images",
+    "now": "Now",
+    "onePriceError": "Add at least one price",
+    "descriptionError": "Description is required",
+    "characteristicError": "At least one row in the characteristics table must be filled",
+    "topDescrError": "Company top description is required",
+    "bottomError": "Company bottom description is required",
+    "companyImagesError": "At least one company image must be uploaded",
+    "altTextImagesError": "All uploaded images must have descriptions",
+    "oneFaqError": "At least one question and answer must be added",
+    "fullFaqError": "Every question must have an answer and vice versa"
+  },
+  "CreateCardPriceElementsText": {
     "daysBeforeSale": "Specify the number of days until the end of the promotion",
     "daysBeforeSaleNotMinus": "The number of days must be a positive number",
     "minimalVolume": "Specify the minimum order volume",
@@ -428,13 +406,13 @@
     "daysDelivery": "Delivery time",
     "packagingOptions": "Packaging options",
     "price": "Price"
-},
-"CreateCardProductCategory": {
-    "errorLoadingCategories": "Error loading categories",  
-    "loadingCategories": "Loading categories...",  
-    "emptyCategory": "Category not selected",  
-    "removeCategory": "Remove category",  
-    "categoryNotFound": "No categories found",  
+  },
+  "CreateCardProductCategory": {
+    "errorLoadingCategories": "Error loading categories",
+    "loadingCategories": "Loading categories...",
+    "emptyCategory": "Category not selected",
+    "removeCategory": "Remove category",
+    "categoryNotFound": "No categories found",
     "foundCategoryProcessing": "Searching for categories...",
     "notFoundCategories": "No categories found",
     "notFoundItems": "No items found",
@@ -443,274 +421,268 @@
     "searchItems": "Search items...",
     "clearAll": "Clear all",
     "ready": "Done"
-},
-"CreateCompanyDescription":{
-    "infoAboutCompany":"Company information",
-    "infoAboutCompanyPlaceholder":"Company description",
-    "descriptionPlaceholder":"Description",
-    "descriptionCompanyPlaceholder":"Company description"
-},
-"CreateDescription":{
-    "descriptionPlaceholder":"Description",
-    "writeDescription":"Enter description...",
-    "secondDescr":"Additional description ",
-    "secondDescrSpan":"optional",
-    "writeSecondDescr":"Enter additional description..."
-},
-"CreateFaqCard":{
-    "question":"Question",
-    "answer":"Answer",
-    "faqTitle":"Quick questions"
-},
-"CategoryMenu": {
-  "isEmptyAll": "No categories found",
-  "categoryBack": "☰ Categories",
-  "backButton": "← Back",
-  "subCategoryEmpty": "No subcategories",
-  "categoryTitle": "Categories",
-  "noElements": "No items"
-},
-"PromoItem": {
-      "goToCategory": "Go to category",
-      "title": "Popular categories"
-    },
-"CardComponent": {
+  },
+  "CreateCompanyDescription": {
+    "infoAboutCompany": "Company information",
+    "infoAboutCompanyPlaceholder": "Company description",
+    "descriptionPlaceholder": "Description",
+    "descriptionCompanyPlaceholder": "Company description"
+  },
+  "CreateDescription": {
+    "descriptionPlaceholder": "Description",
+    "writeDescription": "Enter description...",
+    "secondDescr": "Additional description ",
+    "secondDescrSpan": "optional",
+    "writeSecondDescr": "Enter additional description..."
+  },
+  "CreateFaqCard": {
+    "question": "Question",
+    "answer": "Answer",
+    "faqTitle": "Quick questions"
+  },
+  "CategoryMenu": {
+    "isEmptyAll": "No categories found",
+    "categoryBack": "☰ Categories",
+    "backButton": "← Back",
+    "subCategoryEmpty": "No subcategories",
+    "categoryTitle": "Categories"
+  },
+  "CardComponent": {
     "defaultTitle": "Best Deal",
-    "cardImageAlt": "Product Image", 
+    "cardImageAlt": "Product Image",
     "saw": "View",
     "edit": "Edit",
-    "success":"Success!",
-    "successDel":"Product successfully deleted",
-    "error":"Error!",
-    "errorDel":"Error deleting product",
-    "successUpdateStatus":"Product status changed to",
-   "errorUpdateStatus":"Error updating product status",
-   "PENDING": "Under Moderation",
-   "APPROVED": "Approved",
-   "REJECTED": "Rejected"
-},
-"Admin": {
+    "success": "Success!",
+    "successDel": "Product successfully deleted",
+    "error": "Error!",
+    "errorDel": "Error deleting product",
+    "successUpdateStatus": "Product status changed to",
+    "errorUpdateStatus": "Error updating product status",
+    "PENDING": "Under Moderation",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected"
+  },
+  "Admin": {
     "Ads": {
-        "loadingError": "Error loading ads"  
+      "loadingError": "Error loading ads"
     }
-},
-"Privacy":{
-    "policyTitle":"Policy on the Processing of Personal Data",
-    "back":" Back",
-"download":" Download the \"Policy on the Processing of Personal Data\" file",
-      "policyLists": {
-        "1": {
-          "title": "General Provisions",
-          "text": "This Personal Data Processing Policy has been prepared in accordance with the requirements of Federal Law No. 152-FZ of 27.07.2006 'On Personal Data' (hereinafter — the Personal Data Law) and defines the procedure for processing personal data and measures to ensure the security of personal data undertaken by LLC 'EXPORTERU' (hereinafter — the Operator).",
-          "1-1": "The Operator’s primary goal and condition for its activities is the observance of human and civil rights and freedoms in the processing of personal data, including the protection of the right to privacy, personal and family secrets.",
-          "1-2": "This Policy of the Operator regarding the processing of personal data (hereinafter — the Policy) applies to all information that the Operator may obtain about visitors of the website https://exporteru.com."
-        },
-        "2": {
-          "title": "Basic Terms Used in the Policy",
-          "text": "",
-          "2-1": "Automated processing of personal data — processing of personal data using computer technology.",
-          "2-2": "Blocking of personal data — temporary suspension of the processing of personal data (except when processing is necessary to clarify personal data).",
-          "2-3": "Website — a set of graphic and informational materials, as well as computer programs and databases, ensuring their accessibility on the Internet at the web address https://exporteru.com.",
-          "2-4": "Personal data information system — a set of personal data contained in databases and information technologies and technical means ensuring their processing.",
-          "2-5": "Depersonalization of personal data — actions that make it impossible to determine, without the use of additional information, the belonging of personal data to a specific User or another personal data subject.",
-          "2-6": "Processing of personal data — any action (operation) or set of actions (operations) performed with or without the use of automation tools with personal data, including collection, recording, systematization, accumulation, storage, clarification (updating, modification), extraction, use, transfer (distribution, provision, access), depersonalization, blocking, deletion, destruction of personal data.",
-          "2-7": "Operator — a state body, municipal body, legal or natural person that independently or jointly with others organizes and/or carries out the processing of personal data, as well as determines the purposes of personal data processing, the composition of personal data to be processed, and the actions (operations) performed with personal data.",
-          "2-8": "Personal data — any information relating directly or indirectly to a specific or identifiable User of the website https://exporteru.com.",
-          "2-9": "Personal data allowed by the personal data subject for distribution — personal data to which an unlimited number of persons are granted access by the personal data subject through consent, in the manner prescribed by the Personal Data Law.",
-          "2-10": "User — any visitor of the website https://exporteru.com.",
-          "2-11": "Provision of personal data — actions aimed at disclosing personal data to a specific person or a specific circle of persons.",
-          "2-12": "Distribution of personal data — any actions aimed at disclosing personal data to an indefinite circle of persons (transfer of personal data) or at making personal data available to an unlimited circle of persons.",
-          "2-13": "Cross-border transfer of personal data — transfer of personal data to the territory of a foreign state, to a foreign state authority, foreign individual, or foreign legal entity.",
-          "2-14": "Destruction of personal data — any actions resulting in the irreversible destruction of personal data with no possibility of further restoration."
-        },
-        "3": {
-          "title": "Basic Rights and Obligations of the Operator",
-          "text":
-"",          "3-1": "The Operator has the right to: — receive from the personal data subject reliable information and/or documents; — continue processing personal data without the consent of the subject in cases provided by the Law; — independently determine the composition and measures to ensure the fulfillment of duties.",
-          "3-2": "The Operator is obliged to: — provide the personal data subject, upon request, with information about his/her data; — organize processing in accordance with the law; — respond to requests from subjects; — report to the authorized body upon request; — publish the Policy; — take measures to protect personal data; — cease transfer and destroy data in cases provided by law; — fulfill other obligations established by law."
-        },
-        "4": {
-          "title": "Basic Rights and Obligations of Personal Data Subjects",
-          "text":
-"",          "4-1": "Personal data subjects have the right to: — obtain information on the processing of their personal data; — demand clarification, blocking, or destruction of data; — establish conditions of consent for processing data for marketing purposes; — withdraw consent; — appeal actions or inactions of the Operator; — exercise other rights provided by law.",
-          "4-2": "Personal data subjects are obliged to: — provide the Operator with accurate information about themselves; — notify of changes to their data.",
-          "4-3": "Persons who have provided false information about themselves or about other persons without their consent shall be liable in accordance with the laws of the Russian Federation."
-        },
-        "5": {
-          "title": "Principles of Personal Data Processing",
-          "text":"",
-          "5-1": "Processing of personal data is carried out on a lawful and fair basis.",
-          "5-2": "Processing of personal data is limited to achieving specific, predetermined, and lawful purposes.",
-          "5-3": "It is not allowed to combine databases with incompatible purposes of processing.",
-          "5-4": "Only personal data that meet the purposes of processing are subject to processing.",
-          "5-5": "The content and volume of processed data must correspond to the purposes of processing.",
-          "5-6": "Accuracy, sufficiency, and relevance of personal data are ensured.",
-          "5-7": "Personal data are stored no longer than required for the purposes of processing. After the purposes are achieved, the data are destroyed or depersonalized."
-        },
-        "6": {
-          "title": "Purposes of Personal Data Processing",
-          "text":
-"",          "rows": [
-            {
-              "label": "Purpose of processing",
-              "value": "providing the User with access to services, information and/or materials contained on the website"
-            },
-            {
-              "label": "Personal data",
-              "value": "• surname, first name, patronymic<br/>• email address<br/>• phone numbers<br/>• year, month, date and place of birth<br/>• photographs<br/>• taxpayer identification number, date of registration, details of the certificate of registration with the tax authority"
-            },
-            {
-              "label": "Legal grounds",
-              "value": "• statutory (founding) documents of the Operator"
-            },
-            {
-              "label": "Types of personal data processing",
-              "value": "• Collection, recording, systematization, accumulation, storage, destruction, and depersonalization of personal data<br/>• Sending informational emails to the email address"
-            },
-            {
-              "label": "Purpose of processing",
-              "value": "informing the User by sending emails"
-            },
-            {
-              "label": "Personal data",
-              "value": "• philosophical beliefs"
-            },
-            {
-              "label": "Legal grounds",
-              "value": "• Federal Law 'On Information, Information Technologies, and Information Protection' No. 149-FZ of 27.07.2006"
-            },
-            {
-              "label": "Types of personal data processing",
-              "value": "• Transfer of personal data"
-            }
-          ]
-        },
-        "7": {
-          "title": "Conditions for Personal Data Processing",
-          "text":
-"",          "7-1": "Processing of personal data is carried out with the consent of the personal data subject to the processing of his/her personal data.",
-          "7-2": "Processing of personal data is necessary to achieve purposes provided for by an international treaty of the Russian Federation or by law, for the exercise of functions, powers, and duties imposed on the operator by the legislation of the Russian Federation.",
-          "7-3": "Processing of personal data is necessary for the administration of justice, execution of a judicial act, or an act of another authority or official to be executed in accordance with the legislation of the Russian Federation on enforcement proceedings.",
-          "7-4": "Processing of personal data is necessary for the performance of a contract to which the personal data subject is a party, beneficiary, or guarantor, as well as for concluding a contract on the initiative of the personal data subject or a contract under which the personal data subject will be a beneficiary or guarantor.",
-          "7-5": "Processing of personal data is necessary for the exercise of the rights and legitimate interests of the operator or third parties or to achieve socially significant purposes, provided that the rights and freedoms of the personal data subject are not thereby violated.",
-          "7-6": "Processing of personal data, to which an unlimited number of persons have been granted access by the personal data subject or at his/her request (hereinafter — publicly available personal data), is carried out.",
-          "7-7": "Processing of personal data subject to publication or mandatory disclosure in accordance with federal law is carried out."
-        },
-        "8": {
-          "title": "Procedure for Collection, Storage, Transfer, and Other Types of Processing of Personal Data",
-          "text": "The security of personal data processed by the Operator is ensured by the implementation of legal, organizational, and technical measures necessary for full compliance with the requirements of the applicable legislation on personal data protection.",
-          "8-1": "The Operator ensures the security of personal data and takes all possible measures to exclude unauthorized access to personal data.",
-          "8-2": "User's personal data will never, under any circumstances, be transferred to third parties, except in cases related to the execution of applicable law or if the personal data subject has given consent to the Operator to transfer the data to a third party for the performance of obligations under a civil contract.",
-          "8-3": "If inaccuracies in personal data are detected, the User may update them independently by sending a notification to the Operator’s email address info@exporteru.com with the note 'Update of personal data'.",
-          "8-4": "The period of personal data processing is determined by the achievement of the purposes for which the personal data were collected, unless another period is established by a contract or applicable law.<br/>The User may withdraw his/her consent to the processing of personal data at any time by sending a notification to the Operator via email at info@exporteru.com with the note 'Withdrawal of consent to personal data processing'.",
-          "8-5": "All information collected by third-party services, including payment systems, communication tools, and other service providers, is stored and processed by these persons (Operators) in accordance with their User Agreement and Privacy Policy. The Operator is not responsible for the actions of third parties.",
-          "8-6": "Restrictions imposed by the personal data subject on the transfer (except for granting access), as well as on processing or conditions of processing (except for access), of personal data allowed for distribution do not apply in cases of processing personal data for state, public, and other public interests defined by the legislation of the Russian Federation.",
-          "8-7": "The Operator ensures the confidentiality of personal data during processing.",
-          "8-8": "The Operator stores personal data in a form that allows identifying the personal data subject no longer than required for the purposes of personal data processing, unless a longer period of personal data storage is established by federal law, a contract, to which the personal data subject is a party, beneficiary, or guarantor.",
-          "8-9": "The condition for terminating the processing of personal data may be the achievement of the purposes of personal data processing, expiration of the personal data subject's consent, withdrawal of consent by the personal data subject, a request to stop processing, or detection of unlawful processing of personal data."
-        },
-        "9": {
-          "title": "List of Actions Performed by the Operator with Received Personal Data",
-          "text":
-"",          "9-1": "The Operator carries out collection, recording, systematization, accumulation, storage, clarification (updating, modification), extraction, use, transfer (distribution, provision, access), depersonalization, blocking, deletion, and destruction of personal data.",
-          "9-2": "The Operator carries out automated processing of personal data with or without obtaining and/or transmitting the obtained information via information and telecommunication networks."
-        },
-        "10": {
-          "title": "Cross-Border Transfer of Personal Data",
-          "text":
-"",          "10-1": "Before starting activities on cross-border transfer of personal data, the Operator must notify the authorized body for the protection of personal data subjects’ rights of its intention to carry out cross-border transfer of personal data.",
-          "10-2": "Before submitting the above notification, the Operator must obtain relevant information from the authorities of a foreign state, foreign individuals, or foreign legal entities to whom cross-border transfer of personal data is planned."
-        },
-        "11": {
-          "title": "Confidentiality of Personal Data",
-          "text": "The Operator and other persons who have gained access to personal data are obliged not to disclose or distribute personal data to third parties without the consent of the personal data subject, unless otherwise provided by federal law."
-        },
-        "12": {
-          "title": "Final Provisions",
-          "text":
-"",          "12-1": "The User may obtain any clarifications on matters related to the processing of his/her personal data by contacting the Operator via email at info@exporteru.com.",
-          "12-2": "Any changes to the Operator's personal data processing policy will be reflected in this document. The Policy is valid indefinitely until replaced with a new version.",
-          "12-3": "The current version of the Policy is freely available on the Internet at https://exporteru.com/en/privacy/."
-        }
+  },
+  "Privacy": {
+    "policyTitle": "Policy on the Processing of Personal Data",
+    "back": " Back",
+    "download": " Download the \"Policy on the Processing of Personal Data\" file",
+    "policyLists": {
+      "1": {
+        "title": "General Provisions",
+        "text": "This Personal Data Processing Policy has been prepared in accordance with the requirements of Federal Law No. 152-FZ of 27.07.2006 'On Personal Data' (hereinafter — the Personal Data Law) and defines the procedure for processing personal data and measures to ensure the security of personal data undertaken by LLC 'EXPORTERU' (hereinafter — the Operator).",
+        "1-1": "The Operator’s primary goal and condition for its activities is the observance of human and civil rights and freedoms in the processing of personal data, including the protection of the right to privacy, personal and family secrets.",
+        "1-2": "This Policy of the Operator regarding the processing of personal data (hereinafter — the Policy) applies to all information that the Operator may obtain about visitors of the website https://exporteru.com."
+      },
+      "2": {
+        "title": "Basic Terms Used in the Policy",
+        "text": "",
+        "2-1": "Automated processing of personal data — processing of personal data using computer technology.",
+        "2-2": "Blocking of personal data — temporary suspension of the processing of personal data (except when processing is necessary to clarify personal data).",
+        "2-3": "Website — a set of graphic and informational materials, as well as computer programs and databases, ensuring their accessibility on the Internet at the web address https://exporteru.com.",
+        "2-4": "Personal data information system — a set of personal data contained in databases and information technologies and technical means ensuring their processing.",
+        "2-5": "Depersonalization of personal data — actions that make it impossible to determine, without the use of additional information, the belonging of personal data to a specific User or another personal data subject.",
+        "2-6": "Processing of personal data — any action (operation) or set of actions (operations) performed with or without the use of automation tools with personal data, including collection, recording, systematization, accumulation, storage, clarification (updating, modification), extraction, use, transfer (distribution, provision, access), depersonalization, blocking, deletion, destruction of personal data.",
+        "2-7": "Operator — a state body, municipal body, legal or natural person that independently or jointly with others organizes and/or carries out the processing of personal data, as well as determines the purposes of personal data processing, the composition of personal data to be processed, and the actions (operations) performed with personal data.",
+        "2-8": "Personal data — any information relating directly or indirectly to a specific or identifiable User of the website https://exporteru.com.",
+        "2-9": "Personal data allowed by the personal data subject for distribution — personal data to which an unlimited number of persons are granted access by the personal data subject through consent, in the manner prescribed by the Personal Data Law.",
+        "2-10": "User — any visitor of the website https://exporteru.com.",
+        "2-11": "Provision of personal data — actions aimed at disclosing personal data to a specific person or a specific circle of persons.",
+        "2-12": "Distribution of personal data — any actions aimed at disclosing personal data to an indefinite circle of persons (transfer of personal data) or at making personal data available to an unlimited circle of persons.",
+        "2-13": "Cross-border transfer of personal data — transfer of personal data to the territory of a foreign state, to a foreign state authority, foreign individual, or foreign legal entity.",
+        "2-14": "Destruction of personal data — any actions resulting in the irreversible destruction of personal data with no possibility of further restoration."
+      },
+      "3": {
+        "title": "Basic Rights and Obligations of the Operator",
+        "text": "",
+        "3-1": "The Operator has the right to: — receive from the personal data subject reliable information and/or documents; — continue processing personal data without the consent of the subject in cases provided by the Law; — independently determine the composition and measures to ensure the fulfillment of duties.",
+        "3-2": "The Operator is obliged to: — provide the personal data subject, upon request, with information about his/her data; — organize processing in accordance with the law; — respond to requests from subjects; — report to the authorized body upon request; — publish the Policy; — take measures to protect personal data; — cease transfer and destroy data in cases provided by law; — fulfill other obligations established by law."
+      },
+      "4": {
+        "title": "Basic Rights and Obligations of Personal Data Subjects",
+        "text": "",
+        "4-1": "Personal data subjects have the right to: — obtain information on the processing of their personal data; — demand clarification, blocking, or destruction of data; — establish conditions of consent for processing data for marketing purposes; — withdraw consent; — appeal actions or inactions of the Operator; — exercise other rights provided by law.",
+        "4-2": "Personal data subjects are obliged to: — provide the Operator with accurate information about themselves; — notify of changes to their data.",
+        "4-3": "Persons who have provided false information about themselves or about other persons without their consent shall be liable in accordance with the laws of the Russian Federation."
+      },
+      "5": {
+        "title": "Principles of Personal Data Processing",
+        "text": "",
+        "5-1": "Processing of personal data is carried out on a lawful and fair basis.",
+        "5-2": "Processing of personal data is limited to achieving specific, predetermined, and lawful purposes.",
+        "5-3": "It is not allowed to combine databases with incompatible purposes of processing.",
+        "5-4": "Only personal data that meet the purposes of processing are subject to processing.",
+        "5-5": "The content and volume of processed data must correspond to the purposes of processing.",
+        "5-6": "Accuracy, sufficiency, and relevance of personal data are ensured.",
+        "5-7": "Personal data are stored no longer than required for the purposes of processing. After the purposes are achieved, the data are destroyed or depersonalized."
+      },
+      "6": {
+        "title": "Purposes of Personal Data Processing",
+        "text": "",
+        "rows": [
+          {
+            "label": "Purpose of processing",
+            "value": "providing the User with access to services, information and/or materials contained on the website"
+          },
+          {
+            "label": "Personal data",
+            "value": "• surname, first name, patronymic<br/>• email address<br/>• phone numbers<br/>• year, month, date and place of birth<br/>• photographs<br/>• taxpayer identification number, date of registration, details of the certificate of registration with the tax authority"
+          },
+          {
+            "label": "Legal grounds",
+            "value": "• statutory (founding) documents of the Operator"
+          },
+          {
+            "label": "Types of personal data processing",
+            "value": "• Collection, recording, systematization, accumulation, storage, destruction, and depersonalization of personal data<br/>• Sending informational emails to the email address"
+          },
+          {
+            "label": "Purpose of processing",
+            "value": "informing the User by sending emails"
+          },
+          {
+            "label": "Personal data",
+            "value": "• philosophical beliefs"
+          },
+          {
+            "label": "Legal grounds",
+            "value": "• Federal Law 'On Information, Information Technologies, and Information Protection' No. 149-FZ of 27.07.2006"
+          },
+          {
+            "label": "Types of personal data processing",
+            "value": "• Transfer of personal data"
+          }
+        ]
+      },
+      "7": {
+        "title": "Conditions for Personal Data Processing",
+        "text": "",
+        "7-1": "Processing of personal data is carried out with the consent of the personal data subject to the processing of his/her personal data.",
+        "7-2": "Processing of personal data is necessary to achieve purposes provided for by an international treaty of the Russian Federation or by law, for the exercise of functions, powers, and duties imposed on the operator by the legislation of the Russian Federation.",
+        "7-3": "Processing of personal data is necessary for the administration of justice, execution of a judicial act, or an act of another authority or official to be executed in accordance with the legislation of the Russian Federation on enforcement proceedings.",
+        "7-4": "Processing of personal data is necessary for the performance of a contract to which the personal data subject is a party, beneficiary, or guarantor, as well as for concluding a contract on the initiative of the personal data subject or a contract under which the personal data subject will be a beneficiary or guarantor.",
+        "7-5": "Processing of personal data is necessary for the exercise of the rights and legitimate interests of the operator or third parties or to achieve socially significant purposes, provided that the rights and freedoms of the personal data subject are not thereby violated.",
+        "7-6": "Processing of personal data, to which an unlimited number of persons have been granted access by the personal data subject or at his/her request (hereinafter — publicly available personal data), is carried out.",
+        "7-7": "Processing of personal data subject to publication or mandatory disclosure in accordance with federal law is carried out."
+      },
+      "8": {
+        "title": "Procedure for Collection, Storage, Transfer, and Other Types of Processing of Personal Data",
+        "text": "The security of personal data processed by the Operator is ensured by the implementation of legal, organizational, and technical measures necessary for full compliance with the requirements of the applicable legislation on personal data protection.",
+        "8-1": "The Operator ensures the security of personal data and takes all possible measures to exclude unauthorized access to personal data.",
+        "8-2": "User's personal data will never, under any circumstances, be transferred to third parties, except in cases related to the execution of applicable law or if the personal data subject has given consent to the Operator to transfer the data to a third party for the performance of obligations under a civil contract.",
+        "8-3": "If inaccuracies in personal data are detected, the User may update them independently by sending a notification to the Operator’s email address info@exporteru.com with the note 'Update of personal data'.",
+        "8-4": "The period of personal data processing is determined by the achievement of the purposes for which the personal data were collected, unless another period is established by a contract or applicable law.<br/>The User may withdraw his/her consent to the processing of personal data at any time by sending a notification to the Operator via email at info@exporteru.com with the note 'Withdrawal of consent to personal data processing'.",
+        "8-5": "All information collected by third-party services, including payment systems, communication tools, and other service providers, is stored and processed by these persons (Operators) in accordance with their User Agreement and Privacy Policy. The Operator is not responsible for the actions of third parties.",
+        "8-6": "Restrictions imposed by the personal data subject on the transfer (except for granting access), as well as on processing or conditions of processing (except for access), of personal data allowed for distribution do not apply in cases of processing personal data for state, public, and other public interests defined by the legislation of the Russian Federation.",
+        "8-7": "The Operator ensures the confidentiality of personal data during processing.",
+        "8-8": "The Operator stores personal data in a form that allows identifying the personal data subject no longer than required for the purposes of personal data processing, unless a longer period of personal data storage is established by federal law, a contract, to which the personal data subject is a party, beneficiary, or guarantor.",
+        "8-9": "The condition for terminating the processing of personal data may be the achievement of the purposes of personal data processing, expiration of the personal data subject's consent, withdrawal of consent by the personal data subject, a request to stop processing, or detection of unlawful processing of personal data."
+      },
+      "9": {
+        "title": "List of Actions Performed by the Operator with Received Personal Data",
+        "text": "",
+        "9-1": "The Operator carries out collection, recording, systematization, accumulation, storage, clarification (updating, modification), extraction, use, transfer (distribution, provision, access), depersonalization, blocking, deletion, and destruction of personal data.",
+        "9-2": "The Operator carries out automated processing of personal data with or without obtaining and/or transmitting the obtained information via information and telecommunication networks."
+      },
+      "10": {
+        "title": "Cross-Border Transfer of Personal Data",
+        "text": "",
+        "10-1": "Before starting activities on cross-border transfer of personal data, the Operator must notify the authorized body for the protection of personal data subjects’ rights of its intention to carry out cross-border transfer of personal data.",
+        "10-2": "Before submitting the above notification, the Operator must obtain relevant information from the authorities of a foreign state, foreign individuals, or foreign legal entities to whom cross-border transfer of personal data is planned."
+      },
+      "11": {
+        "title": "Confidentiality of Personal Data",
+        "text": "The Operator and other persons who have gained access to personal data are obliged not to disclose or distribute personal data to third parties without the consent of the personal data subject, unless otherwise provided by federal law."
+      },
+      "12": {
+        "title": "Final Provisions",
+        "text": "",
+        "12-1": "The User may obtain any clarifications on matters related to the processing of his/her personal data by contacting the Operator via email at info@exporteru.com.",
+        "12-2": "Any changes to the Operator's personal data processing policy will be reflected in this document. The Policy is valid indefinitely until replaced with a new version.",
+        "12-3": "The current version of the Policy is freely available on the Internet at https://exporteru.com/en/privacy/."
       }
-    },
-    "Agreement":{
-  "titles":{
-    "1":"User Agreement",
-    "2":"Rights and Obligations of the Parties",
-    "3":"Liability of the Parties",
-    "4":"Terms of the Agreement"
-  },
-  "back":" Go back",
-  "download":" Download file \"User Agreement\"",
-  "text":"This User Agreement (hereinafter referred to as the Agreement) governs the relationship between EXPORTERU LLC (hereinafter exporteru.com or Administration) on the one hand and the user of the website on the other. The website exporteru.com is not a mass media outlet.",
-  "secondText":"By using the website, you agree to the terms of this Agreement. <br/>If you do not agree with the terms of this Agreement, do not use exporteru.com!<br/>",
-  "agreementList":{
-    "2":{
-      "1-title":"The User has the right to:",
-      "1-text":"- search for information on the website <br/>- receive information on the website <br/>- create information for the website <br/>- distribute information on the website <br/>- comment on content posted on the website <br/>- change user ratings <br/>- copy information to other websites with attribution <br/>- use website information for personal non-commercial purposes <br/>- use website information for commercial purposes without special permission",
-      "2-title":"The Administration has the right to:",
-      "2-text":"- at its sole discretion, create, modify, or cancel rules <br/> - restrict access to any information on the website <br/> - create, modify, or delete information <br/> - delete user accounts <br/> - refuse registration without explanation",
-      "3-title":"The User undertakes to:",
-      "3-text":"- provide accurate information <br/>- ensure the security of personal data from third-party access <br/>- update Personal Data provided during registration in case of changes <br/>- not copy information from other sources <br/>- when copying from other sources, include author attribution <br/>- not distribute information promoting war, inciting national, racial, or religious hatred and hostility, or other content subject to criminal or administrative liability <br/>- not disrupt the website’s functionality <br/>- not mislead other Users <br/>- not post advertising, erotic, pornographic, or offensive materials, as well as other information prohibited by Russian law <br/>- not use scripts (programs) for automated data collection and/or interaction with the Website and its Services",
-      "4-title":"The Administration undertakes to:",
-      "4-text":"- maintain the operability of the website except in cases beyond its control <br/> - ensure comprehensive protection of the User’s account <br/> - provide all available User information to authorized government bodies as required by law"
-    },
-    "3":{
-      "1-title":"",
-      "1-text":"- the user is personally fully responsible for the information they distribute <br/>- the administration is not responsible for the accuracy of information copied from other sources <br/>- the administration is not responsible for discrepancies between User expectations and the actual services received <br/>- the administration is not responsible for services provided by third parties <br/>- in case of force majeure (military actions, emergencies, natural disasters, etc.), the Administration does not guarantee the safety of information posted by the User or the uninterrupted operation of the resource"
-    },
-    "4":{
-      "1-title":"",
-      "1-text":"This Agreement comes into effect upon any use of the website. <br/>The Agreement ceases to be valid when a new version appears. <br/>The Administration reserves the right to unilaterally amend this Agreement at its discretion. <br/>The Administration does not notify users about changes in the Agreement."
     }
-  }
-},
-"ResetPasswordPage": {
-      "title": "Password Reset",
-      "confirmationTitle": "Confirmation",
-      "emailPlaceholder": "Enter your email",
-      "emailLabel": "Email",
-      "newPasswordPlaceholder": "Enter new password",
-      "newPasswordLabel": "New password",
-      "confirmButton": "Confirm",
-      "backToLogin": "Back to login",
-      "sending": "Sending...",
-      "emailRequired": "Please enter your email",
-      "emailInvalid": "Please enter a valid email",
-      "passwordTooShort": "Password must be at least 6 characters",
-      "emailCorrect": "Enter a valid email",
-      "passwordMinLength": "Password must be at least 6 characters",
-      "codeSentSuccess": "Verification code sent to your email",
-      "resetError": "Reset Error",
-      "checkDataError": "Please check your entered data",
-      "resetPasswordError": "Password reset error",
-      "congratulations": "Congratulations!",
-      "passwordChangedSuccess": "Password successfully changed!",
-      "confirmationError": "Confirmation Error",
-      "invalidCode": "Invalid verification code",
-      "verificationText": "We sent a verification code to your email",
-      "verificationSubtitle": "Enter the 4-digit code from the email"
-    },
-    "VendorPageClient": {
-      "errorLoadingData": "Error loading data",
-      "errorLoadingDataDescription": "An error occurred while loading the vendor page:",
-      "tryAgain": "Try Again",
-      "userNotFound": "User not found",
-      "pleaseLogin": "Please log in",
-      "accessDenied": "Access Denied",
-      "accessDeniedDescription": "Your role is not sufficient to view this page. Your role:"
-    },
-    "DeleteButton":{ 
-        "deleteTitle": "Delete account",
-      "loading": "Loading...",
-      "modalTitle": "Account Deletion Confirmation",
-      "modalDescription": "Enter the confirmation code sent to your email",
-      "checkingCode": "Verifying code...",
-      "errorDelete": "An error occurred while deleting the account",
-      "errorOtp": "Invalid confirmation code"
   },
-  "multiDrop":{
+  "Agreement": {
+    "titles": {
+      "1": "User Agreement",
+      "2": "Rights and Obligations of the Parties",
+      "3": "Liability of the Parties",
+      "4": "Terms of the Agreement"
+    },
+    "back": " Go back",
+    "download": " Download file \"User Agreement\"",
+    "text": "This User Agreement (hereinafter referred to as the Agreement) governs the relationship between EXPORTERU LLC (hereinafter exporteru.com or Administration) on the one hand and the user of the website on the other. The website exporteru.com is not a mass media outlet.",
+    "secondText": "By using the website, you agree to the terms of this Agreement. <br/>If you do not agree with the terms of this Agreement, do not use exporteru.com!<br/>",
+    "agreementList": {
+      "2": {
+        "1-title": "The User has the right to:",
+        "1-text": "- search for information on the website <br/>- receive information on the website <br/>- create information for the website <br/>- distribute information on the website <br/>- comment on content posted on the website <br/>- change user ratings <br/>- copy information to other websites with attribution <br/>- use website information for personal non-commercial purposes <br/>- use website information for commercial purposes without special permission",
+        "2-title": "The Administration has the right to:",
+        "2-text": "- at its sole discretion, create, modify, or cancel rules <br/> - restrict access to any information on the website <br/> - create, modify, or delete information <br/> - delete user accounts <br/> - refuse registration without explanation",
+        "3-title": "The User undertakes to:",
+        "3-text": "- provide accurate information <br/>- ensure the security of personal data from third-party access <br/>- update Personal Data provided during registration in case of changes <br/>- not copy information from other sources <br/>- when copying from other sources, include author attribution <br/>- not distribute information promoting war, inciting national, racial, or religious hatred and hostility, or other content subject to criminal or administrative liability <br/>- not disrupt the website’s functionality <br/>- not mislead other Users <br/>- not post advertising, erotic, pornographic, or offensive materials, as well as other information prohibited by Russian law <br/>- not use scripts (programs) for automated data collection and/or interaction with the Website and its Services",
+        "4-title": "The Administration undertakes to:",
+        "4-text": "- maintain the operability of the website except in cases beyond its control <br/> - ensure comprehensive protection of the User’s account <br/> - provide all available User information to authorized government bodies as required by law"
+      },
+      "3": {
+        "1-title": "",
+        "1-text": "- the user is personally fully responsible for the information they distribute <br/>- the administration is not responsible for the accuracy of information copied from other sources <br/>- the administration is not responsible for discrepancies between User expectations and the actual services received <br/>- the administration is not responsible for services provided by third parties <br/>- in case of force majeure (military actions, emergencies, natural disasters, etc.), the Administration does not guarantee the safety of information posted by the User or the uninterrupted operation of the resource"
+      },
+      "4": {
+        "1-title": "",
+        "1-text": "This Agreement comes into effect upon any use of the website. <br/>The Agreement ceases to be valid when a new version appears. <br/>The Administration reserves the right to unilaterally amend this Agreement at its discretion. <br/>The Administration does not notify users about changes in the Agreement."
+      }
+    }
+  },
+  "ResetPasswordPage": {
+    "title": "Password Reset",
+    "confirmationTitle": "Confirmation",
+    "emailPlaceholder": "Enter your email",
+    "emailLabel": "Email",
+    "newPasswordPlaceholder": "Enter new password",
+    "newPasswordLabel": "New password",
+    "confirmButton": "Confirm",
+    "backToLogin": "Back to login",
+    "sending": "Sending...",
+    "emailRequired": "Please enter your email",
+    "emailInvalid": "Please enter a valid email",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "emailCorrect": "Enter a valid email",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "codeSentSuccess": "Verification code sent to your email",
+    "resetError": "Reset Error",
+    "checkDataError": "Please check your entered data",
+    "resetPasswordError": "Password reset error",
+    "congratulations": "Congratulations!",
+    "passwordChangedSuccess": "Password successfully changed!",
+    "confirmationError": "Confirmation Error",
+    "invalidCode": "Invalid verification code",
+    "verificationText": "We sent a verification code to your email",
+    "verificationSubtitle": "Enter the 4-digit code from the email"
+  },
+  "VendorPageClient": {
+    "errorLoadingData": "Error loading data",
+    "errorLoadingDataDescription": "An error occurred while loading the vendor page:",
+    "tryAgain": "Try Again",
+    "userNotFound": "User not found",
+    "pleaseLogin": "Please log in",
+    "accessDenied": "Access Denied",
+    "accessDeniedDescription": "Your role is not sufficient to view this page. Your role:"
+  },
+  "DeleteButton": {
+    "loading": "Loading...",
+    "modalTitle": "Account Deletion Confirmation",
+    "modalDescription": "Enter the confirmation code sent to your email",
+    "checkingCode": "Verifying code...",
+    "errorDelete": "An error occurred while deleting the account",
+    "errorOtp": "Invalid confirmation code"
+  },
+  "multiDrop": {
     "notFoundCategories": "No categories found",
     "notFoundItems": "No items found",
     "tryChangeSearch": "Try changing your search",
@@ -720,53 +692,53 @@
     "ready": "Done"
   },
   "HelpPage": {
-      "title": "Contact Us",
-      "namePlaceholder": "Your name",
-      "emailPlaceholder": "Your email",
-      "subjectPlaceholder": "Message subject",
-      "messagePlaceholder": "Your message",
-      "send": "Send",
-      "sending": "Sending...",
-      "successMessage": "Message sent successfully!",
-      "errorMessage": "Error sending message. Please try again.",
-      "contactInfo": "If you encounter any issues on our website, contact us through various social networks and other communication methods. Thank you for being with us!",
-      "nameError": "Name is required",
-      "emailError": "Email is required",
-      "emailFormatError": "Please enter a valid email address",
-      "messageError": "Message is required"
-    },
+    "title": "Contact Us",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "Your email",
+    "subjectPlaceholder": "Message subject",
+    "messagePlaceholder": "Your message",
+    "send": "Send",
+    "sending": "Sending...",
+    "successMessage": "Message sent successfully!",
+    "errorMessage": "Error sending message. Please try again.",
+    "contactInfo": "If you encounter any issues on our website, contact us through various social networks and other communication methods. Thank you for being with us!",
+    "nameError": "Name is required",
+    "emailError": "Email is required",
+    "emailFormatError": "Please enter a valid email address",
+    "messageError": "Message is required"
+  },
   "breadCrumbs": {
-  "home": "Home",
-  "card": "Item",
-  "category": "Categories",
-  "categories":"Categories",
-  "products": "Products",
-  "electronics": "Electronics",
-  "smartphones": "Smartphones",
-  "catalog": "Catalog",
-  "about": "About Us",
-  "contacts": "Contacts",
-  "blog": "Blog",
-  "news": "News",
-  "services": "Services"
-},
-"modal":{
-  "previous": "Previous image",
-  "next": "Next image",
-  "image": "Image {number}",
-  "video": "Video {number}",
-  "thumbnail": "Thumbnail {number}",
-  "close": "Close gallery",
-  "clickImage": "Click the image to zoom"
+    "home": "Home",
+    "card": "Item",
+    "category": "Categories",
+    "categories": "Categories",
+    "products": "Products",
+    "electronics": "Electronics",
+    "smartphones": "Smartphones",
+    "catalog": "Catalog",
+    "about": "About Us",
+    "contacts": "Contacts",
+    "blog": "Blog",
+    "news": "News",
+    "services": "Services"
   },
-  "mainCategory":{
+  "modal": {
+    "previous": "Previous image",
+    "next": "Next image",
+    "image": "Image {number}",
+    "video": "Video {number}",
+    "thumbnail": "Thumbnail {number}",
+    "close": "Close gallery",
+    "clickImage": "Click the image to zoom"
+  },
+  "mainCategory": {
     "title": "Categories",
-  "subtitle": "Choose the category you are interested in",
-  "loading": "Loading categories...",
-  "empty": "No categories found",
-  "subcategoriesCount": "{count} subcategories"
+    "subtitle": "Choose the category you are interested in",
+    "loading": "Loading categories...",
+    "empty": "No categories found",
+    "subcategoriesCount": "{count} subcategories"
   },
- "MetaTags": {
+  "MetaTags": {
     "MainPage": {
       "firstText": "an online platform for exporting goods from Russia. We help Russian companies find foreign counterparts and enter international markets. We specialize in wholesale product supplies. Comprehensive support: from listing to concluding an export contract. A personal manager for the entire period of cooperation.",
       "secondText": "a service for exporting goods from Russia. We offer support at all stages: selection of counterparts, negotiations, deal closure. We work directly with suppliers and international buyers."
@@ -775,103 +747,11 @@
   "catalogMeta": {
     "mainPageTitle": "Categories",
     "mainPageText": "Exporteru provides a wide range of product categories for export and import. Every user will be able to find the right product with optimal conditions."
-},
-"CategoryPage": {
+  },
+  "CategoryPage": {
     "companies": "Companies",
     "inn": "Tax ID",
     "experience": "Experience",
     "years": "years"
-},
-"PopularCategories": {
-      "more": "More",
-      "sectionTitleT": "Popular Categories",
-      "viewAllTextT": "View All",
-      "cat1": "Metal Products",
-      "cat2": "Timber",
-      "cat3": "Mineral Products",
-      "cat4": "Minerals"
-    },
-    "AdvantagesSection": {
-    "sectionTitle": "Our Advantages",
-    "title": "Our Advantages",
-    "description": "Why do clients choose us? Because we make the complex simple and the reliable affordable!",
-    "advantage1": "Direct contracts with trusted manufacturers",
-    "advantage2": "Access to a wide catalog of products from Russia",
-    "advantage3": "A single channel for procurement from various industries and regions of Russia",
-    "advantage4": "Exclusive conditions and quotas from manufacturers for partners",
-    "advantage5": "Reduced purchasing costs and currency risks"
-  },
-  "Exports": {
-    "sectionTitle": "Exporters Across the Country",
-    "title": "Exporters Across the Country",
-    "description": "You no longer need to search for suppliers in each region separately. We’ve gathered trusted exporters from all over Russia for you."
-  },
-  "FooterNew": {
-    "sections": {
-      "title": "Main Sections",
-      "main": "Home",
-      "catalog": "Catalog",
-      "help": "Help",
-      "about": "About Us",
-      "contacts": "Contacts",
-      "reviews": "Reviews"
-    },
-    "support": {
-      "title": "Technical Support",
-      "phone": "+7 999 123 45 67",
-      "email": "info@mail.ru",
-      "telegram": "made_in_russia"
-    },
-    "info": {
-      "title": "Information Center",
-      "legal": "Legal Information"
-    },
-    "profile": {
-      "title": "My Profile",
-      "login": "Login",
-      "register": "Register"
-    },
-    "social": {
-      "title": "Social Networks"
-    }
-  },
-  
-
-  "CatalogNew": {
-      "originPrice": "By price",
-      "creationDate": "By date",
-      "new": "Newest first",
-      "cheapest": "Cheapest first",
-      "expensive": "Most expensive first",
-      "found": "Found",
-      "products": "products",
-      "resultTitle": "Search results for",
-      "filter": "Filter",
-      "apply": "Apply",
-      "reset": "Reset"
-    },
-    "CardsCatalogNew": {
-      "notFound": "Not found",
-      "popularProducts": "Popular products",
-      "viewAll": "View all"
-    },
-    "CardsCatalogWithPagination": {
-    "notFound": "No products found",
-    "prevPage": "Previous page",
-    "nextPage": "Next page",
-    "loadingCards": "Loading products...",
-    "viewAll": "View all"
-  },
-  "LoginSlider": {
-    "slide1Title": "Verified suppliers across Russia",
-    "slide1Description": "Work only with trusted companies that have passed quality and reputation checks throughout the country.",
-    "slide2Title": "Personal manager for your company",
-    "slide2Description": "Your dedicated specialist will help you choose the best solutions and speed up the cooperation process.",
-    "slide3Title": "Access to wholesale prices",
-    "slide3Description": "Get the best offers directly from manufacturers and save on purchases without middlemen.",
-    "slide4Title": "Unique resource database",
-    "slide4Description": "We’ve gathered thousands of suppliers so you can easily find the products and services your business needs."
   }
-
 }
-
