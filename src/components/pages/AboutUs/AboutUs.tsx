@@ -2,7 +2,6 @@ import Header from '@/components/MainComponents/Header/Header'
 import styles from './AboutUs.module.scss'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {useTranslations} from 'next-intl'
-import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -11,9 +10,6 @@ const AboutUs = () => {
   return (
     <div>
       <Header />
-      <div className={`container`}>
-        <BreadCrumbs className={`${styles.bread_crumbs_container}`} />
-      </div>
       <div className={'main about'}>
         <section className={styles.section_topnull}>
           <h1 className={'visually-hidden'}>О нас</h1>

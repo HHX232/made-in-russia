@@ -3,7 +3,6 @@ import {FC} from 'react'
 import styles from './HelpPageComponent.module.scss'
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
-import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
 import HelpPageSocialComponent from './HelpPageSocialComponent'
 import HelpPageFormComponent from './HelpPageFormComponent'
 
@@ -12,11 +11,6 @@ const HelpPageComponent: FC = () => {
     <div className={styles.helpPageComponent}>
       <Header />
       <main className='main'>
-        <div className='container'>
-          <div className={styles.breadcrumbs_wrapper}>
-            <BreadCrumbs className={styles.breadcrumbs} />
-          </div>
-        </div>
         <div className={`${styles.contacts_container} container`}>
           <div className={styles.contacts_layout}>
             <div className={styles.layout_grid}>

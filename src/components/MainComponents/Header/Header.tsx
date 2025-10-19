@@ -281,22 +281,22 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
         <nav className={`${styles.header__nav}`}>
           <ul>
             <li>
-              <Link href='#' className={`${styles.header__link}`}>
+              <Link href='/' className={`${styles.header__link}`}>
                 Отзывы
               </Link>
             </li>
             <li>
-              <Link href='#' className={`${styles.header__link}`}>
+              <Link href='/help' className={`${styles.header__link}`}>
                 Контакты
               </Link>
             </li>
             <li>
-              <Link href='#' className={`${styles.header__link}`}>
+              <Link href='/about-us' className={`${styles.header__link}`}>
                 О нас
               </Link>
             </li>
             <li>
-              <Link href='#' className={`${styles.header__link}`}>
+              <Link href='/help' className={`${styles.header__link}`}>
                 Помощь
               </Link>
             </li>
