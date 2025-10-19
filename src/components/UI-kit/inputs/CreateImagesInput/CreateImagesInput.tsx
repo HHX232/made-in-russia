@@ -3,6 +3,7 @@ import styles from './CreateImagesInput.module.scss'
 import Image from 'next/image'
 import {toast} from 'sonner'
 import SliderForCreateImages from './SliderForCreateImages/SliderForCreateImages'
+import {useTranslations} from 'next-intl'
 
 const plusIcon = '/create-card/plus.svg'
 
@@ -16,13 +17,11 @@ interface CreateImagesInputProps {
   setErrorValue?: (value: string) => void
   minFiles?: number
   inputIdPrefix?: string
-  // Существующие пропсы
-  maxFileSize?: number // размер в байтах, по умолчанию 20 МБ
-  allowMultipleFiles?: boolean // разрешена ли мульти загрузка, по умолчанию false
-  allowedTypes?: string[] // массив разрешенных MIME типов, по умолчанию ['image/*', 'video/*'] без SVG
-  // Новые пропсы
-  isOnlyShow?: boolean // режим только просмотра, по умолчанию false
-  showBigFirstItem?: boolean // показывать ли первый элемент большим, по умолчанию true
+  maxFileSize?: number
+  allowMultipleFiles?: boolean
+  allowedTypes?: string[]
+  isOnlyShow?: boolean
+  showBigFirstItem?: boolean
 }
 
 const ImagePreview = memo<{
@@ -34,9 +33,12 @@ const ImagePreview = memo<{
   isOnlyShow?: boolean
   onImageClick?: (index: number) => void
 }>(({url, file, index, onError, loadError, isOnlyShow, onImageClick}) => {
+  const t = useTranslations('CreateImagesInput')
+
   const handleError = useCallback(() => {
     onError(index)
   }, [index, onError])
+
   const handleClick = useCallback(() => {
     if (isOnlyShow && onImageClick) {
       onImageClick(index)
@@ -62,7 +64,7 @@ const ImagePreview = memo<{
   if (loadError) {
     return (
       <div className={styles.errorPreview}>
-        <p>Ошибка загрузки</p>
+        <p>{t('loadError')}</p>
         <small>{url}</small>
       </div>
     )
@@ -99,7 +101,6 @@ const ImagePreview = memo<{
 
 ImagePreview.displayName = 'ImagePreview'
 
-// Мемоизированный компонент для отдельного элемента загрузки
 const ImageUploadItem = memo<{
   index: number
   maxFiles: number
@@ -137,12 +138,11 @@ const ImageUploadItem = memo<{
     onImageError,
     onImageClick
   }) => {
+    const t = useTranslations('CreateImagesInput')
     const [isHovered, setIsHovered] = useState(false)
 
-    // Функция для проверки типа файла
     const isValidFileType = useCallback(
       (file: File) => {
-        // Проверяем на SVG отдельно, чтобы исключить его
         if (file.type === 'image/svg+xml') {
           return false
         }
@@ -160,13 +160,12 @@ const ImageUploadItem = memo<{
 
     const handleFileChange = useCallback(
       (e: ChangeEvent<HTMLInputElement>) => {
-        if (isOnlyShow) return // Блокируем изменения в режиме только просмотра
+        if (isOnlyShow) return
 
         const files = e.target.files
         if (!files || files.length === 0) return
 
         if (allowMultipleFiles && files.length > 1) {
-          // Валидация всех файлов при мульти загрузке
           const invalidFiles: string[] = []
           const oversizedFiles: string[] = []
 
@@ -182,8 +181,8 @@ const ImageUploadItem = memo<{
           if (invalidFiles.length > 0) {
             toast.error(
               <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-                <strong style={{display: 'block', marginBottom: 4}}>Ошибка загрузки данных</strong>
-                <span>Недопустимые типы файлов: {invalidFiles.join(', ')}</span>
+                <strong style={{display: 'block', marginBottom: 4}}>{t('uploadError')}</strong>
+                <span>{t('invalidFileTypes', {fileNames: invalidFiles.join(', ')})}</span>
               </div>,
               {
                 style: {
@@ -198,9 +197,12 @@ const ImageUploadItem = memo<{
             const maxSizeMB = Math.round(maxFileSize / (1024 * 1024))
             toast.error(
               <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-                <strong style={{display: 'block', marginBottom: 4}}>Ошибка загрузки данных</strong>
+                <strong style={{display: 'block', marginBottom: 4}}>{t('uploadError')}</strong>
                 <span>
-                  Превышен размер файлов (макс. {maxSizeMB} МБ): {oversizedFiles.join(', ')}
+                  {t('fileSizeExceeded', {
+                    maxSizeMB,
+                    fileNames: oversizedFiles.join(', ')
+                  })}
                 </span>
               </div>,
               {
@@ -216,14 +218,13 @@ const ImageUploadItem = memo<{
           return
         }
 
-        // Обработка одного файла
         const file = files[0]
 
         if (!isValidFileType(file)) {
           toast.error(
             <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-              <strong style={{display: 'block', marginBottom: 4}}>Ошибка загрузки данных</strong>
-              <span>Пожалуйста, выберите изображение или видео (SVG не поддерживается)</span>
+              <strong style={{display: 'block', marginBottom: 4}}>{t('uploadError')}</strong>
+              <span>{t('chooseImageOrVideo')}</span>
             </div>,
             {
               style: {
@@ -238,8 +239,8 @@ const ImageUploadItem = memo<{
           const maxSizeMB = Math.round(maxFileSize / (1024 * 1024))
           toast.error(
             <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-              <strong style={{display: 'block', marginBottom: 4}}>Ошибка загрузки данных</strong>
-              <span>Размер файла не должен превышать {maxSizeMB} МБ</span>
+              <strong style={{display: 'block', marginBottom: 4}}>{t('uploadError')}</strong>
+              <span>{t('fileSizeLimit', {maxSizeMB})}</span>
             </div>,
             {
               style: {
@@ -260,16 +261,17 @@ const ImageUploadItem = memo<{
         isValidFileType,
         onFileChange,
         onMultipleFilesChange,
-        isOnlyShow
+        isOnlyShow,
+        t
       ]
     )
 
     const handleRemove = useCallback(
       (e: React.MouseEvent) => {
-        if (isOnlyShow) return // Блокируем удаление в режиме только просмотра
+        if (isOnlyShow) return
 
         e.preventDefault()
-        e.stopPropagation() // Предотвращаем всплытие события
+        e.stopPropagation()
         onRemove(index)
       },
       [index, onRemove, isOnlyShow]
@@ -357,7 +359,7 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
   setErrorValue,
   minFiles = 0,
   inputIdPrefix = 'images',
-  maxFileSize = 20 * 1024 * 1024, // 20 МБ
+  maxFileSize = 20 * 1024 * 1024,
   allowMultipleFiles = false,
   allowedTypes = [
     'image/jpeg',
@@ -370,10 +372,10 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     'video/mov',
     'video/avi'
   ],
-  // Новые пропсы с значениями по умолчанию
   isOnlyShow = false,
   showBigFirstItem = true
 }) => {
+  const t = useTranslations('CreateImagesInput')
   const [localFiles, setLocalFiles] = useState<(File | null)[]>(() => new Array(maxFiles).fill(null))
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalImages, setModalImages] = useState<string[]>([])
@@ -391,9 +393,7 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
   const [loadError, setLoadError] = useState<{[key: number]: boolean}>({})
   const [removedInitialImages, setRemovedInitialImages] = useState<Set<number>>(new Set())
 
-  // Создаем строку для атрибута accept
   const acceptString = useMemo(() => {
-    // Исключаем SVG из image/*
     const filteredTypes = allowedTypes.map((type) => {
       if (type === 'image/*') {
         return 'image/jpeg,image/jpg,image/png,image/gif,image/webp'
@@ -403,7 +403,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     return filteredTypes.join(',')
   }, [allowedTypes])
 
-  // Определяем количество элементов для отображения
   const itemsToShow = useMemo(() => {
     if (isOnlyShow) {
       return activeImages.length
@@ -411,31 +410,26 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     return maxFiles
   }, [isOnlyShow, activeImages.length, maxFiles])
 
-  // Функция для переупорядочивания массива изображений
   const reorderImages = useCallback((clickedIndex: number, images: string[]) => {
-    if (clickedIndex === 0) return images // Если нажали на первое, порядок не меняется
+    if (clickedIndex === 0) return images
 
     const reordered = [...images]
     const clickedItem = reordered[clickedIndex]
 
-    // Перемещаем выбранный элемент в начало
     reordered.splice(clickedIndex, 1)
     reordered.unshift(clickedItem)
 
     return reordered
   }, [])
 
-  // Обработчик клика по изображению в режиме просмотра
   const handleImageClick = useCallback(
     (clickedIndex: number) => {
       if (!isOnlyShow) return
 
-      // Фильтруем только существующие изображения
       const validImages = activeImages.filter((img) => img && img.trim() !== '')
 
       if (validImages.length === 0) return
 
-      // Переупорядочиваем массив так, чтобы выбранное изображение было первым
       const reorderedImages = reorderImages(clickedIndex, validImages)
 
       setModalImages(reorderedImages)
@@ -444,13 +438,11 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     [isOnlyShow, activeImages, reorderImages]
   )
 
-  // Закрытие модального окна
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false)
     setModalImages([])
   }, [])
 
-  // Мемоизируем функцию подсчета изображений
   const totalImagesCount = useMemo(() => {
     if (isOnlyShow) {
       return activeImages.length
@@ -465,14 +457,12 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     return count
   }, [localFiles, previewUrls, removedInitialImages, maxFiles, isOnlyShow, activeImages.length])
 
-  // Мемоизируем функцию проверки и сброса ошибки
   const checkAndClearError = useCallback(() => {
     if (errorValue && setErrorValue && totalImagesCount >= minFiles) {
       setErrorValue('')
     }
   }, [errorValue, setErrorValue, totalImagesCount, minFiles])
 
-  // Мемоизируем callback для изменения файлов
   const handleFileChange = useCallback(
     (index: number, file: File) => {
       if (isOnlyShow) return
@@ -487,7 +477,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
 
       setPreviewUrls((prev) => {
         const newUrls = [...prev]
-        // Очищаем старый URL если был создан из файла
         if (prev[index] && localFiles[index]) {
           URL.revokeObjectURL(prev[index]!)
         }
@@ -495,7 +484,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         return newUrls
       })
 
-      // Убираем из списка удаленных, если заменяем удаленное изображение
       setRemovedInitialImages((prev) => {
         if (prev.has(index)) {
           const newSet = new Set(prev)
@@ -505,10 +493,8 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         return prev
       })
 
-      // Сбрасываем ошибку загрузки
       setLoadError((prev) => ({...prev, [index]: false}))
 
-      // Обновляем файлы в родителе
       setLocalFiles((currentFiles) => {
         const updatedFiles = [...currentFiles]
         updatedFiles[index] = file
@@ -519,14 +505,12 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     [localFiles, onFilesChange, isOnlyShow]
   )
 
-  // Новый callback для мульти загрузки
   const handleMultipleFilesChange = useCallback(
     (startIndex: number, files: FileList) => {
       if (isOnlyShow) return
 
       const fileArray = Array.from(files)
 
-      // Находим все свободные слоты
       const freeSlots: number[] = []
       for (let i = 0; i < maxFiles; i++) {
         if (!localFiles[i] && !previewUrls[i]) {
@@ -534,13 +518,15 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         }
       }
 
-      // Если свободных слотов меньше чем файлов, предупреждаем пользователя
       if (freeSlots.length < fileArray.length) {
         toast.error(
           <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-            <strong style={{display: 'block', marginBottom: 4}}>Недостаточно свободных слотов</strong>
+            <strong style={{display: 'block', marginBottom: 4}}>{t('notEnoughSlots')}</strong>
             <span>
-              Доступно: {freeSlots.length}, выбрано файлов: {fileArray.length}
+              {t('availableSlots', {
+                available: freeSlots.length,
+                selected: fileArray.length
+              })}
             </span>
           </div>,
           {
@@ -551,7 +537,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         )
       }
 
-      // Обрабатываем столько файлов, сколько есть свободных слотов
       const filesToProcess = fileArray.slice(0, freeSlots.length)
 
       const newFiles = [...localFiles]
@@ -571,17 +556,15 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
       setPreviewUrls(newUrls)
       setLoadError(newLoadError)
 
-      // Обновляем файлы в родителе
       onFilesChange(newFiles.filter((f) => f !== null) as File[])
     },
-    [localFiles, previewUrls, loadError, maxFiles, onFilesChange, isOnlyShow]
+    [localFiles, previewUrls, loadError, maxFiles, onFilesChange, isOnlyShow, t]
   )
 
   const handleRemove = useCallback(
     (index: number) => {
       if (isOnlyShow) return
 
-      // Очищаем URL только если это был загруженный файл
       if (previewUrls[index] && localFiles[index]) {
         URL.revokeObjectURL(previewUrls[index]!)
       }
@@ -598,18 +581,13 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         return newUrls
       })
 
-      // Если это было начальное изображение, добавляем в список удаленных
       if (activeImages[index] && !localFiles[index]) {
         setRemovedInitialImages((prev) => {
           const newSet = new Set(prev).add(index)
 
-          // ✅ КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: НЕ делаем фильтрацию с изменением позиций
           if (onActiveImagesChange) {
-            // Создаем новый массив с сохранением позиций
             const updatedImages = [...activeImages]
-            updatedImages[index] = '' // Заменяем на пустую строку вместо удаления
-
-            // Убираем все пустые строки только в конце массива для экономии места
+            updatedImages[index] = ''
             while (updatedImages.length > 0 && updatedImages[updatedImages.length - 1] === '') {
               updatedImages.pop()
             }
@@ -620,16 +598,13 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
           return newSet
         })
       } else {
-        // Если удаляем локально загруженный файл
         if (onActiveImagesChange) {
-          // Просто передаем текущие activeImages без изменений
           onActiveImagesChange([...activeImages])
         }
       }
 
       setLoadError((prev) => ({...prev, [index]: false}))
 
-      // Обновляем файлы в родителе
       setLocalFiles((currentFiles) => {
         const updatedFiles = [...currentFiles]
         updatedFiles[index] = null
@@ -643,16 +618,13 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
   useEffect(() => {
     if (activeImages.length > 0) {
       setPreviewUrls((prev) => {
-        const newUrls = isOnlyShow
-          ? activeImages.map((url) => url || null) // Сохраняем позиции
-          : [...prev]
+        const newUrls = isOnlyShow ? activeImages.map((url) => url || null) : [...prev]
 
         if (!isOnlyShow) {
           let hasChanges = false
           activeImages.forEach((url, index) => {
             if (index < maxFiles && !localFiles[index] && !removedInitialImages.has(index)) {
               if (newUrls[index] !== url && url !== '') {
-                // Игнорируем пустые строки
                 newUrls[index] = url
                 hasChanges = true
               }
@@ -666,7 +638,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     }
   }, [activeImages, maxFiles, localFiles, removedInitialImages, isOnlyShow])
 
-  // В CreateImagesInput добавить:
   useEffect(() => {
     if (activeImages.length > 0) {
       setPreviewUrls(() => {
@@ -678,7 +649,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
           }
         })
 
-        // Сохраняем локально загруженные файлы
         localFiles.forEach((file, index) => {
           if (file && newUrls[index] === null) {
             newUrls[index] = URL.createObjectURL(file)
@@ -690,18 +660,14 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     }
   }, [activeImages, removedInitialImages, localFiles, maxFiles])
 
-  // Мемоизируем callback для ошибок изображений
   const handleImageError = useCallback((index: number) => {
     setLoadError((prev) => ({...prev, [index]: true}))
   }, [])
 
-  // Эффект для обновления при изменении activeImages
   useEffect(() => {
     if (activeImages.length > 0) {
       setPreviewUrls((prev) => {
-        const newUrls = isOnlyShow
-          ? activeImages.map((url) => url) // В режиме только просмотра берем только activeImages
-          : [...prev]
+        const newUrls = isOnlyShow ? activeImages.map((url) => url) : [...prev]
 
         if (!isOnlyShow) {
           let hasChanges = false
@@ -721,14 +687,12 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     }
   }, [activeImages, maxFiles, localFiles, removedInitialImages, isOnlyShow])
 
-  // Эффект для проверки ошибок
   useEffect(() => {
     if (!isOnlyShow) {
       checkAndClearError()
     }
   }, [checkAndClearError, isOnlyShow])
 
-  // Мемоизируем массив элементов
   const uploadItems = useMemo(() => {
     return Array.from({length: itemsToShow}).map((_, index) => (
       <ImageUploadItem
@@ -783,7 +747,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         <div className={styles.info__block}>{errorValue && <p className={styles.error__message}>{errorValue}</p>}</div>
       )}
 
-      {/* Модальное окно для просмотра изображений */}
       {isOnlyShow && isModalOpen && (
         <SliderForCreateImages
           isModalOpen={isModalOpen}

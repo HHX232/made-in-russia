@@ -1,6 +1,7 @@
 import {FC, useState, ChangeEvent, useCallback, useMemo} from 'react'
 import styles from './CreateImagesInputMinimalistic.module.scss'
 import {toast} from 'sonner'
+import {useTranslations} from 'next-intl'
 
 interface CreateImagesInputMinimalisticProps {
   onFilesChange: (files: File[]) => void
@@ -16,14 +17,18 @@ const CreateImagesInputMinimalistic: FC<CreateImagesInputMinimalisticProps> = ({
   onFilesChange,
   maxFiles = 10,
   extraClass = '',
-  labelText = 'Добавить медиафайлы',
+  labelText,
   maxFileSize = 20 * 1024 * 1024,
   allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'],
   inputId = 'minimalistic-upload'
 }) => {
+  const t = useTranslations('CreateImagesInputMinimalistic')
   const [files, setFiles] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+
+  // Используем переведенный текст по умолчанию, если не передан labelText
+  const displayLabelText = labelText || t('defaultLabel')
 
   const acceptString = useMemo(() => {
     return allowedTypes.join(',')
@@ -56,8 +61,8 @@ const CreateImagesInputMinimalistic: FC<CreateImagesInputMinimalisticProps> = ({
       if (fileArray.length > remainingSlots) {
         toast.error(
           <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-            <strong style={{display: 'block', marginBottom: 4}}>Превышен лимит файлов</strong>
-            <span>Вы можете добавить еще {remainingSlots} файл(ов)</span>
+            <strong style={{display: 'block', marginBottom: 4}}>{t('fileLimitExceeded')}</strong>
+            <span>{t('youCanAddMore', {remainingSlots})}</span>
           </div>,
           {
             style: {
@@ -87,8 +92,8 @@ const CreateImagesInputMinimalistic: FC<CreateImagesInputMinimalisticProps> = ({
       if (invalidFiles.length > 0) {
         toast.error(
           <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-            <strong style={{display: 'block', marginBottom: 4}}>Ошибка загрузки данных</strong>
-            <span>Недопустимые типы файлов: {invalidFiles.join(', ')}</span>
+            <strong style={{display: 'block', marginBottom: 4}}>{t('uploadError')}</strong>
+            <span>{t('invalidFileTypes', {fileNames: invalidFiles.join(', ')})}</span>
           </div>,
           {
             style: {
@@ -102,9 +107,12 @@ const CreateImagesInputMinimalistic: FC<CreateImagesInputMinimalisticProps> = ({
         const maxSizeMB = Math.round(maxFileSize / (1024 * 1024))
         toast.error(
           <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-            <strong style={{display: 'block', marginBottom: 4}}>Ошибка загрузки данных</strong>
+            <strong style={{display: 'block', marginBottom: 4}}>{t('uploadError')}</strong>
             <span>
-              Превышен размер файлов (макс. {maxSizeMB} МБ): {oversizedFiles.join(', ')}
+              {t('fileSizeExceeded', {
+                maxSizeMB,
+                fileNames: oversizedFiles.join(', ')
+              })}
             </span>
           </div>,
           {
@@ -126,7 +134,7 @@ const CreateImagesInputMinimalistic: FC<CreateImagesInputMinimalisticProps> = ({
 
       e.target.value = ''
     },
-    [files, previewUrls, maxFiles, maxFileSize, isValidFileType, allowedTypes, onFilesChange]
+    [files, previewUrls, maxFiles, maxFileSize, isValidFileType, onFilesChange, t]
   )
 
   const handleRemove = useCallback(
@@ -157,7 +165,7 @@ const CreateImagesInputMinimalistic: FC<CreateImagesInputMinimalisticProps> = ({
             strokeLinejoin='round'
           />
         </svg>
-        <span className={styles.upload__text}>{labelText}</span>
+        <span className={styles.upload__text}>{displayLabelText}</span>
         {canAddMore && (
           <input
             type='file'

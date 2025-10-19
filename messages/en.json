@@ -105,11 +105,17 @@
   },
   "AboutUsPage": {
     "title": "About Us",
-    "firstParagraph": "Exporteru is an online service designed to promote export of products manufactured in Russia. Focusing on the business sector (B2B), we facilitate international business connections between companies.",
-    "secondParagraph": "Our specialization lies in finding foreign partners for you through our multifunctional online platform. This presents an excellent opportunity for businesses of all sizes, across various industries and regions, to connect with the dynamically growing global market.",
-    "thirdParagraph": "We provide comprehensive support and guidance throughout all stages - from product listing on our platform to signing export contracts. For the entire duration of your service use, you'll be assigned a dedicated account manager.",
-    "fourthParagraph": "Our primary goal is to boost your international sales! We identify your key requirements for export operations and make every effort to fulfill them.",
-    "fifthParagraph": "Start exporting with us today, and you'll automatically gain visibility among buyers from China, Turkey, and Southeast Asian countries."
+    "firstParagraph": "Exporteru is an online service designed to promote the export of products manufactured in Russia. Focusing on the business sector (B2B), we facilitate interaction between companies on the international stage.",
+    "secondParagraph": "Our specialization is finding foreign counterparts for you through a multifunctional online platform. This is an excellent opportunity for businesses of all scales, from various industries and regions, to connect to the dynamically developing global market.",
+    "thirdParagraph": "Comprehensive support and accompaniment for your company at all stages - from placing products on the resource to concluding an export contract. For the entire period of using the service, a personal manager will be assigned to you.",
+    "fourthParagraph": "Our main goal is to increase your international sales! In the process of work, we identify your main needs for carrying out export operations and make every effort to satisfy them.",
+    "fifthParagraph": "Start exporting with us today, and you will automatically come to the attention of buyers from China, Turkey, and Southeast Asian countries.",
+    "mission": "Our Mission",
+    "mainGoal": "Our Main Goal",
+    "efficiency": "Efficiency and Control in Every Deal",
+    "unifiedCenter": "Unified Center for All Raw Material Needs",
+    "joinTitle": "Join Exporteru and Discover New Horizons for Your Business",
+    "becomePartner": "Become a Partner"
   },
   "ProfilePage": {
     "belarus": "Belarus",
@@ -692,20 +698,31 @@
     "ready": "Done"
   },
   "HelpPage": {
-    "title": "Contact Us",
-    "namePlaceholder": "Your name",
-    "emailPlaceholder": "Your email",
-    "subjectPlaceholder": "Message subject",
-    "messagePlaceholder": "Your message",
-    "send": "Send",
-    "sending": "Sending...",
-    "successMessage": "Message sent successfully!",
-    "errorMessage": "Error sending message. Please try again.",
-    "contactInfo": "If you encounter any issues on our website, contact us through various social networks and other communication methods. Thank you for being with us!",
-    "nameError": "Name is required",
-    "emailError": "Email is required",
-    "emailFormatError": "Please enter a valid email address",
-    "messageError": "Message is required"
+    "Form": {
+      "contacts": "Contacts",
+      "fillForm": "Fill out the form",
+      "description": "When contacting us, please describe your question or problem in detail, providing links, screenshots or photos. We are open to any questions! We work 24/7 without days off or holidays.",
+      "namePlaceholder": "Your name",
+      "phonePlaceholder": "Phone number",
+      "emailPlaceholder": "E-mail",
+      "messagePlaceholder": "Write your message",
+      "addMedia": "Add media files",
+      "submit": "Send",
+      "successMessage": "Your message has been sent successfully!",
+      "errorMessage": "Error sending message. Please try again."
+    },
+    "Social": {
+      "contacts": "Contacts",
+      "telegram": "Telegram",
+      "vk": "VK",
+      "max": "MAX",
+      "wechat": "WeChat",
+      "email": "E-mail",
+      "phone": "Phone",
+      "username": "@made_in_russia",
+      "wechatUsername": "@made-in-russia",
+      "emailAddress": "info@mail.ru"
+    }
   },
   "breadCrumbs": {
     "home": "Home",
@@ -753,5 +770,23 @@
     "inn": "Tax ID",
     "experience": "Experience",
     "years": "years"
+  },
+  "CreateImagesInput": {
+    "uploadError": "Upload error",
+    "invalidFileTypes": "Invalid file types: {fileNames}",
+    "fileSizeExceeded": "File size exceeded (max. {maxSizeMB} MB): {fileNames}",
+    "chooseImageOrVideo": "Please select an image or video (SVG is not supported)",
+    "fileSizeLimit": "File size should not exceed {maxSizeMB} MB",
+    "notEnoughSlots": "Not enough free slots",
+    "availableSlots": "Available: {available}, files selected: {selected}",
+    "loadError": "Load error"
+  },
+  "CreateImagesInputMinimalistic": {
+    "defaultLabel": "Add media files",
+    "fileLimitExceeded": "File limit exceeded",
+    "youCanAddMore": "You can add {remainingSlots} more file(s)",
+    "uploadError": "Upload error",
+    "invalidFileTypes": "Invalid file types: {fileNames}",
+    "fileSizeExceeded": "File size exceeded (max. {maxSizeMB} MB): {fileNames}"
   }
 }

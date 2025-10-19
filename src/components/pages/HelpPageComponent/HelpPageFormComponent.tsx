@@ -6,7 +6,7 @@ import {toast} from 'sonner'
 import CreateImagesInputMinimalistic from '@/components/UI-kit/inputs/CreateImagesInputMinimalistic/CreateImagesInputMinimalistic'
 
 const HelpPageFormComponent: FC = () => {
-  const t = useTranslations('HelpPage')
+  const t = useTranslations('HelpPage.Form')
   const user = useTypedSelector((state) => state.user.user)
 
   const [images, setImages] = useState<File[]>([])
@@ -22,7 +22,7 @@ const HelpPageFormComponent: FC = () => {
       const data = {
         username: fd.get('firstName'),
         email: fd.get('email'),
-        subject: 'Сообщение в поддержку',
+        subject: t('subject', {defaultMessage: 'Сообщение в поддержку'}),
         body: fd.get('message')
       }
 
@@ -88,19 +88,16 @@ const HelpPageFormComponent: FC = () => {
   return (
     <div className={styles.contacts_form}>
       <form onSubmit={handleSubmit}>
-        <h2 className={styles.contacts_form__md_media}>Контакты</h2>
-        <h3 className={styles.contacts_form__title}>Заполните форму</h3>
-        <div className={styles.contacts_form__description}>
-          При обращении подробно опишите свой вопрос или проблему, с указанием ссылок, скриношотов или фото. Мы открыты
-          для любых вопросов! Работаем круглосуточно без выходных и праздников.
-        </div>
+        <h2 className={styles.contacts_form__md_media}>{t('contacts')}</h2>
+        <h3 className={styles.contacts_form__title}>{t('fillForm')}</h3>
+        <div className={styles.contacts_form__description}>{t('description')}</div>
         <div className={styles.contacts_form__grid}>
           <div className={`${styles.contacts_form__col} ${styles.contacts_form__col_half}`}>
             <input
               type='text'
               name='firstName'
               className={styles.contacts_form__input}
-              placeholder='Ваше имя'
+              placeholder={t('namePlaceholder')}
               autoComplete='firstName'
               value={user?.login}
               required
@@ -111,7 +108,7 @@ const HelpPageFormComponent: FC = () => {
               type='tel'
               name='phone'
               className={styles.contacts_form__input}
-              placeholder='Номер телефона'
+              placeholder={t('phonePlaceholder')}
               autoComplete='tel'
               value={user?.phoneNumber}
               required
@@ -122,7 +119,7 @@ const HelpPageFormComponent: FC = () => {
               type='email'
               name='email'
               className={styles.contacts_form__input}
-              placeholder='E-mail'
+              placeholder={t('emailPlaceholder')}
               autoComplete='email'
               value={user?.email}
               required
@@ -132,20 +129,20 @@ const HelpPageFormComponent: FC = () => {
             <textarea
               name='message'
               className={styles.contacts_form__textarea}
-              placeholder='Напишите Ваше обращение'
+              placeholder={t('messagePlaceholder')}
               rows={5}
               required
             ></textarea>
           </div>
           <div className={styles.contacts_form__col}>
             <div className={styles.contacts_form__file_wrapper}>
-              <span>Добавить медиафайлы</span>
+              <span>{t('addMedia')}</span>
             </div>
             <CreateImagesInputMinimalistic onFilesChange={setImages} />
           </div>
           <div className={styles.contacts_form__col}>
             <button type='submit' className={styles.btn_accent}>
-              Отправить
+              {t('submit')}
             </button>
           </div>
         </div>

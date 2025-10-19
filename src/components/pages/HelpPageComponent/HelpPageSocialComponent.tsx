@@ -1,11 +1,14 @@
 import {FC} from 'react'
 import styles from './HelpPageSocialComponent.module.scss'
 import Link from 'next/link'
+import {useTranslations} from 'next-intl'
 
 const HelpPageSocialComponent: FC = () => {
+  const t = useTranslations('HelpPage.Social')
+
   return (
     <div className={styles.contacts_social}>
-      <h2 className={styles.contacts_social__title}>Контакты</h2>
+      <h2 className={styles.contacts_social__title}>{t('contacts')}</h2>
       <div className={styles.contacts_social__grid}>
         <div className={styles.contacts_social__col}>
           <Link href='#' className={styles.contacts_social__item}>
@@ -13,9 +16,9 @@ const HelpPageSocialComponent: FC = () => {
               <svg className={styles.contacts_social__icon_tg}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-tg'></use>
               </svg>
-              <span>Telegram</span>
+              <span>{t('telegram')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>@made_in_russia</div>
+            <div className={styles.contacts_social__nikname}>{t('username')}</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
@@ -24,9 +27,9 @@ const HelpPageSocialComponent: FC = () => {
               <svg className={styles.contacts_social__icon_vk}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-vk'></use>
               </svg>
-              <span>VK</span>
+              <span>{t('vk')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>@made_in_russia</div>
+            <div className={styles.contacts_social__nikname}>{t('username')}</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
@@ -35,9 +38,9 @@ const HelpPageSocialComponent: FC = () => {
               <svg className={styles.contacts_social__icon_max}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-max'></use>
               </svg>
-              <span>MAX</span>
+              <span>{t('max')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>@made_in_russia</div>
+            <div className={styles.contacts_social__nikname}>{t('username')}</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
@@ -46,9 +49,9 @@ const HelpPageSocialComponent: FC = () => {
               <svg className={styles.contacts_social__icon_wechat}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-wechat'></use>
               </svg>
-              <span>WeChat</span>
+              <span>{t('wechat')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>@made-in-russia</div>
+            <div className={styles.contacts_social__nikname}>{t('wechatUsername')}</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
@@ -57,9 +60,9 @@ const HelpPageSocialComponent: FC = () => {
               <svg className={styles.contacts_social__icon_email}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-email'></use>
               </svg>
-              <span>E-mail</span>
+              <span>{t('email')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>info@mail.ru</div>
+            <div className={styles.contacts_social__nikname}>{t('emailAddress')}</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
@@ -68,9 +71,9 @@ const HelpPageSocialComponent: FC = () => {
               <svg className={styles.contacts_social__icon_phone}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-phone'></use>
               </svg>
-              <span>Телефон</span>
+              <span>{t('phone')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>info@mail.ru</div>
+            <div className={styles.contacts_social__nikname}>{t('emailAddress')}</div>
           </Link>
         </div>
       </div>
