@@ -719,36 +719,33 @@
   "Agreement": {
     "titles": {
       "1": "User Agreement",
-      "2": "Rights and obligations of the parties",
-      "3": "Liability of the parties",
+      "2": "Rights and Obligations of the Parties",
+      "3": "Liability of the Parties",
       "4": "Terms of the Agreement"
     },
-    "CardMiddlePage": {
-      "description": "Description",
-      "technicalCharacteristics": "Technical specifications:",
-      "companyDescription": "Supplier information",
-      "deliveryDescription": "Delivery information",
-      "emptyAddress": "address not specified",
-      "INN": "TIN"
-    },
-    "CardBottomPage": {
-      "success": "Success!",
-      "successPublished": "Review sent for moderation",
-      "errorPublished": "Error publishing review",
-      "errorPublishedText": "Before publishing, you must contact the seller, and the account age must be at least 7 days",
-      "revues": "Reviews",
-      "questions": "Questions",
-      "noComments": "No reviews yet. Be the first!",
-      "pleaseCreateComment": "Please tell us about your experience with this product",
-      "writeCommentPlaceholder": "Write a review...",
-      "defaultError": "Error",
-      "fileUploadErrorType": "File {fileName} has unsupported format",
-      "fileUploadErrorTypeSubtext": "File has unsupported format",
-      "svgError": "SVG files are not supported",
-      "bigImage": "Image exceeds 5MB size",
-      "bigVideo": "Video exceeds 200MB size",
-      "bigFiles": "You can upload no more than {maxFilesCount} files",
-      "publishing": "Publishing..."
+    "back": " Go back",
+    "download": " Download file \"User Agreement\"",
+    "text": "This User Agreement (hereinafter referred to as the Agreement) governs the relationship between EXPORTERU LLC (hereinafter exporteru.com or Administration) on the one hand and the user of the website on the other. The website exporteru.com is not a mass media outlet.",
+    "secondText": "By using the website, you agree to the terms of this Agreement. <br/>If you do not agree with the terms of this Agreement, do not use exporteru.com!<br/>",
+    "agreementList": {
+      "2": {
+        "1-title": "The User has the right to:",
+        "1-text": "- search for information on the website <br/>- receive information on the website <br/>- create information for the website <br/>- distribute information on the website <br/>- comment on content posted on the website <br/>- change user ratings <br/>- copy information to other websites with attribution <br/>- use website information for personal non-commercial purposes <br/>- use website information for commercial purposes without special permission",
+        "2-title": "The Administration has the right to:",
+        "2-text": "- at its sole discretion, create, modify, or cancel rules <br/> - restrict access to any information on the website <br/> - create, modify, or delete information <br/> - delete user accounts <br/> - refuse registration without explanation",
+        "3-title": "The User undertakes to:",
+        "3-text": "- provide accurate information <br/>- ensure the security of personal data from third-party access <br/>- update Personal Data provided during registration in case of changes <br/>- not copy information from other sources <br/>- when copying from other sources, include author attribution <br/>- not distribute information promoting war, inciting national, racial, or religious hatred and hostility, or other content subject to criminal or administrative liability <br/>- not disrupt the website’s functionality <br/>- not mislead other Users <br/>- not post advertising, erotic, pornographic, or offensive materials, as well as other information prohibited by Russian law <br/>- not use scripts (programs) for automated data collection and/or interaction with the Website and its Services",
+        "4-title": "The Administration undertakes to:",
+        "4-text": "- maintain the operability of the website except in cases beyond its control <br/> - ensure comprehensive protection of the User’s account <br/> - provide all available User information to authorized government bodies as required by law"
+      },
+      "3": {
+        "1-title": "",
+        "1-text": "- the user is personally fully responsible for the information they distribute <br/>- the administration is not responsible for the accuracy of information copied from other sources <br/>- the administration is not responsible for discrepancies between User expectations and the actual services received <br/>- the administration is not responsible for services provided by third parties <br/>- in case of force majeure (military actions, emergencies, natural disasters, etc.), the Administration does not guarantee the safety of information posted by the User or the uninterrupted operation of the resource"
+      },
+      "4": {
+        "1-title": "",
+        "1-text": "This Agreement comes into effect upon any use of the website. <br/>The Agreement ceases to be valid when a new version appears. <br/>The Administration reserves the right to unilaterally amend this Agreement at its discretion. <br/>The Administration does not notify users about changes in the Agreement."
+      }
     }
   },
   "DeleteButton": {
