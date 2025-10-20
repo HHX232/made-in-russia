@@ -67,7 +67,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
             <h3 className={`${styles.footer__title}`}>{t('support.title')}</h3>
             <ul className={`${styles.footer__list}`}>
               <li>
-                <Link className={`${styles.footer__link}`} href='tel:+74959833888'>
+                <Link className={`${styles.footer__link}`} href='tel:74959833888'>
                   <svg className={`${styles.icon} ${styles.icon__phone}`}>
                     <use href='/iconsNew/symbol/sprite.svg#phone'></use>
                   </svg>
