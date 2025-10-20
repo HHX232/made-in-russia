@@ -23,11 +23,14 @@ export interface CatalogProps {
   showSearchTitle?: boolean
   specialRoute?: string
   useContainer?: boolean
+  customMinHeight?: string
+  extraSwiperClass?: string
   searchParams?: {[key: string]: string | string[] | undefined}
 }
 
 const Catalog: FC<CatalogProps> = ({
   initialProducts,
+  customMinHeight,
   initialHasMore,
   isShowFilters = false,
   usePagesCatalog = false,
@@ -38,6 +41,7 @@ const Catalog: FC<CatalogProps> = ({
   specialRoute,
   showSpecialSearchFilters = false,
   searchParams = {},
+  extraSwiperClass,
   useContainer = true
 }) => {
   const [activeFilterName, setActiveFilterName] = useState<'originPrice' | 'creationDate'>('creationDate')
@@ -392,7 +396,13 @@ const Catalog: FC<CatalogProps> = ({
           />
         )}
         {!usePagesCatalog && (
-          <CardsCatalog specialRoute={specialRoute} initialProducts={initialProducts} initialHasMore={initialHasMore} />
+          <CardsCatalog
+            extraSwiperClass={extraSwiperClass}
+            customMinHeight={customMinHeight}
+            specialRoute={specialRoute}
+            initialProducts={initialProducts}
+            initialHasMore={initialHasMore}
+          />
         )}
       </div>
     </>

@@ -4,7 +4,6 @@
 import {FC, useEffect, useState, useRef, useCallback, useMemo} from 'react'
 import styled from './CardsCatalog.module.scss'
 import Card from '@/components/UI-kit/elements/card/card'
-import {useProducts} from '@/hooks/useProducts'
 import {Product} from '@/services/products/product.types'
 import {selectRangeFilter} from '@/store/Filters/filters.slice'
 import {useSelector} from 'react-redux'
@@ -17,6 +16,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
+import ProductService from '@/services/products/product.service'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 interface CardsCatalogProps {
   initialProducts?: Product[]
@@ -28,6 +29,8 @@ interface CardsCatalogProps {
   approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL'
   direction?: 'asc' | 'desc'
   isForAdmin?: boolean
+  customMinHeight?: string
+  extraSwiperClass?: string
 }
 
 interface PageParams {
@@ -44,7 +47,7 @@ interface PageParams {
   [key: string]: any
 }
 
-const SLIDES_COUNT = 5 // Количество слайдов для загрузки
+const SLIDES_COUNT = 5
 
 const CardsCatalog: FC<CardsCatalogProps> = ({
   initialProducts = [],
@@ -55,12 +58,14 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   extraButtonsBoxClass,
   isForAdmin = false,
   direction = 'desc',
-  approveStatuses = 'ALL'
+  approveStatuses = 'ALL',
+  customMinHeight,
+  extraSwiperClass
 }) => {
-  console.log('🎯 CardsCatalog: Component render')
   const t = useTranslations('CardsCatalogNew')
   const {setCurrentSlide: setCurrentSlideRedux} = useActions()
   const {currentSlide: currentSlideRedux} = useTypedSelector((state) => state.sliderHomeSlice)
+  const currentLang = useCurrentLanguage()
 
   // Селекторы и состояния
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
@@ -72,32 +77,24 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const [sliderPageSize, setSliderPageSize] = useState(8)
   const width = useWindowWidth()
 
-  // Расчет количества товаров на основе ширины экрана (согласно grid в SCSS)
   useEffect(() => {
     if (!width) return
 
     let itemsPerSlide: number
 
     if (width > 1270) {
-      // 4 колонки × 2 ряда = 8 товаров
       itemsPerSlide = 8
     } else if (width > 768) {
-      // 3 колонки × 3 ряда = 9 товаров
       itemsPerSlide = 9
     } else {
-      // 2 колонки × 4 ряда = 8 товаров
       itemsPerSlide = 8
     }
 
     setSliderPageSize(itemsPerSlide)
-    console.log('📐 Slider page size updated:', itemsPerSlide, 'for width:', width)
   }, [width])
 
-  // Динамический расчет общего количества товаров для загрузки
   const totalProductsToLoad = useMemo(() => {
-    const total = sliderPageSize * SLIDES_COUNT
-    console.log('📊 Total products to load:', total, `(${sliderPageSize} items × ${SLIDES_COUNT} slides)`)
-    return total
+    return sliderPageSize * SLIDES_COUNT
   }, [sliderPageSize])
 
   // Состояния
@@ -106,10 +103,13 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const [isSliderInitialized, setIsSliderInitialized] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [sliderHeight, setSliderHeight] = useState<number | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isError, setIsError] = useState(false)
 
   // Refs
   const containerRef = useRef<HTMLDivElement>(null)
   const activeSlideRef = useRef<HTMLDivElement | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // Параметры пагинации
   const [pageParams, setPageParams] = useState<PageParams>({
@@ -132,50 +132,77 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }))
   }, [totalProductsToLoad])
 
-  console.log('📄 Current page params:', pageParams)
+  // Функция загрузки продуктов
+  const fetchProducts = useCallback(
+    async (params: PageParams) => {
+      // Отменяем предыдущий запрос
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
 
-  // Загрузка продуктов
-  const {
-    data: pageResponse,
-    isLoading,
-    isError,
-    resData
-  } = useProducts(
-    pageParams,
-    () => {
-      console.log('🔄 Reset triggered')
-      setPageParams((prev) => ({...prev, page: 0}))
+      // Создаем новый AbortController
+      abortControllerRef.current = new AbortController()
+
+      setIsLoading(true)
+      setIsError(false)
+
+      try {
+        console.log('🔍 Fetching products with params:', params)
+
+        const response = await ProductService.getAll(
+          {
+            ...params,
+            approveStatuses: params.approveStatuses === 'ALL' ? '' : params.approveStatuses
+          },
+          specialRoute,
+          currentLang,
+          accessToken || ''
+        )
+
+        console.log('✅ Products fetched:', response?.content?.length || 0)
+
+        if (response?.content) {
+          setProducts(response.content)
+        } else {
+          setProducts([])
+        }
+      } catch (error: any) {
+        if (error.name === 'AbortError') {
+          console.log('🚫 Request aborted')
+          return
+        }
+        console.error('❌ Error fetching products:', error)
+        setIsError(true)
+        setProducts([])
+      } finally {
+        setIsLoading(false)
+      }
     },
-    specialRoute,
-    accessToken || ''
+    [specialRoute, currentLang, accessToken]
   )
-
-  console.log('📦 Products state:', {
-    totalProducts: products.length,
-    isLoading,
-    requestedSize: pageParams.size
-  })
-
-  // Мемоизированные данные
-  const showSkeleton = useMemo(() => {
-    const result = isLoading && products.length === 0
-    console.log('💀 Show skeleton:', result)
-    return result
-  }, [isLoading, products.length])
 
   // Обработка числовых фильтров
   useEffect(() => {
     const numericKeys = Object.keys(selectedFilters)
       .filter((key) => !isNaN(Number(key)))
       .map(Number)
-    console.log('🔢 Numeric filters updated:', numericKeys)
     setNumericFilters(numericKeys)
   }, [selectedFilters])
 
+  // Загрузка при монтировании и изменении параметров
+  useEffect(() => {
+    fetchProducts(pageParams)
+
+    // Cleanup при размонтировании
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [pageParams, fetchProducts])
+
   // Сброс при изменении поискового запроса
   useEffect(() => {
-    console.log('🔍 Search title changed:', searchTitle)
-    setProducts([])
     setCurrentSlide(0)
     setPageParams((prev) => ({
       ...prev,
@@ -186,8 +213,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // Сброс при изменении фильтров
   useEffect(() => {
-    console.log('🎛️ Filters changed:', {numericFilters, priceRange, delivery})
-    setProducts([])
     setCurrentSlide(0)
     setPageParams((prev) => {
       const newParams: PageParams = {
@@ -211,8 +236,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   // Сброс для админки при изменении статусов
   useEffect(() => {
     if (isForAdmin) {
-      console.log('👨‍💼 Admin approve status changed:', approveStatuses)
-      setProducts([])
       setCurrentSlide(0)
       setPageParams((prev) => ({
         ...prev,
@@ -225,8 +248,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   // Сброс для админки при изменении направления
   useEffect(() => {
     if (isForAdmin) {
-      console.log('🔀 Admin direction changed:', direction)
-      setProducts([])
       setCurrentSlide(0)
       setPageParams((prev) => ({
         ...prev,
@@ -236,16 +257,16 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }
   }, [direction, isForAdmin])
 
-  // Обработка ответа от API
+  // Сброс при изменении языка
   useEffect(() => {
-    if (pageResponse?.content) {
-      console.log('📥 API response received:', {
-        contentLength: pageResponse.content.length,
-        requested: pageParams.size
-      })
-      setProducts(pageResponse.content)
-    }
-  }, [pageResponse])
+    setCurrentSlide(0)
+    fetchProducts(pageParams)
+  }, [currentLang])
+
+  // Мемоизированные данные
+  const showSkeleton = useMemo(() => {
+    return isLoading && products.length === 0
+  }, [isLoading, products.length])
 
   // Разделение данных на страницы для слайдера
   const pages = useMemo(() => {
@@ -260,12 +281,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       result[pageIndex].push(product)
     })
 
-    console.log('📑 Pages created:', {
-      totalPages: result.length,
-      productsPerPage: sliderPageSize,
-      totalProducts: products.length
-    })
-
+    console.log('📑 Pages created:', result.length, 'Total products:', products.length)
     return result
   }, [products, sliderPageSize])
 
@@ -282,26 +298,31 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     },
     loop: false,
     renderMode: 'precision',
-    initial: currentSlideRedux,
+    initial: 0,
     created: (s) => {
-      console.log('🎨 Slider created, initial slide:', s.track.details.rel)
+      console.log('🎨 Slider created')
+      if (s.track.details) {
+        setCurrentSlide(s.track.details.rel)
+      } else {
+        setCurrentSlide(0)
+      }
       setIsSliderInitialized(true)
-      setCurrentSlide(s.track.details.rel)
     },
     slideChanged: (slider) => {
-      const newSlide = slider.track.details.rel
-      console.log('🔄 Slide changed:', {
-        from: currentSlide,
-        to: newSlide,
-        totalSlides: pages.length
-      })
-      setCurrentSlide(newSlide)
-      setCurrentSlideRedux(slider.track.details.rel)
+      if (slider.track.details) {
+        const newSlide = slider.track.details.rel
+        console.log('🔄 Slide changed to:', newSlide)
+        setCurrentSlide(newSlide)
+        setCurrentSlideRedux(newSlide)
+      }
     },
     updated: (slider) => {
-      console.log('🔧 Slider updated, current slide:', slider.track.details.rel)
-      setCurrentSlide(slider.track.details.rel)
-      setCurrentSlideRedux(slider.track.details.rel)
+      if (slider.track.details) {
+        const currentRel = slider.track.details.rel
+        console.log('🔧 Slider updated, slide:', currentRel)
+        setCurrentSlide(currentRel)
+        setCurrentSlideRedux(currentRel)
+      }
       if (pages.length > 0) {
         setIsSliderInitialized(true)
       }
@@ -316,17 +337,12 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // Эффект для сброса состояния при изменении данных
   useEffect(() => {
-    console.log('🔄 Data changed:', {dataLength: products.length, pagesLength: pages.length})
-
     if (products.length === 0) {
-      console.log('🔄 Reset slider state - no data')
       setIsSliderInitialized(false)
       setCurrentSlide(0)
     } else if (products.length > 0 && !isSliderInitialized) {
-      console.log('🔄 Data loaded, waiting for slider init')
       const timer = setTimeout(() => {
         if (instanceRef.current) {
-          console.log('✅ Slider ready after data load')
           setIsSliderInitialized(true)
           setCurrentSlide(0)
         }
@@ -337,25 +353,18 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // Вычисление состояния стрелок
   const canGoPrev = useMemo(() => {
-    const result = isSliderInitialized && currentSlide > 0 && pages.length > 1
-    console.log('⬅️ Can go prev:', result)
-    return result
+    return isSliderInitialized && currentSlide > 0 && pages.length > 1
   }, [isSliderInitialized, currentSlide, pages.length])
 
   const canGoNext = useMemo(() => {
-    const result = isSliderInitialized && currentSlide < pages.length - 1 && pages.length > 1
-    console.log('➡️ Can go next:', result)
-    return result
+    return isSliderInitialized && currentSlide < pages.length - 1 && pages.length > 1
   }, [isSliderInitialized, currentSlide, pages.length])
-
-  console.log('⬅️➡️ Navigation state:', {canGoPrev, canGoNext, currentSlide, totalPages: pages.length})
 
   // Расчет высоты активного слайда
   useEffect(() => {
     const updateHeight = () => {
       if (activeSlideRef.current) {
         const height = activeSlideRef.current.scrollHeight
-        console.log('📏 Updating slide height:', height)
         setSliderHeight(height)
       }
     }
@@ -363,7 +372,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     updateHeight()
 
     const resizeObserver = new ResizeObserver(() => {
-      console.log('📐 Resize detected, updating height')
       updateHeight()
     })
 
@@ -378,7 +386,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // Обработчики навигации
   const handlePrevClick = useCallback(() => {
-    console.log('⬅️ Previous slide clicked', {canGoPrev, hasInstance: !!instanceRef.current})
     if (canGoPrev && instanceRef.current) {
       try {
         instanceRef.current.prev()
@@ -389,7 +396,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   }, [canGoPrev])
 
   const handleNextClick = useCallback(() => {
-    console.log('➡️ Next slide clicked', {canGoNext, hasInstance: !!instanceRef.current})
     if (canGoNext && instanceRef.current) {
       try {
         instanceRef.current.next()
@@ -446,58 +452,59 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
           </div>
         </div>
 
-        <div className={`${styled.swiper}`} id='popularprod-swiper' ref={containerRef}>
+        <div className={`${styled.swiper} ${extraSwiperClass}`} id='popularprod-swiper' ref={containerRef}>
           <div
             ref={sliderRef}
             key={sliderKey}
             className={`keen-slider ${styled.swiper_wrapper}`}
             style={{
-              minHeight: sliderHeight ? `${sliderHeight}px` : 'auto'
+              minHeight: customMinHeight ? customMinHeight : sliderHeight ? `${sliderHeight}px` : 'auto'
             }}
           >
-            {pages.map((page, pageIndex) => {
-              const isActive = pageIndex === currentSlide
+            {pages.length > 0 &&
+              pages.map((page, pageIndex) => {
+                const isActive = pageIndex === currentSlide
 
-              return (
-                <div
-                  className={`keen-slider__slide spec__keen-slider__slide ${styled.slider__slide} ${isActive ? styled.slider__slide_active : ''}`}
-                  key={`page-${pageIndex}`}
-                  ref={(node) => {
-                    if (isActive) {
-                      activeSlideRef.current = node
-                    }
-                  }}
-                >
-                  {page.map((product, productIndex) => {
-                    const uniqueKey = `${product.id}-${pageIndex}-${productIndex}`
+                return (
+                  <div
+                    className={`keen-slider__slide spec__keen-slider__slide ${styled.slider__slide} ${isActive ? styled.slider__slide_active : ''}`}
+                    key={`page-${pageIndex}`}
+                    ref={(node) => {
+                      if (isActive) {
+                        activeSlideRef.current = node
+                      }
+                    }}
+                  >
+                    {page.map((product, productIndex) => {
+                      const uniqueKey = `${product.id}-${pageIndex}-${productIndex}`
 
-                    return (
-                      <div className={styled.card_wrapper} key={uniqueKey}>
-                        <Card
-                          isForAdmin={isForAdmin}
-                          approveStatus={product?.approveStatus}
-                          extraButtonsBoxClass={extraButtonsBoxClass}
-                          onPreventCardClick={onPreventCardClick}
-                          canUpdateProduct={canCreateNewProduct}
-                          isLoading={false}
-                          id={product.id}
-                          title={product.title}
-                          price={product.originalPrice}
-                          discount={product.discount}
-                          previewImageUrl={product.previewImageUrl}
-                          discountedPrice={product.discountedPrice}
-                          deliveryMethod={product.deliveryMethod}
-                          fullProduct={product}
-                          onClickFunction={() => {
-                            addToLatestViews(product)
-                          }}
-                        />
-                      </div>
-                    )
-                  })}
-                </div>
-              )
-            })}
+                      return (
+                        <div className={styled.card_wrapper} key={uniqueKey}>
+                          <Card
+                            isForAdmin={isForAdmin}
+                            approveStatus={product?.approveStatus}
+                            extraButtonsBoxClass={extraButtonsBoxClass}
+                            onPreventCardClick={onPreventCardClick}
+                            canUpdateProduct={canCreateNewProduct}
+                            isLoading={false}
+                            id={product.id}
+                            title={product.title}
+                            price={product.originalPrice}
+                            discount={product.discount}
+                            previewImageUrl={product.previewImageUrl}
+                            discountedPrice={product.discountedPrice}
+                            deliveryMethod={product.deliveryMethod}
+                            fullProduct={product}
+                            onClickFunction={() => {
+                              addToLatestViews(product)
+                            }}
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })}
 
             {showSkeleton && (
               <div

@@ -3,6 +3,8 @@
     "title": "你好世界！",
     "profile": "前往个人资料页面",
     "search": "搜索网站",
+    "profile": "前往个人资料页面",
+    "search": "搜索网站",
     "login": "登录",
     "category": "分类",
     "reviews": "评论",
@@ -121,7 +123,7 @@
     "becomePartner": "成为合作伙伴"
   },
   "ProfilePage": {
-    "noFavorites": "没有收藏的产品",
+      "noFavorites": "没有收藏的产品",
     "personalCabinet": "个人账户",
     "personalData": "个人资料",
     "registrationDate": "注册日期",
@@ -319,7 +321,7 @@
     },
     "CardTopPage": {
       "from": "来自",
-      "daysBeforeDiscountExpires": "天促销结束",
+"daysBeforeDiscountExpires": "天促销结束",
       "successCallback": "申请提交成功！",
       "errorCallback": "提交申请时出错！需要注册",
       "successCreateOrder": "订单创建成功！",
@@ -381,7 +383,7 @@
   },
   "CardTopPage": {
     "from": "来自",
-    "daysBeforeDiscountExpires": "天促销结束",
+"daysBeforeDiscountExpires": "天促销结束",
     "successCallback": "申请提交成功！",
     "errorCallback": "提交申请时出错！需要注册",
     "successCreateOrder": "订单创建成功！",
@@ -957,17 +959,17 @@
     "viewAll": "查看全部"
   },
   "LoginSlider": {
-    "slide1Title": "遍布俄罗斯的认证供应商",
-    "slide1Description": "与通过质量和信誉审核的可靠公司合作。",
+  "slide1Title": "遍布俄罗斯的认证供应商",
+  "slide1Description": "与通过质量和信誉审核的可靠公司合作。",
 
-    "slide2Title": "专属企业经理",
-    "slide2Description": "您的专属顾问将帮助您找到最佳方案并加快合作进程。",
+  "slide2Title": "专属企业经理",
+  "slide2Description": "您的专属顾问将帮助您找到最佳方案并加快合作进程。",
 
-    "slide3Title": "获取批发价",
-    "slide3Description": "直接从制造商获取最佳报价，节省采购成本。",
+  "slide3Title": "获取批发价",
+  "slide3Description": "直接从制造商获取最佳报价，节省采购成本。",
 
-    "slide4Title": "独特的资源数据库",
-    "slide4Description": "我们汇集了数千家供应商，助您轻松找到所需商品和服务。"
+  "slide4Title": "独特的资源数据库",
+  "slide4Description": "我们汇集了数千家供应商，助您轻松找到所需商品和服务。"
   },
   "CreateImagesInput": {
     "uploadError": "数据上传错误",

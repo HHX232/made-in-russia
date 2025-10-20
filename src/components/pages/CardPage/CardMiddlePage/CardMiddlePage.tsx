@@ -14,7 +14,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
   useEffect(() => {
     // console.log('cardData in middle', cardData)
   }, [cardData])
-  const t = useTranslations('CardPage.CardMiddlePage')
+  const t = useTranslations('CardMiddlePage')
   return (
     <div className={`${styles.card__middle__box}`}>
       <h3 id='description__title__id' style={{marginBottom: '15px'}} className={`${styles.card__middle__title}`}>

@@ -22,7 +22,7 @@ async function CardContent({id}: {id: string}) {
   try {
     const {data} = await cardService.getFullCardById(id, locale)
     cardData = data as ICardFull
-    console.log('cardData server', cardData)
+    // console.log('cardData server', cardData)
     if (!cardData) {
       notFound()
     }

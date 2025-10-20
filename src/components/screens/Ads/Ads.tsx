@@ -168,7 +168,7 @@ const DynamicSlider: FC<DynamicSliderProps> = ({ads, isLoading}) => {
     },
     detailsChanged(s) {
       const new_opacities = s.track.details.slides.map((slide) => slide.portion)
-      console.log('new_opacities', new_opacities)
+      // console.log('new_opacities', new_opacities)
       setOpacities(new_opacities)
     },
     created() {

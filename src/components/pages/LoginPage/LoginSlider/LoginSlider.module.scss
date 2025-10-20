@@ -87,6 +87,7 @@
 .slider__description {
   position: relative;
   z-index: 1;
+  max-width: 240px;
   color: #2f2f2f;
   font-size: 16px;
   font-weight: 400;
@@ -103,6 +104,7 @@
   }
 
   @media (max-width: 768px) {
+    max-width: unset;
     font-size: 16px;
   }
 

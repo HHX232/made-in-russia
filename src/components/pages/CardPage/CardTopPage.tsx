@@ -566,7 +566,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   )
 
   const NewFullTopInfo = () => {
-    const t = useTranslations('CardPage.CardTopPage')
+    const t = useTranslations('CardTopPage')
 
     return (
       <div className={styles.full__info__box}>
@@ -586,7 +586,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
         </div>
         <div className={styles.prices__box__new}>
           <p className={styles.main__price}>
-            от {cardData?.prices[0].discountedPrice} {cardData?.prices[0].currency}/{cardData?.prices[0].unit}
+            {t('from')} {cardData?.prices[0].discountedPrice} {cardData?.prices[0].currency}/{cardData?.prices[0].unit}
           </p>
           {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
             <p className={styles.original__price}>
@@ -594,7 +594,9 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             </p>
           )}
           {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
-            <p className={styles.disc__days}>{cardData?.daysBeforeDiscountExpires} дней до конца акции</p>
+            <p className={styles.disc__days}>
+              {cardData?.daysBeforeDiscountExpires} {t('daysBeforeDiscountExpires')}
+            </p>
           )}
         </div>
         <div className={styles.buttons__box__new}>

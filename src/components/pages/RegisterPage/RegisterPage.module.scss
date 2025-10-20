@@ -435,6 +435,14 @@
   cursor: pointer;
   font-size: 16px;
   line-height: 18px;
+
+  @media (max-width: 850px) {
+    font-size: 12px;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 10px;
+  }
 }
 
 .active__user_button {

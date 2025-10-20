@@ -75,21 +75,6 @@
 .category__card__col {
   margin-bottom: 20px;
 
-  // @media (min-width: 1200px) {
-  //   flex: 0 0 25%;
-  //   max-width: 25%;
-  // }
-
-  // @media (min-width: 901px) and (max-width: 1199px) {
-  //   flex: 0 0 33.333%;
-  //   max-width: 33.333%;
-  // }
-
-  // @media (min-width: 601px) and (max-width: 900px) {
-  //   flex: 0 0 50%;
-  //   max-width: 50%;
-  // }
-
   @media (max-width: 600px) {
     max-width: 100%;
     flex: 0 0 100%;
@@ -220,8 +205,6 @@
   align-items: center;
   justify-content: center;
   padding: 15px 20px;
-
-  // border-radius: 20px;
   background-color: #f4f5f6;
   box-shadow: -2px 4px 4px #00000015;
   text-align: center;
@@ -235,8 +218,6 @@
 .category__last__level__item {
   min-width: 150px;
   padding: 12px 20px;
-
-  // border-radius: 20px;
   background-color: #f4f5f6;
   transition: all 0.3s ease;
 
@@ -255,13 +236,15 @@
   font-size: 20px;
   font-weight: 500;
   line-height: 24px;
-  white-space: nowrap;
+
+  // white-space: nowrap;
 }
 
 .category__last__level__title {
   color: #000;
   font-size: 16px !important;
-  white-space: nowrap !important;
+
+  // white-space: nowrap !important;
 
   @media (max-width: 600px) {
     font-size: 14px !important;
@@ -419,13 +402,13 @@
 .companies__slider {
   position: relative;
   width: 100%;
-  max-height: 1000px;
   margin: 0 auto;
+  transition: height 0.3s ease;
 }
 
 .company__slide__item {
-  height: 100% !important;
-  min-height: 100%;
+  height: fit-content !important;
+  min-height: fit-content;
   outline: none;
 
   @media (max-width: 600px) {
@@ -438,7 +421,7 @@
   width: 100%;
   gap: 12px;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(4, auto);
 
   @media (max-width: 1400px) {
     gap: 10px;
@@ -451,25 +434,37 @@
 
   @media (max-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(10, 1fr);
+    grid-template-rows: repeat(10, auto);
   }
 
   @media (max-width: 710px) {
     gap: 8px;
     grid-template-columns: repeat(1, 1fr);
-    grid-template-rows: repeat(4, 1fr);
+    grid-template-rows: repeat(4, auto);
   }
 
   @media (max-width: 600px) {
-    height: 1000px;
     gap: 6px;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(10, 1fr);
+    grid-template-rows: repeat(10, auto);
   }
 
   @media (max-width: 480px) {
-    height: 1000px;
     gap: 5px;
+  }
+}
+
+.extra__swiper__min {
+  @media (max-width: 1270px) {
+    min-height: fit-content !important;
+  }
+
+  @media (max-width: 768px) {
+    min-height: fit-content !important;
+  }
+
+  @media (max-width: 576px) {
+    min-height: fit-content !important;
   }
 }
 

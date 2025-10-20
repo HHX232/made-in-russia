@@ -19,7 +19,7 @@ export default async function CategoriesPage() {
     <div>
       <Header />
       <MainCategoryPage categories={categories} />
-      <Catalog initialProducts={[]} initialHasMore />
+      <Catalog initialProducts={[]} initialHasMore customMinHeight='fit-content' />
       <Footer />
     </div>
   )

@@ -79,6 +79,7 @@ interface IDropListProps extends Pick<ArrowIconProps, 'color' | 'width' | 'heigh
   closeOnScroll?: boolean
   scrollThreshold?: number
   useNewTheme?: boolean
+  hideOnWindowScroll?: boolean
 }
 
 const DropList: FC<IDropListProps> = ({
@@ -107,7 +108,8 @@ const DropList: FC<IDropListProps> = ({
   onChildHover,
   closeOnScroll = true,
   scrollThreshold = 200,
-  useNewTheme = true
+  useNewTheme = true,
+  hideOnWindowScroll = false
 }) => {
   const [internalOpenState, setInternalOpenState] = useState(false)
   const openList = isOpen !== undefined ? isOpen : internalOpenState
@@ -116,6 +118,7 @@ const DropList: FC<IDropListProps> = ({
   const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastMousePosRef = useRef({x: 0, y: 0})
   const mouseTrajectoryRef = useRef<Array<{x: number; y: number; time: number}>>([])
+  const lastScrollPositionRef = useRef({x: 0, y: 0})
 
   // Реф для отслеживания активного дочернего элемента
   const activeChildRef = useRef<string | null>(null)
@@ -141,6 +144,14 @@ const DropList: FC<IDropListProps> = ({
       onOpenChange?.(true)
     } else {
       setInternalOpenState(true)
+    }
+
+    // Сохраняем текущую позицию скролла при открытии
+    if (hideOnWindowScroll && typeof window !== 'undefined') {
+      lastScrollPositionRef.current = {
+        x: window.scrollX,
+        y: window.scrollY
+      }
     }
   }
 
@@ -357,9 +368,33 @@ const DropList: FC<IDropListProps> = ({
     }
   }, [safeAreaEnabled, trigger, openList, handleMouseMove])
 
+  // Обработчик для hideOnWindowScroll - закрывает меню при любом скролле окна
+  useEffect(() => {
+    if (!hideOnWindowScroll || !openList || isSpecialList) return
+
+    const handleWindowScroll = () => {
+      if (typeof window === 'undefined') return
+
+      const currentScrollX = window.scrollX
+      const currentScrollY = window.scrollY
+
+      // Проверяем, изменилась ли позиция скролла
+      if (currentScrollX !== lastScrollPositionRef.current.x || currentScrollY !== lastScrollPositionRef.current.y) {
+        closeDropList()
+      }
+    }
+
+    // Используем capture phase для более надежного отслеживания
+    window.addEventListener('scroll', handleWindowScroll, true)
+
+    return () => {
+      window.removeEventListener('scroll', handleWindowScroll, true)
+    }
+  }, [hideOnWindowScroll, openList, isSpecialList])
+
   // Глобальный обработчик скролла для всех элементов с new-id-for-open-list
   useEffect(() => {
-    if (!closeOnScroll || isSpecialList) return
+    if (!closeOnScroll || isSpecialList || hideOnWindowScroll) return
 
     const handleScroll = () => {
       // Находим все элементы с атрибутом new-id-for-open-list
@@ -390,7 +425,7 @@ const DropList: FC<IDropListProps> = ({
     return () => {
       window.removeEventListener('scroll', handleScroll, true)
     }
-  }, [closeOnScroll, scrollThreshold, isSpecialList])
+  }, [closeOnScroll, scrollThreshold, isSpecialList, hideOnWindowScroll])
 
   useEffect(() => {
     if (!positionIsAbsolute && openList) {
@@ -497,7 +532,9 @@ const DropList: FC<IDropListProps> = ({
         parentDropListId: listId,
         onChildHover: handleChildHover,
         dropListId: typedItem.props.dropListId || `${listId}-child-${index}`,
-        scrollThreshold: typedItem.props.scrollThreshold || scrollThreshold
+        scrollThreshold: typedItem.props.scrollThreshold || scrollThreshold,
+        hideOnWindowScroll:
+          typedItem.props.hideOnWindowScroll !== undefined ? typedItem.props.hideOnWindowScroll : hideOnWindowScroll
       } as Partial<IDropListProps>)
     }
 

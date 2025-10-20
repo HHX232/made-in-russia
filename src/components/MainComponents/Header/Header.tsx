@@ -416,6 +416,7 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
 
               <DropList
                 closeOnMouseLeave={true}
+                hideOnWindowScroll={true}
                 extraStyle={{zIndex: '1001'}}
                 arrowClassName={styles.hide_arrow}
                 extraClass={`${styles.extra__header__language_box}`}
