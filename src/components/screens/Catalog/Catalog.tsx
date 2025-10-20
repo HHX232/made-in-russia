@@ -23,6 +23,7 @@ export interface CatalogProps {
   showSearchTitle?: boolean
   specialRoute?: string
   useContainer?: boolean
+  mathMinHeight?: boolean
   customMinHeight?: string
   extraSwiperClass?: string
   searchParams?: {[key: string]: string | string[] | undefined}
@@ -30,6 +31,7 @@ export interface CatalogProps {
 
 const Catalog: FC<CatalogProps> = ({
   initialProducts,
+  mathMinHeight,
   customMinHeight,
   initialHasMore,
   isShowFilters = false,
@@ -397,6 +399,7 @@ const Catalog: FC<CatalogProps> = ({
         )}
         {!usePagesCatalog && (
           <CardsCatalog
+            mathMinHeight={mathMinHeight}
             extraSwiperClass={extraSwiperClass}
             customMinHeight={customMinHeight}
             specialRoute={specialRoute}

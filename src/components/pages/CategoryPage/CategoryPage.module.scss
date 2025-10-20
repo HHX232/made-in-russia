@@ -409,6 +409,7 @@
 .company__slide__item {
   height: fit-content !important;
   min-height: fit-content;
+  padding-bottom: 5px;
   outline: none;
 
   @media (max-width: 600px) {

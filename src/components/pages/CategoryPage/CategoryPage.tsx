@@ -553,8 +553,8 @@ const CategoryPage = ({
           )}
 
           <Catalog
+            mathMinHeight={true}
             extraSwiperClass={styles.extra__swiper__min}
-            customMinHeight='fit-content'
             useContainer={false}
             isShowFilters={false}
             initialProducts={[]}

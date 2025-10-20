@@ -31,6 +31,7 @@ interface CardsCatalogProps {
   isForAdmin?: boolean
   customMinHeight?: string
   extraSwiperClass?: string
+  mathMinHeight?: boolean
 }
 
 interface PageParams {
@@ -48,6 +49,7 @@ interface PageParams {
 }
 
 const SLIDES_COUNT = 5
+const GAP = 22 // Gap между карточками
 
 const CardsCatalog: FC<CardsCatalogProps> = ({
   initialProducts = [],
@@ -60,7 +62,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   direction = 'desc',
   approveStatuses = 'ALL',
   customMinHeight,
-  extraSwiperClass
+  extraSwiperClass,
+  mathMinHeight = false
 }) => {
   const t = useTranslations('CardsCatalogNew')
   const {setCurrentSlide: setCurrentSlideRedux} = useActions()
@@ -105,11 +108,13 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const [sliderHeight, setSliderHeight] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
+  const [cardHeight, setCardHeight] = useState<number | null>(null)
 
   // Refs
   const containerRef = useRef<HTMLDivElement>(null)
   const activeSlideRef = useRef<HTMLDivElement | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
+  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
   // Параметры пагинации
   const [pageParams, setPageParams] = useState<PageParams>({
@@ -290,6 +295,73 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     return `slider-${products.length}-${pages.length}-${sliderPageSize}`
   }, [products.length, pages.length, sliderPageSize])
 
+  // Измерение высоты карточки
+  useEffect(() => {
+    const measureCardHeight = () => {
+      // Берем первую карточку из текущего слайда
+      const firstCard = cardRefs.current.values().next().value
+      if (firstCard) {
+        const height = firstCard.offsetHeight
+        if (height > 0 && height !== cardHeight) {
+          setCardHeight(height)
+          console.log('📏 Card height measured:', height)
+        }
+      }
+    }
+
+    // Измеряем с задержкой, чтобы DOM успел отрендериться
+    const timer = setTimeout(measureCardHeight, 100)
+
+    // Также измеряем при изменении размера окна
+    const resizeObserver = new ResizeObserver(measureCardHeight)
+    const firstCard = cardRefs.current.values().next().value
+    if (firstCard) {
+      resizeObserver.observe(firstCard)
+    }
+
+    return () => {
+      clearTimeout(timer)
+      resizeObserver.disconnect()
+    }
+  }, [pages, currentSlide, width])
+
+  // Вычисление высоты на основе mathMinHeight
+  const calculatedHeight = useMemo(() => {
+    if (!mathMinHeight || !cardHeight) return null
+
+    const currentPage = pages[currentSlide]
+    if (!currentPage) return null
+
+    const itemsCount = currentPage.length
+    const currentWidth = width || 1920
+
+    // Определяем количество элементов в строке в зависимости от ширины
+    let itemsPerRow: number
+    if (currentWidth > 1270) {
+      itemsPerRow = 4 // 8 элементов / 2 строки = 4 элемента в строке
+    } else if (currentWidth > 768) {
+      itemsPerRow = 3 // 9 элементов / 3 строки = 3 элемента в строке
+    } else {
+      itemsPerRow = 2 // 8 элементов / 4 строки = 2 элемента в строке
+    }
+
+    // Вычисляем количество строк
+    const rowsCount = Math.ceil(itemsCount / itemsPerRow)
+
+    // Вычисляем общую высоту: высота карточки * количество строк + gap * (количество строк - 1)
+    const totalHeight = cardHeight * rowsCount + GAP * (rowsCount - 1)
+
+    console.log('📐 Calculated height:', {
+      cardHeight,
+      itemsCount,
+      itemsPerRow,
+      rowsCount,
+      totalHeight
+    })
+
+    return totalHeight
+  }, [mathMinHeight, cardHeight, pages, currentSlide, width])
+
   // Конфигурация слайдера
   const [sliderRef, instanceRef] = useKeenSlider({
     slides: {
@@ -384,6 +456,20 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }
   }, [currentSlide, pages, showSkeleton])
 
+  // Определяем финальную высоту слайдера
+  const finalHeight = useMemo(() => {
+    if (mathMinHeight && calculatedHeight !== null) {
+      return `${calculatedHeight}px`
+    }
+    if (customMinHeight) {
+      return customMinHeight
+    }
+    if (sliderHeight) {
+      return `${sliderHeight}px`
+    }
+    return 'auto'
+  }, [mathMinHeight, calculatedHeight, customMinHeight, sliderHeight])
+
   // Обработчики навигации
   const handlePrevClick = useCallback(() => {
     if (canGoPrev && instanceRef.current) {
@@ -404,6 +490,15 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       }
     }
   }, [canGoNext])
+
+  // Функция для установки рефа карточки
+  const setCardRef = useCallback((key: string, element: HTMLDivElement | null) => {
+    if (element) {
+      cardRefs.current.set(key, element)
+    } else {
+      cardRefs.current.delete(key)
+    }
+  }, [])
 
   if (isError) {
     console.error('❌ Error loading products')
@@ -458,7 +553,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
             key={sliderKey}
             className={`keen-slider ${styled.swiper_wrapper}`}
             style={{
-              minHeight: customMinHeight ? customMinHeight : sliderHeight ? `${sliderHeight}px` : 'auto'
+              minHeight: finalHeight
             }}
           >
             {pages.length > 0 &&
@@ -479,7 +574,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
                       const uniqueKey = `${product.id}-${pageIndex}-${productIndex}`
 
                       return (
-                        <div className={styled.card_wrapper} key={uniqueKey}>
+                        <div ref={(el) => setCardRef(uniqueKey, el)} className={styled.card_wrapper} key={uniqueKey}>
                           <Card
                             isForAdmin={isForAdmin}
                             approveStatus={product?.approveStatus}
