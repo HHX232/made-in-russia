@@ -11,69 +11,69 @@ const HelpPageSocialComponent: FC = () => {
       <h2 className={styles.contacts_social__title}>{t('contacts')}</h2>
       <div className={styles.contacts_social__grid}>
         <div className={styles.contacts_social__col}>
-          <Link href='#' className={styles.contacts_social__item}>
+          <Link href='https://t.me/exporteru' className={styles.contacts_social__item}>
             <div className={styles.contacts_social__network}>
               <svg className={styles.contacts_social__icon_tg}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-tg'></use>
               </svg>
               <span>{t('telegram')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>{t('username')}</div>
+            <div className={styles.contacts_social__nikname}>@exporteru</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
-          <Link href='#' className={styles.contacts_social__item}>
+          <Link href='#vk' className={styles.contacts_social__item}>
             <div className={styles.contacts_social__network}>
               <svg className={styles.contacts_social__icon_vk}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-vk'></use>
               </svg>
               <span>{t('vk')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>{t('username')}</div>
+            <div className={styles.contacts_social__nikname}>@exporteru</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
-          <Link href='#' className={styles.contacts_social__item}>
+          <Link href='#max' className={styles.contacts_social__item}>
             <div className={styles.contacts_social__network}>
               <svg className={styles.contacts_social__icon_max}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-max'></use>
               </svg>
               <span>{t('max')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>{t('username')}</div>
+            <div className={styles.contacts_social__nikname}>@exporteru</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
-          <Link href='#' className={styles.contacts_social__item}>
+          <Link href='#wechat' className={styles.contacts_social__item}>
             <div className={styles.contacts_social__network}>
               <svg className={styles.contacts_social__icon_wechat}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-wechat'></use>
               </svg>
               <span>{t('wechat')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>{t('wechatUsername')}</div>
+            <div className={styles.contacts_social__nikname}>@exporteru</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
-          <Link href='#' className={styles.contacts_social__item}>
+          <Link href='mailto:info@exporteru.com' className={styles.contacts_social__item}>
             <div className={styles.contacts_social__network}>
               <svg className={styles.contacts_social__icon_email}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-email'></use>
               </svg>
               <span>{t('email')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>{t('emailAddress')}</div>
+            <div className={styles.contacts_social__nikname}>info@exporteru.com</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
-          <Link href='#' className={styles.contacts_social__item}>
+          <Link href='tel:+74959833888' className={styles.contacts_social__item}>
             <div className={styles.contacts_social__network}>
               <svg className={styles.contacts_social__icon_phone}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-phone'></use>
               </svg>
               <span>{t('phone')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>{t('emailAddress')}</div>
+            <div className={styles.contacts_social__nikname}>+7-495-983-38-88</div>
           </Link>
         </div>
       </div>

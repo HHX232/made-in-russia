@@ -718,10 +718,7 @@
       "max": "MAX",
       "wechat": "WeChat",
       "email": "E-mail",
-      "phone": "Phone",
-      "username": "@made_in_russia",
-      "wechatUsername": "@made-in-russia",
-      "emailAddress": "info@mail.ru"
+      "phone": "Phone"
     }
   },
   "breadCrumbs": {

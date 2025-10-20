@@ -32,7 +32,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
                   </Link>
                 </li>
                 <li>
-                  <Link className={`${styles.footer__link}`} href='/'>
+                  <Link className={`${styles.footer__link}`} href='/search'>
                     {t('sections.catalog')}
                   </Link>
                 </li>
@@ -50,12 +50,12 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
                   </Link>
                 </li>
                 <li>
-                  <Link className={`${styles.footer__link}`} href='/about-us'>
+                  <Link className={`${styles.footer__link}`} href='/help'>
                     {t('sections.contacts')}
                   </Link>
                 </li>
                 <li>
-                  <Link className={`${styles.footer__link}`} href='/'>
+                  <Link className={`${styles.footer__link}`} href='#reviews'>
                     {t('sections.reviews')}
                   </Link>
                 </li>
@@ -67,11 +67,11 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
             <h3 className={`${styles.footer__title}`}>{t('support.title')}</h3>
             <ul className={`${styles.footer__list}`}>
               <li>
-                <Link className={`${styles.footer__link}`} href='tel:74959833888'>
+                <Link className={`${styles.footer__link}`} href='tel:+74959833888'>
                   <svg className={`${styles.icon} ${styles.icon__phone}`}>
                     <use href='/iconsNew/symbol/sprite.svg#phone'></use>
                   </svg>
-                  <span>7 495 983 38 88</span>
+                  <span>+7-495-983-38-88</span>
                 </Link>
               </li>
               <li>
@@ -87,7 +87,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
                   <svg className={`${styles.icon} ${styles.icon__tg}`}>
                     <use href='/iconsNew/symbol/sprite.svg#tg'></use>
                   </svg>
-                  <span>exporteru</span>
+                  <span>@exporteru</span>
                 </Link>
               </li>
             </ul>
@@ -124,7 +124,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
             <h3 className={`${styles.footer__title} ${styles.footer__title_social}`}>{t('social.title')}</h3>
             <div className={`${styles.footer__social}`}>
               <Link
-                href='#'
+                href='#vk'
                 className={`${styles.footer__social_link} ${styles.footer__social_link_vk}`}
                 aria-label='VK'
               >
@@ -141,7 +141,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
               </Link>
 
               <Link
-                href='#'
+                href='https://t.me/exporteru'
                 className={`${styles.footer__social_link} ${styles.footer__social_link_tg}`}
                 aria-label='Telegram'
               >
@@ -154,7 +154,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
               </Link>
 
               <Link
-                href='#'
+                href='https://wa.me/79859233888'
                 className={`${styles.footer__social_link} ${styles.footer__social_link_whatsapp}`}
                 aria-label='WhatsApp'
               >
@@ -168,7 +168,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
               </Link>
 
               <Link
-                href='#'
+                href='#max'
                 className={`${styles.footer__social_link} ${styles.footer__social_link_max}`}
                 aria-label='Max'
               >
@@ -183,7 +183,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
               </Link>
 
               <Link
-                href='#'
+                href='#wechat'
                 className={`${styles.footer__social_link} ${styles.footer__social_link_wechat}`}
                 aria-label='WeChat'
               >
@@ -222,7 +222,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
         </div>
 
         <div className={`${styles.footer__bottom}`}>
-          <Link href='main.html' className={`${styles.footer__logo}`}>
+          <Link href='/' className={`${styles.footer__logo}`}>
             <Image src='/imagesNew/logo.png' width={190} height={70} alt='Logo' />
           </Link>
           <p className={`${styles.footer__copyright}`}>© 2021-2025 Exporteru</p>

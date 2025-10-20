@@ -828,10 +828,7 @@
         "max": "MAX",
         "wechat": "微信",
         "email": "电子邮箱",
-        "phone": "电话",
-        "username": "@made_in_russia",
-        "wechatUsername": "@made-in-russia",
-        "emailAddress": "info@mail.ru"
+        "phone": "电话"
       }
     },
     "breadCrumbs": {
