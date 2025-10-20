@@ -148,6 +148,7 @@
     font-weight: 400;
     gap: rem(10);
     line-height: 200%;
+    white-space: nowrap;
 
     @include sm {
       font-size: rem(12);

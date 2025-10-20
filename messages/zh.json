@@ -1,8 +1,8 @@
 {
   "HomePage": {
     "title": "你好世界！",
-    "profile": "转到个人资料页",
-    "search": "网站搜索",
+    "profile": "前往个人资料页面",
+    "search": "搜索网站",
     "login": "登录",
     "category": "分类",
     "reviews": "评论",
@@ -11,9 +11,10 @@
     "help": "帮助",
     "contacts": "联系方式",
     "more": "更多",
-    "noResults": "未找到结果",
+    "noResults": "未找到任何内容",
+    "catalog": "目录",
     "searchLoading": "搜索中...",
-    "noResultsCatalog": "未找到符合您搜索条件的结果"
+    "noResultsCatalog": "未找到符合您查询的内容"
   },
   "Footer": {
     "ugreement": "用户协议",
@@ -27,21 +28,21 @@
     "filtersReset": "重置"
   },
   "LoginPage": {
-    "loginWithTelegram": "通过 Telegram 登录",
+    "loginWithTelegram": "通过Telegram登录",
     "loginTitle": "登录账户",
     "loginAccount": "账户",
     "loginPassword": "密码",
     "loginButton": "登录",
-    "loginForgotPassword": "忘记密码？找回密码",
+    "loginForgotPassword": "忘记密码？恢复",
     "loginRegister": "注册",
     "loginWithSocial": "通过以下方式登录：",
-    "writeEmailOrNickname": "邮箱/用户名",
+    "writeEmailOrNickname": "输入邮箱",
     "writePassword": "输入密码",
     "passwordError": "密码至少需要6个字符",
-    "nicknameError": "请输入用户名或邮箱",
-    "autorithationError": "用户名或密码错误",
-    "authorizationErrorTelegram": "Telegram 授权错误",
-    "decorationImage": "装饰图片 '大量材料'",
+    "nicknameError": "请输入姓名或邮箱",
+    "autorithationError": "用户名或密码无效",
+    "autorithationErrorTelegram": "Telegram认证错误",
+    "decorationImage": "装饰图片'大量材料'",
     "loading": "加载中..."
   },
   "RegisterUserPage": {
@@ -49,35 +50,35 @@
     "adressPlaceholder": "输入地址...",
     "adress": "公司地址",
     "successTitleTG": "成功！",
-    "successBodyTG": "机器人已在Telegram上给您发送了消息！请查看。",
+    "successBodyTG": "机器人已在Telegram上给您发送消息！请查看",
     "errorTitleTG": "Telegram错误",
-    "errorPrefixTG": "机器人无法向您发送消息",
+    "errorPrefixTG": "机器人无法给您发送消息",
     "Belarus": "白俄罗斯",
     "Kazakhstan": "哈萨克斯坦",
-    "China": "中国",
     "chooseUserType": "选择账户类型",
     "imBuyer": "我是买家",
-    "imExporter": "我是出口商公司",
+    "imExporter": "我是出口公司",
+    "China": "中国",
     "Russia": "俄罗斯",
     "registerTitle": "注册",
-    "registerTitleCompany": "企业注册",
+    "registerTitleCompany": "公司注册",
     "registerRegion": "国家/地区",
-    "registerFullName": "登录",
+    "registerFullName": "用户名",
     "password": "账户密码",
+    "passwordPlaceholder": "输入密码，6-20个字符",
     "phoneNumber": "手机号码",
-    "passwordPlaceholder": "输入密码, 6-20个字符",
     "imVendor": "我是卖家",
     "passwordError": "密码至少需要6个字符",
     "imUser": "我是买家",
-    "haveAccount": "已有账号？登录！",
+    "haveAccount": "已有账户？登录！",
     "email": "邮箱",
     "emailDescription": "建议使用企业邮箱。",
     "checkPolicy": "我同意用户协议和隐私政策。",
-    "emailError": "邮箱必须包含 '@' 和域名后缀",
-    "codeText": "验证码已发送至您的邮箱",
-    "nameError": "姓名不应包含数字或特殊字符",
+    "emailError": "邮箱必须包含@和扩展名",
+    "nameError": "姓名不得包含数字或特殊字符",
+    "codeText": "确认码已发送到您的电子邮件地址",
+    "haveProblemWithCode": "接收验证码有问题？",
     "defaultRegisterError": "注册错误",
-    "haveProblemWithCode": "收不到验证码？",
     "loading": "加载中...",
     "next": "下一步",
     "emailNext": "邮箱验证",
@@ -85,17 +86,17 @@
     "inn": "公司税号",
     "innPlaceholder": "输入公司税号",
     "innError": "税号至少需要9位数字",
-    "companyCountryes": "业务所在国家",
+    "companyCountryes": "业务国家",
     "companyCountryesPlaceholder": "选择国家...",
     "companyName": "公司名称",
     "companyNamePlaceholder": "输入公司名称...",
     "companyNameError": "公司名称至少需要3个字符",
     "companyTel": "联系电话",
     "corporateEmail": "企业邮箱",
-    "corporateEmailPlaceholder": "请输入企业邮箱...",
-    "categories": "商品类别",
-    "categoriesPlaceholder": "请选择商品类别...",
-    "categoriesSubtext": "选择贵公司经营的主要产品类别"
+    "corporateEmailPlaceholder": "输入企业邮箱...",
+    "categories": "产品类别",
+    "categoriesPlaceholder": "选择产品类别...",
+    "categoriesSubtext": "选择您公司经营的主要产品类别"
   },
   "MinimalHeader": {
     "category": "分类",
@@ -103,107 +104,102 @@
     "delivery": "配送",
     "about-us": "关于我们",
     "help": "帮助",
-    "contacts": "联系方式",
-    "success": "成功！",
-    "successDel": "商品已成功删除",
-    "error": "错误！",
-    "errorDel": "删除商品时出错"
+    "contacts": "联系方式"
   },
   "AboutUsPage": {
     "title": "关于我们",
-    "firstParagraph": "Exporteru是一个旨在促进俄罗斯制造产品出口的在线服务平台。专注于企业领域（B2B），我们在国际舞台上促进公司之间的互动。",
-    "secondParagraph": "我们的专长是通过多功能在线平台为您寻找外国合作伙伴。这对于不同规模、来自不同行业和地区的企业来说，是连接到快速发展的全球市场的绝佳机会。",
-    "thirdParagraph": "在从产品上架到签订出口合同的各个阶段，为您的公司提供全面的支持与陪伴。在使用服务的整个期间，将为您分配一位专属客户经理。",
-    "fourthParagraph": "我们的主要目标是增加您的国际销售额！在工作过程中，我们确定您进行出口操作的主要需求，并尽一切努力满足这些需求。",
-    "fifthParagraph": "立即开始与我们合作出口，您将自动进入来自中国、土耳其和东南亚国家买家的视野。",
+    "firstParagraph": "Exporteru是一个在线服务平台，旨在促进俄罗斯制造产品的出口。专注于企业对企业（B2B）领域，我们促进国际舞台上公司之间的互动。",
+    "secondParagraph": "我们的专长是通过多功能在线平台为您寻找外国合作伙伴。这对于不同规模、不同行业和地区的企业来说是一个很好的机会，可以连接到动态发展的全球市场。",
+    "thirdParagraph": "在所有阶段为您的公司提供全面的支持和协助 - 从在资源上放置商品到签订出口合同。在使用服务的整个期间，您将被分配一名专属经理。",
+    "fourthParagraph": "我们的主要目标是增加您的国际销售！在此过程中，我们确定您进行出口业务的主要需求，并尽一切努力满足这些需求。",
+    "fifthParagraph": "今天就开始与我们一起出口，您将自动引起来自中国、土耳其和东南亚国家买家的关注。",
     "mission": "我们的使命",
     "mainGoal": "我们的主要目标",
-    "efficiency": "每笔交易的效率与控制",
-    "unifiedCenter": "满足所有原材料需求的统一中心",
-    "joinTitle": "加入Exporteru，为您的业务开拓新视野",
+    "efficiency": "每笔交易的效率和控制",
+    "unifiedCenter": "所有原材料需求的统一中心",
+    "joinTitle": "加入Exporteru，为您的业务开辟新视野",
     "becomePartner": "成为合作伙伴"
   },
   "ProfilePage": {
+    "noFavorites": "没有收藏的产品",
+    "personalCabinet": "个人账户",
     "personalData": "个人资料",
     "registrationDate": "注册日期",
     "myReviews": "我的评论",
-
     "belarus": "白俄罗斯",
-    "白俄罗斯": "白俄罗斯",
+    "беларусь": "白俄罗斯",
     "kazakhstan": "哈萨克斯坦",
-    "哈萨克斯坦": "哈萨克斯坦",
+    "казахстан": "哈萨克斯坦",
     "china": "中国",
-    "中国": "中国",
+    "китай": "中国",
     "russia": "俄罗斯",
-    "俄罗斯": "俄罗斯",
+    "россия": "俄罗斯",
     "createAvatarSuccess": "头像创建成功！",
     "deleteAvatarSuccess": "头像删除成功！",
-    "createAvatarError": "头像创建失败！",
-    "deleteAvatarError": "头像删除失败！",
+    "createAvatarError": "头像创建错误！",
+    "deleteAvatarError": "头像删除错误！",
     "mySessions": "我的会话",
     "deviceType": "设备类型",
     "browser": "浏览器",
     "os": "操作系统",
-    "lastLoginDate": "上次登录",
+    "lastLoginDate": "最后登录",
     "paymentsMethods": "支付方式",
     "paymentsMethodsTitle": "支付方式",
     "congratulations": "恭喜！",
     "dataSuccessfullyChanged": "数据修改成功！",
     "dataErrorChange": "数据修改错误！",
-    "wannaGetOut": "确定要退出登录吗？",
+    "wannaGetOut": "您确定要退出吗？",
     "yes": "是",
     "no": "否",
-    "logout": "退出登录",
+    "logout": "退出",
     "cancel": "取消",
     "deleteAccount": "删除账户",
     "deleteAccountTitle": "删除账户",
-    "deleteAccountDescription": "确定要删除账户吗？",
+    "deleteAccountDescription": "您确定要删除账户吗？",
     "deleteAccountButton": "删除账户",
     "deleteAccountButtonCancel": "取消",
     "quit": "退出",
     "quitTitle": "退出",
     "save": "保存",
-    "favorites": "收藏夹",
+    "favorites": "收藏",
     "recentlyViewed": "最近浏览",
-    "notHaveRecentlyViewed": "暂无浏览记录",
+    "notHaveRecentlyViewed": "没有浏览过的产品",
     "shopping": "{memberSince, date, short}",
     "saw": "注册日期",
-    "errorLoadingProfile": "加载资料错误",
-    "products": "商品",
+    "errorLoadingProfile": "个人资料加载错误",
+    "products": "产品",
     "deletedSuccess": "删除成功！",
-    "deletedError": "删除失败！",
-    "deleting": "正在删除...",
+    "deletedError": "删除错误！",
+    "deleting": "删除中...",
     "defaultError": "错误！",
-    "publishing": "发布中…",
-
     "ProfileForm": {
       "address": "地址",
       "addressPlaceholder": "输入地址",
       "belarus": "白俄罗斯",
-      "白俄罗斯": "白俄罗斯",
+      "беларусь": "白俄罗斯",
       "kazakhstan": "哈萨克斯坦",
-      "哈萨克斯坦": "哈萨克斯坦",
+      "казахстан": "哈萨克斯坦",
       "china": "中国",
-      "中国": "中国",
+      "китай": "中国",
       "russia": "俄罗斯",
-      "俄罗斯": "俄罗斯",
+      "россия": "俄罗斯",
       "phoneNumber": "手机号码",
-      "errorLoadingCAtegoryes": "加载类别错误",
-      "codeInEmail": "验证码已发送至邮箱",
-      "errorUpdatePassword": "修改密码错误！",
+      "errorLoadingCAtegoryes": "类别加载错误",
+      "codeInEmail": "验证码已发送到邮箱",
+      "errorUpdatePassword": "密码修改错误！",
       "dontChangePassword": "密码未修改！",
       "passwordChangeSuccess": "密码修改成功！",
-      "wannaChangePassword": "要修改密码吗？",
+      "wannaChangePassword": "修改密码？",
       "enterCodeFromEmail": "输入发送到您邮箱的验证码",
       "password": "密码",
       "createNewPassword": "创建新密码？",
       "regions": "国家/地区",
       "selectRegions": "选择国家...",
-      "categoryes": "商品类别",
-      "selectCategoryes": "选择商品类别...",
+      "categoryes": "产品类别",
+      "selectCategoryes": "选择产品类别...",
       "inn": "税号",
       "innPlaceholder": "输入税号",
-      "innError": "税号必须至少包含9位数字",
+      "innError": "税号至少需要9位数字",
       "congratulations": "恭喜！"
     },
     "ProfilePageBottomDelivery": {
@@ -212,40 +208,49 @@
     },
     "ProfilePageBottomHelp": {
       "title": "常见问题",
-      "service": "服务与帮助",
-      "support": "联系客服",
-      "quest": "常见问题解答",
+      "service": "服务和支持",
+      "support": "联系支持",
+      "quest": "常见问题",
       "questNotFoundTitle": "未找到问题",
-      "questNotFoundValue": "请稍后再查看该版块，或联系技术支持！"
+      "questNotFoundValue": "请稍后查看，或联系技术支持！"
     }
   },
-
+  "ProfilePageBottomDelivery": {
+    "title": "我的评论",
+    "noReviews": "没有评论"
+  },
+  "ProfilePageBottomHelp": {
+    "title": "常见问题",
+    "service": "服务和支持",
+    "support": "联系支持",
+    "quest": "常见问题",
+    "questNotFoundTitle": "未找到问题",
+    "questNotFoundValue": "请稍后查看，或联系技术支持！"
+  },
   "VendorPage": {
     "personalData": "个人资料",
-    "rating": "评分",
+    "rating": "评级",
     "description": "描述",
     "photos": "照片",
     "contacts": "联系方式",
-    "mySessions": "我的课程",
-    "reviews": "评价",
+    "mySessions": "我的会话",
+    "reviews": "评论",
     "faq": "常见问题",
-    "createProduct": "创建商品",
-
+    "createProduct": "创建产品",
     "deviceType": "设备类型",
     "browser": "浏览器",
     "os": "操作系统",
-    "lastLoginDate": "上次登录",
+    "lastLoginDate": "最后登录",
     "wannaGetOut": "您确定要退出吗？",
     "logout": "退出",
     "cancel": "取消",
-
-    "invalidPhone": "电话号码必须至少有7个字符",
-    "invalidEmail": "电子邮件必须包含 @ 和 .",
     "descriptionPlaceholder": "公司描述",
-    "additionalContacts": "附加联系方式",
+    "invalidEmail": "邮箱必须包含@和.",
+    "invalidPhone": "电话号码至少需要7个字符",
+    "additionalContacts": "其他联系方式",
     "phones": "电话",
-    "phoneInputTitle": "输入电话号码",
-    "emails": "电子邮件",
+    "phoneInputTitle": "输入电话",
+    "emails": "邮箱",
     "emailInputTitle": "输入邮箱",
     "sites": "网站",
     "siteInputTitle": "输入网站",
@@ -255,735 +260,731 @@
     "kazakhstan": "哈萨克斯坦",
     "china": "中国",
     "russia": "俄罗斯",
-    "favorites": "收藏夹",
-    "help": "支持",
+    "favorites": "收藏",
+    "help": "联系支持",
     "quest": "常见问题",
     "addQuest": "添加问题",
     "questNotFoundTitle": "未找到问题",
-    "questNotFoundValue": "请稍后查看，或联系客服！",
-    "accountViews": "本月账户浏览次数",
-    "accountComments": "本月评论和评分",
+    "questNotFoundValue": "请稍后查看，或联系技术支持！",
+    "accountViews": "每月账户浏览量",
+    "accountComments": "评论 - zh",
     "comments": "评论",
-    "loadComments": "正在加载评论...",
-    "noComments": "暂无商品评价",
-    "loadMoreCommets": "正在加载更多评价...",
-    "myProducts": "我的商品",
-    "noMyProducts": "卖家的商品",
+    "loadComments": "加载评论中...",
+    "noComments": "暂无产品评论",
+    "loadMoreCommets": "加载更多评论...",
+    "myProducts": "我的产品",
+    "noMyProducts": "卖家产品",
     "question": "问题",
     "answer": "答案",
     "success": "成功！",
-    "successPublishedNewQuest": "问答已发布",
+    "successPublishedNewQuest": "问题/答案已发布",
     "errorCreatFaq": "创建问题时出错",
-    "sucessDeleatFaq": "问题已成功删除",
+    "sucessDeleatFaq": "问题删除成功",
     "errorDeleatFaq": "删除问题时出错"
   },
   "Favorites": {
-    "title": "收藏夹",
-    "noFavorites": "没有收藏的商品"
+    "title": "收藏",
+    "noFavorites": "没有收藏的产品"
   },
   "CardPage": {
     "PurchaseModal": {
-      "title": "下单",
+      "title": "下订单",
       "fields": {
         "name": "姓名",
-        "email": "电子邮箱",
+        "email": "邮箱",
         "phone": "电话号码",
         "quantity": "数量"
       },
-      "ProfilePageBottomDelivery": {
-        "title": "我的评论",
-        "noReviews": "没有评论"
+      "placeholders": {
+        "name": "输入您的姓名",
+        "email": "example@email.com",
+        "phone": "+7 (999) 123-45-67",
+        "quantity": "最少 {minimum}"
       },
-      "ProfilePageBottomHelp": {
-        "title": "常见问题",
-        "service": "服务与帮助",
-        "support": "联系客服",
-        "quest": "常见问题解答",
-        "questNotFoundTitle": "未找到问题",
-        "questNotFoundValue": "请稍后再查看该版块，或联系技术支持！"
+      "errors": {
+        "nameRequired": "姓名为必填项",
+        "emailRequired": "邮箱为必填项",
+        "emailInvalid": "邮箱格式无效",
+        "quantityMinimum": "最少数量：{minimum}"
+      },
+      "priceInfo": {
+        "range": "范围",
+        "unitPrice": "单价",
+        "totalPrice": "总金额"
+      },
+      "buttons": {
+        "cancel": "取消",
+        "submit": "提交申请"
       }
     },
-    "VendorPage": {
-      "invalidPhone": "电话号码必须至少有7个字符",
-      "invalidEmail": "电子邮件必须包含 @ 和 .",
-      "descriptionPlaceholder": "公司描述",
-      "additionalContacts": "附加联系方式",
-      "phones": "电话",
-      "phoneInputTitle": "输入电话号码",
-      "emails": "电子邮件",
-      "emailInputTitle": "输入邮箱",
-      "sites": "网站",
-      "siteInputTitle": "输入网站",
-      "save": "保存",
-      "create": "创建产品",
-      "belarus": "白俄罗斯",
-      "kazakhstan": "哈萨克斯坦",
-      "china": "中国",
-      "russia": "俄罗斯",
-      "favorites": "收藏夹",
-      "help": "支持",
-      "quest": "常见问题",
-      "addQuest": "添加问题",
-      "questNotFoundTitle": "未找到问题",
-      "questNotFoundValue": "请稍后查看，或联系客服！",
-      "accountViews": "本月账户浏览次数",
-      "accountComments": "本月评论和评分",
-      "comments": "评论",
-      "loadComments": "正在加载评论...",
-      "noComments": "暂无商品评价",
-      "loadMoreCommets": "正在加载更多评价...",
-      "myProducts": "我的商品",
-      "noMyProducts": "卖家的商品",
-      "question": "问题",
-      "answer": "答案",
+    "CardTopPage": {
+      "from": "来自",
+      "daysBeforeDiscountExpires": "天促销结束",
+      "successCallback": "申请提交成功！",
+      "errorCallback": "提交申请时出错！需要注册",
+      "successCreateOrder": "订单创建成功！",
+      "successCreateBody": "请等待，卖家很快会联系您",
+      "errorCreateOrder": "创建订单时出错",
+      "addressTitle": "地址",
+      "addressAlternative": "未指定地址",
+      "innTitle": "税号",
+      "countriesTitle": "业务国家",
+      "description": "描述",
+      "showTelephone": "显示电话",
+      "showOnEmail": "发送邮件",
+      "RequestCallback": "请求回电",
+      "showVendorData": "卖家联系方式",
+      "company": "公司",
+      "title": "产品标题在此",
+      "revues": "评论",
+      "lookLoike": "相似：",
+      "articul": "货号",
+      "podrobnee": "更多详情",
+      "days": "天",
+      "discountDate": "距折扣结束",
+      "minimumOrderQuantity": "最小订购量",
+      "byNow": "立即购买",
+      "deliveryMethodsInfo": "配送信息",
+      "packagingOptions": "包装选项"
+    },
+    "CardMiddlePage": {
+      "description": "描述",
+      "technicalCharacteristics": "技术规格：",
+      "companyDescription": "供应商信息",
+      "deliveryDescription": "配送信息",
+      "emptyAddress": "未指定地址",
+      "INN": "税号"
+    },
+    "CardBottomPage": {
       "success": "成功！",
-      "successPublishedNewQuest": "问答已发布",
-      "errorCreatFaq": "创建问题时出错",
-      "sucessDeleatFaq": "问题已成功删除",
-      "errorDeleatFaq": "删除问题时出错"
-    },
-    "Favorites": {
-      "title": "收藏夹",
-      "noFavorites": "没有收藏的商品"
-    },
-    "CardPage": {
-      "PurchaseModal": {
-        "title": "下单",
-        "fields": {
-          "name": "姓名",
-          "email": "电子邮箱",
-          "phone": "电话号码",
-          "quantity": "数量"
-        },
-        "placeholders": {
-          "name": "请输入您的姓名",
-          "email": "example@email.com",
-          "phone": "+7 (999) 123-45-67",
-          "quantity": "最少 {minimum} 件"
-        },
-        "errors": {
-          "nameRequired": "姓名必须填写",
-          "emailRequired": "电子邮箱必须填写",
-          "emailInvalid": "邮箱格式不正确",
-          "quantityMinimum": "最低数量：{minimum}"
-        },
-        "priceInfo": {
-          "range": "范围",
-          "unitPrice": "单价",
-          "totalPrice": "总金额"
-        },
-        "buttons": {
-          "cancel": "取消",
-          "submit": "提交申请"
-        }
-      },
-      "CardTopPage": {
-        "successCreateOrder": "订单创建成功！",
-        "successCreateBody": "请稍候，卖家会很快联系您。",
-        "errorCreateOrder": "创建订单时出错",
-        "addressTitle": "地址",
-        "addressAlternative": "未指定地址",
-        "innTitle": "税号",
-        "countriesTitle": "业务所在国家",
-        "description": "描述",
-        "showTelephone": "显示电话号码",
-        "showOnEmail": "发送电子邮件",
-        "RequestCallback": "请求回电",
-        "showVendorData": "卖家联系方式",
-        "company": "公司",
-        "title": "商品标题",
-        "revues": "评论",
-        "lookLoike": "类似商品：",
-        "days": "天",
-        "articul": "商品编号",
-        "podrobnee": "更多详情",
-        "discountDate": "折扣截止时间",
-        "minimumOrderQuantity": "最低订购量",
-        "byNow": "立即购买",
-        "deliveryMethodsInfo": "配送信息",
-        "packagingOptions": "包装选项"
-      },
-      "CardMiddlePage": {
-        "description": "商品描述",
-        "technicalCharacteristics": "技术参数：",
-        "companyDescription": "供应商资料",
-        "deliveryDescription": "航运资料",
-        "emptyAddress": "地址未指定",
-        "INN": "客栈"
-      },
-      "CardBottomPage": {
-        "success": "成功！",
-        "successPublished": "评论已提交审核",
-        "errorPublished": "发布评论时出错",
-        "errorPublishedText": "发布前需先联系卖家, 且账户年龄不得少于7天",
-        "revues": "评价",
-        "questions": "提问",
-        "noComments": "暂无评论，快来抢沙发！",
-        "pleaseCreateComment": "请分享您对该商品的使用体验",
-        "writeCommentPlaceholder": "请输入评论...",
-
-        "defaultError": "错误",
-        "fileUploadErrorType": "文件 {fileName} 格式不受支持",
-        "fileUploadErrorTypeSubtext": "文件格式不受支持",
-        "svgError": "不支持上传 SVG 文件",
-        "bigImage": "图片大小超过了 5MB 限制",
-        "bigVideo": "视频大小超过了 200MB 限制",
-        "bigFiles": "最多只能上传 {maxFilesCount} 个文件"
-      }
-    },
-    "NotFoundPage": {
-      "goBack": "返回首页",
-      "mainText": "页面未找到或已被删除。请检查网址或返回首页。"
-    },
-    "createCard": {
-      "mg": "毫克",
-      "g": "克",
-      "kg": "千克",
-      "c": "公担",
-      "t": "吨",
-      "ml": "毫升",
-      "l": "升",
-      "hl": "百升",
-      "m3": "米³",
-      "m2": "米²",
-      "cm2": "厘米²",
-      "pcs": "件",
-      "pack": "包",
-      "m": "米",
-      "cm": "厘米",
-      "pair": "对",
-      "set": "套",
-      "box": "盒",
-      "languageForInput": "商品输入语言",
-      "languageForInputSubtitle": "至少需要填写一种语言",
-      "alternativeMainDescr": "主要描述",
-      "alternativeAdditionalDescr": "附加描述（可选）",
-      "validateError": "验证错误",
-      "error": "错误",
-      "categoryError": "请选择商品类别",
-      "elCount": "件",
-      "updateCardProcess": "更新商品中...",
-      "saveCardProcess": "保存商品中...",
-      "gratulation": "恭喜！",
-      "cardSuccess": "商品已",
-      "successCreateCardEndText": "成功创建！",
-      "successUpdateCardEndText": "成功更新！",
-      "saveError": "保存错误",
-      "saveErrorText": "保存商品时出错",
-      "createCardTitle": "创建商品",
-      "name": "名称",
-      "altHelpWithName": "名称帮助",
-      "categoryTitle": "商品类别",
-      "imageCard": "商品图片",
-      "altHelpWithImageCard": "商品图片帮助",
-      "similarProducts": "类似商品",
-      "altHelpWithSimilarProducts": "类似商品帮助",
-      "save": "保存",
-
-      "titleError": "商品标题必填",
-      "minimumImages": "至少需要1张图片",
-      "now": "现在",
-      "onePriceError": "至少添加一个价格",
-      "descriptionError": "描述必填",
-      "characteristicError": "至少填写一行特性表格",
-      "topDescrError": "公司顶部描述必填",
-      "bottomError": "公司底部描述必填",
-      "companyImagesError": "至少上传一张公司图片",
-      "altTextImagesError": "所有上传的图片必须包含描述",
-      "oneFaqError": "至少添加一个问答",
-      "fullFaqError": "每个问题必须有答案，反之亦然"
-    },
-    "CreateCardPriceElementsText": {
-      "daysBeforeSale": "请输入促销结束前的天数",
-      "daysBeforeSaleNotMinus": "天数必须为正数",
-      "minimalVolume": "请输入最低订购量",
-      "pricesList": "商品价格表",
-      "elementCount": "数量",
-      "originalPrice": "原价（无折扣）",
-      "priceWithDiscount": "折扣价",
-      "currency": "货币",
-      "unit": "计量单位",
-      "characteristickTable": "描述与特性表",
-      "title": "标题",
-      "characteristic": "特性",
-      "infoAboutPrices": "价格信息",
-      "daysCountBeforeSale": "促销结束前天数",
-      "daysCountBeforeSalePlaceholder": "距离结束 ... 天",
-      "minimalVolumeTitle": "最低订购量",
-      "minimalVolumePlaceholder": "最低订购量 ...",
-      "deliveryInfo": "配送信息",
-      "daysDelivery": "配送时间",
-      "packagingOptions": "包装选项",
-      "price": "价格"
-    },
-    "CreateCardProductCategory": {
-      "errorLoadingCategories": "加载分类错误",
-      "loadingCategories": "正在加载分类...",
-      "emptyCategory": "未选择分类",
-      "removeCategory": "删除分类",
-      "categoryNotFound": "未找到分类",
-      "foundCategoryProcessing": "正在搜索分类...",
-      "notFoundCategories": "未找到类别",
-      "notFoundItems": "未找到项目",
-      "tryChangeSearch": "请尝试更改搜索",
-      "searchCategories": "搜索类别...",
-      "searchItems": "搜索项目...",
-      "clearAll": "清除所有",
-      "ready": "完成"
-    },
-    "CreateCompanyDescription": {
-      "infoAboutCompany": "公司信息",
-      "infoAboutCompanyPlaceholder": "公司描述",
-      "descriptionPlaceholder": "描述",
-      "descriptionCompanyPlaceholder": "公司描述"
-    },
-    "CreateDescription": {
-      "descriptionPlaceholder": "描述",
-      "writeDescription": "输入描述...",
-      "secondDescr": "附加描述 ",
-      "secondDescrSpan": "可选",
-      "writeSecondDescr": "输入附加描述..."
-    },
-    "CreateFaqCard": {
-      "question": "问题",
-      "answer": "答案",
-      "faqTitle": "빠른 질문"
-    },
-    "CategoryMenu": {
-      "isEmptyAll": "未找到分类",
-      "categoryBack": "☰ 分类",
-      "backButton": "← 返回",
-      "subCategoryEmpty": "无子分类",
-      "categoryTitle": "分类",
-      "noElements": "暂无内容"
-    },
-    "PromoItem": {
-      "goToCategory": "进入分类",
-      "title": "热门分类"
-    },
-    "CardComponent": {
-      "defaultTitle": "优惠商品",
-      "cardImageAlt": "商品图片",
-      "saw": "查看",
-      "edit": "编辑",
-      "success": "成功！",
-      "successDel": "商品已成功删除",
-      "error": "错误！",
-      "errorDel": "删除商品时出错",
-      "successUpdateStatus": "产品状态已更新为",
-      "errorUpdateStatus": "更新状态时出错",
-      "PENDING": "审核中",
-      "APPROVED": "已批准",
-      "REJECTED": "已拒绝"
-    },
-    "Admin": {
-      "Ads": {
-        "loadingError": "加载广告时出错"
-      }
-    },
-    "Privacy": {
-      "policyTitle": "个人数据处理政策",
-      "back": " 返回",
-      "download": " 下载《个人数据处理政策》文件",
-
-      "policyLists": {
-        "1": {
-          "title": "一般规定",
-          "text": "本《个人数据处理政策》是根据2006年7月27日第152-FZ号《个人数据法》的要求制定的（以下简称《个人数据法》），并规定了有限责任公司“EXPORTERU”（以下简称“运营方”）处理个人数据的程序和为确保个人数据安全所采取的措施。",
-          "1-1": "运营方的首要目标和开展活动的条件是遵守在处理个人数据时的人权和公民权利与自由，包括保护隐私权、个人和家庭秘密。",
-          "1-2": "本运营方关于个人数据处理的政策（以下简称“政策”）适用于运营方可能获得的关于网站 https://exporteru.com 访问者的所有信息。"
-        },
-        "2": {
-          "title": "政策中使用的基本概念",
-          "text": "",
-          "2-1": "个人数据的自动化处理 —— 使用计算机技术对个人数据进行处理。",
-          "2-2": "个人数据的封锁 —— 暂时停止个人数据的处理（除非处理是为了澄清个人数据所必需）。",
-          "2-3": "网站 —— 在互联网上通过地址 https://exporteru.com 可访问的图形和信息资料，以及计算机程序和数据库的集合。",
-          "2-4": "个人数据信息系统 —— 包含在数据库中的个人数据及其处理所使用的信息技术和技术手段的集合。",
-          "2-5": "个人数据的去标识化 —— 使得在没有附加信息的情况下无法确定个人数据属于特定用户或其他个人数据主体的行为。",
-          "2-6": "个人数据处理 —— 使用或不使用自动化工具对个人数据进行的任何操作（操作集合），包括收集、记录、系统化、积累、存储、澄清（更新、修改）、提取、使用、传输（传播、提供、访问）、去标识化、封锁、删除、销毁。",
-          "2-7": "运营方 —— 独立或与他人共同组织和/或进行个人数据处理，并确定个人数据处理目的、需处理的个人数据组成以及对个人数据进行的操作的国家机关、地方机关、法人或自然人。",
-          "2-8": "个人数据 —— 与网站 https://exporteru.com 的特定或可识别用户直接或间接相关的任何信息。",
-          "2-9": "个人数据主体允许传播的个人数据 —— 个人数据主体根据《个人数据法》规定的方式同意处理并向不特定人群开放的个人数据。",
-          "2-10": "用户 —— 网站 https://exporteru.com 的任何访问者。",
-          "2-11": "个人数据的提供 —— 旨在向特定人或特定人群披露个人数据的行为。",
-          "2-12": "个人数据的传播 —— 旨在向不特定人群披露个人数据（个人数据的传输）或使不特定人群能够获取个人数据的行为。",
-          "2-13": "个人数据跨境传输 —— 将个人数据传输到外国国家的政府机关、外国自然人或外国法人。",
-          "2-14": "个人数据销毁 —— 导致个人数据不可逆销毁且无法恢复的任何行为。"
-        },
-        "3": {
-          "title": "运营方的基本权利和义务",
-          "text": "",
-          "3-1": "运营方有权：— 从个人数据主体处获取可靠的信息和/或文件；— 在法律规定的情况下未经主体同意继续处理个人数据；— 独立确定履行义务的措施和内容。",
-          "3-2": "运营方必须：— 根据请求向个人数据主体提供其数据的信息；— 按法律组织处理；— 回复主体的请求；— 根据要求向主管机关提供信息；— 发布本政策；— 采取措施保护个人数据；— 在法律规定的情况下停止传输和销毁数据；— 履行法律规定的其他义务。"
-        },
-        "4": {
-          "title": "个人数据主体的基本权利和义务",
-          "4-1": "个人数据主体有权：— 获得其个人数据处理的信息；— 要求澄清、封锁或销毁数据；— 对将数据用于营销目的设定同意条件；— 撤回同意；— 对运营方的行为或不作为提出申诉；— 行使法律规定的其他权利。",
-          "4-2": "个人数据主体必须：— 向运营方提供准确的个人信息；— 通知其数据的变更。",
-          "4-3": "提供虚假信息或未经他人同意提供他人信息的个人，将根据俄罗斯联邦法律承担责任。"
-        },
-        "5": {
-          "title": "个人数据处理原则",
-          "text": "",
-          "5-1": "个人数据处理基于合法和公平的基础进行。",
-          "5-2": "个人数据处理限于实现特定、预先确定且合法的目的。",
-          "5-3": "不允许合并具有不兼容处理目的的数据库。",
-          "5-4": "仅处理符合处理目的的个人数据。",
-          "5-5": "处理的数据内容和范围应符合处理目的。",
-          "5-6": "确保个人数据的准确性、充分性和时效性。",
-          "5-7": "个人数据的存储时间不得超过处理目的所需的期限。达到目的后，数据应销毁或去标识化。"
-        },
-        "6": {
-          "title": "个人数据处理的目的",
-          "text": "",
-          "rows": [
-            {
-              "label": "处理目的",
-              "value": "为用户提供访问网站上的服务、信息和/或资料"
-            },
-            {
-              "label": "个人数据",
-              "value": "• 姓名<br/>• 电子邮箱地址<br/>• 电话号码<br/>• 出生年、月、日和地点<br/>• 照片<br/>• 纳税人识别号、注册日期、税务登记证书信息"
-            },
-            {
-              "label": "法律依据",
-              "value": "• 运营方的章程性文件"
-            },
-            {
-              "label": "个人数据处理方式",
-              "value": "• 收集、记录、系统化、积累、存储、销毁和去标识化<br/>• 向电子邮箱发送信息邮件"
-            },
-            {
-              "label": "处理目的",
-              "value": "通过电子邮件向用户提供信息"
-            },
-            {
-              "label": "个人数据",
-              "value": "• 哲学信仰"
-            },
-            {
-              "label": "法律依据",
-              "value": "• 《信息、信息技术和信息保护法》（2006年7月27日第149-FZ号）"
-            },
-            {
-              "label": "个人数据处理方式",
-              "value": "• 个人数据的传输"
-            }
-          ]
-        },
-        "7": {
-          "title": "个人数据处理条件",
-          "text": "",
-          "7-1": "个人数据处理需经个人数据主体同意。",
-          "7-2": "为实现俄罗斯联邦国际条约或法律规定的目的、履行法律赋予运营方的职能、权力和义务，需处理个人数据。",
-          "7-3": "为司法、执行法院判决或其他机关的执行文件，需处理个人数据。",
-          "7-4": "为履行合同（个人数据主体为当事人、受益人或担保人），或为签订个人数据主体主动提出的合同，需处理个人数据。",
-          "7-5": "为运营方或第三方的合法权益或实现社会公益目的，在不侵犯个人数据主体权利和自由的情况下，需处理个人数据。",
-          "7-6": "处理个人数据主体提供的不受限制访问的个人数据（以下简称“公开数据”）。",
-          "7-7": "处理根据联邦法律需公开或强制披露的个人数据。"
-        },
-        "8": {
-          "title": "个人数据收集、存储、传输及其他处理程序",
-          "text": "运营方通过实施法律、组织和技术措施，确保符合现行法律对个人数据保护的全部要求，从而保障所处理个人数据的安全性。",
-          "8-1": "运营方确保个人数据的安全，并采取一切可能的措施防止未经授权的访问。",
-          "8-2": "用户的个人数据在任何情况下都不会转让给第三方，除非与法律执行相关，或个人数据主体同意运营方向第三方转让以履行民事合同义务。",
-          "8-3": "如发现个人数据不准确，用户可自行更新，或通过发送邮件至 info@exporteru.com，备注“更新个人数据”。",
-          "8-4": "个人数据的处理期限取决于实现收集目的的时间，除非合同或法律另有规定。<br/>用户可随时通过邮件 info@exporteru.com 提交“撤回个人数据处理同意”的通知来撤回同意。",
-          "8-5": "由第三方服务（包括支付系统、通信工具及其他服务提供商）收集的信息，由其根据自身的用户协议和隐私政策存储和处理。运营方对第三方的行为不承担责任。",
-          "8-6": "个人数据主体对传输或处理的限制不适用于法律规定的国家、社会及公共利益范围内的处理。",
-          "8-7": "运营方在处理过程中保证个人数据的机密性。",
-          "8-8": "运营方仅在实现处理目的所需时间内保存能识别个人数据主体的个人数据，除非联邦法律或合同另有规定。",
-          "8-9": "终止处理个人数据的条件包括：实现处理目的、同意期限届满、个人数据主体撤回同意、要求停止处理，或发现违法处理行为。"
-        },
-        "9": {
-          "title": "运营方对接收的个人数据所进行的操作清单",
-          "text": "",
-          "9-1": "运营方进行个人数据的收集、记录、系统化、积累、存储、澄清（更新、修改）、提取、使用、传输（传播、提供、访问）、去标识化、封锁、删除和销毁。",
-          "9-2": "运营方进行个人数据的自动化处理，可通过信息网络进行或不进行信息的获取和传输。"
-        },
-        "10": {
-          "title": "个人数据跨境传输",
-          "text": "",
-          "10-1": "在进行个人数据跨境传输前，运营方必须通知主管机关其跨境传输个人数据的意图。",
-          "10-2": "在提交上述通知前，运营方必须从外国政府机关、外国自然人或外国法人获取相关信息。"
-        },
-        "11": {
-          "title": "个人数据的保密性",
-          "text": "运营方及其他获得个人数据的人员，未经个人数据主体同意，不得向第三方披露或传播个人数据，除非联邦法律另有规定。"
-        },
-        "12": {
-          "title": "最终条款",
-          "text": "",
-          "12-1": "用户可通过发送邮件至 info@exporteru.com 向运营方咨询与个人数据处理相关的任何问题。",
-          "12-2": "运营方对个人数据处理政策的任何更改将反映在本文件中。本政策无限期有效，直至由新版本取代。",
-          "12-3": "最新版本的政策可在网站 https://exporteru.com/privacy/ 上公开获取。"
-        }
-      }
-    },
-    "Agreement": {
-      "titles": {
-        "1": "用户协议",
-        "2": "双方的权利与义务",
-        "3": "双方责任",
-        "4": "协议条款"
-      },
-      "back": " 返回",
-      "download": " 下载文件 \"用户协议\"",
-      "text": "本用户协议（以下简称“协议”）规范有限责任公司 EXPORTERU（以下简称 exporteru.com 或 管理方）与网站用户之间的关系。网站 exporteru.com 不是大众传媒。",
-      "secondText": "使用本网站即表示您同意本协议条款。<br/>如果您不同意本协议条款，请不要使用 exporteru.com！<br/>",
-      "agreementList": {
-        "2": {
-          "1-title": "用户有权：",
-          "1-text": "- 在网站上搜索信息 <br/>- 在网站上获取信息 <br/>- 为网站创建信息 <br/>- 在网站上传播信息 <br/>- 评论网站上发布的内容 <br/>- 修改用户评分 <br/>- 在注明来源的情况下将信息复制到其他网站 <br/>- 将网站信息用于个人非商业目的 <br/>- 在未经特别许可的情况下将网站信息用于商业目的",
-          "2-title": "管理方有权：",
-          "2-text": "- 根据需要制定、修改或取消规则 <br/> - 限制对网站上任何信息的访问 <br/> - 创建、修改、删除信息 <br/> - 删除用户账户 <br/> - 无需解释即可拒绝注册",
-          "3-title": "用户承诺：",
-          "3-text": "- 提供真实的信息 <br/>- 确保个人数据不被第三方获取 <br/>- 在注册信息变更时及时更新个人数据 <br/>- 不得从其他来源复制信息 <br/>- 如复制其他来源的信息，必须注明作者 <br/>- 不得传播宣扬战争、煽动民族、种族或宗教仇恨的内容，以及其他依法应承担刑事或行政责任的信息 <br/>- 不得破坏网站正常运行 <br/>- 不得误导其他用户 <br/>- 不得发布广告、色情、低俗或侮辱性内容，以及其他法律禁止的信息 <br/>- 不得使用脚本（程序）自动收集信息和/或与网站及其服务交互",
-          "4-title": "管理方承诺：",
-          "4-text": "- 维护网站的正常运行，除非因不可抗力因素导致无法实现 <br/> - 对用户账户进行全面保护 <br/> - 在法律规定情况下向有权机关提供所有可用的用户信息"
-        },
-        "3": {
-          "1-title": "",
-          "1-text": "- 用户对其传播的信息承担全部责任 <br/>- 管理方对从其他来源复制的信息的真实性不承担任何责任 <br/>- 管理方对用户期望与实际获得服务的不符不承担责任 <br/>- 管理方对第三方提供的服务不承担任何责任 <br/>- 在发生不可抗力（战争、紧急状态、自然灾害等）情况下，管理方不保证用户发布信息的保存，也不保证资源的不间断运行"
-        },
-        "4": {
-          "1-title": "",
-          "1-text": "本协议自用户使用网站之时起生效。<br/>当出现新版本时，本协议自动失效。<br/>管理方保留单方面修改本协议的权利。<br/>管理方不向用户通知协议的更改。"
-        }
-      }
-    },
-
-    "ResetPasswordPage": {
-      "title": "密码重置",
-      "confirmationTitle": "确认",
-      "emailPlaceholder": "请输入您的邮箱",
-      "emailLabel": "邮箱",
-      "newPasswordPlaceholder": "请输入新密码",
-      "newPasswordLabel": "新密码",
-      "confirmButton": "确认",
-      "backToLogin": "返回登录",
-      "sending": "发送中...",
-      "emailRequired": "请输入邮箱",
-      "emailInvalid": "请输入有效的邮箱",
-      "passwordTooShort": "密码至少需要6个字符",
-      "emailCorrect": "请输入有效的邮箱",
-      "passwordMinLength": "密码至少需要6个字符",
-      "codeSentSuccess": "验证码已发送到您的邮箱",
-      "resetError": "重置错误",
-      "checkDataError": "请检查您输入的数据",
-      "resetPasswordError": "密码重置错误",
-      "congratulations": "恭喜！",
-      "passwordChangedSuccess": "密码修改成功！",
-      "confirmationError": "确认错误",
-      "invalidCode": "验证码错误",
-      "verificationText": "我们已向您的邮箱发送验证码",
-      "verificationSubtitle": "请输入邮件中的4位数字验证码"
-    },
-    "VendorPageClient": {
-      "errorLoadingData": "加载数据错误",
-      "errorLoadingDataDescription": "加载供应商页面时发生错误：",
-      "tryAgain": "重试",
-      "userNotFound": "用户未找到",
-      "pleaseLogin": "请登录",
-      "accessDenied": "访问被拒绝",
-      "accessDeniedDescription": "您的角色权限不足以查看此页面。您的角色："
-    },
-    "DeleteButton": {
-      "loading": "加载中...",
-      "modalTitle": "确认删除账户",
-      "modalDescription": "请输入发送到您邮箱的验证码",
-      "checkingCode": "正在验证验证码...",
-      "errorDelete": "删除账户时发生错误",
-      "errorOtp": "验证码无效",
-      "deleteTitle": "删除账户"
-    },
-    "multiDrop": {
-      "notFoundCategories": "未找到类别",
-      "notFoundItems": "未找到项目",
-      "tryChangeSearch": "请尝试更改搜索",
-      "searchCategories": "搜索类别...",
-      "searchItems": "搜索项目...",
-      "clearAll": "清除所有",
-      "ready": "完成"
-    },
-    "HelpPage": {
-      "Form": {
-        "contacts": "联系方式",
-        "fillForm": "填写表格",
-        "description": "联系我们时，请详细描述您的问题或困难，并提供链接、截图或照片。我们乐于解答任何问题！我们全天候工作，无休息日或节假日。",
-        "namePlaceholder": "您的姓名",
-        "phonePlaceholder": "电话号码",
-        "emailPlaceholder": "电子邮箱",
-        "messagePlaceholder": "写下您的留言",
-        "addMedia": "添加媒体文件",
-        "submit": "发送",
-        "successMessage": "您的消息已成功发送！",
-        "errorMessage": "发送消息时出错。请重试。"
-      },
-      "Social": {
-        "contacts": "联系方式",
-        "telegram": "Telegram",
-        "vk": "VK",
-        "max": "MAX",
-        "wechat": "微信",
-        "email": "电子邮箱",
-        "phone": "电话"
-      }
-    },
-    "breadCrumbs": {
-      "home": "主页",
-      "card": "商品",
-      "category": "类别",
-      "categories": "类别",
-      "products": "商品",
-      "electronics": "电子产品",
-      "smartphones": "智能手机",
-      "catalog": "目录",
-      "about": "关于我们",
-      "contacts": "联系方式",
-      "blog": "博客",
-      "news": "新闻",
-      "services": "服务"
-    },
-    "modal": {
-      "previous": "上一张图片",
-      "next": "下一张图片",
-      "image": "图片 {number}",
-      "video": "视频 {number}",
-      "thumbnail": "缩略图 {number}",
-      "close": "关闭图库",
-      "clickImage": "点击图片放大"
-    },
-    "mainCategory": {
-      "title": "类别",
-      "subtitle": "请选择您感兴趣的类别",
-      "loading": "正在加载类别...",
-      "empty": "未找到类别",
-      "subcategoriesCount": "{count} 个子类别"
-    },
-    "MetaTags": {
-      "MainPage": {
-        "firstText": "一个从俄罗斯出口商品的在线平台。我们帮助俄罗斯公司寻找外国合作伙伴并进入国际市场。我们专注于产品的批发供应。提供全方位支持：从商品上架到签订出口合同。在整个合作期间配备专属客户经理。",
-        "secondText": "一个从俄罗斯出口商品的服务平台。我们在所有阶段提供支持：筛选合作伙伴、谈判、达成交易。我们直接与供应商和国际买家合作。"
-      }
-    },
-    "catalogMeta": {
-      "mainPageTitle": "类别",
-      "mainPageText": "Exporteru 提供多种进出口产品类别。每位用户都能找到条件最优的合适产品。"
-    },
-    "CategoryPage": {
-      "companies": "公司",
-      "inn": "税号",
-      "experience": "经验",
-      "years": "年"
-    },
-    "PopularCategories": {
-      "more": "更多",
-      "sectionTitleT": "热门分类",
-      "viewAllTextT": "查看全部",
-      "cat1": "冶金产品",
-      "cat2": "木材",
-      "cat3": "矿产品",
-      "cat4": "矿物"
-    },
-    "AdvantagesSection": {
-      "sectionTitle": "与我们合作的优势",
-      "title": "与我们合作的优势",
-      "description": "为什么选择我们？因为我们让复杂的变得简单，让可靠的变得触手可及！",
-      "advantage1": "与可信赖的制造商签订直接合同",
-      "advantage2": "可访问来自俄罗斯的广泛商品目录",
-      "advantage3": "一个渠道即可采购来自俄罗斯不同地区和行业的商品",
-      "advantage4": "为合作伙伴提供制造商的独家优惠和配额",
-      "advantage5": "降低采购成本和汇率风险"
-    },
-    "Exports": {
-      "sectionTitle": "遍布全国的出口商",
-      "title": "遍布全国的出口商",
-      "description": "您不再需要在每个地区单独寻找供应商。我们为您汇集了来自全俄罗斯的可靠出口商。"
-    },
-
-    "FooterNew": {
-      "sections": {
-        "title": "主要版块",
-        "main": "首页",
-        "catalog": "目录",
-        "help": "帮助",
-        "about": "关于我们",
-        "contacts": "联系方式",
-        "reviews": "评价"
-      },
-      "support": {
-        "title": "技术支持",
-        "phone": "8 999 123 45 67",
-        "email": "info@mail.ru",
-        "telegram": "made_in_russia"
-      },
-      "info": {
-        "title": "信息中心",
-        "legal": "法律信息"
-      },
-      "profile": {
-        "title": "我的账户",
-        "login": "登录账户",
-        "register": "注册"
-      },
-      "social": {
-        "title": "社交媒体"
-      }
-    },
-    "CatalogNew": {
-      "originPrice": "按价格",
-      "creationDate": "按日期",
-      "new": "最新优先",
-      "cheapest": "最便宜优先",
-      "expensive": "最贵优先",
-      "found": "找到",
-      "products": "件商品",
-      "resultTitle": "搜索结果",
-      "filter": "筛选",
-      "apply": "应用",
-      "reset": "重置"
-    },
-    "CardsCatalogNew": {
-      "notFound": "未找到",
-      "popularProducts": "热门商品",
-      "viewAll": "查看全部"
-    },
-    "CardsCatalogWithPagination": {
-      "notFound": "未找到商品",
-      "prevPage": "上一页",
-      "nextPage": "下一页",
-      "loadingCards": "正在加载商品...",
-      "viewAll": "查看全部"
-    },
-    "LoginSlider": {
-      "slide1Title": "遍布全俄的认证供应商",
-      "slide1Description": "与经过质量和信誉审核的可靠公司合作，覆盖全国范围。",
-      "slide2Title": "为您企业提供专属经理",
-      "slide2Description": "您的专属顾问将帮助您选择最佳方案，加快合作进程。",
-      "slide3Title": "获取批发价格",
-      "slide3Description": "直接从制造商处获得最优惠报价，节省采购成本，无需中间商。",
-      "slide4Title": "独特的资源数据库",
-      "slide4Description": "我们汇集了成千上万的供应商，让您轻松找到企业所需的产品和服务。"
+      "successPublished": "评论已提交审核",
+      "errorPublished": "发布评论时出错",
+      "errorPublishedText": "发布前需要联系卖家，且账户年龄至少为7天",
+      "revues": "评论",
+      "questions": "问题",
+      "noComments": "暂无评论。成为第一个！",
+      "pleaseCreateComment": "请告诉我们您使用此产品的体验",
+      "writeCommentPlaceholder": "撰写评论...",
+      "defaultError": "错误",
+      "fileUploadErrorType": "文件 {fileName} 格式不支持",
+      "fileUploadErrorTypeSubtext": "文件格式不支持",
+      "svgError": "不支持SVG文件",
+      "bigImage": "图片超过5MB大小",
+      "bigVideo": "视频超过200MB大小",
+      "bigFiles": "最多可上传 {maxFilesCount} 个文件",
+      "publishing": "发布中..."
     }
   },
+  "NotFoundPage": {
+    "goBack": "返回首页",
+    "mainText": "页面未找到或已删除。请检查URL或返回首页。"
+  },
+  "CardTopPage": {
+    "from": "来自",
+    "daysBeforeDiscountExpires": "天促销结束",
+    "successCallback": "申请提交成功！",
+    "errorCallback": "提交申请时出错！需要注册",
+    "successCreateOrder": "订单创建成功！",
+    "successCreateBody": "请等待，卖家很快会联系您",
+    "errorCreateOrder": "创建订单时出错",
+    "addressTitle": "地址",
+    "addressAlternative": "未指定地址",
+    "innTitle": "税号",
+    "countriesTitle": "业务国家",
+    "description": "描述",
+    "showTelephone": "显示电话",
+    "showOnEmail": "发送邮件",
+    "RequestCallback": "请求回电",
+    "showVendorData": "卖家联系方式",
+    "company": "公司",
+    "title": "产品标题在此",
+    "revues": "评论",
+    "lookLoike": "相似：",
+    "articul": "货号",
+    "podrobnee": "更多详情",
+    "days": "天",
+    "discountDate": "距折扣结束",
+    "minimumOrderQuantity": "最小订购量",
+    "byNow": "立即购买",
+    "deliveryMethodsInfo": "配送信息",
+    "packagingOptions": "包装选项"
+  },
+  "CardMiddlePage": {
+    "description": "描述",
+    "technicalCharacteristics": "技术规格：",
+    "companyDescription": "供应商信息",
+    "deliveryDescription": "配送信息",
+    "emptyAddress": "未指定地址",
+    "INN": "税号"
+  },
+  "CardBottomPage": {
+    "success": "成功！",
+    "successPublished": "评论已提交审核",
+    "errorPublished": "发布评论时出错",
+    "errorPublishedText": "发布前需要联系卖家，且账户年龄至少为7天",
+    "revues": "评论",
+    "questions": "问题",
+    "noComments": "暂无评论。成为第一个！",
+    "pleaseCreateComment": "请告诉我们您使用此产品的体验",
+    "writeCommentPlaceholder": "撰写评论...",
+    "defaultError": "错误",
+    "fileUploadErrorType": "文件 {fileName} 格式不支持",
+    "fileUploadErrorTypeSubtext": "文件格式不支持",
+    "svgError": "不支持SVG文件",
+    "bigImage": "图片超过5MB大小",
+    "bigVideo": "视频超过200MB大小",
+    "bigFiles": "最多可上传 {maxFilesCount} 个文件",
+    "publishing": "发布中..."
+  },
+  "createCard": {
+    "mg": "毫克",
+    "g": "克",
+    "kg": "千克",
+    "c": "公担",
+    "t": "吨",
+    "ml": "毫升",
+    "l": "升",
+    "hl": "百升",
+    "m3": "立方米",
+    "m2": "平方米",
+    "cm2": "平方厘米",
+    "pcs": "件",
+    "pack": "包装",
+    "m": "米",
+    "cm": "厘米",
+    "pair": "双",
+    "set": "套",
+    "box": "箱",
+    "languageForInput": "产品活动语言",
+    "languageForInputSubtitle": "至少需要填写1种语言",
+    "alternativeMainDescr": "主要描述",
+    "alternativeAdditionalDescr": "附加可选描述",
+    "validateError": "验证错误",
+    "error": "错误",
+    "categoryError": "请选择产品类别",
+    "elCount": "件",
+    "updateCardProcess": "更新产品中...",
+    "saveCardProcess": "保存产品中...",
+    "gratulation": "恭喜！",
+    "cardSuccess": "产品成功",
+    "successCreateCardEndText": "成功创建！",
+    "successUpdateCardEndText": "成功更新！",
+    "saveError": "保存错误",
+    "saveErrorText": "保存产品时发生错误",
+    "createCardTitle": "创建产品",
+    "name": "名称",
+    "altHelpWithName": "名称帮助",
+    "categoryTitle": "产品类别",
+    "imageCard": "产品图片",
+    "altHelpWithImageCard": "产品图片帮助",
+    "similarProducts": "相似产品",
+    "altHelpWithSimilarProducts": "相似产品帮助",
+    "save": "保存",
+    "titleError": "产品名称为必填项",
+    "minimumImages": "至少1张图片",
+    "now": "现在",
+    "onePriceError": "至少添加一个价格",
+    "descriptionError": "描述为必填项",
+    "characteristicError": "特性表中至少需要填写一行",
+    "topDescrError": "顶部公司描述为必填项",
+    "bottomError": "底部公司描述为必填项",
+    "companyImagesError": "至少需要上传一张公司图片",
+    "altTextImagesError": "所有上传的图片都必须有描述",
+    "oneFaqError": "至少需要添加一个问题和答案",
+    "fullFaqError": "每个问题都必须有答案，反之亦然"
+  },
+  "CreateCardPriceElementsText": {
+    "daysBeforeSale": "指定促销结束前的天数",
+    "daysBeforeSaleNotMinus": "天数必须为正数",
+    "minimalVolume": "指定最小订购量",
+    "pricesList": "产品价格列表",
+    "elementCount": "单位数量",
+    "originalPrice": "无折扣价格",
+    "priceWithDiscount": "折扣价格",
+    "currency": "货币",
+    "unit": "计量单位",
+    "characteristickTable": "描述和特性表",
+    "title": "标题",
+    "characteristic": "特性",
+    "infoAboutPrices": "价格信息",
+    "daysCountBeforeSale": "距促销结束",
+    "daysCountBeforeSalePlaceholder": "距结束...天",
+    "minimalVolumeTitle": "最小数量",
+    "minimalVolumePlaceholder": "最小订购量...",
+    "deliveryInfo": "配送信息",
+    "daysDelivery": "时间",
+    "packagingOptions": "包装选项",
+    "price": "价格"
+  },
+  "CreateCardProductCategory": {
+    "errorLoadingCategoryes": "类别加载错误",
+    "loadingCategories": "加载类别中...",
+    "emptyCategory": "未选择类别",
+    "removeCategory": "删除类别",
+    "categoryNotFound": "未找到类别",
+    "foundCategoryProcessing": "搜索类别中...",
+    "notFoundCategories": "未找到类别",
+    "notFoundItems": "未找到项目",
+    "tryChangeSearch": "请尝试更改查询",
+    "searchCategories": "搜索类别...",
+    "searchItems": "搜索项目...",
+    "clearAll": "清除全部",
+    "ready": "完成"
+  },
+  "CreateCompanyDescription": {
+    "infoAboutCompany": "公司信息",
+    "infoAboutCompanyPlaceholder": "公司描述",
+    "descriptionPlaceholder": "描述",
+    "descriptionCompanyPlaceholder": "公司描述"
+  },
+  "CreateDescription": {
+    "descriptionPlaceholder": "描述",
+    "writeDescription": "输入描述...",
+    "secondDescr": "附加描述",
+    "secondDescrSpan": "可选",
+    "writeSecondDescr": "输入附加描述..."
+  },
+  "CreateFaqCard": {
+    "question": "问题",
+    "answer": "答案",
+    "faqTitle": "快速问题"
+  },
+  "CategoryMenu": {
+    "isEmptyAll": "未找到类别",
+    "categoryBack": "☰ 类别",
+    "backButton": "← 返回",
+    "subCategoryEmpty": "无子类别",
+    "categoryTitle": "类别",
+    "noElements": "无项目"
+  },
+  "PromoItem": {
+    "goToCategory": "前往类别",
+    "title": "热门类别"
+  },
+  "Admin": {
+    "Ads": {
+      "loadingError": "加载广告时出错"
+    }
+  },
+  "CardComponent": {
+    "defaultTitle": "优惠产品",
+    "cardImageAlt": "产品图片",
+    "saw": "查看",
+    "edit": "编辑",
+    "success": "成功！",
+    "successDel": "产品删除成功",
+    "error": "错误！",
+    "errorDel": "产品删除错误",
+    "successUpdateStatus": "产品状态已更改为",
+    "errorUpdateStatus": "更改状态时出错",
+    "PENDING": "审核中",
+    "APPROVED": "已批准",
+    "REJECTED": "已拒绝"
+  },
+  "Privacy": {
+    "back": "返回",
+    "download": "下载文件\"个人数据处理政策\"",
+    "policyTitle": "个人数据处理政策",
+    "policyLists": {
+      "1": {
+        "title": "总则",
+        "text": "本个人数据处理政策根据2006年7月27日第152-FZ号联邦法律\"关于个人数据\"（以下简称个人数据法）的要求制定，规定了个人数据处理程序和LLC 'EXPORTERU'（以下简称运营商）采取的个人数据安全措施",
+        "1-1": "运营商将遵守在处理个人数据时对人权和公民自由的尊重作为其最重要的目标和活动条件，包括保护隐私权、个人和家庭秘密",
+        "1-2": "运营商关于个人数据处理的政策（以下简称政策）适用于运营商可能获得的有关网站 https://exporteru.com 访问者的所有信息"
+      },
+      "2": {
+        "title": "政策中使用的基本概念",
+        "text": "",
+        "2-1": "个人数据自动处理 - 使用计算机技术处理个人数据。",
+        "2-2": "个人数据封锁 - 临时停止个人数据处理（除非需要处理以澄清个人数据）。",
+        "2-3": "网站 - 图形和信息材料以及计算机程序和数据库的集合，确保其在互联网上通过网络地址 https://exporteru.com 可访问。",
+        "2-4": "个人数据信息系统 - 数据库中包含的个人数据以及确保其处理的信息技术和技术手段的集合。",
+        "2-5": "个人数据去个性化 - 导致在不使用附加信息的情况下无法确定个人数据属于特定用户或其他个人数据主体的行为。",
+        "2-6": "个人数据处理 - 使用或不使用自动化工具对个人数据执行的任何行为（操作）或一组行为（操作），包括收集、记录、系统化、积累、存储、澄清（更新、更改）、提取、使用、传输（分发、提供、访问）、去个性化、封锁、删除、销毁个人数据。",
+        "2-7": "运营商 - 独立或与其他人共同组织和/或进行个人数据处理，并确定个人数据处理目的、要处理的个人数据组成、对个人数据执行的行为（操作）的国家机关、市政机关、法人或自然人。",
+        "2-8": "个人数据 - 直接或间接与网站 https://exporteru.com 的特定或可识别用户相关的任何信息。",
+        "2-9": "个人数据主体允许分发的个人数据 - 个人数据主体通过同意处理个人数据主体允许分发的个人数据，按照个人数据法规定的程序，向不限数量的人提供访问权限的个人数据。",
+        "2-10": "用户 - 网站 https://exporteru.com 的任何访问者。",
+        "2-11": "个人数据提供 - 旨在向特定人或特定范围的人披露个人数据的行为。",
+        "2-12": "个人数据分发 - 旨在向不确定范围的人披露个人数据（传输个人数据）或使不限数量的人熟悉个人数据的任何行为。",
+        "2-13": "个人数据跨境传输 - 将个人数据传输到外国领土、外国国家权力机关、外国自然人或外国法人。",
+        "2-14": "个人数据销毁 - 导致个人数据不可逆转地销毁且无法进一步恢复的任何行为。"
+      },
+      "3": {
+        "title": "运营商的基本权利和义务",
+        "text": "",
+        "3-1": "运营商有权：- 从个人数据主体获取可靠的信息和/或文件；- 在法律规定的情况下，在没有主体同意的情况下继续处理个人数据；- 独立确定履行义务的组成和措施。",
+        "3-2": "运营商有义务：- 应个人数据主体的要求向其提供有关其数据的信息；- 按照法律组织处理；- 回应主体的请求；- 应请求向授权机关报告信息；- 发布政策；- 采取保护个人数据的措施；- 在法律规定的情况下停止传输和销毁数据；- 履行法律规定的其他义务。"
+      },
+      "4": {
+        "title": "个人数据主体的基本权利和义务",
+        "text": "",
+        "4-1": "个人数据主体有权：- 获取有关其个人数据处理的信息；- 要求澄清、封锁或销毁数据；- 为营销目的设定同意数据处理的条件；- 撤回同意；- 对运营商的行为或不作为提出申诉；- 行使法律规定的其他权利。",
+        "4-2": "个人数据主体有义务：- 向运营商提供关于自己的可靠数据；- 告知其数据的变更。",
+        "4-3": "未经他人同意而提供有关自己或他人的虚假信息的人，应根据俄罗斯联邦立法承担责任。"
+      },
+      "5": {
+        "title": "个人数据处理原则",
+        "text": "",
+        "5-1": "个人数据处理在合法和公平的基础上进行。",
+        "5-2": "个人数据处理仅限于实现具体、预先确定和合法的目的。",
+        "5-3": "不允许合并具有不兼容处理目的的数据库。",
+        "5-4": "仅处理符合处理目的的个人数据。",
+        "5-5": "处理数据的内容和数量必须符合处理目的。",
+        "5-6": "确保个人数据的准确性、充分性和相关性。",
+        "5-7": "个人数据的存储时间不超过处理目的所需的时间。达到目标后，数据将被销毁或去个性化。"
+      },
+      "6": {
+        "title": "个人数据处理目的",
+        "text": "",
+        "rows": [
+          {
+            "label": "处理目的",
+            "value": "为用户提供对网站上包含的服务、信息和/或材料的访问"
+          },
+          {
+            "label": "个人数据",
+            "value": "• 姓、名、父称<br/>• 电子邮件地址<br/>• 电话号码<br/>• 出生年、月、日和地点<br/>• 照片<br/>• 纳税人识别号、登记日期、税务机关登记证书详情"
+          },
+          {
+            "label": "法律依据",
+            "value": "• 运营商的章程（组织）文件"
+          },
+          {
+            "label": "个人数据处理类型",
+            "value": "• 个人数据的收集、记录、系统化、积累、存储、销毁和去个性化<br/>• 向电子邮件地址发送信息信件"
+          },
+          {
+            "label": "处理目的",
+            "value": "通过发送电子邮件通知用户"
+          },
+          {
+            "label": "个人数据",
+            "value": "• 哲学信仰"
+          },
+          {
+            "label": "法律依据",
+            "value": "• 2006年7月27日第149-FZ号联邦法律\"关于信息、信息技术和信息保护\""
+          },
+          {
+            "label": "个人数据处理类型",
+            "value": "• 个人数据传输"
+          }
+        ]
+      },
+      "7": {
+        "title": "个人数据处理的法律依据",
+        "text": "",
+        "7-1": "运营商仅在用户通过位于网站 https://exporteru.com 上的特殊表格自行填写和/或发送个人数据的情况下处理用户的个人数据。通过填写相关表格和/或向运营商发送其个人数据，用户同意本政策。",
+        "7-2": "如果用户的浏览器设置允许（启用保存\"cookie\"文件和使用JavaScript技术），运营商将处理有关用户的去个性化数据。"
+      },
+      "8": {
+        "title": "个人数据收集、存储、传输和其他类型处理的程序",
+        "text": "运营商处理的个人数据的安全性通过实施法律、组织和技术措施来确保，这些措施是充分遵守个人数据保护领域现行立法要求所必需的。",
+        "8-1": "运营商确保个人数据的安全，并采取一切可能的措施防止未经授权的人访问个人数据。",
+        "8-2": "用户的个人数据在任何情况下都不会转移给第三方，除非与执行现行立法相关的情况。",
+        "8-3": "如果个人数据不准确，用户可以通过向运营商的电子邮件地址 support@exporteru.com 发送通知并标注\"个人数据更新\"来自行更新。",
+        "8-4": "个人数据处理的期限由收集个人数据的目的实现来确定，除非协议或现行立法规定了不同的期限。",
+        "8-5": "用户可以随时通过向运营商的电子邮件 support@exporteru.com 发送通知并标注\"撤回个人数据处理同意\"来撤回其对个人数据处理的同意。",
+        "8-6": "第三方服务（包括支付系统和其他通信运营商）收集的所有信息，由这些人根据其隐私政策存储和处理。",
+        "8-7": "运营商不对因用户使用互联网而获得用户信息访问权限的第三方的行为负责。",
+        "8-8": "运营商以允许识别个人数据主体的形式存储个人数据的时间不超过处理目的所需的时间，除非法律规定了存储期限。"
+      },
+      "9": {
+        "title": "个人数据跨境传输",
+        "text": "",
+        "9-1": "在开始进行个人数据跨境传输之前，运营商有义务确保计划将个人数据传输到其领土的外国为个人数据主体的权利提供可靠的保护。",
+        "9-2": "只有在个人数据主体书面同意跨境传输其个人数据和/或执行个人数据主体作为一方的协议的情况下，才能向不符合上述要求的外国领土进行个人数据跨境传输。"
+      },
+      "10": {
+        "title": "个人数据跨境传输",
+        "text": "",
+        "10-1": "在开始进行个人数据跨境传输活动之前，运营商有义务通知保护个人数据主体权利的授权机关其打算进行个人数据跨境传输（此类通知应与打算处理个人数据的通知分开发送）。",
+        "10-2": "在提交上述通知之前，运营商有义务从计划进行个人数据跨境传输的外国国家权力机关、外国自然人、外国法人获得相关信息。"
+      },
+      "11": {
+        "title": "个人数据保密性",
+        "text": "",
+        "11-1": "运营商和其他获得个人数据访问权限的人有义务在未经个人数据主体同意的情况下不向第三方披露和不分发个人数据，除非联邦法律另有规定。"
+      },
+      "12": {
+        "title": "最终条款",
+        "text": "",
+        "12-1": "用户可以通过使用电子邮件 info@exporteru.com 联系运营商，获得有关处理其个人数据的任何感兴趣问题的澄清。",
+        "12-2": "本文件将反映运营商个人数据处理政策的任何变更。该政策无限期有效，直到被新版本替换。",
+        "12-3": "当前版本的政策可在互联网上免费访问，地址为 https://exporteru.com/privacy/。"
+      }
+    }
+  },
+  "Agreement": {
+    "titles": {
+      "1": "用户协议",
+      "2": "各方的权利和义务",
+      "3": "各方的责任",
+      "4": "协议条款"
+    },
+    "CardMiddlePage": {
+      "description": "描述",
+      "technicalCharacteristics": "技术规格：",
+      "companyDescription": "供应商信息",
+      "deliveryDescription": "配送信息",
+      "emptyAddress": "未指定地址",
+      "INN": "税号"
+    },
+    "CardBottomPage": {
+      "success": "成功！",
+      "successPublished": "评论已提交审核",
+      "errorPublished": "发布评论时出错",
+      "errorPublishedText": "发布前需要联系卖家，且账户年龄至少为7天",
+      "revues": "评论",
+      "questions": "问题",
+      "noComments": "暂无评论。成为第一个！",
+      "pleaseCreateComment": "请告诉我们您使用此产品的体验",
+      "writeCommentPlaceholder": "撰写评论...",
+      "defaultError": "错误",
+      "fileUploadErrorType": "文件 {fileName} 格式不支持",
+      "fileUploadErrorTypeSubtext": "文件格式不支持",
+      "svgError": "不支持SVG文件",
+      "bigImage": "图片超过5MB大小",
+      "bigVideo": "视频超过200MB大小",
+      "bigFiles": "最多可上传 {maxFilesCount} 个文件",
+      "publishing": "发布中..."
+    }
+  },
+  "DeleteButton": {
+    "loading": "加载中...",
+    "modalTitle": "账户删除确认",
+    "modalDescription": "输入发送到您电子邮件的确认码",
+    "checkingCode": "验证码检查中...",
+    "errorDelete": "删除账户时发生错误",
+    "errorOtp": "确认码无效",
+    "deleteTitle": "删除账户"
+  },
+  "multiDrop": {
+    "notFoundCategories": "未找到类别",
+    "notFoundItems": "未找到项目",
+    "tryChangeSearch": "请尝试更改查询",
+    "searchCategories": "搜索类别...",
+    "searchItems": "搜索项目...",
+    "clearAll": "清除全部",
+    "ready": "完成"
+  },
+  "ResetPasswordPage": {
+    "title": "密码恢复",
+    "confirmationTitle": "确认",
+    "emailPlaceholder": "输入您的邮箱",
+    "emailLabel": "邮箱",
+    "newPasswordPlaceholder": "输入新密码",
+    "newPasswordLabel": "新密码",
+    "confirmButton": "确认",
+    "backToLogin": "返回登录",
+    "sending": "发送中...",
+    "emailRequired": "请输入邮箱",
+    "emailInvalid": "请输入有效的邮箱",
+    "passwordTooShort": "密码至少需要6个字符",
+    "emailCorrect": "输入有效的邮箱",
+    "passwordMinLength": "密码至少需要6个字符",
+    "codeSentSuccess": "确认码已发送到您的邮箱",
+    "resetError": "恢复错误",
+    "checkDataError": "请检查输入的数据",
+    "resetPasswordError": "密码恢复错误",
+    "congratulations": "恭喜！",
+    "passwordChangedSuccess": "密码修改成功！",
+    "confirmationError": "确认错误",
+    "invalidCode": "确认码无效",
+    "verificationText": "我们已向您的邮箱发送确认码",
+    "verificationSubtitle": "输入邮件中的4位数字码"
+  },
+  "VendorPageClient": {
+    "errorLoadingData": "数据加载错误",
+    "errorLoadingDataDescription": "加载卖家页面时发生错误：",
+    "tryAgain": "重试",
+    "userNotFound": "未找到用户",
+    "pleaseLogin": "请登录",
+    "accessDenied": "访问被拒绝",
+    "accessDeniedDescription": "您的角色不足以查看此页面。您的角色："
+  },
+  "HelpPage": {
+    "Form": {
+      "contacts": "联系方式",
+      "fillForm": "填写表格",
+      "description": "联系时，请详细描述您的问题或疑问，并提供链接、截图或照片。我们欢迎任何问题！我们全天候工作，无周末和节假日。",
+      "namePlaceholder": "您的姓名",
+      "phonePlaceholder": "电话号码",
+      "emailPlaceholder": "电子邮箱",
+      "messagePlaceholder": "撰写您的信息",
+      "addMedia": "添加媒体文件",
+      "submit": "发送",
+      "successMessage": "您的消息已成功发送！",
+      "errorMessage": "发送消息时出错。请重试。"
+    },
+    "Social": {
+      "contacts": "联系方式",
+      "telegram": "Telegram",
+      "vk": "VK",
+      "max": "MAX",
+      "wechat": "微信",
+      "email": "电子邮箱",
+      "phone": "电话",
+      "username": "@made_in_russia",
+      "wechatUsername": "@made-in-russia",
+      "emailAddress": "info@mail.ru"
+    }
+  },
+  "breadCrumbs": {
+    "home": "首页",
+    "card": "产品",
+    "category": "类别",
+    "categories": "类别",
+    "products": "产品",
+    "electronics": "电子产品",
+    "smartphones": "智能手机",
+    "catalog": "目录",
+    "about": "关于",
+    "contacts": "联系方式",
+    "blog": "博客",
+    "news": "新闻",
+    "services": "服务"
+  },
+  "modal": {
+    "previous": "上一张图片",
+    "next": "下一张图片",
+    "image": "图片 {number}",
+    "video": "视频 {number}",
+    "thumbnail": "缩略图 {number}",
+    "close": "关闭画廊",
+    "clickImage": "点击图片放大"
+  },
+  "mainCategory": {
+    "title": "类别",
+    "subtitle": "选择您感兴趣的类别",
+    "loading": "加载类别中...",
+    "empty": "未找到类别",
+    "subcategoriesCount": "{count} 个子类别"
+  },
+  "MetaTags": {
+    "MainPage": {
+      "firstText": "俄罗斯商品出口在线平台。我们帮助俄罗斯公司寻找外国合作伙伴并进入国际市场。专注于产品批发供应。全面支持：从展示到签订出口合同。在整个合作期间提供专属经理",
+      "secondText": "俄罗斯商品出口服务。我们在所有阶段提供支持：选择合作伙伴、谈判、达成交易。我们直接与供应商和国际买家合作"
+    }
+  },
+  "catalogMeta": {
+    "mainPageTitle": "类别",
+    "mainPageText": "Exporteru提供多种商品类别用于出口和进口。每个用户都可以找到条件最优的所需商品。"
+  },
+  "CategoryPage": {
+    "companies": "公司",
+    "inn": "税号",
+    "experience": "经验",
+    "years": "年"
+  },
+  "PopularCategories": {
+    "more": "了解更多",
+    "sectionTitleT": "热门类别",
+    "viewAllTextT": "查看全部",
+    "cat1": "冶金产品",
+    "cat2": "木材",
+    "cat3": "矿产品",
+    "cat4": "矿物"
+  },
+  "AdvantagesSection": {
+    "sectionTitle": "与我们合作的优势",
+    "title": "与我们合作的优势",
+    "description": "为什么选择我们？因为我们让复杂变得简单，让可靠变得可及！",
+    "advantage1": "与经过验证的制造商直接签约",
+    "advantage2": "访问来自俄罗斯的广泛商品目录",
+    "advantage3": "从俄罗斯不同行业和地区采购的单一渠道",
+    "advantage4": "为合作伙伴提供制造商的独家条款和配额",
+    "advantage5": "降低采购成本和货币风险"
+  },
+  "Exports": {
+    "sectionTitle": "全国各地的出口商",
+    "title": "全国各地的出口商",
+    "description": "您不再需要在每个地区单独寻找供应商。我们为您收集了来自俄罗斯各地的经过验证的出口商。"
+  },
+  "FooterNew": {
+    "sections": {
+      "title": "主要版块",
+      "main": "首页",
+      "catalog": "目录",
+      "help": "帮助",
+      "about": "关于我们",
+      "contacts": "联系方式",
+      "reviews": "评论"
+    },
+    "support": {
+      "title": "技术支持",
+      "phone": "8 999 123 45 67",
+      "email": "info@mail.ru",
+      "telegram": "made_in_russia"
+    },
+    "info": {
+      "title": "信息中心",
+      "legal": "法律信息"
+    },
+    "profile": {
+      "title": "我的资料",
+      "login": "登录个人账户",
+      "register": "注册"
+    },
+    "social": {
+      "title": "社交网络"
+    }
+  },
+  "CatalogNew": {
+    "originPrice": "按价格",
+    "creationDate": "按新旧",
+    "new": "最新优先",
+    "cheapest": "最便宜优先",
+    "expensive": "最贵优先",
+    "found": "找到",
+    "products": "产品",
+    "resultTitle": "搜索查询结果",
+    "filter": "筛选",
+    "apply": "应用",
+    "reset": "重置"
+  },
+  "CardsCatalogNew": {
+    "notFound": "未找到",
+    "popularProducts": "热门产品",
+    "viewAll": "查看全部"
+  },
+  "CardsCatalogWithPagination": {
+    "notFound": "未找到产品",
+    "prevPage": "上一页",
+    "nextPage": "下一页",
+    "loadingCards": "加载产品中...",
+    "viewAll": "查看全部"
+  },
+  "LoginSlider": {
+    "slide1Title": "遍布俄罗斯的认证供应商",
+    "slide1Description": "与通过质量和信誉审核的可靠公司合作。",
+
+    "slide2Title": "专属企业经理",
+    "slide2Description": "您的专属顾问将帮助您找到最佳方案并加快合作进程。",
+
+    "slide3Title": "获取批发价",
+    "slide3Description": "直接从制造商获取最佳报价，节省采购成本。",
+
+    "slide4Title": "独特的资源数据库",
+    "slide4Description": "我们汇集了数千家供应商，助您轻松找到所需商品和服务。"
+  },
   "CreateImagesInput": {
-    "uploadError": "上传错误",
-    "invalidFileTypes": "无效的文件类型: {fileNames}",
-    "fileSizeExceeded": "文件大小超出限制 (最大 {maxSizeMB} MB): {fileNames}",
-    "chooseImageOrVideo": "请选择图片或视频 (不支持SVG)",
-    "fileSizeLimit": "文件大小不应超过 {maxSizeMB} MB",
-    "notEnoughSlots": "空闲插槽不足",
-    "availableSlots": "可用: {available}, 已选文件: {selected}",
+    "uploadError": "数据上传错误",
+    "invalidFileTypes": "无效的文件类型：{fileNames}",
+    "fileSizeExceeded": "文件大小超出限制（最大 {maxSizeMB} MB）：{fileNames}",
+    "chooseImageOrVideo": "请选择图片或视频（不支持SVG）",
+    "fileSizeLimit": "文件大小不得超过 {maxSizeMB} MB",
+    "notEnoughSlots": "可用插槽不足",
+    "availableSlots": "可用：{available}，已选文件：{selected}",
     "loadError": "加载错误"
   },
   "CreateImagesInputMinimalistic": {
     "defaultLabel": "添加媒体文件",
-    "fileLimitExceeded": "超出文件限制",
+    "fileLimitExceeded": "文件限制已超出",
     "youCanAddMore": "您还可以添加 {remainingSlots} 个文件",
-    "uploadError": "上传错误",
-    "invalidFileTypes": "无效的文件类型: {fileNames}",
-    "fileSizeExceeded": "文件大小超出限制 (最大 {maxSizeMB} MB): {fileNames}"
+    "uploadError": "数据上传错误",
+    "invalidFileTypes": "无效的文件类型：{fileNames}",
+    "fileSizeExceeded": "文件大小超出限制（最大 {maxSizeMB} MB）：{fileNames}"
   }
 }
