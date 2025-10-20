@@ -98,7 +98,12 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
             <ul className={`${styles.footer__list}`}>
               <li>
                 <Link href='/terms' className={`${styles.footer__link}`}>
-                  {t('info.legal')}
+                  {t('info.terms')}
+                </Link>
+              </li>
+              <li>
+                <Link href='/privacy' className={`${styles.footer__link}`}>
+                  {t('info.privacy')}
                 </Link>
               </li>
             </ul>

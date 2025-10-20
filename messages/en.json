@@ -121,7 +121,7 @@
     "becomePartner": "Become a partner"
   },
   "ProfilePage": {
-        "noFavorites": "No favorite products",
+    "noFavorites": "No favorite products",
     "personalCabinet": "Personal Account",
     "personalData": "Personal data",
     "registrationDate": "Registration date",
@@ -319,7 +319,7 @@
     },
     "CardTopPage": {
       "from": "from",
-"daysBeforeDiscountExpires": "days until promotion ends",
+      "daysBeforeDiscountExpires": "days until promotion ends",
       "successCallback": "Request sent successfully!",
       "errorCallback": "Error sending request! You must be registered",
       "successCreateOrder": "Order created successfully!",
@@ -381,7 +381,7 @@
   },
   "CardTopPage": {
     "from": "from",
-"daysBeforeDiscountExpires": "days until promotion ends",
+    "daysBeforeDiscountExpires": "days until promotion ends",
     "successCallback": "Request sent successfully!",
     "errorCallback": "Error sending request! You must be registered",
     "successCreateOrder": "Order created successfully!",
@@ -917,7 +917,8 @@
     },
     "info": {
       "title": "Information center",
-      "legal": "Legal information"
+      "terms": "User agreement",
+      "privacy": "Legal information"
     },
     "profile": {
       "title": "My profile",
@@ -956,13 +957,13 @@
   "LoginSlider": {
     "slide1Title": "Verified Suppliers Across Russia",
     "slide1Description": "Work only with reliable companies that have passed quality and reputation checks.",
-  
+
     "slide2Title": "Personal Manager for Your Company",
     "slide2Description": "Your personal specialist will help find solutions and speed up cooperation.",
-  
+
     "slide3Title": "Access to Wholesale Prices",
     "slide3Description": "Get the best offers directly from manufacturers and save on purchases.",
-  
+
     "slide4Title": "Unique Resource Database",
     "slide4Description": "Thousands of suppliers united to help you easily find the right goods and services."
   },
