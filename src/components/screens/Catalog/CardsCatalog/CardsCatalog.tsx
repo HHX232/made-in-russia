@@ -16,8 +16,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
-import ProductService from '@/services/products/product.service'
-import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {useProducts, ProductQueryParams} from '@/hooks/useProducts'
 
 interface CardsCatalogProps {
   initialProducts?: Product[]
@@ -32,20 +31,6 @@ interface CardsCatalogProps {
   customMinHeight?: string
   extraSwiperClass?: string
   mathMinHeight?: boolean
-}
-
-interface PageParams {
-  page: number
-  size: number
-  minPrice?: number
-  maxPrice?: number
-  categoryIds?: string
-  title?: string
-  approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL' | ''
-  direction?: 'asc' | 'desc'
-  deliveryMethodIds?: string
-  sort?: string
-  [key: string]: any
 }
 
 const SLIDES_COUNT = 5
@@ -68,7 +53,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const t = useTranslations('CardsCatalogNew')
   const {setCurrentSlide: setCurrentSlideRedux} = useActions()
   const {currentSlide: currentSlideRedux} = useTypedSelector((state) => state.sliderHomeSlice)
-  const currentLang = useCurrentLanguage()
 
   // Селекторы и состояния
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
@@ -101,90 +85,54 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   }, [sliderPageSize])
 
   // Состояния
-  const [products, setProducts] = useState<Product[]>(initialProducts)
   const [numericFilters, setNumericFilters] = useState<number[]>([])
   const [isSliderInitialized, setIsSliderInitialized] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [sliderHeight, setSliderHeight] = useState<number | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isError, setIsError] = useState(false)
   const [cardHeight, setCardHeight] = useState<number | null>(null)
 
   // Refs
   const containerRef = useRef<HTMLDivElement>(null)
   const activeSlideRef = useRef<HTMLDivElement | null>(null)
-  const abortControllerRef = useRef<AbortController | null>(null)
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
-  // Параметры пагинации
-  const [pageParams, setPageParams] = useState<PageParams>({
+  // Параметры для useProducts
+  const [queryParams, setQueryParams] = useState<ProductQueryParams>({
     page: 0,
     size: totalProductsToLoad,
     minPrice: priceRange?.min,
     maxPrice: priceRange?.max,
-    deliveryMethodIds: delivery?.join(',') || '',
-    title: searchTitle,
+    delivery: delivery || [],
+    search: searchTitle,
     sort: 'creationDate',
     direction: direction,
-    approveStatuses: approveStatuses === 'ALL' ? '' : approveStatuses
+    approveStatuses: approveStatuses
   })
+
+  // Callback для сброса страницы
+  const resetPageParams = useCallback(() => {
+    setQueryParams((prev) => ({
+      ...prev,
+      page: 0
+    }))
+    setCurrentSlide(0)
+  }, [])
+
+  // Используем хук useProducts
+  const {
+    resData: products,
+    isLoading,
+    isError,
+    refetch
+  } = useProducts(queryParams, resetPageParams, specialRoute, accessToken || '')
 
   // Обновляем size при изменении sliderPageSize
   useEffect(() => {
-    setPageParams((prev) => ({
+    setQueryParams((prev) => ({
       ...prev,
       size: totalProductsToLoad
     }))
   }, [totalProductsToLoad])
-
-  // Функция загрузки продуктов
-  const fetchProducts = useCallback(
-    async (params: PageParams) => {
-      // Отменяем предыдущий запрос
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
-
-      // Создаем новый AbortController
-      abortControllerRef.current = new AbortController()
-
-      setIsLoading(true)
-      setIsError(false)
-
-      try {
-        console.log('🔍 Fetching products with params:', params)
-
-        const response = await ProductService.getAll(
-          {
-            ...params,
-            approveStatuses: params.approveStatuses === 'ALL' ? '' : params.approveStatuses
-          },
-          specialRoute,
-          currentLang,
-          accessToken || ''
-        )
-
-        console.log('✅ Products fetched:', response?.content?.length || 0)
-
-        if (response?.content) {
-          setProducts(response.content)
-        } else {
-          setProducts([])
-        }
-      } catch (error: any) {
-        if (error.name === 'AbortError') {
-          console.log('🚫 Request aborted')
-          return
-        }
-        console.error('❌ Error fetching products:', error)
-        setIsError(true)
-        setProducts([])
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    [specialRoute, currentLang, accessToken]
-  )
 
   // Обработка числовых фильтров
   useEffect(() => {
@@ -194,58 +142,37 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     setNumericFilters(numericKeys)
   }, [selectedFilters])
 
-  // Загрузка при монтировании и изменении параметров
-  useEffect(() => {
-    fetchProducts(pageParams)
-
-    // Cleanup при размонтировании
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
-    }
-  }, [pageParams, fetchProducts])
-
   // Сброс при изменении поискового запроса
   useEffect(() => {
     setCurrentSlide(0)
-    setPageParams((prev) => ({
+    setQueryParams((prev) => ({
       ...prev,
       page: 0,
-      title: searchTitle
+      search: searchTitle
     }))
   }, [searchTitle])
 
   // Сброс при изменении фильтров
   useEffect(() => {
     setCurrentSlide(0)
-    setPageParams((prev) => {
-      const newParams: PageParams = {
-        ...prev,
-        page: 0,
-        minPrice: priceRange?.min,
-        maxPrice: priceRange?.max,
-        deliveryMethodIds: delivery?.join(',') || ''
-      }
-
-      if (numericFilters.length > 0) {
-        newParams.categoryIds = numericFilters.join(',')
-      } else {
-        delete newParams.categoryIds
-      }
-
-      return newParams
-    })
+    setQueryParams((prev) => ({
+      ...prev,
+      page: 0,
+      minPrice: priceRange?.min,
+      maxPrice: priceRange?.max,
+      deliveryMethodIds: delivery?.join(',') || '',
+      categoryIds: numericFilters.length > 0 ? numericFilters.join(',') : undefined
+    }))
   }, [numericFilters, priceRange, delivery])
 
   // Сброс для админки при изменении статусов
   useEffect(() => {
     if (isForAdmin) {
       setCurrentSlide(0)
-      setPageParams((prev) => ({
+      setQueryParams((prev) => ({
         ...prev,
         page: 0,
-        approveStatuses: approveStatuses === 'ALL' ? '' : approveStatuses
+        approveStatuses: approveStatuses
       }))
     }
   }, [approveStatuses, isForAdmin])
@@ -254,19 +181,13 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   useEffect(() => {
     if (isForAdmin) {
       setCurrentSlide(0)
-      setPageParams((prev) => ({
+      setQueryParams((prev) => ({
         ...prev,
         page: 0,
         direction: direction
       }))
     }
   }, [direction, isForAdmin])
-
-  // Сброс при изменении языка
-  useEffect(() => {
-    setCurrentSlide(0)
-    fetchProducts(pageParams)
-  }, [currentLang])
 
   // Мемоизированные данные
   const showSkeleton = useMemo(() => {
@@ -298,7 +219,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   // Измерение высоты карточки
   useEffect(() => {
     const measureCardHeight = () => {
-      // Берем первую карточку из текущего слайда
       const firstCard = cardRefs.current.values().next().value
       if (firstCard) {
         const height = firstCard.offsetHeight
@@ -309,10 +229,8 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       }
     }
 
-    // Измеряем с задержкой, чтобы DOM успел отрендериться
     const timer = setTimeout(measureCardHeight, 100)
 
-    // Также измеряем при изменении размера окна
     const resizeObserver = new ResizeObserver(measureCardHeight)
     const firstCard = cardRefs.current.values().next().value
     if (firstCard) {
@@ -325,6 +243,19 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }
   }, [pages, currentSlide, width])
 
+  const measureCardHeight = () => {
+    const firstCard = cardRefs.current.values().next().value
+    if (firstCard) {
+      const height = firstCard.offsetHeight
+      if (height > 0 && height !== cardHeight) {
+        setCardHeight(height)
+        console.log('📏 Card height measured:', height)
+      }
+    }
+  }
+  const onImageLoad = () => {
+    measureCardHeight()
+  }
   // Вычисление высоты на основе mathMinHeight
   const calculatedHeight = useMemo(() => {
     if (!mathMinHeight || !cardHeight) return null
@@ -335,21 +266,17 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     const itemsCount = currentPage.length
     const currentWidth = width || 1920
 
-    // Определяем количество элементов в строке в зависимости от ширины
     let itemsPerRow: number
     if (currentWidth > 1270) {
-      itemsPerRow = 4 // 8 элементов / 2 строки = 4 элемента в строке
+      itemsPerRow = 4
     } else if (currentWidth > 768) {
-      itemsPerRow = 3 // 9 элементов / 3 строки = 3 элемента в строке
+      itemsPerRow = 3
     } else {
-      itemsPerRow = 2 // 8 элементов / 4 строки = 2 элемента в строке
+      itemsPerRow = 2
     }
 
-    // Вычисляем количество строк
     const rowsCount = Math.ceil(itemsCount / itemsPerRow)
-
-    // Вычисляем общую высоту: высота карточки * количество строк + gap * (количество строк - 1)
-    const totalHeight = cardHeight * rowsCount + GAP * (rowsCount - 1)
+    const totalHeight = cardHeight * rowsCount + 20 + ((width || 1270) < 1420 ? 30 : GAP) * (rowsCount - 1)
 
     console.log('📐 Calculated height:', {
       cardHeight,
@@ -574,7 +501,14 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
                       const uniqueKey = `${product.id}-${pageIndex}-${productIndex}`
 
                       return (
-                        <div ref={(el) => setCardRef(uniqueKey, el)} className={styled.card_wrapper} key={uniqueKey}>
+                        <div
+                          style={{
+                            maxWidth: mathMinHeight ? ((cardHeight || 330) * 300) / 330 : ''
+                          }}
+                          ref={(el) => setCardRef(uniqueKey, el)}
+                          className={styled.card_wrapper}
+                          key={uniqueKey}
+                        >
                           <Card
                             isForAdmin={isForAdmin}
                             approveStatus={product?.approveStatus}
