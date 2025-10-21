@@ -834,6 +834,7 @@ const SessionsTab: FC = () => {
       </div>
       <ul className={styles.modal__sessions__list}>
         {sessions.map((el, i) => {
+          if (el.deviceType === 'Unknown' && el.browser === 'Unknown') return
           return (
             <li style={{width: '100%', display: 'flex', alignItems: 'center'}} key={i}>
               <div className={styles.modal__sessions__list__item}>

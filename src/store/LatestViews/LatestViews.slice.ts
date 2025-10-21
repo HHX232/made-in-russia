@@ -1,17 +1,57 @@
 import {Product} from '@/services/products/product.types'
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
+// Ключ для localStorage
+const LATEST_VIEWS_STORAGE_KEY = 'latestViews'
+
 // Интерфейс состояния
 interface LatestViewsState {
   latestViews: Product[]
   isEmpty: boolean
 }
 
-// Начальное состояние
-const initialState: LatestViewsState = {
-  latestViews: [],
-  isEmpty: true
+// Функция для загрузки данных из localStorage
+const loadFromLocalStorage = (): Product[] => {
+  // Проверка на клиентскую сторону (Next.js)
+  if (typeof window === 'undefined') {
+    return []
+  }
+
+  try {
+    const storedData = localStorage.getItem(LATEST_VIEWS_STORAGE_KEY)
+    if (storedData) {
+      const parsed = JSON.parse(storedData)
+      return Array.isArray(parsed) ? parsed : []
+    }
+  } catch (error) {
+    console.error('Ошибка при загрузке данных из localStorage:', error)
+  }
+
+  return []
 }
+
+// Функция для сохранения данных в localStorage
+const saveToLocalStorage = (products: Product[]): void => {
+  // Проверка на клиентскую сторону (Next.js)
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  try {
+    localStorage.setItem(LATEST_VIEWS_STORAGE_KEY, JSON.stringify(products))
+  } catch (error) {
+    console.error('Ошибка при сохранении данных в localStorage:', error)
+  }
+}
+
+// Начальное состояние с загрузкой из localStorage
+const initialState: LatestViewsState = (() => {
+  const loadedViews = loadFromLocalStorage()
+  return {
+    latestViews: loadedViews,
+    isEmpty: loadedViews.length === 0
+  }
+})()
 
 // Создание slice
 const latestViewsSlice = createSlice({
@@ -33,13 +73,11 @@ const latestViewsSlice = createSlice({
       // Добавляем товар в конец массива (как самый новый)
       state.latestViews.push(product)
 
-      // Убираем ограничение на длину массива
-      // if (state.latestViews.length > 20) {
-      //   state.latestViews.shift()
-      // }
-
       // Обновляем флаг isEmpty
       state.isEmpty = state.latestViews.length === 0
+
+      // Сохраняем в localStorage
+      saveToLocalStorage(state.latestViews)
     },
 
     // Удаление конкретного товара из списка
@@ -47,18 +85,27 @@ const latestViewsSlice = createSlice({
       const productId = action.payload
       state.latestViews = state.latestViews.filter((product) => product.id !== productId)
       state.isEmpty = state.latestViews.length === 0
+
+      // Сохраняем в localStorage
+      saveToLocalStorage(state.latestViews)
     },
 
     // Очистка всего списка
     clearLatestViews: (state) => {
       state.latestViews = []
       state.isEmpty = true
+
+      // Очищаем localStorage
+      saveToLocalStorage([])
     },
 
     setLatestViews: (state, action: PayloadAction<Product[]>) => {
       // Берем все переданные товары без ограничения по количеству
       state.latestViews = action.payload
       state.isEmpty = state.latestViews.length === 0
+
+      // Сохраняем в localStorage
+      saveToLocalStorage(state.latestViews)
     }
   }
 })
