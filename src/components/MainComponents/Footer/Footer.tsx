@@ -32,7 +32,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
                   </Link>
                 </li>
                 <li>
-                  <Link className={`${styles.footer__link}`} href='/search'>
+                  <Link className={`${styles.footer__link}`} href='/categories'>
                     {t('sections.catalog')}
                   </Link>
                 </li>
