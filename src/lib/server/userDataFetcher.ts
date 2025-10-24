@@ -4,7 +4,8 @@ import {cookies} from 'next/headers'
 import {getCurrentLocale} from '@/lib/locale-detection'
 
 import {IVendorData, User} from '@/store/User/user.slice'
-import {saveTokenStorage, removeFromStorage} from '@/middleware'
+import {saveTokenStorage} from '@/middleware'
+import {removeFromStorage} from '@/services/auth/auth.helper'
 
 interface ServerUserFetchResult {
   user: User | null
