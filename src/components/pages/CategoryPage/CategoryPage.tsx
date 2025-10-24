@@ -15,14 +15,6 @@ import {useTranslations} from 'next-intl'
 import CategoriesService from '@/services/categoryes/categoryes.service'
 import Image from 'next/image'
 
-const CATEGORYESCONST = [
-  {title: 'Однолетние культуры', value: 'Annual_crops', imageSrc: '/category/cat1.jpg'},
-  {title: 'Многолетние культуры', value: 'Perennial_crops', imageSrc: '/category/cat2.jpg'},
-  {title: 'Рассада', value: 'Seedlings', imageSrc: '/category/cat3.jpg'},
-  {title: 'Животноводство', value: 'Livestock_farming', imageSrc: '/category/cat4.jpg'},
-  {title: 'Смешанное сельское хозяйство', value: 'Mixed_farming', imageSrc: '/category/cat5.jpg'}
-]
-
 const CategoryPage = ({
   categoryName,
   level = 1,
@@ -375,20 +367,15 @@ const CategoryPage = ({
 
           {!isLastCategoryLevel && categoriesToDisplay.length > 0 && shouldShowDesktop && (
             <div className={`row ${styles.category__cards__grid}`}>
-              {categoriesToDisplay.map((category, index) => (
+              {categoriesToDisplay.map((category) => (
                 <div
                   key={category.id || category.slug}
                   className={`col-lg-4 col-xl-3 col-12 col-sm-6 ${styles.category__card__col}`}
                 >
                   <div className={styles.category_in_card}>
-                    {(category.imageUrl || (level === 1 && CATEGORYESCONST[index]?.imageSrc)) && (
+                    {category.imageUrl && (
                       <div className={styles.category_in_card__image}>
-                        <Image
-                          src={category.imageUrl || CATEGORYESCONST[index]?.imageSrc || ''}
-                          alt={category.name}
-                          width={302}
-                          height={201}
-                        />
+                        <Image src={category.imageUrl || ''} alt={category.name} width={302} height={201} />
                       </div>
                     )}
                     <div className={styles.category_in_card__content}>
@@ -422,17 +409,12 @@ const CategoryPage = ({
 
           {!isLastCategoryLevel && categoriesToDisplay.length > 0 && shouldShowMobile && (
             <div className={`row ${styles.category__cards__grid}`}>
-              {categoriesToDisplay.map((category, index) => (
+              {categoriesToDisplay.map((category) => (
                 <div key={category.id || category.slug} className={`col-12 ${styles.category__card__col}`}>
                   <div className={styles.category_in_card}>
-                    {(category.imageUrl || (level === 1 && CATEGORYESCONST[index]?.imageSrc)) && (
+                    {category.imageUrl && (
                       <div className={styles.category_in_card__image}>
-                        <Image
-                          src={category.imageUrl || CATEGORYESCONST[index]?.imageSrc || ''}
-                          alt={category.name}
-                          width={302}
-                          height={201}
-                        />
+                        <Image src={category.imageUrl || ''} alt={category.name} width={302} height={201} />
                       </div>
                     )}
                     <div className={styles.category_in_card__content}>

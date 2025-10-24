@@ -63,7 +63,7 @@
     "registerTitle": "Регистрация",
     "registerTitleCompany": "Регистрация компании",
     "registerRegion": "Страна/Регион",
-    "registerFullName": "Логин",
+    "registerFullName": "Имя",
     "password": "Пароль аккаунта",
     "passwordPlaceholder": "Введите пароль, 6-20 символов",
     "phoneNumber": "Номер мобильного телефона",

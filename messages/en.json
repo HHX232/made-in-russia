@@ -63,7 +63,7 @@
     "registerTitle": "Registration",
     "registerTitleCompany": "Company registration",
     "registerRegion": "Country/Region",
-    "registerFullName": "Username",
+    "registerFullName": "Name",
     "password": "Account password",
     "passwordPlaceholder": "Enter password, 6-20 characters",
     "phoneNumber": "Mobile phone number",

@@ -361,7 +361,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
           <LoginSlider />
         </div>
       </div>
-      <Footer extraClass={`${styles.extraFooter}`} />
+      <Footer useFixedFooter minMediaHeight={1250} extraClass={`${styles.extraFooter}`} />
     </div>
   )
 }

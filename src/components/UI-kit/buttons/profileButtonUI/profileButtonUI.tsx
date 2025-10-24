@@ -52,10 +52,10 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
     const accessFromQuery = url.searchParams.get('accessToken')
     const refreshFromQuery = url.searchParams.get('refreshToken')
 
-    console.log('access token in ProfileButtonUI', accessFromQuery?.slice(0, 5))
-    console.log('refresh token in ProfileButtonUI', refreshFromQuery?.slice(0, 5))
+    // console.log('access token in ProfileButtonUI', accessFromQuery?.slice(0, 5))
+    // console.log('refresh token in ProfileButtonUI', refreshFromQuery?.slice(0, 5))
 
-    if (accessFromQuery && refreshFromQuery) {
+    if (!!accessFromQuery && !!refreshFromQuery) {
       console.log('найден access token в ProfileButtonUI')
       console.log('access token in ProfileButtonUI', accessFromQuery?.slice(0, 5))
       console.log('refresh token in ProfileButtonUI', refreshFromQuery?.slice(0, 5))
@@ -67,10 +67,14 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
 
   useEffect(() => {
     setRandomAvatar(avatarsArray[0])
-    console.log('не найден access token в ProfileButtonUI')
+
     if (!accessToken) {
-      removeUserFromCache()
-      clearUser()
+      console.log('не найден access token в ProfileButtonUI')
+      if (typeof window !== 'undefined') {
+        console.log('удаляем юзера и токены')
+        removeUserFromCache()
+        clearUser()
+      }
     }
   }, [accessToken, removeUserFromCache, clearUser])
 

@@ -1,5 +1,5 @@
 'use client'
-import {CSSProperties, FC} from 'react'
+import {CSSProperties, FC, useEffect, useState} from 'react'
 import styles from './Footer.module.scss'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -13,12 +13,34 @@ export function getHaveLangStartFromCookie(): boolean {
 interface IFooterProps {
   extraClass?: string
   extraStyle?: CSSProperties
+  useFixedFooter?: boolean
+  minMediaHeight?: number
 }
 
-const Footer: FC<IFooterProps> = ({extraClass, extraStyle}) => {
+const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMediaHeight}) => {
   const t = useTranslations('FooterNew')
+
+  const [isFixedByHeight, setIsFixedByHeight] = useState(false)
+
+  useEffect(() => {
+    const checkHeight = () => {
+      if (minMediaHeight && window.innerHeight > minMediaHeight) {
+        setIsFixedByHeight(true)
+      } else {
+        setIsFixedByHeight(false)
+      }
+    }
+
+    checkHeight()
+    window.addEventListener('resize', checkHeight)
+    return () => window.removeEventListener('resize', checkHeight)
+  }, [minMediaHeight])
+
   return (
-    <footer style={{...extraStyle}} className={`${styles.footer} ${extraClass}`}>
+    <footer
+      style={{...extraStyle}}
+      className={`${styles.footer} ${useFixedFooter && isFixedByHeight ? styles.footer_fixed : ''} ${extraClass}`}
+    >
       <div className={`container`}>
         <div className={`${styles.footer__top}`}>
           <div className={`${styles.footer__item}`}>

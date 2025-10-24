@@ -1,138 +1,270 @@
-/* Класс для модального окна с изображениями */
-.imageModalLarge {
-  & > div {
-    overflow: hidden;
-    width: 80vw !important;
-    max-width: 100% !important;
-    height: 80vh !important;
-    max-height: 100% !important;
-    padding: 15px !important;
-    border-radius: 8px;
-
-    @media (max-width: 1000px) {
-      overflow: auto;
-      width: 96vw !important;
-      height: 96vh !important;
-      padding: 10px !important;
-    }
-
-    &:hover {
-      cursor: zoom-in;
-    }
-  }
-
-  .modal__body {
-    display: flex;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-
-    @media (max-width: 700px) {
-      overflow: auto;
-      align-items: flex-start;
-    }
-  }
+/* Модальное окно - оверлей на весь экран */
+.modalOverlay {
+  position: fixed;
+  z-index: 1010000001;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  background: rgb(0 0 0 / 85%);
 }
 
-/* Стили для контейнера изображения в модальном окне */
-.modalImageContainer {
+/* Контейнер модального окна */
+.modalContent {
   position: relative;
   display: flex;
   width: 100%;
   height: 100%;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: zoom-in !important;
+  padding: 20px;
 
-  @media (max-width: 700px) {
-    width: 100%;
-    height: auto;
-    min-height: 100%;
-    align-items: flex-start;
-    justify-content: flex-start;
+  @media (max-width: 768px) {
+    padding: 10px;
   }
 }
 
-/* Стили для изображения в модальном окне */
-.modalImage {
-  display: block;
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  max-height: 100%;
-  cursor: zoom-in !important;
-  object-fit: contain;
+/* Кнопка закрытия */
+.modalClose {
+  position: absolute;
+  z-index: 10;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 20%);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
-  @media (max-width: 700px) {
-    width: 100%;
-    max-width: none;
-    height: 100%;
-    max-height: none;
-    object-fit: cover;
+  &:hover {
+    background: rgb(255 255 255 / 30%);
+    transform: scale(1.1);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  @media (max-width: 768px) {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
   }
 }
 
-/* Стили для видео в модальном окне */
+/* Основная область с изображением */
+.modalMain {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 20px;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    padding-bottom: 10px;
+    // flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Контейнер для изображения */
+.modalImageContainer {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    flex: 1;
+  }
+}
+
+/* Обертка для зум-изображения в модалке */
+.modalImageWrapper {
+  width: 100%;
+  height: 100%;
+  max-height: calc(100vh - 200px);
+
+  @media (max-width: 768px) {
+    max-height: calc(100vh - 150px);
+  }
+}
+
+/* Видео в модальном окне */
 .modalVideo {
   width: auto;
   max-width: 100%;
   height: auto;
-  max-height: 100%;
-  cursor: zoom-in !important;
+  max-height: calc(100vh - 200px);
   object-fit: contain;
 
-  @media (max-width: 700px) {
-    width: 100%;
-    max-width: none;
-    height: 100%;
-    max-height: none;
-    object-fit: cover;
+  @media (max-width: 768px) {
+    max-height: calc(100vh - 150px);
   }
+}
+
+/* Стрелки навигации в модальном окне */
+.modalArrowLeft,
+.modalArrowRight {
+  position: static;
+  z-index: 5;
+  display: flex;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 20%);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover {
+    background: rgb(255 255 255 / 30%);
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 700px) {
+    position: absolute;
+    top: 50%;
+    width: 45px;
+    height: 45px;
+    background: rgb(42 46 70 / 70%);
+    transform: translateY(-50%);
+
+    &:hover {
+      background: rgb(42 46 70 / 85%);
+    }
+
+    svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+}
+
+.modalArrowLeft {
+  @media (max-width: 700px) {
+    left: 10px;
+  }
+}
+
+.modalArrowRight {
+  @media (max-width: 700px) {
+    right: 10px;
+  }
+}
+
+/* Превью миниатюр в модальном окне */
+.modalThumbnails {
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px 0 0;
+
+  @media (max-width: 700px) {
+    padding: 10px 0 0;
+  }
+
+  .keen-slider {
+    overflow: visible;
+
+    @media (max-width: 700px) {
+      display: flex;
+      justify-content: center;
+    }
+  }
+
+  .keen-slider__slide {
+    width: 100px !important;
+    min-width: 100px;
+    max-width: 100px;
+
+    @media (max-width: 700px) {
+      width: 110px !important;
+      min-width: 110px;
+      max-width: 110px;
+    }
+  }
+}
+
+/* Миниатюра в модальном окне */
+.modalThumbnail {
+  overflow: hidden;
+  width: 100px;
+  height: 70px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #fff;
+    opacity: 0.9;
+  }
+
+  @media (max-width: 700px) {
+    width: 110px;
+    height: 77px;
+  }
+}
+
+.modalThumbnailActive {
+  border-color: #fff;
+  opacity: 1;
 }
 
 /* Стили для зум-эффекта */
 .zoomImageWrapper {
   position: relative;
-  display: inline-block;
+  display: flex;
+  overflow: hidden;
   width: 100%;
   height: 100%;
-  cursor: zoom-in;
+  align-items: center;
+  justify-content: center;
 
   .zoomImage {
     display: block;
-    width: 100%;
+    width: auto;
     max-width: 100%;
     height: auto;
     max-height: 100%;
     cursor: zoom-in;
     object-fit: contain;
-
-    @media (max-width: 700px) {
-      width: 100%;
-      max-width: none;
-      height: 100%;
-      max-height: none;
-      object-fit: cover;
-    }
-  }
-
-  .zoomLens {
-    position: absolute;
-    z-index: 10;
-    border: 2px solid #fff;
-    border-radius: 4px;
-    background-repeat: no-repeat;
-    box-shadow: 0 0 10px rgb(0 0 0 / 50%);
-    pointer-events: none;
-
-    // Скрываем лупу на мобильных устройствах
-    @media (max-width: 700px) {
-      display: none;
-    }
+    transition: transform 0.3s ease;
   }
 }
 
+/* Основной слайдер */
 .imageSlider {
   width: 100%;
   max-width: 100%;
@@ -148,7 +280,6 @@
     width: 100%;
     margin-bottom: 16px;
 
-    // KeenSlider основные стили
     .keen-slider {
       position: relative;
     }
@@ -235,12 +366,8 @@
     height: 30px;
     align-items: center;
     justify-content: center;
-
-    // border-radius: 50%;
     backdrop-filter: blur(4px);
     background: #ffffff2d;
-
-    // box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
     cursor: pointer;
     transition: all 0.2s ease;
 
@@ -250,8 +377,7 @@
     }
 
     &:hover {
-      // background: #ffffff62;
-      // box-shadow: 0 3px 8px rgb(0 0 0 / 15%);
+      background: #ffffff62;
     }
 
     &Disabled {
@@ -261,92 +387,43 @@
     }
   }
 
-  // Контейнер для стрелок навигации
   &__navigation {
     display: flex;
     margin-top: 20px;
     gap: 14px;
   }
 
-  // Стили для стрелок в миниатюрах
   &__thumbnails {
     padding: 0;
     margin-top: 16px;
 
-    // KeenSlider стили для миниатюр
     .keen-slider {
       position: relative;
     }
 
     .keen-slider__slide {
-      // Принудительно задаем размер для миниатюр
       width: 140px !important;
       height: 90px !important;
       min-height: 0;
       flex: 0 0 140px;
-
-      // Убираем стандартные отступы keen-slider для миниатюр
       padding: 0;
     }
   }
 
-  // Дополнительные стили для адаптации keen-slider
   .keen-slider {
     &__slide {
       overflow: visible;
     }
   }
 
-  // Убираем возможные конфликты стилей
   .keen-slider__slide:not(.keen-slider__slide--active) {
     pointer-events: auto;
   }
 
-  // Для главного слайдера - каждый слайд должен занимать 100% ширины
   &__main .keen-slider__slide {
     width: 100% !important;
     flex: 0 0 100%;
     padding: 0;
     outline: none;
   }
-}
-
-.modalArrow {
-  position: absolute;
-  z-index: 20;
-  top: 50%;
-  width: 50px;
-  height: 50px;
-  padding: 0 1rem;
-  border: none;
-  border-radius: 50%;
-  aspect-ratio: 1/1;
-  background: rgb(121 12 12 / 50%);
-  color: white;
-  cursor: pointer;
-  font-size: 2rem;
-  transform: translateY(-50%);
-}
-
-.customArrowStyles {
-  display: flex;
-  width: 30px;
-  height: 30px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  backdrop-filter: blur(4px);
-  background: #2a2e46;
-
-  & > svg > path {
-    fill: #fff;
-  }
-}
-
-.modalArrowLeft {
-  left: 10px;
-}
-
-.modalArrowRight {
-  right: 10px;
 }

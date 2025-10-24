@@ -442,9 +442,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
             className={`${styled.popularprod__header_group} ${styled.popularprod__header_group__for_vis}`}
             id='popularprod-navig-group'
           >
-            <Link href='#' className={`${styled.btn_accent}`}>
+            {/* <Link href='#' className={`${styled.btn_accent}`}>
               {t('viewAll')}
-            </Link>
+            </Link> */}
           </div>
           <div className={`${styled.popularprod__navigation_wrap} ${styled.popularprod__navigation_wrap__for_vis}`}>
             <Image
@@ -580,9 +580,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
             className={`${styled.popularprod__header_group} ${styled.popularprod__header_group__for_unvis}`}
             id='popularprod-navig-group'
           >
-            <Link href='#' className={`${styled.btn_accent} ${styled.btn_accent_bottom}`}>
+            {/* <Link href='#' className={`${styled.btn_accent} ${styled.btn_accent_bottom}`}>
               {t('viewAll')}
-            </Link>
+            </Link> */}
           </div>
           <div className={`${styled.popularprod__navigation_wrap} ${styled.popularprod__navigation_wrap__for_unvis}`}>
             <Image

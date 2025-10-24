@@ -51,16 +51,6 @@ export const saveTokensInResponse = (response: NextResponse, data: {accessToken:
   return response
 }
 
-// Функция для удаления токенов
-export const removeFromStorage = () => {
-  // Для клиентской стороны (браузер)
-  if (typeof window !== 'undefined') {
-    Cookies.remove('accessToken')
-    Cookies.remove('refreshToken')
-    console.log('🗑️ Токены удалены на клиенте')
-  }
-}
-
 // Функция для удаления токенов из NextResponse (для middleware)
 export const removeTokensFromResponse = (response: NextResponse) => {
   response.cookies.delete('accessToken')

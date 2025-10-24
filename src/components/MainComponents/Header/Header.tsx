@@ -265,7 +265,10 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
   }
 
   return (
-    <div style={{position: useSticky ? 'sticky' : 'relative', top: 0}} className={` ${styles.header}`}>
+    <div
+      style={{position: useSticky ? (!categoryListIsOpen ? 'sticky' : 'relative') : 'relative', top: 0}}
+      className={` ${styles.header}`}
+    >
       <Head>
         <script
           type='application/ld+json'

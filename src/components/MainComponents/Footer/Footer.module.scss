@@ -1,5 +1,13 @@
 @import '@/scss/config/mixins';
 
+.footer_fixed {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+}
+
 .footer {
   margin-top: 40px;
   background-color: var(--accent);

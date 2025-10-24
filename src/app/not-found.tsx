@@ -291,7 +291,9 @@ export default function NotFound() {
                 zIndex: 1,
                 overflow: 'visible',
                 marginLeft: marginLeft,
-                maxWidth: '100%'
+                maxHeight: '11.5rem',
+                maxWidth: '100%',
+                marginTop: '40px'
               }}
             >
               {dots.map((dot) => (

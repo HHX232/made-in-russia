@@ -3,14 +3,11 @@ import React, {useState, useEffect, useLayoutEffect, useCallback, useRef, useMem
 import {useKeenSlider} from 'keen-slider/react'
 import styles from './CardSlider.module.scss'
 import Skeleton from 'react-loading-skeleton'
-import ModalWindowDefault from '../../modals/ModalWindowDefault/ModalWindowDefault'
 
 // Типы
 interface ZoomImageProps {
   src: string
   alt?: string
-  zoom?: number
-  lensSize?: number
   className?: string
 }
 
@@ -53,65 +50,71 @@ const getMediaUrl = (media: string): string => {
 }
 
 const calculateSlidesToShow = (containerWidth: number, imagesLength: number): number => {
-  const thumbnailWidth = 140 // ширина одной миниатюры
-  const gap = 16 // отступ между миниатюрами
+  const thumbnailWidth = 140
+  const gap = 16
   const availableSlides = Math.floor((containerWidth + gap) / (thumbnailWidth + gap))
   return Math.min(Math.max(availableSlides, 1), imagesLength)
 }
 
 // Компоненты
-export const ZoomImage: React.FC<ZoomImageProps> = React.memo(
-  ({src, alt = 'zoom', zoom = 2, lensSize = 150, className = ''}) => {
-    const imgRef = useRef<HTMLImageElement>(null)
-    const [lensPos, setLensPos] = useState<{x: number; y: number} | null>(null)
+export const ZoomImage: React.FC<ZoomImageProps> = React.memo(({src, alt = 'zoom', className = ''}) => {
+  const imgRef = useRef<HTMLImageElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [isZoomed, setIsZoomed] = useState(false)
+  const [transform, setTransform] = useState({scale: 1, x: 0, y: 0})
 
-    const handleMouseMove = useCallback(
-      (e: React.MouseEvent) => {
-        if (!imgRef.current) return
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (!imgRef.current || !containerRef.current) return
 
+      if (!isZoomed) {
         const rect = imgRef.current.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const y = e.clientY - rect.top
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const containerRect = containerRef.current.getBoundingClientRect()
 
-        const posX = Math.max(lensSize / 2, Math.min(x, rect.width - lensSize / 2))
-        const posY = Math.max(lensSize / 2, Math.min(y, rect.height - lensSize / 2))
+        const clickX = e.clientX - rect.left
+        const clickY = e.clientY - rect.top
 
-        setLensPos({x: posX, y: posY})
-      },
-      [lensSize]
-    )
+        const percentX = clickX / rect.width
+        const percentY = clickY / rect.height
 
-    const handleMouseLeave = useCallback(() => {
-      setLensPos(null)
-    }, [])
+        const scale = 2.5
+        const maxTranslateX = (rect.width * (scale - 1)) / 2
+        const maxTranslateY = (rect.height * (scale - 1)) / 2
 
-    const lensStyle = useMemo(() => {
-      if (!lensPos || !imgRef.current) return {}
+        const translateX = -(percentX - 0.5) * rect.width * (scale - 1)
+        const translateY = -(percentY - 0.5) * rect.height * (scale - 1)
 
-      return {
-        width: lensSize,
-        height: lensSize,
-        top: lensPos.y - lensSize / 2,
-        left: lensPos.x - lensSize / 2,
-        backgroundImage: `url(${src})`,
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: `${(imgRef.current.width || 0) * zoom}px ${(imgRef.current.height || 0) * zoom}px`,
-        backgroundPosition: `-${lensPos.x * zoom - lensSize / 2}px -${lensPos.y * zoom - lensSize / 2}px`
+        setTransform({
+          scale,
+          x: Math.max(-maxTranslateX, Math.min(maxTranslateX, translateX)),
+          y: Math.max(-maxTranslateY, Math.min(maxTranslateY, translateY))
+        })
+        setIsZoomed(true)
+      } else {
+        setTransform({scale: 1, x: 0, y: 0})
+        setIsZoomed(false)
       }
-    }, [lensPos, lensSize, zoom, src])
+    },
+    [isZoomed]
+  )
 
-    return (
-      <div
-        className={`${styles.zoomImageWrapper} ${className}`}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-      >
-        <img ref={imgRef} src={src} alt={alt} className={styles.zoomImage} />
-        {lensPos && <div className={styles.zoomLens} style={lensStyle} />}
-      </div>
-    )
-  }
-)
+  return (
+    <div ref={containerRef} className={`${styles.zoomImageWrapper} ${className}`} onClick={handleClick}>
+      <img
+        ref={imgRef}
+        src={src}
+        alt={alt}
+        className={styles.zoomImage}
+        style={{
+          transform: `scale(${transform.scale}) translate(${transform.x / transform.scale}px, ${transform.y / transform.scale}px)`,
+          transition: 'transform 0.3s ease',
+          cursor: isZoomed ? 'zoom-out' : 'zoom-in'
+        }}
+      />
+    </div>
+  )
+})
 
 ZoomImage.displayName = 'ZoomImage'
 
@@ -125,23 +128,22 @@ const ArrowButton: React.FC<ArrowButtonProps> = React.memo(({onClick, disabled, 
 
   return (
     <div className={arrowClass} onClick={onClick} role='button' tabIndex={0}>
-      {/* <svg style={svgStyle} width='15' height='11' viewBox='0 0 15 11' fill='none' xmlns='http://www.w3.org/2000/svg'> */}
       <svg style={svgStyle} width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'>
         <path
           d='M12.0254 4.94165L17.0837 9.99998L12.0254 15.0583'
-          stroke='#2F2F2F'
-          stroke-width='1.5'
-          stroke-miterlimit='10'
-          stroke-linecap='round'
-          stroke-linejoin='round'
+          stroke='currentColor'
+          strokeWidth='1.5'
+          strokeMiterlimit='10'
+          strokeLinecap='round'
+          strokeLinejoin='round'
         />
         <path
           d='M2.91699 10H16.942'
-          stroke='#2F2F2F'
-          stroke-width='1.5'
-          stroke-miterlimit='10'
-          stroke-linecap='round'
-          stroke-linejoin='round'
+          stroke='currentColor'
+          strokeWidth='1.5'
+          strokeMiterlimit='10'
+          strokeLinecap='round'
+          strokeLinejoin='round'
         />
       </svg>
     </div>
@@ -199,7 +201,7 @@ const MediaRenderer: React.FC<{
 
   return (
     <div
-      style={{backgroundImage: `url(${media})`, cursor: 'pointer'}}
+      style={{backgroundImage: `url(${media})`, cursor: 'pointer', height: '100%'}}
       className={`${imageClass} ${className}`}
       role='img'
       aria-label={alt}
@@ -397,6 +399,10 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
     [images.length]
   )
 
+  const handleModalThumbnailClick = useCallback((index: number) => {
+    setModalImageIndex(index)
+  }, [])
+
   // Генерация структурированных данных
   const structuredData = useMemo(() => {
     const mediaObjects = images.map((media, index) => {
@@ -462,6 +468,7 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
         currentIndex={modalImageIndex}
         productName={productName}
         onNavigate={handleModalNavigation}
+        onThumbnailClick={handleModalThumbnailClick}
         isSingleImage={isSingleImage}
       />
 
@@ -511,51 +518,122 @@ const ModalGallery: React.FC<{
   currentIndex: number
   productName: string
   onNavigate: (direction: 'prev' | 'next') => void
+  onThumbnailClick: (index: number) => void
   isSingleImage: boolean
-}> = ({isOpen, onClose, images, currentIndex, productName, onNavigate, isSingleImage}) => (
-  <ModalWindowDefault extraClass={styles.imageModalLarge} isOpen={isOpen} onClose={onClose}>
-    <div className={styles.modalImageContainer}>
-      {!isSingleImage && (
-        <ArrowButton
-          direction='left'
-          extraClass={styles.customArrowStyles}
-          disabled={false}
-          onClick={() => onNavigate('prev')}
-        />
-      )}
+}> = ({isOpen, onClose, images, currentIndex, productName, onNavigate, onThumbnailClick, isSingleImage}) => {
+  const [modalThumbnailSliderRef, modalThumbnailInstanceRef] = useKeenSlider<HTMLDivElement>({
+    initial: currentIndex,
+    loop: false,
+    mode: 'free-snap' as const,
+    slides: {
+      perView: 'auto',
+      spacing: 12
+    }
+  })
 
-      {getMediaType(images[currentIndex]) === 'video' ? (
-        <video
-          src={images[currentIndex]}
-          autoPlay
-          muted
-          loop
-          playsInline
-          webkit-playsinline='true'
-          controls
-          className={styles.modalVideo}
-        />
-      ) : (
-        <ZoomImage
-          src={images[currentIndex]}
-          alt={`${productName} - увеличенное изображение`}
-          zoom={2}
-          lensSize={150}
-          className={styles.modalImage}
-        />
-      )}
+  useEffect(() => {
+    if (!modalThumbnailInstanceRef.current) return
 
-      {!isSingleImage && (
-        <ArrowButton
-          direction='right'
-          extraClass={styles.customArrowStyles}
-          disabled={false}
-          onClick={() => onNavigate('next')}
-        />
-      )}
+    try {
+      modalThumbnailInstanceRef.current.moveToIdx(currentIndex)
+    } catch (error) {
+      console.warn('Modal thumbnail sync failed:', error)
+    }
+  }, [currentIndex, modalThumbnailInstanceRef])
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
+
+  if (!isOpen) return null
+
+  const currentMedia = images[currentIndex]
+  const currentType = getMediaType(currentMedia)
+
+  return (
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <button className={styles.modalClose} onClick={onClose} aria-label='Закрыть'>
+          <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+            <path
+              d='M18 6L6 18M6 6L18 18'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
+          </svg>
+        </button>
+
+        <div className={styles.modalMain}>
+          {!isSingleImage && (
+            <ArrowButton
+              direction='left'
+              extraClass={styles.modalArrowLeft}
+              disabled={false}
+              onClick={() => onNavigate('prev')}
+            />
+          )}
+
+          <div className={styles.modalImageContainer}>
+            {currentType === 'video' ? (
+              <video src={currentMedia} autoPlay muted loop playsInline controls className={styles.modalVideo} />
+            ) : (
+              <ZoomImage
+                src={currentMedia}
+                alt={`${productName} - изображение ${currentIndex + 1}`}
+                className={styles.modalImageWrapper}
+              />
+            )}
+          </div>
+
+          {!isSingleImage && (
+            <ArrowButton
+              direction='right'
+              extraClass={styles.modalArrowRight}
+              disabled={false}
+              onClick={() => onNavigate('next')}
+            />
+          )}
+        </div>
+
+        {!isSingleImage && (
+          <div className={styles.modalThumbnails}>
+            <div ref={modalThumbnailSliderRef} className='keen-slider'>
+              {images.map((image, index) => {
+                const type = getMediaType(image)
+                return (
+                  <div
+                    key={index}
+                    className={`keen-slider__slide ${styles.modalThumbnail} ${
+                      index === currentIndex ? styles.modalThumbnailActive : ''
+                    }`}
+                    onClick={() => onThumbnailClick(index)}
+                  >
+                    <MediaRenderer
+                      media={image}
+                      alt={`${type === 'video' ? 'Видео' : 'Изображение'} ${index + 1}`}
+                      type={type}
+                      isThumbnail={true}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-  </ModalWindowDefault>
-)
+  )
+}
 
 const ImageGallery: React.FC<{
   images: string[]

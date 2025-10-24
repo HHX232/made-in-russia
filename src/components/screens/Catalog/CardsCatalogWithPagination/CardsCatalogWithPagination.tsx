@@ -10,10 +10,10 @@ import {TypeRootState} from '@/store/store'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useActions} from '@/hooks/useActions'
 import {getAccessToken} from '@/services/auth/auth.helper'
-import Link from 'next/link'
 import useProductsWithPagination from './useProductsWithPagination'
 import Image from 'next/image'
 import {useTranslations} from 'next-intl'
+import useWindowWidth from '@/hooks/useWindoWidth'
 
 interface CardsCatalogWithPaginationProps {
   initialProducts?: Product[]
@@ -62,6 +62,20 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
 }) => {
   // console.log('🎯 CardsCatalogWithPagination: Component render')
   const t = useTranslations('CardsCatalogWithPagination')
+  const windowWidth = useWindowWidth()
+
+  // Динамическое определение размера страницы в зависимости от ширины экрана
+  const dynamicPageSize = useMemo(() => {
+    if (!windowWidth) return pageSize
+
+    // >1200 = 9 товаров, <=1200 = 10 товаров
+    if (windowWidth > 1200) {
+      return 9
+    } else {
+      return 10
+    }
+  }, [windowWidth, pageSize])
+
   // Селекторы и состояния
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
@@ -69,6 +83,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   const accessToken = getAccessToken()
   const filtersContainerRef = useRef<HTMLDivElement>(null)
   const gridContainerRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     const updateFiltersWidth = () => {
       if (filtersContainerRef.current && gridContainerRef.current) {
@@ -104,7 +119,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   // Параметры пагинации
   const [pageParams, setPageParams] = useState<PageParams>({
     page: 0,
-    size: pageSize,
+    size: dynamicPageSize,
     minPrice: priceRange?.min,
     maxPrice: priceRange?.max,
     deliveryMethodIds: delivery?.join(',') || '',
@@ -113,6 +128,15 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     direction: direction,
     approveStatuses: approveStatuses === 'ALL' ? '' : approveStatuses
   })
+
+  // Обновляем размер страницы при изменении ширины экрана
+  useEffect(() => {
+    setPageParams((prev) => ({
+      ...prev,
+      size: dynamicPageSize
+    }))
+  }, [dynamicPageSize])
+
   useEffect(() => {
     setPageParams((prev) => ({
       ...prev,
@@ -145,6 +169,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     // originalPrice
     // creationDate
   }, [products])
+
   // Мемоизированные данные
   const showSkeleton = useMemo(() => {
     const result = isLoading && products.length === 0
@@ -362,7 +387,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
             )}
             {showSkeleton
               ? // Скелетоны при загрузке
-                Array.from({length: pageSize}).map((_, index) => (
+                Array.from({length: dynamicPageSize}).map((_, index) => (
                   <div key={`skeleton-${index}`} className={styled.card_wrapper}>
                     <Card
                       isForAdmin={isForAdmin}
@@ -480,15 +505,14 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
         )}
 
         {/* Мобильная кнопка */}
-        <div
+        {/* <div
           className={`${styled.catalog__header_group} ${styled.catalog__header_group__for_unvis}`}
           id='catalog-header-group-mobile'
         >
           <Link href='#' className={`${styled.btn_accent} ${styled.btn_accent_bottom}`}>
             {t('viewAll')}
-            {/* Смотреть все */}
           </Link>
-        </div>
+        </div> */}
       </div>
     </section>
   )
