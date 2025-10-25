@@ -284,6 +284,12 @@
     border-top: 1px solid rgb(255 255 255 / 20%);
     padding-block: rem(14) rem(20);
 
+    &__link {
+      display: block;
+      height: 100%;
+      color: #fff;
+    }
+
     @include lg {
       padding-bottom: rem(30);
     }
