@@ -36,16 +36,22 @@ const getLocaleFromSubdomain = (hostname: string): string | null => {
 
 export const saveTokenStorage = (data: {accessToken: string; refreshToken: string}) => {
   if (typeof window !== 'undefined') {
-    Cookies.set('accessToken', data.accessToken)
-    Cookies.set('refreshToken', data.refreshToken)
+    Cookies.set('accessToken', data.accessToken, {
+      expires: 7,
+      secure: process.env.NODE_ENV === 'production'
+    })
+    Cookies.set('refreshToken', data.refreshToken, {
+      expires: 30,
+      secure: process.env.NODE_ENV === 'production'
+    })
     console.log('🔐 Токены сохранены на клиенте:', !!data.accessToken, !!data.refreshToken)
   }
 }
 
 export const saveTokensInResponse = (response: NextResponse, data: {accessToken: string; refreshToken?: string}) => {
-  response.cookies.set('accessToken', data.accessToken)
+  response.cookies.set('accessToken', data.accessToken, {maxAge: 60 * 60 * 24 * 7})
   if (data.refreshToken) {
-    response.cookies.set('refreshToken', data.refreshToken)
+    response.cookies.set('refreshToken', data.refreshToken, {maxAge: 60 * 60 * 24 * 30})
   }
   console.log('🔐 Токены установлены в response:', !!data.accessToken, !!data.refreshToken)
   return response
@@ -307,7 +313,7 @@ export async function middleware(request: NextRequest) {
 
           // Создаем новый ответ и устанавливаем обновленные токены
           const response = NextResponse.next()
-          response.cookies.set('accessToken', tokenData.accessToken)
+          response.cookies.set('accessToken', tokenData.accessToken, {maxAge: 60 * 60 * 24 * 7})
           setLocaleInResponse(response, localeFromSubdomain || 'en', shouldSetLocaleCookie, acceptLanguageFromRequest)
 
           // Повторяем проверку с новым токеном
@@ -322,7 +328,7 @@ export async function middleware(request: NextRequest) {
           if (userData.role !== 'Vendor' && userData.role !== 'Admin') {
             console.log('❌ Доступ запрещен для роли:', userData.role)
             const redirectResponse = NextResponse.redirect(new URL('/', request.url))
-            redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+            redirectResponse.cookies.set('accessToken', tokenData.accessToken, {maxAge: 60 * 60 * 24 * 7})
             return setLocaleInResponse(
               redirectResponse,
               localeFromSubdomain || 'en',
@@ -413,7 +419,7 @@ export async function middleware(request: NextRequest) {
 
           // Создаем новый ответ и устанавливаем обновленные токены
           const response = NextResponse.next()
-          response.cookies.set('accessToken', tokenData.accessToken)
+          response.cookies.set('accessToken', tokenData.accessToken, {maxAge: 60 * 60 * 24 * 7})
           setLocaleInResponse(response, localeFromSubdomain || 'en', shouldSetLocaleCookie, acceptLanguageFromRequest)
 
           console.log('🔐 Новый accessToken установлен в cookies')
@@ -437,7 +443,7 @@ export async function middleware(request: NextRequest) {
             if (userData.role === 'Vendor' && pathname === '/profile') {
               console.log('🔀 Перенаправление User с ролью Vendor на /vendor')
               const redirectResponse = NextResponse.redirect(new URL('/vendor', request.url))
-              redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              redirectResponse.cookies.set('accessToken', tokenData.accessToken, {maxAge: 60 * 60 * 24 * 7})
               return setLocaleInResponse(
                 redirectResponse,
                 localeFromSubdomain || 'en',
@@ -447,7 +453,7 @@ export async function middleware(request: NextRequest) {
             } else if (userData.role === 'User' && pathname === '/vendor') {
               console.log('🔀 Перенаправление User с ролью User на /profile')
               const redirectResponse = NextResponse.redirect(new URL('/profile', request.url))
-              redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              redirectResponse.cookies.set('accessToken', tokenData.accessToken, {maxAge: 60 * 60 * 24 * 7})
               return setLocaleInResponse(
                 redirectResponse,
                 localeFromSubdomain || 'en',
@@ -571,7 +577,7 @@ export async function middleware(request: NextRequest) {
 
           // Создаем новый ответ и устанавливаем обновленные токены
           const response = NextResponse.next()
-          response.cookies.set('accessToken', tokenData.accessToken)
+          response.cookies.set('accessToken', tokenData.accessToken, {maxAge: 60 * 60 * 24 * 7})
           setLocaleInResponse(response, localeFromSubdomain || 'en', shouldSetLocaleCookie, acceptLanguageFromRequest)
 
           console.log('🔐 Новый accessToken установлен в cookies')
@@ -595,7 +601,7 @@ export async function middleware(request: NextRequest) {
             if (userData.role === 'Vendor' && pathname === '/profile') {
               console.log('🔀 Перенаправление User с ролью Vendor на /vendor')
               const redirectResponse = NextResponse.redirect(new URL('/vendor', request.url))
-              redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              redirectResponse.cookies.set('accessToken', tokenData.accessToken, {maxAge: 60 * 60 * 24 * 7})
               return setLocaleInResponse(
                 redirectResponse,
                 localeFromSubdomain || 'en',
@@ -605,7 +611,7 @@ export async function middleware(request: NextRequest) {
             } else if (userData.role === 'User' && pathname === '/vendor') {
               console.log('🔀 Перенаправление User с ролью User на /profile')
               const redirectResponse = NextResponse.redirect(new URL('/profile', request.url))
-              redirectResponse.cookies.set('accessToken', tokenData.accessToken)
+              redirectResponse.cookies.set('accessToken', tokenData.accessToken, {maxAge: 60 * 60 * 24 * 7})
               return setLocaleInResponse(
                 redirectResponse,
                 localeFromSubdomain || 'en',
@@ -753,7 +759,7 @@ export async function middleware(request: NextRequest) {
 
               // Создаем редирект и устанавливаем обновленные токены
               const response = NextResponse.redirect(new URL(redirectUrl, request.url))
-              response.cookies.set('accessToken', tokenData.accessToken)
+              response.cookies.set('accessToken', tokenData.accessToken, {maxAge: 60 * 60 * 24 * 7})
               setLocaleInResponse(
                 response,
                 localeFromSubdomain || 'en',

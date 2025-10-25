@@ -7,8 +7,14 @@ const isClient = typeof window !== 'undefined'
 export const saveTokenStorage = (data: {accessToken: string; refreshToken: string}) => {
   if (!isClient) return
 
-  Cookies.set('accessToken', data.accessToken)
-  Cookies.set('refreshToken', data.refreshToken)
+  Cookies.set('accessToken', data.accessToken, {
+    expires: 7,
+    secure: process.env.NODE_ENV === 'production'
+  })
+  Cookies.set('refreshToken', data.refreshToken, {
+    expires: 30,
+    secure: process.env.NODE_ENV === 'production'
+  })
 }
 
 export const removeFromStorage = (): void => {
