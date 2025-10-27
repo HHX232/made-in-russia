@@ -372,35 +372,54 @@ export const submitFormCardData = async ({
     })) || []
   ).filter((item) => item.question && item.answer)
 
-  // Prepare delivery method details
   const deliveryMethodDetails =
-    multyLangObjectForPrices[langFromPathname]?.delivery?.map((delivery, i) => ({
-      name: delivery?.title || 'Default Name',
-      nameTranslations: {
-        ru: multyLangObjectForPrices?.ru?.delivery?.[i]?.title || '',
-        en: multyLangObjectForPrices?.en?.delivery?.[i]?.title || '',
-        zh: multyLangObjectForPrices?.zh?.delivery?.[i]?.title || ''
-      },
-      value: delivery.daysDelivery,
-      valueTranslations: {
-        ru: multyLangObjectForPrices?.ru?.delivery?.[i]?.daysDelivery || '',
-        en: multyLangObjectForPrices?.en?.delivery?.[i]?.daysDelivery || '',
-        zh: multyLangObjectForPrices?.zh?.delivery?.[i]?.daysDelivery || ''
-      }
-    })) || []
+    multyLangObjectForPrices[langFromPathname]?.delivery
+      ?.map((delivery, i) => ({
+        name: delivery?.title,
+        nameTranslations: {
+          ru: multyLangObjectForPrices?.ru?.delivery?.[i]?.title || '',
+          en: multyLangObjectForPrices?.en?.delivery?.[i]?.title || '',
+          zh: multyLangObjectForPrices?.zh?.delivery?.[i]?.title || ''
+        },
+        value: delivery.daysDelivery,
+        valueTranslations: {
+          ru: multyLangObjectForPrices?.ru?.delivery?.[i]?.daysDelivery || '',
+          en: multyLangObjectForPrices?.en?.delivery?.[i]?.daysDelivery || '',
+          zh: multyLangObjectForPrices?.zh?.delivery?.[i]?.daysDelivery || ''
+        }
+      }))
+      .filter((item) => {
+        // Проверяем что name не пустое и хотя бы один перевод не пустой
+        const hasName = item.name && item.name.trim() !== ''
+        const hasAtLeastOneTranslation =
+          (item.nameTranslations.ru && item.nameTranslations.ru.trim() !== '') ||
+          (item.nameTranslations.en && item.nameTranslations.en.trim() !== '') ||
+          (item.nameTranslations.zh && item.nameTranslations.zh.trim() !== '')
+        return hasName && hasAtLeastOneTranslation
+      }) || []
 
   // Prepare package options
   const packageOptions =
-    multyLangObjectForPrices[langFromPathname]?.packaging?.map((packaging, i) => ({
-      name: packaging?.title || '',
-      nameTranslations: {
-        ru: multyLangObjectForPrices?.ru?.packaging?.[i]?.title || '',
-        en: multyLangObjectForPrices?.en?.packaging?.[i]?.title || '',
-        zh: multyLangObjectForPrices?.zh?.packaging?.[i]?.title || ''
-      },
-      price: parseFloat(packaging.price?.toString() || '0'),
-      priceUnit: pricesArrayForSubmit[0].currency || 'RUB'
-    })) || []
+    multyLangObjectForPrices[langFromPathname]?.packaging
+      ?.map((packaging, i) => ({
+        name: packaging?.title || '',
+        nameTranslations: {
+          ru: multyLangObjectForPrices?.ru?.packaging?.[i]?.title || '',
+          en: multyLangObjectForPrices?.en?.packaging?.[i]?.title || '',
+          zh: multyLangObjectForPrices?.zh?.packaging?.[i]?.title || ''
+        },
+        price: parseFloat(packaging.price?.toString() || '0'),
+        priceUnit: pricesArrayForSubmit[0].currency || 'RUB'
+      }))
+      .filter((item) => {
+        // Проверяем что name не пустое и хотя бы один перевод не пустой
+        const hasName = item.name && item.name.trim() !== ''
+        const hasAtLeastOneTranslation =
+          (item.nameTranslations.ru && item.nameTranslations.ru.trim() !== '') ||
+          (item.nameTranslations.en && item.nameTranslations.en.trim() !== '') ||
+          (item.nameTranslations.zh && item.nameTranslations.zh.trim() !== '')
+        return hasName && hasAtLeastOneTranslation
+      }) || []
 
   // Process product media - separate old and new images
   const oldProductMedia: {id: number; position: number}[] = []

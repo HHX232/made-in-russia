@@ -335,6 +335,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('gratulation')}</strong>
             <span>
               {t('cardSuccess').split(' ')[0] +
+                ' ' +
                 (initialData?.id ? t('successUpdateCardEndText') : t('successCreateCardEndText'))}
             </span>
           </div>,
@@ -399,7 +400,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
         )}
       </ModalWindowDefault>
 
-      <Header useSticky={false} />
+      <Header />
       <div className={'container'}>
         <div className={`${styles.create__inner}`}>
           <h1 className={`${styles.create__title}`}>{t('createCardTitle')}</h1>
