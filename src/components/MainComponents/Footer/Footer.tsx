@@ -257,85 +257,89 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
         </div>
 
         <div className={`${styles.footer__bottom}`}>
-          <Link href='/' className={`${styles.footer__logo}`}>
-            <Image src='/imagesNew/logo.png' width={190} height={70} alt='Logo' />
-          </Link>
-          <a
-            href='https://exporteru.com'
-            className={`${styles.footer__bottom__link}`}
-            onClick={(e) => {
-              e.preventDefault()
-              setCookieLocale('ru')
-              setCurrentLang('ru')
+          <div className={`${styles.footer__bottom__link}`}>
+            <Link href='/' className={`${styles.footer__logo}`}>
+              <Image src='/imagesNew/logo.png' width={190} height={70} alt='Logo' />
+            </Link>
+          </div>
+          <div className={`${styles.footer__bottom__inner}`}>
+            <a
+              href='https://exporteru.com'
+              className={`${styles.footer__bottom__link}`}
+              onClick={(e) => {
+                e.preventDefault()
+                setCookieLocale('ru')
+                setCurrentLang('ru')
 
-              // invalidateProductsCache(queryClient)
-              // forceRefetch()
+                // invalidateProductsCache(queryClient)
+                // forceRefetch()
 
-              if (typeof window !== 'undefined') {
-                const haveLangStart = getHaveLangStartFromCookie()
-                console.log('haveLangStart', haveLangStart)
-                if (!haveLangStart) {
-                  window.location.href = 'https://exporteru.com'
+                if (typeof window !== 'undefined') {
+                  const haveLangStart = getHaveLangStartFromCookie()
+                  console.log('haveLangStart', haveLangStart)
+                  if (!haveLangStart) {
+                    window.location.href = 'https://exporteru.com'
+                  }
                 }
-              }
-              // window.location.reload()
-              startTransition(() => {
-                router.refresh()
-              })
-            }}
-          >
-            exporteru.com
-          </a>
-          <a
-            href='https://en.exporteru.com'
-            className={`${styles.footer__bottom__link}`}
-            onClick={(e) => {
-              e.preventDefault()
-              setCookieLocale('en')
-              setCurrentLang('en')
+                // window.location.reload()
+                startTransition(() => {
+                  router.refresh()
+                })
+              }}
+            >
+              exporteru.com
+            </a>
+            <a
+              href='https://en.exporteru.com'
+              className={`${styles.footer__bottom__link}`}
+              onClick={(e) => {
+                e.preventDefault()
+                setCookieLocale('en')
+                setCurrentLang('en')
 
-              // invalidateProductsCache(queryClient)
-              // forceRefetch()
-              if (typeof window !== 'undefined') {
-                const haveLangStart = getHaveLangStartFromCookie()
-                console.log('haveLangStart', haveLangStart)
-                if (!haveLangStart) {
-                  window.location.href = 'https://en.exporteru.com'
+                // invalidateProductsCache(queryClient)
+                // forceRefetch()
+                if (typeof window !== 'undefined') {
+                  const haveLangStart = getHaveLangStartFromCookie()
+                  console.log('haveLangStart', haveLangStart)
+                  if (!haveLangStart) {
+                    window.location.href = 'https://en.exporteru.com'
+                  }
                 }
-              }
-              // window.location.reload()
-              startTransition(() => {
-                router.refresh()
-              })
-            }}
-          >
-            en.exporteru.com
-          </a>
-          <a
-            href='https://cn.exporteru.com'
-            className={`${styles.footer__bottom__link}`}
-            onClick={(e) => {
-              e.preventDefault()
-              setCookieLocale('zh')
-              setCurrentLang('zh')
+                // window.location.reload()
+                startTransition(() => {
+                  router.refresh()
+                })
+              }}
+            >
+              en.exporteru.com
+            </a>
+            <a
+              href='https://cn.exporteru.com'
+              className={`${styles.footer__bottom__link}`}
+              onClick={(e) => {
+                e.preventDefault()
+                setCookieLocale('zh')
+                setCurrentLang('zh')
 
-              // invalidateProductsCache(queryClient)
-              // forceRefetch()
-              if (typeof window !== 'undefined') {
-                const haveLangStart = getHaveLangStartFromCookie()
-                console.log('haveLangStart', haveLangStart)
-                if (!haveLangStart) {
-                  window.location.href = 'https://cn.exporteru.com'
+                // invalidateProductsCache(queryClient)
+                // forceRefetch()
+                if (typeof window !== 'undefined') {
+                  const haveLangStart = getHaveLangStartFromCookie()
+                  console.log('haveLangStart', haveLangStart)
+                  if (!haveLangStart) {
+                    window.location.href = 'https://cn.exporteru.com'
+                  }
                 }
-              }
-              // window.location.reload()
-              startTransition(() => {
-                router.refresh()
-              })
-            }}
-          >
-            cn.exporteru.com
-          </a>
+                // window.location.reload()
+                startTransition(() => {
+                  router.refresh()
+                })
+              }}
+            >
+              cn.exporteru.com
+            </a>
+          </div>
           <p className={`${styles.footer__copyright}`}>© 2021-2025 Exporteru</p>
         </div>
       </div>

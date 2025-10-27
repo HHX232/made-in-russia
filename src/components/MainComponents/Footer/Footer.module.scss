@@ -279,15 +279,34 @@
 
   &__bottom {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-end;
     justify-content: space-between;
     border-top: 1px solid rgb(255 255 255 / 20%);
+    gap: 5px;
     padding-block: rem(14) rem(20);
+
+    &__inner {
+      display: flex;
+      width: 100%;
+      flex: 1 1 50%;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
+
+      @include sm {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
 
     &__link {
       display: block;
       height: 100%;
+      flex: 1 1 10%;
       color: #fff;
+      font-size: rem(14);
     }
 
     @include lg {
