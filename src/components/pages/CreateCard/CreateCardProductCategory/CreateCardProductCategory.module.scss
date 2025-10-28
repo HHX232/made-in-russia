@@ -125,7 +125,9 @@
     padding: 14px 16px;
     border: 1px solid rgb(47 47 47 / 20%);
     border-radius: 0;
-    font-size: 14px;
+    font-size: 16px;
+
+    /* Минимум 16px для предотвращения зума на iOS */
     outline: none;
     transition: all 0.2s ease;
 
@@ -378,7 +380,9 @@
 
     &__search {
       padding: 10px 14px;
-      font-size: 13px;
+      font-size: 16px;
+
+      /* Остается 16px для предотвращения зума на мобильных */
     }
 
     &__dropdownItem {

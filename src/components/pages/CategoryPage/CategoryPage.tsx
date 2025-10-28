@@ -12,7 +12,6 @@ import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
 import {usePathname, useRouter} from 'next/navigation'
 import Link from 'next/link'
 import {useTranslations} from 'next-intl'
-import CategoriesService from '@/services/categoryes/categoryes.service'
 import Image from 'next/image'
 
 const CategoryPage = ({
@@ -66,13 +65,10 @@ const CategoryPage = ({
     }
   }, [clearFilters])
 
+  // ИСПРАВЛЕНО: используем переданные categories, а не перезагружаем
   useEffect(() => {
-    const fetchCategoriesNew = async () => {
-      const newCategories = await CategoriesService.getById('l1_' + categoryName, language || 'en')
-      setSortedCategories(newCategories.children)
-    }
-    fetchCategoriesNew()
-  }, [language, categoryName])
+    setSortedCategories(categories)
+  }, [categories, language])
 
   useEffect(() => {
     clearFilters()
@@ -95,7 +91,6 @@ const CategoryPage = ({
   ): number {
     if (!companiesSlides || companiesSlides.length === 0) return 0
 
-    // Нормализуем индекс (чтобы не выходил за границы массива)
     const normalizedIndex = ((currentIndex % companiesSlides.length) + companiesSlides.length) % companiesSlides.length
     const companiesInSlide = companiesSlides[normalizedIndex]?.length || 0
 
@@ -103,7 +98,6 @@ const CategoryPage = ({
     let rows = 1
     let rowHeight = 120
 
-    // 📏 Определяем сетку и высоту строк в зависимости от ширины экрана
     if (windowWidth && windowWidth > 1300) {
       columns = 3
       rows = 4
@@ -121,21 +115,15 @@ const CategoryPage = ({
       rows = 3
       rowHeight = 135
     } else {
-      // до 710px
       columns = 1
       rows = 5
       rowHeight = 135
     }
 
-    // Сколько реально рядов занято текущими компаниями
     const usedRows = Math.ceil(companiesInSlide / columns)
     const totalRows = Math.min(usedRows, rows)
 
     const height = totalRows * rowHeight
-
-    console.log(
-      `Slide ${normalizedIndex}: ${companiesInSlide} companies | cols=${columns}, rows=${totalRows}, rowHeight=${rowHeight}px, totalHeight=${height}px`
-    )
 
     return height
   }
@@ -148,7 +136,6 @@ const CategoryPage = ({
       mode: 'snap',
       slides: {perView: 1, spacing: 11},
       slideChanged: (slider) => {
-        console.log('slideChanged', slider.track.details.rel)
         setCurrentCompSlide(slider.track.details.rel)
         setCompaniesSliderHeight(getActiveCompanySlideHeight(currentCompSlide, companiesSlides))
       }
@@ -184,7 +171,6 @@ const CategoryPage = ({
               const height = getActiveCompanySlideHeight(idx, companiesSlides)
               setCompaniesSliderHeight(height)
               setCurrentCompSlide(idx)
-              console.log('лог внутри useKeenSlider о задаче высоты', height, 'для слайда', idx)
             }
             slider.on('created', updateHeight)
             slider.on('slideChanged', updateHeight)
@@ -212,11 +198,9 @@ const CategoryPage = ({
       const currentIndex = instanceRef.current.track.details.rel
       const height = getActiveCompanySlideHeight(currentIndex, companiesSlides)
       setCompaniesSliderHeight(height)
-      console.log('задаем новую высоту', height, 'для слайда', currentIndex)
     }
   }, [mounted, companiesSlides, JSON.stringify(instanceRef.current?.track.details.rel)])
 
-  // Обновляем высоту при изменении размера окна
   useEffect(() => {
     if (mounted && instanceRef.current) {
       const updateHeight = () => {
@@ -552,7 +536,6 @@ const CategoryPage = ({
                     onClick={() => {
                       instanceRef.current?.prev()
                       setCompaniesSliderHeight(getActiveCompanySlideHeight(currentCompSlide, companiesSlides))
-                      console.log('prev', getActiveCompanySlideHeight(currentCompSlide, companiesSlides))
                     }}
                     width={24}
                     height={24}
@@ -564,7 +547,6 @@ const CategoryPage = ({
                     onClick={() => {
                       instanceRef.current?.next()
                       setCompaniesSliderHeight(getActiveCompanySlideHeight(currentCompSlide, companiesSlides))
-                      console.log('next', getActiveCompanySlideHeight(currentCompSlide, companiesSlides))
                     }}
                     width={24}
                     height={24}

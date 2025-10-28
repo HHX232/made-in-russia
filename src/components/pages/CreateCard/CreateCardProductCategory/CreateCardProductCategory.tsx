@@ -20,6 +20,8 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
 
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const searchWrapperRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const t = useTranslations('CreateCardProductCategory')
   const currentLang = useCurrentLanguage()
 
@@ -45,13 +47,19 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     onSetCategory(selectedCategory)
   }, [selectedCategory, onSetCategory])
 
-  // Обработчик скролла для закрытия списка (только скролл страницы, не списка)
+  // Улучшенный обработчик скролла - закрывает меню только если инпут вышел за экран
   useEffect(() => {
-    const handleScroll = (e: Event) => {
-      if (isDropdownOpen && dropdownRef.current) {
-        // Проверяем, что скролл происходит не внутри нашего дропдауна
-        if (!dropdownRef.current.contains(e.target as Node)) {
+    const handleScroll = () => {
+      if (isDropdownOpen && searchWrapperRef.current) {
+        const rect = searchWrapperRef.current.getBoundingClientRect()
+        const isOutOfView = rect.bottom < 0 || rect.top > window.innerHeight
+
+        if (isOutOfView) {
           setIsDropdownOpen(false)
+          // Убираем фокус с инпута при закрытии
+          if (inputRef.current) {
+            inputRef.current.blur()
+          }
         }
       }
     }
@@ -64,18 +72,15 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     }
   }, [isDropdownOpen])
 
-  // Улучшенная функция для проверки, содержит ли категория или её дети искомый текст
   const categoryContainsSearch = (category: Category, searchTerm: string): boolean => {
     if (!searchTerm) return true
 
     const lowerSearchTerm = searchTerm.toLowerCase()
 
-    // Проверяем саму категорию
     if (category.name.toLowerCase().includes(lowerSearchTerm)) {
       return true
     }
 
-    // Рекурсивно проверяем всех детей
     if (category.children && category.children.length > 0) {
       return category.children.some((child) => categoryContainsSearch(child, searchTerm))
     }
@@ -83,19 +88,15 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     return false
   }
 
-  // Функция для получения всех путей к категориям, содержащим поисковый запрос
   const getAllMatchingPaths = (categories: Category[], searchTerm: string, currentPath: string[] = []): string[][] => {
     const paths: string[][] = []
 
     for (const category of categories) {
       const newPath = [...currentPath, category.id.toString()]
 
-      // Если текущая категория или её дети содержат поисковый запрос
       if (categoryContainsSearch(category, searchTerm)) {
-        // Добавляем путь к текущей категории
         paths.push(newPath)
 
-        // Если есть дети, ищем в них рекурсивно
         if (category.children && category.children.length > 0) {
           const childPaths = getAllMatchingPaths(category.children, searchTerm, newPath)
           paths.push(...childPaths)
@@ -105,13 +106,11 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     return paths
   }
 
-  // Функция для определения, должна ли категория быть видимой
   const shouldShowCategory = (category: Category, searchTerm: string): boolean => {
     if (!searchTerm) return true
     return categoryContainsSearch(category, searchTerm)
   }
 
-  // Функция для подсчета видимых категорий (для определения наличия результатов)
   const countVisibleCategories = (categories: Category[], searchTerm: string): number => {
     if (!searchTerm) return categories.length
 
@@ -124,15 +123,12 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     return count
   }
 
-  // Эффект для автоматического раскрытия категорий при поиске
   useEffect(() => {
     if (searchQuery) {
       const allPaths = getAllMatchingPaths(allCategories, searchQuery)
       const categoriesToExpand = new Set<string>()
 
-      // Для каждого найденного пути добавляем все категории для раскрытия
       allPaths.forEach((path) => {
-        // Добавляем все элементы пути для раскрытия (включая родительские)
         path.forEach((categoryId) => {
           categoriesToExpand.add(categoryId)
         })
@@ -153,14 +149,11 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
   }
 
   const handleSelectCategory = (category: Category) => {
-    // Всегда выбираем категорию как активную
     setSelectedCategory(category as ICategory)
 
-    // Если у категории есть дети, то переключаем состояние раскрытия
     if (category.children && category.children.length > 0) {
       toggleCategoryExpanded(category.id.toString())
     } else {
-      // Если детей нет, закрываем список полностью
       setSearchQuery('')
       setIsDropdownOpen(false)
       setExpandedCategories(new Set())
@@ -171,7 +164,13 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     setSelectedCategory(null)
   }
 
-  // Рекурсивная функция для рендеринга категорий с поддержкой глубокого поиска
+  const handleSelectedAreaClick = () => {
+    if (inputRef.current) {
+      inputRef.current.focus()
+      setIsDropdownOpen(true)
+    }
+  }
+
   const renderCategories = (categories: Category[], level = 0): JSX.Element[] => {
     return categories
       .filter((category) => shouldShowCategory(category, searchQuery))
@@ -214,7 +213,6 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
       })
   }
 
-  // Функция для рендеринга сообщения "Не найдено"
   const renderNotFound = () => (
     <div className={styles.cat__notFound}>
       <div className={styles.cat__notFoundContent}>
@@ -243,7 +241,7 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
 
   return (
     <div className={styles.cat__box}>
-      <div className={styles.cat__selected}>
+      <div className={styles.cat__selected} onClick={handleSelectedAreaClick} style={{cursor: 'pointer'}}>
         {!selectedCategory ? (
           <p className={styles.cat__empty}>{t('emptyCategory')}</p>
         ) : (
@@ -254,7 +252,10 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
             <span className={styles.cat__name}>{selectedCategory.name}</span>
             <button
               type='button'
-              onClick={handleRemoveCategory}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleRemoveCategory()
+              }}
               className={styles.cat__remove}
               aria-label={'removeCategory'}
             ></button>
@@ -263,8 +264,9 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
       </div>
 
       <div className={styles.cat__add}>
-        <div className={styles.cat__searchWrapper}>
+        <div ref={searchWrapperRef} className={styles.cat__searchWrapper}>
           <input
+            ref={inputRef}
             type='text'
             id='cy-create-card-product-category-search'
             placeholder={t('foundCategoryProcessing')}

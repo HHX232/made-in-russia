@@ -983,6 +983,8 @@
     "slide4Description": "Thousands of suppliers united to help you easily find the right goods and services."
   },
   "CreateImagesInput": {
+        "makePreview": "Generate preview",
+    "preview": "Preview",
     "uploadError": "Data upload error",
     "invalidFileTypes": "Invalid file types: {fileNames}",
     "fileSizeExceeded": "File size exceeded (max {maxSizeMB} MB): {fileNames}",

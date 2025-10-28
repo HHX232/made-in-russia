@@ -1,12 +1,11 @@
 import {getCurrentLocale} from '@/lib/locale-detection'
-
 import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
-import {buildBreadcrumbs, findCategoryBySlug} from '@/utils/findCategoryPath'
+import {findCategoryByPath, buildBreadcrumbsByPath} from '@/utils/findCategoryPath'
 import {notFound} from 'next/navigation'
 
-export default async function CategoryPageSpecialSecond({
+export default async function CategoryPageSpecialThirdAlt({
   params
 }: {
   params: Promise<{
@@ -16,68 +15,92 @@ export default async function CategoryPageSpecialSecond({
     thirdCAtegoryName: string
   }>
 }) {
-  const {thirdCategoryName, thirdCAtegoryName} = await params
-  // console.log('thirdCategoryName:', thirdCategoryName, 'thirdCAtegoryName', thirdCAtegoryName)
+  const {categoryName, secondCategoryName, thirdCategoryName, thirdCAtegoryName} = await params
+
+  // thirdCategoryName и thirdCAtegoryName - это один и тот же уровень (level 3)
+  // один из них будет undefined в зависимости от роута
+  const actualThirdSlug = thirdCategoryName || thirdCAtegoryName
+
   let categories
   let allCategories
   let breadcrumbs: {title: string; link: string}[] = []
   const locale = await getCurrentLocale()
 
+  // Полный путь от корня: level1 -> level2 -> level3
+  const fullPath = [categoryName, secondCategoryName, actualThirdSlug]
+
+  // Получаем компании для третьего уровня
   let companyes: {name: string; inn: string; ageInYears: string}[]
   try {
-    // console.log('Category:', `/companies/l3_${thirdCategoryName}`)
     const {data} = await axiosClassic.get<{name: string; inn: string; ageInYears: string}[]>(
-      `/companies/l3_${thirdCategoryName}`,
+      `/companies/l3_${actualThirdSlug}`,
       {
         headers: {
           'Accept-Language': locale,
-          'x-language': locale
+          'x-locale': locale
         }
       }
     )
-    // console.log('data companyes:', data)
     companyes = data
   } catch {
-    companyes = []
+    // Fallback на компании второго уровня
+    try {
+      const {data} = await axiosClassic.get<{name: string; inn: string; ageInYears: string}[]>(
+        `/companies/l2_${secondCategoryName}`,
+        {
+          headers: {
+            'Accept-Language': locale,
+            'x-locale': locale
+          }
+        }
+      )
+      companyes = data
+    } catch {
+      // Fallback на компании первого уровня
+      try {
+        const {data} = await axiosClassic.get<{name: string; inn: string; ageInYears: string}[]>(
+          `/companies/l1_${categoryName}`,
+          {
+            headers: {
+              'Accept-Language': locale,
+              'x-locale': locale
+            }
+          }
+        )
+        companyes = data
+      } catch {
+        companyes = []
+      }
+    }
   }
 
   try {
     allCategories = await CategoriesService.getAll(locale || 'en')
 
-    const slugToFind = thirdCategoryName || thirdCAtegoryName
-    const foundCategory = findCategoryBySlug(allCategories, slugToFind)
+    // КЛЮЧЕВОЕ: ищем по полному пути [categoryName, secondCategoryName, actualThirdSlug]
+    const foundCategory = findCategoryByPath(allCategories, fullPath)
 
-    categories = foundCategory || (await CategoriesService.getById('l3_' + slugToFind, locale || 'en'))
+    if (!foundCategory) {
+      console.error('Category not found for path:', fullPath)
+      notFound()
+    }
 
-    breadcrumbs = buildBreadcrumbs(allCategories, slugToFind)
+    categories = foundCategory
+
+    // Строим breadcrumbs по полному пути
+    breadcrumbs = buildBreadcrumbsByPath(allCategories, fullPath)
   } catch (error) {
-    console.log('EEEERRRROOOOOORRRRR', 'почему то выдаем 404', error)
+    console.error('Error loading category:', error)
     notFound()
   }
 
-  console.log(
-    'companyes',
-    companyes,
-    'breadcrumbs',
-    breadcrumbs,
-    'idOfFilter',
-    categories.id,
-    'categories',
-    categories.children,
-    'categoryName',
-    thirdCategoryName || thirdCAtegoryName,
-    'categoryTitleName',
-    categories.name,
-    'level',
-    2
-  )
   return (
     <CategoryPage
       companyes={companyes || []}
       idOfFilter={categories.id}
       breadcrumbs={breadcrumbs}
-      categories={categories.children}
-      categoryName={thirdCategoryName || thirdCAtegoryName}
+      categories={categories.children || []}
+      categoryName={actualThirdSlug}
       categoryTitleName={categories.name}
       level={3}
       language={locale}
@@ -88,22 +111,30 @@ export default async function CategoryPageSpecialSecond({
 export async function generateMetadata({
   params
 }: {
-  params: Promise<{thirdCategoryName: string; thirdCAtegoryName: string}>
+  params: Promise<{
+    categoryName: string
+    secondCategoryName: string
+    thirdCategoryName: string
+    thirdCAtegoryName: string
+  }>
 }) {
   try {
     const locale = await getCurrentLocale()
-    const {thirdCategoryName, thirdCAtegoryName} = await params
-    const slugToFind = thirdCategoryName || thirdCAtegoryName
-    const foundCategory = await CategoriesService.getById('l3_' + slugToFind, locale || 'en')
+    const {categoryName, secondCategoryName, thirdCategoryName, thirdCAtegoryName} = await params
+    const actualThirdSlug = thirdCategoryName || thirdCAtegoryName
+    const allCategories = await CategoriesService.getAll(locale || 'en')
+
+    const fullPath = [categoryName, secondCategoryName, actualThirdSlug]
+    const foundCategory = findCategoryByPath(allCategories, fullPath)
 
     return {
-      title: foundCategory?.name || slugToFind || 'category'
+      title: foundCategory?.name || actualThirdSlug || 'category'
     }
   } catch {
     const {thirdCategoryName, thirdCAtegoryName} = await params
-    const slugToFind = thirdCategoryName || thirdCAtegoryName
+    const actualThirdSlug = thirdCategoryName || thirdCAtegoryName
     return {
-      title: slugToFind || 'category'
+      title: actualThirdSlug || 'category'
     }
   }
 }

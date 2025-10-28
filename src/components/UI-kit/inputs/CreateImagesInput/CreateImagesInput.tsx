@@ -1,4 +1,4 @@
-import {FC, useState, ChangeEvent, useEffect, useCallback, useMemo, memo} from 'react'
+import {FC, useState, ChangeEvent, useEffect, useCallback, useMemo, memo, useRef} from 'react'
 import styles from './CreateImagesInput.module.scss'
 import Image from 'next/image'
 import {toast} from 'sonner'
@@ -119,6 +119,7 @@ const ImageUploadItem = memo<{
   onRemove: (index: number) => void
   onImageError: (index: number) => void
   onImageClick?: (index: number) => void
+  onSwapWithMain?: (index: number) => void
 }>(
   ({
     index,
@@ -136,10 +137,13 @@ const ImageUploadItem = memo<{
     onMultipleFilesChange,
     onRemove,
     onImageError,
-    onImageClick
+    onImageClick,
+    onSwapWithMain
   }) => {
     const t = useTranslations('CreateImagesInput')
     const [isHovered, setIsHovered] = useState(false)
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const menuRef = useRef<HTMLDivElement>(null)
 
     const isValidFileType = useCallback(
       (file: File) => {
@@ -293,6 +297,40 @@ const ImageUploadItem = memo<{
       [isOnlyShow, previewUrl, onImageClick, index]
     )
 
+    const handleMenuToggle = useCallback((e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsMenuOpen((prev) => !prev)
+    }, [])
+
+    const handleSwapClick = useCallback(
+      (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (onSwapWithMain) {
+          onSwapWithMain(index)
+        }
+        setIsMenuOpen(false)
+      },
+      [index, onSwapWithMain]
+    )
+
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+          setIsMenuOpen(false)
+        }
+      }
+
+      if (isMenuOpen) {
+        document.addEventListener('mousedown', handleClickOutside)
+      }
+
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }, [isMenuOpen])
+
     const hasContent = previewUrl !== null
     const isBig = index === 0 && showBigFirstItem
     const inputId = `${inputIdPrefix}-${index}`
@@ -330,7 +368,31 @@ const ImageUploadItem = memo<{
           </>
         )}
 
-        {!hasContent && !isOnlyShow && <Image src={plusIcon} alt='plus' width={24} height={24} />}
+        {!hasContent && !isOnlyShow && (
+          <>
+            {isBig && <div className={styles.preview__label}>{t('preview')}</div>}
+            <Image src={plusIcon} alt='plus' width={24} height={24} />
+          </>
+        )}
+
+        {!isOnlyShow && showBigFirstItem && hasContent && index !== 0 && (
+          <div className={styles.menu__container} ref={menuRef}>
+            <button className={styles.menu__button} onClick={handleMenuToggle} type='button'>
+              <svg width='4' height='18' viewBox='0 0 4 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <circle cx='2' cy='2' r='2' fill='white' />
+                <circle cx='2' cy='9' r='2' fill='white' />
+                <circle cx='2' cy='16' r='2' fill='white' />
+              </svg>
+            </button>
+            {isMenuOpen && (
+              <div className={styles.dropdown__menu}>
+                <button className={styles.menu__item} onClick={handleSwapClick} type='button'>
+                  {t('makePreview')}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {!isOnlyShow && (
           <input
@@ -463,27 +525,51 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     }
   }, [errorValue, setErrorValue, totalImagesCount, minFiles])
 
+  const handleSwapWithMain = useCallback(
+    (targetIndex: number) => {
+      if (targetIndex === 0) return
+
+      setLocalFiles((prev) => {
+        const newFiles = [...prev]
+        const temp = newFiles[0]
+        newFiles[0] = newFiles[targetIndex]
+        newFiles[targetIndex] = temp
+
+        setTimeout(() => {
+          onFilesChange(newFiles.filter((f) => f !== null) as File[])
+        }, 0)
+
+        return newFiles
+      })
+
+      setPreviewUrls((prev) => {
+        const newUrls = [...prev]
+        const temp = newUrls[0]
+        newUrls[0] = newUrls[targetIndex]
+        newUrls[targetIndex] = temp
+        return newUrls
+      })
+
+      if (onActiveImagesChange && activeImages.length > 0) {
+        setTimeout(() => {
+          const newActiveImages = [...activeImages]
+          const temp = newActiveImages[0]
+          newActiveImages[0] = newActiveImages[targetIndex]
+          newActiveImages[targetIndex] = temp
+          onActiveImagesChange(newActiveImages)
+        }, 0)
+      }
+    },
+    [activeImages, onActiveImagesChange, onFilesChange]
+  )
+
   const handleFileChange = useCallback(
     (index: number, file: File) => {
       if (isOnlyShow) return
 
       const url = URL.createObjectURL(file)
 
-      setLocalFiles((prev) => {
-        const newFiles = [...prev]
-        newFiles[index] = file
-        return newFiles
-      })
-
-      setPreviewUrls((prev) => {
-        const newUrls = [...prev]
-        if (prev[index] && localFiles[index]) {
-          URL.revokeObjectURL(prev[index]!)
-        }
-        newUrls[index] = url
-        return newUrls
-      })
-
+      // Удаляем индекс из removedInitialImages если он там был
       setRemovedInitialImages((prev) => {
         if (prev.has(index)) {
           const newSet = new Set(prev)
@@ -495,14 +581,30 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
 
       setLoadError((prev) => ({...prev, [index]: false}))
 
-      setLocalFiles((currentFiles) => {
-        const updatedFiles = [...currentFiles]
-        updatedFiles[index] = file
-        onFilesChange(updatedFiles.filter((f) => f !== null) as File[])
-        return updatedFiles
+      // Обновляем файлы и превью одновременно
+      setLocalFiles((prev) => {
+        const newFiles = [...prev]
+        newFiles[index] = file
+
+        // Обновляем превью в том же тике
+        setPreviewUrls((prevUrls) => {
+          const newUrls = [...prevUrls]
+          if (prevUrls[index] && prev[index]) {
+            URL.revokeObjectURL(prevUrls[index]!)
+          }
+          newUrls[index] = url
+          return newUrls
+        })
+
+        // Отправляем обновленный список файлов
+        setTimeout(() => {
+          onFilesChange(newFiles.filter((f) => f !== null) as File[])
+        }, 0)
+
+        return newFiles
       })
     },
-    [localFiles, onFilesChange, isOnlyShow]
+    [onFilesChange, isOnlyShow]
   )
 
   const handleMultipleFilesChange = useCallback(
@@ -556,7 +658,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
       setPreviewUrls(newUrls)
       setLoadError(newLoadError)
 
-      // ИСПРАВЛЕНИЕ: Откладываем вызов onFilesChange
       setTimeout(() => {
         onFilesChange(newFiles.filter((f) => f !== null) as File[])
       }, 0)
@@ -588,7 +689,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         setRemovedInitialImages((prev) => {
           const newSet = new Set(prev).add(index)
 
-          // ИСПРАВЛЕНИЕ: Откладываем вызов onActiveImagesChange до следующего тика
           if (onActiveImagesChange) {
             setTimeout(() => {
               const updatedImages = [...activeImages]
@@ -604,7 +704,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
           return newSet
         })
       } else {
-        // ИСПРАВЛЕНИЕ: Также откладываем этот вызов
         if (onActiveImagesChange) {
           setTimeout(() => {
             onActiveImagesChange([...activeImages])
@@ -617,7 +716,6 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
       setLocalFiles((currentFiles) => {
         const updatedFiles = [...currentFiles]
         updatedFiles[index] = null
-        // ИСПРАВЛЕНИЕ: Откладываем вызов onFilesChange
         setTimeout(() => {
           onFilesChange(updatedFiles.filter((f) => f !== null) as File[])
         }, 0)
@@ -652,18 +750,19 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
 
   useEffect(() => {
     if (activeImages.length > 0) {
-      setPreviewUrls(() => {
+      setPreviewUrls((prev) => {
         const newUrls = new Array(maxFiles).fill(null)
 
         activeImages.forEach((url, index) => {
-          if (index < maxFiles && !removedInitialImages.has(index)) {
+          if (index < maxFiles && !removedInitialImages.has(index) && !localFiles[index]) {
             newUrls[index] = url
           }
         })
 
         localFiles.forEach((file, index) => {
-          if (file && newUrls[index] === null) {
-            newUrls[index] = URL.createObjectURL(file)
+          if (file) {
+            // Если есть локальный файл, используем существующий URL или создаем новый
+            newUrls[index] = prev[index] || URL.createObjectURL(file)
           }
         })
 
@@ -726,6 +825,7 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         onRemove={handleRemove}
         onImageError={handleImageError}
         onImageClick={isOnlyShow ? handleImageClick : undefined}
+        onSwapWithMain={handleSwapWithMain}
       />
     ))
   }, [
@@ -745,7 +845,8 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
     handleMultipleFilesChange,
     handleRemove,
     handleImageError,
-    handleImageClick
+    handleImageClick,
+    handleSwapWithMain
   ])
 
   return (

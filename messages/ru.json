@@ -997,6 +997,8 @@
     "slide4Description": "Тысячи поставщиков объединены, чтобы вы легко нашли нужные товары и услуги."
   },
   "CreateImagesInput": {
+    "makePreview":"Сделать превью",
+    "preview":"Превью",
     "uploadError": "Ошибка загрузки данных",
     "invalidFileTypes": "Недопустимые типы файлов: {fileNames}",
     "fileSizeExceeded": "Превышен размер файлов (макс. {maxSizeMB} МБ): {fileNames}",

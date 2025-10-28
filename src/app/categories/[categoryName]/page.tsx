@@ -1,5 +1,4 @@
 import {getCurrentLocale} from '@/lib/locale-detection'
-
 import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
@@ -14,9 +13,9 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
 
   const locale = await getCurrentLocale()
 
+  // Получаем компании для категории первого уровня
   let companyes: {name: string; inn: string; ageInYears: string}[]
   try {
-    // console.log('Category:', `/companies/l1_${categoryName}`)
     const {data} = await axiosClassic.get<{name: string; inn: string; ageInYears: string}[]>(
       `/companies/l1_${categoryName}`,
       {
@@ -26,44 +25,24 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
         }
       }
     )
-
-    // console.log('curr lang:', locale)
-    // console.log('data companyes:', data)
     companyes = data
   } catch {
     companyes = []
   }
-  // console.log('companyes:', companyes)
+
   try {
     allCategories = await CategoriesService.getAll(locale || 'en')
 
     const slugToFind = categoryName
     const foundCategory = findCategoryBySlug(allCategories, slugToFind)
-    // console.log('foundCategory', foundCategory)
+
     categories = foundCategory || (await CategoriesService.getById('l1_' + slugToFind, locale || 'en'))
 
     breadcrumbs = buildBreadcrumbs(allCategories, slugToFind)
   } catch (error) {
-    console.log('EEEERRRROOOOOORRRRR', 'почему то выдаем 404', error)
+    console.error('Error loading category:', error)
     notFound()
   }
-
-  console.log(
-    'companyes',
-    companyes,
-    'breadcrumbs',
-    breadcrumbs,
-    'idOfFilter',
-    categories.id,
-    'categories',
-    categories.children,
-    'categoryName',
-    categoryName,
-    'categoryTitleName',
-    categories.name,
-    'level',
-    1
-  )
 
   return (
     <CategoryPage

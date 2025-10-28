@@ -1,9 +1,8 @@
 import {getCurrentLocale} from '@/lib/locale-detection'
-
 import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
 import CategoriesService from '@/services/categoryes/categoryes.service'
-import {findCategoryBySlug, buildBreadcrumbs} from '@/utils/findCategoryPath'
+import {findCategoryByPath, buildBreadcrumbsByPath} from '@/utils/findCategoryPath'
 import {notFound} from 'next/navigation'
 
 export default async function CategoryPageSpecialSecond({
@@ -11,69 +10,72 @@ export default async function CategoryPageSpecialSecond({
 }: {
   params: Promise<{categoryName: string; secondCategoryName: string}>
 }) {
-  const {secondCategoryName} = await params
+  const {categoryName, secondCategoryName} = await params
   let categories
   let allCategories
   let breadcrumbs: {title: string; link: string}[] = []
   const locale = await getCurrentLocale()
 
+  // Полный путь от корня: level1 -> level2
+  const fullPath = [categoryName, secondCategoryName]
+
+  // Получаем компании для второго уровня
   let companyes: {name: string; inn: string; ageInYears: string}[]
   try {
-    console.log('Category:', `/companies/l2_${secondCategoryName}`)
     const {data} = await axiosClassic.get<{name: string; inn: string; ageInYears: string}[]>(
       `/companies/l2_${secondCategoryName}`,
       {
         headers: {
           'Accept-Language': locale,
-          'x-language': locale
+          'x-locale': locale
         }
       }
     )
-
-    // console.log('data companyes:', data)
     companyes = data
   } catch {
-    companyes = []
+    // Fallback на компании первого уровня
+    try {
+      const {data} = await axiosClassic.get<{name: string; inn: string; ageInYears: string}[]>(
+        `/companies/l1_${categoryName}`,
+        {
+          headers: {
+            'Accept-Language': locale,
+            'x-locale': locale
+          }
+        }
+      )
+      companyes = data
+    } catch {
+      companyes = []
+    }
   }
-  // console.log('companyes:', companyes)
 
   try {
     allCategories = await CategoriesService.getAll(locale || 'en')
 
-    const slugToFind = secondCategoryName
-    const foundCategory = findCategoryBySlug(allCategories, slugToFind)
+    // КЛЮЧЕВОЕ: ищем по полному пути, а не по одному slug
+    const foundCategory = findCategoryByPath(allCategories, fullPath)
 
-    categories = foundCategory || (await CategoriesService.getById('l2_' + slugToFind, locale || 'en'))
+    if (!foundCategory) {
+      console.error('Category not found for path:', fullPath)
+      notFound()
+    }
 
-    breadcrumbs = buildBreadcrumbs(allCategories, slugToFind)
+    categories = foundCategory
+
+    // Строим breadcrumbs по полному пути
+    breadcrumbs = buildBreadcrumbsByPath(allCategories, fullPath)
   } catch (error) {
-    console.log('EEEERRRROOOOOORRRRR', 'почему то выдаем 404', error)
+    console.error('Error loading category:', error)
     notFound()
   }
-  // console.log('categories second by slug:', categories)
 
-  console.log(
-    'companyes',
-    companyes,
-    'breadcrumbs',
-    breadcrumbs,
-    'idOfFilter',
-    categories.id,
-    'categories',
-    categories.children,
-    'categoryName',
-    secondCategoryName,
-    'categoryTitleName',
-    categories.name,
-    'level',
-    2
-  )
   return (
     <CategoryPage
       companyes={companyes || []}
       breadcrumbs={breadcrumbs}
       idOfFilter={categories.id}
-      categories={categories.children}
+      categories={categories.children || []}
       categoryName={secondCategoryName}
       categoryTitleName={categories.name}
       level={2}
@@ -82,12 +84,18 @@ export default async function CategoryPageSpecialSecond({
   )
 }
 
-export async function generateMetadata({params}: {params: Promise<{secondCategoryName: string}>}) {
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{categoryName: string; secondCategoryName: string}>
+}) {
   try {
     const locale = await getCurrentLocale()
-    const {secondCategoryName} = await params
-    const slugToFind = secondCategoryName
-    const foundCategory = await CategoriesService.getById('l2_' + slugToFind, locale || 'en')
+    const {categoryName, secondCategoryName} = await params
+    const allCategories = await CategoriesService.getAll(locale || 'en')
+
+    const fullPath = [categoryName, secondCategoryName]
+    const foundCategory = findCategoryByPath(allCategories, fullPath)
 
     return {
       title: foundCategory?.name || secondCategoryName || 'category'

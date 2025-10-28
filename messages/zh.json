@@ -983,6 +983,8 @@
     "slide4Description": "我们汇集了数千家供应商，助您轻松找到所需商品和服务。"
   },
   "CreateImagesInput": {
+    "makePreview": "生成预览",
+    "preview": "预览",
     "uploadError": "数据上传错误",
     "invalidFileTypes": "无效的文件类型：{fileNames}",
     "fileSizeExceeded": "文件大小超出限制（最大 {maxSizeMB} MB）：{fileNames}",
