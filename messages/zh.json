@@ -60,7 +60,7 @@
     "errorPrefixTG": "机器人无法给您发送消息",
     "Belarus": "白俄罗斯",
     "Kazakhstan": "哈萨克斯坦",
-    "errorWriteOTP":"请稍后再试",
+    "errorWriteOTP": "请稍后再试",
     "chooseUserType": "选择账户类型",
     "imBuyer": "我是买家",
     "imExporter": "我是出口公司",
@@ -233,11 +233,11 @@
     "questNotFoundTitle": "未找到问题",
     "questNotFoundValue": "请稍后查看，或联系技术支持！"
   },
-  "rowsImputs":{
-"addRow": "添加行"
+  "rowsImputs": {
+    "addRow": "添加行"
   },
   "VendorPage": {
-     "myAccount": "我的账户",
+    "myAccount": "我的账户",
     "noFaqYet": "暂无常见问题",
     "writeSite": "输入网站",
     "writeEmail": "输入邮箱",
@@ -836,7 +836,7 @@
       "contacts": "联系方式",
       "telegram": "Telegram",
       "vk": "VK",
-      "max": "MAX",
+      "whatsapp": "WhatsApp",
       "wechat": "微信",
       "email": "电子邮箱",
       "phone": "电话",

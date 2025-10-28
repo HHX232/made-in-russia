@@ -82,7 +82,7 @@
     "codeText": "Confirmation code has been sent to your email address",
     "haveProblemWithCode": "Having trouble receiving the code?",
     "defaultRegisterError": "Registration error",
-     "errorWriteOTP":"Try again later",
+    "errorWriteOTP": "Try again later",
     "loading": "Loading...",
     "next": "Next",
     "emailNext": "Email verification",
@@ -231,17 +231,17 @@
     "questNotFoundTitle": "Questions not found",
     "questNotFoundValue": "Check back later, or contact technical support!"
   },
-  "rowsImputs":{
-"addRow": "Add row"
+  "rowsImputs": {
+    "addRow": "Add row"
   },
   "VendorPage": {
     "myAccount": "My Profile",
     "noFaqYet": "No FAQ created yet",
-   "failedToSaveMedia": "Failed to save media",
-   "writeSite": "Enter website",
-   "writeEmail": "Enter email", 
-   "writePhone": "Enter phone number",
-   "addRow": "Add row",
+    "failedToSaveMedia": "Failed to save media",
+    "writeSite": "Enter website",
+    "writeEmail": "Enter email",
+    "writePhone": "Enter phone number",
+    "addRow": "Add row",
     "personalData": "Personal data",
     "rating": "Rating",
     "description": "Description",
@@ -451,7 +451,7 @@
     "publishing": "Publishing..."
   },
   "createCard": {
-     "savingLoad": "Saving...",
+    "savingLoad": "Saving...",
     "mg": "milligram",
     "g": "gram",
     "kg": "kilogram",
@@ -834,7 +834,7 @@
       "contacts": "Contacts",
       "telegram": "Telegram",
       "vk": "VK",
-      "max": "MAX",
+      "whatsapp": "WhatsApp",
       "wechat": "WeChat",
       "email": "E-mail",
       "phone": "Phone",

@@ -97,11 +97,11 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
             <h3 className={`${styles.footer__title}`}>{t('support.title')}</h3>
             <ul className={`${styles.footer__list}`}>
               <li>
-                <Link className={`${styles.footer__link}`} href='tel:74959833888'>
+                <Link className={`${styles.footer__link}`} href='tel:74959233888'>
                   <svg className={`${styles.icon} ${styles.icon__phone}`}>
                     <use href='/iconsNew/symbol/sprite.svg#phone'></use>
                   </svg>
-                  <span>+7-495-983-38-88</span>
+                  <span>+7-495-923-38-88</span>
                 </Link>
               </li>
               <li>
@@ -159,7 +159,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
             <h3 className={`${styles.footer__title} ${styles.footer__title_social}`}>{t('social.title')}</h3>
             <div className={`${styles.footer__social}`}>
               <Link
-                href='#vk'
+                href='https://vk.com/exporteru'
                 className={`${styles.footer__social_link} ${styles.footer__social_link_vk}`}
                 aria-label='VK'
               >
@@ -188,32 +188,9 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
                 </svg>
               </Link>
 
-              <Link
-                href='https://wa.me/79859233888'
-                className={`${styles.footer__social_link} ${styles.footer__social_link_whatsapp}`}
-                aria-label='WhatsApp'
-              >
-                <svg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    className={`${styles.soc_whatsapp_char}`}
-                    clipRule='evenodd'
-                    d='M15.3 2.5875C13.6125 0.9 11.3625 0 9 0C4.05 0 0 4.05 0 9C0 10.575 0.450007 12.15 1.23751 13.5L0 18L4.72501 16.7625C6.07501 17.4375 7.5375 17.8875 9 17.8875C13.95 17.8875 18 13.8375 18 8.8875C18 6.525 16.9875 4.275 15.3 2.5875ZM9 16.425C7.65 16.425 6.30001 16.0875 5.17501 15.4125L4.94999 15.3L2.13749 16.0875L2.92501 13.3875L2.69999 13.05C1.91249 11.8125 1.57499 10.4625 1.57499 9.1125C1.57499 5.0625 4.95 1.6875 9 1.6875C11.025 1.6875 12.825 2.475 14.2875 3.825C15.75 5.2875 16.425 7.0875 16.425 9.1125C16.425 13.05 13.1625 16.425 9 16.425ZM13.05 10.8C12.825 10.6875 11.7 10.125 11.475 10.125C11.25 10.0125 11.1375 10.0125 11.025 10.2375C10.9125 10.4625 10.4625 10.9125 10.35 11.1375C10.2375 11.25 10.125 11.25 9.89999 11.25C9.67499 11.1375 9.00001 10.9125 8.10001 10.125C7.42501 9.5625 6.97501 8.775 6.86251 8.55C6.75001 8.325 6.86251 8.2125 6.97501 8.1C7.08751 7.9875 7.2 7.875 7.3125 7.7625C7.425 7.65 7.42501 7.5375 7.53751 7.425C7.65001 7.3125 7.53751 7.2 7.53751 7.0875C7.53751 6.975 7.08751 5.85 6.86251 5.4C6.75001 5.0625 6.52501 5.0625 6.41251 5.0625C6.30001 5.0625 6.18749 5.0625 5.96249 5.0625C5.84999 5.0625 5.62499 5.0625 5.39999 5.2875C5.17499 5.5125 4.61251 6.075 4.61251 7.2C4.61251 8.325 5.39999 9.3375 5.51249 9.5625C5.62499 9.675 7.08749 12.0375 9.33749 12.9375C11.25 13.725 11.5875 13.5 12.0375 13.5C12.4875 13.5 13.3875 12.9375 13.5 12.4875C13.725 11.925 13.725 11.475 13.6125 11.475C13.5 10.9125 13.275 10.9125 13.05 10.8Z'
-                  />
-                </svg>
-              </Link>
-
-              <Link
-                href='#max'
-                className={`${styles.footer__social_link} ${styles.footer__social_link_max}`}
-                aria-label='Max'
-              >
-                <svg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                  <rect className={`${styles.soc_max_tile}`} width='18' height='18' rx='6' />
-                  <path
-                    className={`${styles.soc_max_char}`}
-                    clipRule='evenodd'
-                    d='M9.12892 14.9658C7.95127 14.9658 7.404 14.7931 6.45271 14.1024C5.85099 14.8794 3.94556 15.4866 3.86246 14.4478C3.86246 13.6679 3.69054 13.0089 3.4957 12.2894C3.26361 11.4031 3 10.416 3 8.98576C3 5.56985 5.79082 3 9.0974 3C12.4068 3 15 5.69647 15 9.01741C15.0111 12.287 12.3843 14.9483 9.12892 14.9658ZM9.17763 5.95259C7.56732 5.86913 6.31231 6.98859 6.03437 8.74402C5.80515 10.1973 6.21202 11.9671 6.55873 12.0592C6.72492 12.0995 7.14325 11.7599 7.404 11.498C7.83515 11.7972 8.33723 11.9769 8.85958 12.0189C10.5281 12.0995 11.9538 10.8237 12.0659 9.14979C12.1311 7.47229 10.8464 6.05146 9.17763 5.95547L9.17763 5.95259Z'
-                  />
+              <Link href='https://wa.me/79859233888' className={`${styles.footer__social_link}`} aria-label='WhatsApp'>
+                <svg width='32' height='32'>
+                  <use href='/iconsNew/contacts-whatsapp.svg#whatsapp' width={32} height={32}></use>
                 </svg>
               </Link>
 

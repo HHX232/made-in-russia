@@ -22,7 +22,7 @@ const HelpPageSocialComponent: FC = () => {
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
-          <Link href='#vk' className={styles.contacts_social__item}>
+          <Link href='https://vk.com/exporteru' className={styles.contacts_social__item}>
             <div className={styles.contacts_social__network}>
               <svg className={styles.contacts_social__icon_vk}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-vk'></use>
@@ -33,14 +33,14 @@ const HelpPageSocialComponent: FC = () => {
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
-          <Link href='#max' className={styles.contacts_social__item}>
+          <Link href='https://wa.me/79859233888' className={styles.contacts_social__item}>
             <div className={styles.contacts_social__network}>
-              <svg className={styles.contacts_social__icon_max}>
-                <use href='/iconsNew/symbol/sprite.svg#contacts-max'></use>
+              <svg className={styles.contacts_social__icon_whatsapp}>
+                <use href='/iconsNew/contacts-whatsapp.svg#whatsapp'></use>
               </svg>
-              <span>{t('max')}</span>
+              <span>{t('whatsapp')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>@exporteru</div>
+            <div className={styles.contacts_social__nikname}>+7-495-923-38-88</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
@@ -66,14 +66,14 @@ const HelpPageSocialComponent: FC = () => {
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
-          <Link href='tel:+74959833888' className={styles.contacts_social__item}>
+          <Link href='tel:74959233888' className={styles.contacts_social__item}>
             <div className={styles.contacts_social__network}>
               <svg className={styles.contacts_social__icon_phone}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-phone'></use>
               </svg>
               <span>{t('phone')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>+7-495-983-38-88</div>
+            <div className={styles.contacts_social__nikname}>+7-495-923-38-88</div>
           </Link>
         </div>
       </div>

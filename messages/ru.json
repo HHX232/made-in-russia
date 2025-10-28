@@ -12,7 +12,7 @@
     "contacts": "Контакты",
     "more": "Еще",
     "noResults": "Ничего не найдено",
-    "defaultRegisterError":"Ошибка регистрации",
+    "defaultRegisterError": "Ошибка регистрации",
     "catalog": "Каталог",
     "searchLoading": "Поиск...",
     "noResultsCatalog": "По вашему запросу ничего не найдено"
@@ -83,7 +83,7 @@
     "codeText": "Код подтверждения был отправлен на ваш адрес электронной почты",
     "haveProblemWithCode": "Есть проблемы с получением кода?",
     "defaultRegisterError": "Ошибка регистрации",
-    "errorWriteOTP":"Попробуйте ввести пароль позже",
+    "errorWriteOTP": "Попробуйте ввести пароль позже",
     "loading": "Загрузка...",
     "next": "Далее",
     "emailNext": "Проверка электронной почты",
@@ -241,11 +241,11 @@
     "questNotFoundTitle": "Вопросы не найдены",
     "questNotFoundValue": "Просмотрите раздел позже, или напишите в тех поддержку!"
   },
-  "rowsImputs":{
+  "rowsImputs": {
     "addRow": "Добавить строку"
   },
   "VendorPage": {
-    "myAccount":"Мой профиль",
+    "myAccount": "Мой профиль",
     "noFaqYet": "FAQ еще не создан",
     "writeSite": "Введите сайт",
     "writeEmail": "Введите email",
@@ -483,7 +483,7 @@
     "pair": "пара",
     "set": "комплект",
     "box": "коробка",
-    "savingLoad":"Сохранение...",
+    "savingLoad": "Сохранение...",
     "languageForInput": "Активный язык товара",
     "languageForInputSubtitle": "Обязателен к заполнению минимум 1 язык",
     "alternativeMainDescr": "Основное описание",
@@ -850,7 +850,7 @@
       "contacts": "Контакты",
       "telegram": "Telegram",
       "vk": "VK",
-      "max": "MAX",
+      "whatsapp": "WhatsApp",
       "wechat": "WeChat",
       "email": "E-mail",
       "phone": "Телефон",
