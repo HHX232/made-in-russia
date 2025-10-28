@@ -798,7 +798,8 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
   const handleFaqDelete = useCallback(
     (item: any) => {
-      handleDeleteQuestion(item.id)
+      console.log('delete item', item)
+      handleDeleteQuestion(item.id || item)
       setActiveFaq(activeFaq?.filter((itemMap) => itemMap.id !== item.id))
     },
     [activeFaq, handleDeleteQuestion]
@@ -1513,7 +1514,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}
               /> */}
                 <Catalog
+                  isPageForVendor={isPageForVendor}
                   initialHasMore
+                  mathMinHeight
                   initialProducts={[]}
                   specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}
                 />

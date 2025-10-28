@@ -123,44 +123,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     setNameState(value)
   }
 
-  // Регистрация пользователя
-  // const onSubmitUser = async (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault()
-
-  //   try {
-  //     const fullPhoneNumber = getCountryCode(selectedRegion.altName) + trueTelephoneNumber
-
-  //     const registrationData = {
-  //       email,
-  //       login: name,
-  //       password,
-  //       region: selectedRegion.altName,
-  //       phoneNumber: fullPhoneNumber?.length <= 4 ? '' : fullPhoneNumber,
-  //       avatarUrl: avatarUrl
-  //     }
-
-  //     axiosClassic.post('/auth/register', registrationData, {
-  //       headers: {'Accept-Language': currentLang}
-  //     })
-
-  //     setPassword(password)
-  //     setNumber(trueTelephoneNumber)
-  //     setName(name)
-  //     setRegion(selectedRegion.altName)
-  //     setShowFinalStep(true)
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   } catch (error: any) {
-  //     const errorMessage = error.response?.data?.message || t('defaultRegisterError')
-  //     toast.error(
-  //       <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-  //         <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('defaultRegisterError')}</strong>
-  //         <span>{errorMessage}</span>
-  //       </div>,
-  //       {style: {background: '#AC2525'}}
-  //     )
-  //   }
-  // }
-
   const onSubmitRegistration = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
 
@@ -196,9 +158,27 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             avatarUrl: avatarUrl
           }
 
-      axiosClassic.post(isUser ? '/auth/register' : '/auth/register-vendor', registrationData, {
-        headers: {'Accept-Language': currentLang}
-      })
+      axiosClassic
+        .post(isUser ? '/auth/register' : '/auth/register-vendor', registrationData, {
+          headers: {'Accept-Language': currentLang}
+        })
+        .catch((error) => {
+          toast.error(
+            <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+              <strong
+                style={{
+                  display: 'block',
+                  marginBottom: 4,
+                  fontSize: '18px'
+                }}
+              >
+                {t('defaultRegisterError')}
+              </strong>
+              <span>{error?.response?.data?.message || ''}</span>
+            </div>,
+            {style: {background: '#AC2525'}}
+          )
+        })
 
       // Сохраняем данные в Redux
       setPassword(password)
@@ -246,7 +226,23 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
         router.push('/')
       }
       router.push('/')
-    } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      toast.error(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong
+            style={{
+              display: 'block',
+              marginBottom: 4,
+              fontSize: '18px'
+            }}
+          >
+            {t('defaultRegisterError')}
+          </strong>
+          <span>{e?.response?.data?.message || t('errorWriteOTP')}</span>
+        </div>,
+        {style: {background: '#AC2525'}}
+      )
       console.log(e)
     }
   }

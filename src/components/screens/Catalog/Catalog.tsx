@@ -25,6 +25,7 @@ export interface CatalogProps {
   useContainer?: boolean
   mathMinHeight?: boolean
   customMinHeight?: string
+  isPageForVendor?: boolean
   extraSwiperClass?: string
   searchParams?: {[key: string]: string | string[] | undefined}
 }
@@ -44,7 +45,8 @@ const Catalog: FC<CatalogProps> = ({
   showSpecialSearchFilters = false,
   searchParams = {},
   extraSwiperClass,
-  useContainer = true
+  useContainer = true,
+  isPageForVendor = false
 }) => {
   const [activeFilterName, setActiveFilterName] = useState<'originPrice' | 'creationDate'>('creationDate')
   const [activeFilterDirect, setActiveFilterDirect] = useState<'asc' | 'desc'>('desc')
@@ -399,6 +401,7 @@ const Catalog: FC<CatalogProps> = ({
         )}
         {!usePagesCatalog && (
           <CardsCatalog
+            canCreateNewProduct={isPageForVendor}
             mathMinHeight={mathMinHeight}
             extraSwiperClass={extraSwiperClass}
             customMinHeight={customMinHeight}

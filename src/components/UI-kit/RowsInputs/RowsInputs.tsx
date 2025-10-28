@@ -17,6 +17,7 @@ import TextInputUI from '../inputs/TextInputUI/TextInputUI'
 import styles from './RowsInputs.module.scss'
 import TextAreaUI from '../TextAreaUI/TextAreaUI'
 import {useCurrentLanguageWithCookie} from '@/hooks/useCurrentLanguage'
+import {useTranslations} from 'next-intl'
 
 const plusCircle = '/create-card/plus-circle.svg'
 const minusCircle = '/create-card/minusCircle.svg'
@@ -34,9 +35,12 @@ interface ButtonSizes {
 interface RowsInputsProps {
   hideTitles?: boolean
   useNewTheme?: boolean
+  extra__rows__grid?: string
   specialCreatePlaceholder?: string
   extraTextareaClass?: string
   extraGlobalClass?: string
+  createButtonExtraText?: string
+  extraPlaceholder?: string
   titles: string[]
   initialRowsCount?: number
   inputsInRowCount?: number
@@ -104,6 +108,9 @@ interface DropdownProps {
   inputId: string
   canCreateNew?: boolean
   readOnly?: boolean
+  useClip?: boolean
+  useClipOnSpan?: boolean
+  extraDropClass?: string
 }
 
 const Dropdown = ({
@@ -114,7 +121,10 @@ const Dropdown = ({
   hasError,
   inputId,
   canCreateNew = false,
-  readOnly = false
+  readOnly = false,
+  useClip = true,
+  extraDropClass,
+  useClipOnSpan = false
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [customValue, setCustomValue] = useState('')
@@ -122,6 +132,7 @@ const Dropdown = ({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const customInputRef = useRef<HTMLInputElement>(null)
   const currentLang = useCurrentLanguageWithCookie()
+
   const miniTranslates = {
     ru: 'Создать',
     en: 'Create',
@@ -219,12 +230,12 @@ const Dropdown = ({
   }
 
   return (
-    <div key={inputId} className={styles.dropdown} ref={dropdownRef}>
+    <div style={{overflowX: useClip ? 'clip' : 'visible'}} key={inputId} className={styles.dropdown} ref={dropdownRef}>
       <div
         className={`${styles.dropdown__trigger} ${hasError ? styles.error__dropdown : ''} ${readOnly ? styles.dropdown__readonly : ''}`}
         onClick={() => !readOnly && setIsOpen(!isOpen)}
         id={inputId}
-        style={{cursor: readOnly ? 'default' : 'pointer'}}
+        style={{cursor: readOnly ? 'default' : 'pointer', overflowX: useClipOnSpan ? 'clip' : 'visible'}}
       >
         <span style={{margin: '0 auto'}} className={value ? styles.dropdown__value : styles.dropdown__placeholder}>
           {value || (placeholder || '')?.trim()?.split(' ')[0]}
@@ -232,7 +243,7 @@ const Dropdown = ({
       </div>
 
       {isOpen && !readOnly && (
-        <div className={styles.dropdown__list}>
+        <div className={`${styles.dropdown__list} ${extraDropClass}`}>
           {canCreateNew && (
             <>
               {isCreatingNew ? (
@@ -304,14 +315,18 @@ const Dropdown = ({
 
 interface SortableRowProps {
   id: string
+  extra__rows__grid?: string
   rowIndex: number
   row: string[]
   titles: string[]
   extraTextareaClass?: string
   inputsInRowCount: number
   idNames?: string[]
+  extraPlaceholder?: string
   extraClass?: string
   isLastRow: boolean
+  totalRows: number
+
   canRemove: boolean
   onUpdateValue: (rowIndex: number, inputIndex: number, value: string) => void
   onRemoveRow: (rowIndex: number) => void
@@ -363,9 +378,13 @@ const SortableRow = ({
   onClick,
   onFocus,
   onKeyUp,
-  useNewTheme
+  useNewTheme,
+  extraPlaceholder,
+  totalRows,
+  extra__rows__grid
 }: SortableRowProps) => {
   const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id})
+  const shouldShowDnD = showDnDButton && !isOnlyShow && totalRows > 1
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -373,7 +392,7 @@ const SortableRow = ({
     opacity: isDragging ? 0.5 : 1
   }
 
-  const renderInput = (value: string, inputIndex: number) => {
+  const renderInput = (value: string, inputIndex: number, lastElemet: boolean) => {
     const currentInputType = inputType?.[inputIndex] || 'text'
     const inputId =
       `cy-create-card-row-input-${idNames?.[inputIndex]}` ||
@@ -386,8 +405,11 @@ const SortableRow = ({
       return (
         <Dropdown
           key={inputIndex + inputId}
+          useClipOnSpan={lastElemet}
           value={value}
+          useClip={!lastElemet}
           options={options}
+          extraDropClass={(lastElemet && styles.extraDropClass) || ''}
           placeholder={titles[inputIndex] || 'Выберите значение'}
           onSelect={(newValue) => !isOnlyShow && onUpdateValue(rowIndex, inputIndex, newValue)}
           hasError={hasError && !value}
@@ -412,7 +434,7 @@ const SortableRow = ({
                   : inputsTheme
                 : 'lightBlue'
           }
-          placeholder={titles[inputIndex] || 'value...'}
+          placeholder={extraPlaceholder || titles[inputIndex] || 'value...'}
           currentValue={value}
           onSetValue={(newValue) => !isOnlyShow && onUpdateValue(rowIndex, inputIndex, newValue)}
           errorValue={hasError && !value ? ' ' : ''}
@@ -434,7 +456,7 @@ const SortableRow = ({
         key={inputIndex}
         idForLabel={inputId}
         theme={useNewTheme ? 'newWhite' : inputsTheme ? inputsTheme : 'lightBlue'}
-        placeholder={titles[inputIndex] || 'value...'}
+        placeholder={extraPlaceholder || titles[inputIndex] || 'value...'}
         currentValue={value}
         onSetValue={(newValue) => !isOnlyShow && onUpdateValue(rowIndex, inputIndex, newValue)}
         errorValue={hasError && !value ? ' ' : ''}
@@ -450,9 +472,9 @@ const SortableRow = ({
   return (
     <div id={`cy-row-${idNames?.[0]}-${rowIndex}`} ref={setNodeRef} style={style}>
       <div
-        className={`${styles.rows__inputs__box} ${useNewTheme && styles.without__gap} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''} ${!showDnDButton || isOnlyShow ? styles.no__drag : ''}`}
+        className={`${styles.rows__inputs__box} ${useNewTheme && styles.without__gap} ${extraClass || ''} ${isDragging ? styles.dragging : ''} ${hasError ? styles.error : ''} ${!shouldShowDnD ? styles.no__drag : ''}`}
       >
-        {showDnDButton && !isOnlyShow && (
+        {shouldShowDnD && (
           <button
             className={styles.rows__inputs__drag}
             {...attributes}
@@ -469,8 +491,11 @@ const SortableRow = ({
           </button>
         )}
 
-        <div className={styles.rows__inputs__row} style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}>
-          {row.map((value, inputIndex) => renderInput(value, inputIndex))}
+        <div
+          className={`${styles.rows__inputs__row} ${extra__rows__grid}`}
+          style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}
+        >
+          {row.map((value, inputIndex) => renderInput(value, inputIndex, row.length - 1 === inputIndex))}
         </div>
 
         {!isOnlyShow && (
@@ -550,11 +575,15 @@ const RowsInputs = ({
   onFocus,
   onKeyUp,
   extraGlobalClass,
-  specialCreatePlaceholder = 'Create',
+  specialCreatePlaceholder,
   useNewTheme = true,
   hideTitles = false,
-  extraTextareaClass
+  extraTextareaClass,
+  createButtonExtraText,
+  extraPlaceholder,
+  extra__rows__grid
 }: RowsInputsProps) => {
+  const t = useTranslations('rowsImputs')
   // Инициализация состояния с учетом controlled режима
   const [rows, setRows] = useState<string[][]>(() => {
     if (controlled && externalValues && externalValues.length > 0) {
@@ -784,6 +813,7 @@ const RowsInputs = ({
       controlled
     })
   }
+  const shouldShowDnDInTitles = showDnDButton && !isOnlyShow && currentRows.length > 1
 
   return (
     <div
@@ -792,7 +822,7 @@ const RowsInputs = ({
       <div className={styles.rows__inputs}>
         {!hideTitles && (
           <div
-            className={`${styles.rows__inputs__titles} ${!showDnDButton || isOnlyShow ? styles.no__drag : ''}`}
+            className={`${styles.rows__inputs__titles} ${!shouldShowDnDInTitles ? styles.no__drag : ''}`}
             style={{gridTemplateColumns: `repeat(${inputsInRowCount}, 1fr)`}}
           >
             {titles.map((title, index) => (
@@ -815,8 +845,10 @@ const RowsInputs = ({
 
                 return (
                   <SortableRow
+                    totalRows={currentRows.length}
                     useNewTheme={useNewTheme}
                     key={rowId}
+                    extra__rows__grid={extra__rows__grid}
                     extraTextareaClass={extraTextareaClass}
                     inputsTheme={inputsTheme}
                     extraButtonMinusClass={extraButtonMinusClass}
@@ -825,6 +857,7 @@ const RowsInputs = ({
                     rowIndex={rowIndex}
                     idNames={idNames}
                     row={row}
+                    extraPlaceholder={extraPlaceholder}
                     titles={titles}
                     inputsInRowCount={inputsInRowCount}
                     extraClass={extraClasses[rowIndex]}
@@ -861,7 +894,9 @@ const RowsInputs = ({
           >
             {useNewTheme ? (
               <div className={styles.newButtonCreateTheme}>
-                <p className={styles.create_place_new}>{specialCreatePlaceholder}</p>
+                <p className={styles.create_place_new}>
+                  {createButtonExtraText || specialCreatePlaceholder || t('addRow')}
+                </p>
                 <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     d='M6 12H18'

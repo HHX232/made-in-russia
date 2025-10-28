@@ -26,7 +26,15 @@
   }
 }
 
+.extra__rows__grid {
+  @media (max-width: 440px) {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
 .delete__minus__button {
+  z-index: 444444;
+
   & > div > div:first-child {
     padding-right: 14px !important;
   }

@@ -57,8 +57,6 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
         'x-language': currentLang
       }
     })
-    // console.log('initialProductsForView', initialProductsForView)
-    // console.log('initialProductsForView:', initialProductsForView.data)
   } catch {}
   console.log(
     'vendorData full',
@@ -67,37 +65,13 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
     vendorData?.data?.vendorDetails?.countries
   )
 
-  // vendorData full {
-  //   id: 71,
-  //   isEnabled: true,
-  //   role: 'Vendor',
-  //   email: 'seorum@ya.ru',
-  //   login: 'Oil System',
-  //   phoneNumber: null,
-  //   avatarUrl: null,
-  //   registrationDate: '2025-08-21T12:28:25.760626Z',
-  //   lastModificationDate: '2025-08-21T12:28:25.760225Z',
-  //   vendorDetails: {
-  //     id: 20,
-  //     inn: '123461770',
-  //     description: '',
-  //     phoneNumbers: [],
-  //     emails: [],
-  //     sites: [],
-  //     countries: [ [Object] ],
-  //     productCategories: [ [Object], [Object], [Object] ],
-  //     faq: [],
-  //     viewsCount: 0,
-  //     creationDate: '2025-08-21T12:28:25.769275Z',
-  //     lastModificationDate: '2025-08-21T12:28:25.769293Z'
-  //   }
-
   return (
     <VendorPageComponent
       onlyShowDescr={vendorData?.data?.vendorDetails?.description}
       onlyShowPhones={vendorData?.data?.vendorDetails?.phoneNumbers}
       onlyShowWebsites={vendorData?.data?.vendorDetails?.sites}
       onlyShowEmail={vendorData?.data?.vendorDetails?.emails}
+      onlyShowAddress={vendorData?.data?.vendorDetails?.address}
       vendorData={{
         ...vendorData?.data,
         phoneNumber: trimPhonePrefix(vendorData?.data.phoneNumber)

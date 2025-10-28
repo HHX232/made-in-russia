@@ -1,3 +1,4 @@
+/* stylelint-disable no-duplicate-selectors */
 .error__message {
   margin-top: 20px;
   color: #ac2525;
@@ -235,10 +236,45 @@
   }
 }
 
+.dropdown__list {
+  max-height: 300px !important;
+
+  @media (max-width: 800px) {
+    min-width: 0 !important;
+    padding: 7px 6px !important;
+    overflow-x: clip;
+  }
+}
+
+.extraDropClass {
+  right: 0 !important;
+  left: auto !important;
+  min-width: 180px !important;
+}
+
 // Dropdown стили
 .dropdown {
   position: relative;
   width: 100%;
+
+  @media (max-width: 800px) {
+    min-width: 0 !important;
+    overflow-x: clip;
+  }
+
+  & > div {
+    @media (max-width: 800px) {
+      min-height: 48px !important;
+      padding: 14px 15px;
+      border-radius: 0 !important;
+    }
+  }
+
+  & > div > span {
+    @media (max-width: 800px) {
+      font-size: 15px !important;
+    }
+  }
 
   &__trigger {
     display: flex;

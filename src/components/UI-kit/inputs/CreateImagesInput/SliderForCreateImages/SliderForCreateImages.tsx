@@ -99,7 +99,7 @@ const SliderForCreateImages: React.FC<SliderForCreateImagesProps> = ({
   const isVideo = currentImage?.match(/\.(mp4|webm|mov|avi)$/i)
 
   return (
-    <div className={`${styles.slider} ${isModalOpen && 'body__without__scrall'}`}>
+    <div style={{zIndex: '1010009999'}} className={`${styles.slider} ${isModalOpen && 'body__without__scrall'}`}>
       {/* Основной контент */}
       <div className={styles.mainContent}>
         {/* Стрелка влево */}

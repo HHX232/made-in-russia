@@ -294,7 +294,7 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
         <nav className={`${styles.header__nav}`}>
           <ul>
             <li>
-              <Link href='#reviews' className={`${styles.header__link}`}>
+              <Link href='/profile' className={`${styles.header__link}`}>
                 {t('reviews')}
               </Link>
             </li>

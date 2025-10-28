@@ -29,10 +29,13 @@
 }
 
 .deleate__button {
+  display: flex;
   height: 100%;
-  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
   aspect-ratio: 1/1;
-  background-color: #ac2525;
+  background-color: #cf241b;
 }
 
 .update__buttons__box {
@@ -59,9 +62,9 @@
 
 .by__now__button {
   padding: 7px 20px;
-  border: 2px solid #ac2525;
-  border-radius: 10px;
-  background-color: #ac2525;
+  border: 2px solid #cf241b;
+  border-radius: 0;
+  background-color: #cf241b;
   color: #fff;
   font-size: 15px;
 }
@@ -80,9 +83,9 @@
   right: 10px;
   bottom: 10px;
   padding: 2px 3px 2px 6px;
-  border-radius: 10px;
+  border-radius: 0;
   background-color: #fff;
-  color: #ac2525;
+  color: #cf241b;
   content: '';
   font-size: 16px;
   font-weight: 800;
@@ -179,10 +182,10 @@
   width: 100%;
   justify-content: center;
   padding: 7px 20px;
-  border: 2px solid #ac2525;
-  border-radius: 10px;
+  border: 2px solid #cf241b;
+  border-radius: 0;
   margin-top: 15px;
-  background-color: #ac2525;
+  background-color: #cf241b;
   color: #fff;
   font-size: 15px;
 }

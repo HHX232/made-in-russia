@@ -146,8 +146,8 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
         picture: user.photo_url || '',
         telegram_id: user.id?.toString() || '',
         username: user.username || '',
-        first_name: user.first_name || '',
-        last_name: user.last_name || ''
+        firstName: user.first_name || '',
+        lastName: user.last_name || ''
       })
 
       router.push(`/register?${queryParams.toString()}`)

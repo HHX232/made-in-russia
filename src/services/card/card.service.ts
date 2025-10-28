@@ -34,7 +34,6 @@ const cardService = {
   },
   async getFullCardById(id: string | number, currentLang?: string, hasTranslations?: boolean) {
     const accessToken = await getAccessTokenServer()
-    console.log('accessToken on server', accessToken)
     try {
       const res = await axiosClassic.get<ICardFull>(
         `/products/${id}${hasTranslations ? '?hasTranslations=true' : ''}`,
@@ -46,6 +45,7 @@ const cardService = {
           }
         }
       )
+      console.log('cardData in F getFullCardById', res.data)
       return {
         data: res.data,
         isLoading: false,

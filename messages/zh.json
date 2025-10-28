@@ -7,7 +7,7 @@
     "search": "搜索网站",
     "login": "登录",
     "category": "分类",
-    "reviews": "评论",
+    "reviews": "个人中心",
     "delivery": "配送",
     "about": "关于我们",
     "help": "帮助",
@@ -57,6 +57,7 @@
     "errorPrefixTG": "机器人无法给您发送消息",
     "Belarus": "白俄罗斯",
     "Kazakhstan": "哈萨克斯坦",
+    "errorWriteOTP":"请稍后再试",
     "chooseUserType": "选择账户类型",
     "imBuyer": "我是买家",
     "imExporter": "我是出口公司",
@@ -229,7 +230,17 @@
     "questNotFoundTitle": "未找到问题",
     "questNotFoundValue": "请稍后查看，或联系技术支持！"
   },
+  "rowsImputs":{
+"addRow": "添加行"
+  },
   "VendorPage": {
+     "myAccount": "我的账户",
+    "noFaqYet": "暂无常见问题",
+    "writeSite": "输入网站",
+    "writeEmail": "输入邮箱",
+    "writePhone": "输入电话",
+    "addRow": "添加行",
+    "failedToSaveMedia": "媒体文件保存失败",
     "personalData": "个人资料",
     "rating": "评级",
     "description": "描述",
@@ -269,7 +280,7 @@
     "questNotFoundTitle": "未找到问题",
     "questNotFoundValue": "请稍后查看，或联系技术支持！",
     "accountViews": "每月账户浏览量",
-    "accountComments": "评论 - zh",
+    "accountComments": "评论",
     "comments": "评论",
     "loadComments": "加载评论中...",
     "noComments": "暂无产品评论",
@@ -439,6 +450,7 @@
     "publishing": "发布中..."
   },
   "createCard": {
+    "savingLoad": "保存中...",
     "mg": "毫克",
     "g": "克",
     "kg": "千克",

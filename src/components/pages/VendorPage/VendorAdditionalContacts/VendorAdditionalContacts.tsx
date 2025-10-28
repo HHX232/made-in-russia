@@ -188,8 +188,10 @@ export const VendorAdditionalContacts = memo(
             <RowsInputs
               useNewTheme
               controlled={true}
+              extraPlaceholder={t('writePhone')}
               hideTitles
               isOnlyShow={isOnlyShow}
+              createButtonExtraText={t('addRow')}
               onBlur={() => handleOnBlur('phones')}
               externalValues={phoneRows}
               onSetValue={(rowIndex, inputIndex, value) => {
@@ -217,7 +219,9 @@ export const VendorAdditionalContacts = memo(
               isOnlyShow={isOnlyShow}
               hideTitles
               onBlur={() => handleOnBlur('emails')}
+              createButtonExtraText={t('addRow')}
               controlled={true}
+              extraPlaceholder={t('writeEmail')}
               externalValues={emailRows}
               idNames={['emails']}
               onSetValue={(rowIndex, inputIndex, value) => {
@@ -246,7 +250,9 @@ export const VendorAdditionalContacts = memo(
               onBlur={() => handleOnBlur('sites')}
               controlled={true}
               externalValues={siteRows}
+              createButtonExtraText={t('addRow')}
               idNames={['sites']}
+              extraPlaceholder={t('writeSite')}
               onSetValue={(rowIndex, inputIndex, value) => {
                 if (isOnlyShow) return
                 const newRows = [...siteRows]

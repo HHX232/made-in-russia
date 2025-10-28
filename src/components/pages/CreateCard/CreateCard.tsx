@@ -31,7 +31,6 @@ import {setInitialStorageValue} from '@/hooks/createCardHelpers'
 import {submitFormCardData} from '@/utils/createCardHelpers'
 import {toast} from 'sonner'
 import {useRouter} from 'next/navigation'
-import RowsInputs from '@/components/UI-kit/RowsInputs/RowsInputs'
 
 // import {useQueryClient} from '@tanstack/react-query'
 // import {invalidateProductsCache} from '@/hooks/useProducts'
@@ -309,7 +308,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
         return
       }
 
-      const loadingToast = toast.loading('Saving...')
+      const loadingToast = toast.loading(t('savingLoad'))
 
       try {
         await submitFormCardData({

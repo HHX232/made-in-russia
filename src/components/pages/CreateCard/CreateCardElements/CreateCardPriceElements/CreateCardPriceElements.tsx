@@ -30,6 +30,7 @@ interface CreateCardPriceElementsProps {
   dropdownPricesOptions?: string[][]
   // Добавляем новый пропс для управления возможностью создания новых опций
   canCreateNewOption?: boolean[]
+  extra__rows__grid?: string
 }
 
 const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
@@ -40,7 +41,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     inputType,
     currentLanguage,
     dropdownPricesOptions = [],
-    canCreateNewOption = []
+    canCreateNewOption = [],
+    extra__rows__grid
   }) => {
     // RTK actions
     const {
@@ -358,7 +360,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             <div className={`${styles.create__label__title__box}`}>
               <p className={`${styles.create__label__title}`}>{t('pricesList')}</p>
               <DropList
-                direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+                direction={windowWidth && windowWidth < 768 ? 'left' : 'bottom'}
                 safeAreaEnabled
                 positionIsAbsolute={false}
                 trigger='hover'
@@ -380,6 +382,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               useNewTheme
               inputsInRowCount={5}
               maxRows={1}
+              extra__rows__grid={styles.extra__rows__grid}
               extraButtonPlusClass={styles.extra__plus__button__class}
               extraGlobalClass={styles.delete__minus__button}
               dropdownOptions={preparedDropdownOptions}
@@ -398,8 +401,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
           <div className={`${styles.rows__inputs__box__inner} ${styles.rows__inputs__box__inner__description}`}>
             <div className={`${styles.create__label__title__box}`}>
               <p className={`${styles.create__label__title}`}>{t('characteristickTable')}</p>
-              <DropList
-                direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+              {/* <DropList
+                direction={windowWidth && windowWidth < 768 ? 'left' : 'right'}
                 safeAreaEnabled
                 positionIsAbsolute={false}
                 trigger='hover'
@@ -416,7 +419,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                     key={1}
                   />
                 ]}
-              />
+              /> */}
             </div>
             <RowsInputs
               key={`characteristics-${characteristicsKey}`}

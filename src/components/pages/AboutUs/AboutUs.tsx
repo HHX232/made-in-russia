@@ -75,7 +75,7 @@ const AboutUs = () => {
               <div className={styles.about_exporteru__wrap}>
                 <div className={styles.about_exporteru__title}>{t('joinTitle')}</div>
                 <div className={styles.about_exporteru__buttons}>
-                  <Link href='#' className={styles.btn_accent}>
+                  <Link href='/register' className={styles.btn_accent}>
                     {t('becomePartner')}
                   </Link>
                 </div>
