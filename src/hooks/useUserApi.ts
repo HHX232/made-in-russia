@@ -6,7 +6,6 @@ import {useActions} from '@/hooks/useActions'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {useRouter} from 'next/navigation'
 
-// Используем ваш интерфейс User
 interface User {
   id: number
   role: string
@@ -27,7 +26,7 @@ interface RefreshTokenResponse {
 
 // Hook для получения данных пользователя
 export const useUserQuery = () => {
-  const {setUser, clearUser} = useActions() // используем ваш кастомный хук
+  const {setUser, clearUser} = useActions()
   const currentLang = useCurrentLanguage()
 
   return useQuery({
@@ -47,9 +46,7 @@ export const useUserQuery = () => {
           }
         })
 
-        // Сохраняем данные через ваш action
         setUser(response.data)
-
         return response.data
       } catch (error) {
         console.error('Failed to fetch user data:', error)
@@ -61,7 +58,6 @@ export const useUserQuery = () => {
         }
 
         try {
-          // Пытаемся обновить токен
           const {data: tokenData} = await axiosClassic.patch<RefreshTokenResponse>(
             '/me/current-session/refresh',
             {refreshToken},
@@ -72,13 +68,11 @@ export const useUserQuery = () => {
             }
           )
 
-          // Сохраняем новый токен
           saveTokenStorage({
             accessToken: tokenData.accessToken,
             refreshToken: refreshToken
           })
 
-          // Повторяем запрос с новым токеном
           const response = await instance.get<User>('/me', {
             headers: {
               'Accept-Language': currentLang
@@ -95,11 +89,13 @@ export const useUserQuery = () => {
         }
       }
     },
-    enabled: !!(getAccessToken() && getRefreshToken()), // Запрос выполняется только если есть токены
-    staleTime: 10 * 60 * 1000, // 5 минут
-    gcTime: 15 * 60 * 1000, // 10 минут (бывший cacheTime)
-    retry: false, // Не повторяем автоматически, так как у нас есть логика обновления токенов
-    refetchOnWindowFocus: false
+    enabled: !!(getAccessToken() && getRefreshToken()),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false
   })
 }
 
@@ -112,36 +108,18 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: async () => {
       try {
-        // Отправляем запрос на сервер для логаута
         await instance.post('/auth/logout', {})
       } catch (error) {
-        // Даже если запрос на сервер не удался, продолжаем локальный логаут
         console.error('Server logout failed:', error)
-      } finally {
-        // Всегда очищаем локальные данные
-        clearUser()
-        removeFromStorage()
       }
     },
-    onSuccess: () => {
-      // Очищаем состояние пользователя
-      clearUser()
-
-      // Очищаем кэш React Query
-      queryClient.removeQueries({queryKey: USER_QUERY_KEY})
-      queryClient.clear()
-
-      // Редирект на главную страницу
-      router.push('/')
-    },
-    onError: (error) => {
-      console.error('Logout error:', error)
-
-      // Даже при ошибке очищаем локальные данные
+    onSettled: () => {
       clearUser()
       removeFromStorage()
+
       queryClient.removeQueries({queryKey: USER_QUERY_KEY})
       queryClient.clear()
+
       router.push('/')
     }
   })
@@ -166,7 +144,6 @@ export const useUpdateAvatar = () => {
       return response.data
     },
     onSuccess: (updatedUser) => {
-      // Обновляем кэш пользователя
       queryClient.setQueryData(USER_QUERY_KEY, updatedUser)
     }
   })

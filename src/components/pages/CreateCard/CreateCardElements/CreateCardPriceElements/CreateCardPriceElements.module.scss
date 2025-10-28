@@ -79,6 +79,12 @@
   }
 }
 
+.extra__rows__grid__descr {
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 .right__box {
   position: sticky;
   top: 10px;

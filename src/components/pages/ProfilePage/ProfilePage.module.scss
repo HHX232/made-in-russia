@@ -6,6 +6,13 @@
   margin-bottom: 56px;
 }
 
+.full__mobile__width {
+  @media (max-width: 390px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
 .account_tile_catalog {
   @media (max-width: 745px) {
     padding: 0 !important;

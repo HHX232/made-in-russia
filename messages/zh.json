@@ -23,6 +23,9 @@
     "privacy": "隐私政策",
     "contact": "联系我们"
   },
+  "dropdown":{
+     "enterValue": "输入值..."
+  },
   "Filters": {
     "filtersTitle": "筛选",
     "filtersCategory": "分类",

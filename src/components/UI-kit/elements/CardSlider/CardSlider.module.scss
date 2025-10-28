@@ -78,6 +78,7 @@
 
   @media (max-width: 768px) {
     padding-bottom: 10px;
+
     // flex-direction: column;
     gap: 10px;
   }
@@ -340,7 +341,7 @@
   &__thumbnail {
     overflow: hidden;
     width: 140px;
-    height: 90px;
+    height: 105px;
     border: 2px solid transparent;
     cursor: pointer;
     opacity: 0.7;
@@ -403,7 +404,7 @@
 
     .keen-slider__slide {
       width: 140px !important;
-      height: 90px !important;
+      height: 105px !important;
       min-height: 0;
       flex: 0 0 140px;
       padding: 0;

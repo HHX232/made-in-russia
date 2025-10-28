@@ -6,6 +6,7 @@ import {Product} from '@/services/products/product.types'
 import {useTranslations} from 'next-intl'
 import {FC, useState, useEffect} from 'react'
 import styles from './FavoritesForProfile.module.scss'
+
 const FavoritesForProfile: FC = () => {
   const {productInFavorites} = useTypedSelector((state) => state.favorites)
   const [isClient, setIsClient] = useState(false)
@@ -41,6 +42,9 @@ const FavoritesForProfile: FC = () => {
   useEffect(() => {
     const ids = productInFavorites.map((product) => product.id)
     setProductsIds(ids)
+    if (ids.length === 0) {
+      setFreshProducts([])
+    }
   }, [productInFavorites])
 
   useEffect(() => {
@@ -178,7 +182,7 @@ const FavoritesForProfile: FC = () => {
   }
 
   const isEmpty = productInFavorites.length === 0
-  const isLoading = productInFavorites.length !== 0 && freshProducts.length === 0
+  const isLoading = productsIds.length > 0 && freshProducts.length === 0
 
   return (
     <div className={styles.account_tile}>
@@ -186,7 +190,8 @@ const FavoritesForProfile: FC = () => {
         <>
           <div className={styles.account_vitrine}>
             <div className={styles.products_grid}>
-              {isLoading &&
+              {!isEmpty &&
+                isLoading &&
                 productInFavorites.slice(startIndex, endIndex).map((product) => (
                   <div key={product.id} className={styles.product_card_wrapper}>
                     <Card

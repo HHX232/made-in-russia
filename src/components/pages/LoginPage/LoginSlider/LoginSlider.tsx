@@ -70,7 +70,7 @@ const LoginSlider = () => {
     if (!loaded || !textWrapRef.current || !navigationRef.current || (windowWidth && windowWidth > 840)) return
     const rect = textWrapRef.current.offsetHeight
     const offset = 10
-    navigationRef.current.style.top = `${(rect + offset) / 2.5}px`
+    navigationRef.current.style.top = windowWidth && windowWidth <= 578 ? `73px` : `${(rect + offset) / 2.5}px`
   }, [windowWidth, loaded])
 
   return (

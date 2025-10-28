@@ -556,7 +556,10 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
       setPreviewUrls(newUrls)
       setLoadError(newLoadError)
 
-      onFilesChange(newFiles.filter((f) => f !== null) as File[])
+      // ИСПРАВЛЕНИЕ: Откладываем вызов onFilesChange
+      setTimeout(() => {
+        onFilesChange(newFiles.filter((f) => f !== null) as File[])
+      }, 0)
     },
     [localFiles, previewUrls, loadError, maxFiles, onFilesChange, isOnlyShow, t]
   )
@@ -585,21 +588,27 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
         setRemovedInitialImages((prev) => {
           const newSet = new Set(prev).add(index)
 
+          // ИСПРАВЛЕНИЕ: Откладываем вызов onActiveImagesChange до следующего тика
           if (onActiveImagesChange) {
-            const updatedImages = [...activeImages]
-            updatedImages[index] = ''
-            while (updatedImages.length > 0 && updatedImages[updatedImages.length - 1] === '') {
-              updatedImages.pop()
-            }
+            setTimeout(() => {
+              const updatedImages = [...activeImages]
+              updatedImages[index] = ''
+              while (updatedImages.length > 0 && updatedImages[updatedImages.length - 1] === '') {
+                updatedImages.pop()
+              }
 
-            onActiveImagesChange(updatedImages)
+              onActiveImagesChange(updatedImages)
+            }, 0)
           }
 
           return newSet
         })
       } else {
+        // ИСПРАВЛЕНИЕ: Также откладываем этот вызов
         if (onActiveImagesChange) {
-          onActiveImagesChange([...activeImages])
+          setTimeout(() => {
+            onActiveImagesChange([...activeImages])
+          }, 0)
         }
       }
 
@@ -608,7 +617,10 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
       setLocalFiles((currentFiles) => {
         const updatedFiles = [...currentFiles]
         updatedFiles[index] = null
-        onFilesChange(updatedFiles.filter((f) => f !== null) as File[])
+        // ИСПРАВЛЕНИЕ: Откладываем вызов onFilesChange
+        setTimeout(() => {
+          onFilesChange(updatedFiles.filter((f) => f !== null) as File[])
+        }, 0)
         return updatedFiles
       })
     },

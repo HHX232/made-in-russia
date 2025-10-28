@@ -3,10 +3,10 @@
 'use client'
 import {useEffect, useRef} from 'react'
 
-interface TelegramUser {
+export interface TelegramUser {
   id: number
-  first_name: string
-  last_name?: string
+  firstName: string
+  lastName?: string
   username?: string
   photo_url?: string
   auth_date: number

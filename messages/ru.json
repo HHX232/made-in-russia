@@ -17,6 +17,9 @@
     "searchLoading": "Поиск...",
     "noResultsCatalog": "По вашему запросу ничего не найдено"
   },
+  "dropdown":{
+    "enterValue":"Значение..."
+  },
   "Footer": {
     "ugreement": "Пользовательское соглашение",
     "privacy": "Политика конфиденциальности",
@@ -901,7 +904,8 @@
     "companies": "Компании",
     "inn": "ИНН",
     "experience": "Опыт",
-    "years": "лет/года"
+  "years": "{count, plural, one {год} few {года} many {лет} other {лет}}"
+
   },
   "PopularCategories": {
     "more": "Подробнее",

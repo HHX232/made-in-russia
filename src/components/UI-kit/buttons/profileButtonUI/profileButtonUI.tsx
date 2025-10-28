@@ -1,5 +1,5 @@
 'use client'
-import {CSSProperties, FC, useEffect, useState, useMemo, useCallback} from 'react'
+import {CSSProperties, FC, useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import styles from './profileButtonUI.module.scss'
 import Image from 'next/image'
 import {useRouter} from 'next/navigation'
@@ -37,6 +37,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   const {removeUserFromCache} = useUserCache()
   const accessToken = getAccessToken()
   const {isLoading, error, isError} = useUserQuery()
+  const didRun = useRef(false)
 
   const [randomAvatar, setRandomAvatar] = useState<string>(ava)
 
@@ -66,6 +67,9 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   }, [])
 
   useEffect(() => {
+    if (didRun.current) return
+    didRun.current = true
+
     setRandomAvatar(avatarsArray[0])
 
     if (!accessToken) {

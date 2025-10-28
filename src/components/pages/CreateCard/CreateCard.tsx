@@ -558,7 +558,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             </div>
             {/* CreateCardPriceElements */}
             <CreateCardPriceElements
-              inputType={['text', 'number', 'number', 'dropdown', 'dropdown']}
+              inputType={['number', 'number', 'number', 'dropdown', 'dropdown']}
               pricesArray={pricesArray.map((item) => [
                 item.quantity,
                 item.priceWithoutDiscount,

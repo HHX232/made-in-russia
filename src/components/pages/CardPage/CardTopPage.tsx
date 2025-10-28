@@ -646,7 +646,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             titleFontSize='16'
             listGap='10'
             items={[
-              {title: 'Article', value: cardData?.article || ''},
+              {title: t('articul'), value: cardData?.article || ''},
               ...(cardData?.characteristics?.slice(0, 4)?.map((el) => ({
                 title: el.name,
                 value: el.value

@@ -1,4 +1,5 @@
 import CreateCard from '@/components/pages/CreateCard/CreateCard'
+import {getCurrentLocale} from '@/lib/locale-detection'
 import cardService from '@/services/card/card.service'
 import {Metadata} from 'next'
 // import {headers} from 'next/headers'
@@ -9,7 +10,8 @@ export const metadata: Metadata = {
 }
 
 export default async function CreateCardPageWithId({params}: {params: Promise<{id: string; locale: string}>}) {
-  const {id, locale} = await params
+  const {id} = await params
+  const locale = await getCurrentLocale()
 
   // if (!locale) {
   //   const headersList = await headers()
@@ -31,7 +33,7 @@ export default async function CreateCardPageWithId({params}: {params: Promise<{i
   let isSuccess = true
   try {
     res = await cardService.getFullCardById(id, locale, true)
-    // console.log('res full card with translates', res.data)
+    console.log('res full card with translates', locale, res.data)
   } catch {
     isSuccess = false
     notFound()

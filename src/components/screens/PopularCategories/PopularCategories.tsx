@@ -18,7 +18,7 @@ interface PopularCategoriesProps {
   sectionTitle?: string
 }
 
-const PopularCategories: React.FC<PopularCategoriesProps> = ({categories, viewAllLink = '#'}) => {
+const PopularCategories: React.FC<PopularCategoriesProps> = ({categories, viewAllLink = '/categories'}) => {
   const t = useTranslations('PopularCategories')
   const defaultCategories: CategoryItem[] = [
     {

@@ -357,7 +357,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
         </ModalWindowDefault>
         <div className={styles.rows__inputs__box}>
           <div className={styles.rows__inputs__box__inner}>
-            <div className={`${styles.create__label__title__box}`}>
+            <div style={{zIndex: '66666666'}} className={`${styles.create__label__title__box}`}>
               <p className={`${styles.create__label__title}`}>{t('pricesList')}</p>
               <DropList
                 direction={windowWidth && windowWidth < 768 ? 'left' : 'bottom'}
@@ -434,6 +434,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 maxRows: 5,
                 autoResize: true
               }}
+              extra__rows__grid={styles.extra__rows__grid__descr}
               extraClasses={[
                 styles.rows__inputs__box__inner__description__extra,
                 styles.rows__inputs__box__inner__description__extra,

@@ -21,6 +21,9 @@
     "privacy": "Privacy Policy",
     "contact": "Contact us"
   },
+  "dropdown":{
+     "enterValue": "Value..."
+  },
   "Filters": {
     "filtersTitle": "Filters",
     "filtersCategory": "Categories",

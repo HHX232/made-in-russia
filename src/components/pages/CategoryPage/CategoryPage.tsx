@@ -585,7 +585,7 @@ const CategoryPage = ({
                           {t('inn')}: {company.inn}
                         </p>
                         <p className={styles.company__age}>
-                          {t('experience')}: {company.ageInYears} {t('years')}
+                          {t('experience')}: {company.ageInYears} {t('years', {count: company.ageInYears})}
                         </p>
                       </div>
                     </div>
@@ -627,7 +627,7 @@ const CategoryPage = ({
                                   {t('inn')}: {company.inn}
                                 </span>
                                 <span className={styles['companys-card__practice']}>
-                                  {t('experience')}: {company.ageInYears} {t('years')}
+                                  {t('experience')}: {company.ageInYears} {t('years', {count: company.ageInYears})}
                                 </span>
                               </div>
                             </div>

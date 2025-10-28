@@ -132,7 +132,7 @@ const Dropdown = ({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const customInputRef = useRef<HTMLInputElement>(null)
   const currentLang = useCurrentLanguageWithCookie()
-
+  const t = useTranslations('dropdown')
   const miniTranslates = {
     ru: 'Создать',
     en: 'Create',
@@ -254,7 +254,7 @@ const Dropdown = ({
                     theme='newGray'
                     onKeyDown={handleCustomKeyPress}
                     extraClass={styles.extra__text__input}
-                    placeholder='Enter value...'
+                    placeholder={t('enterValue')}
                     currentValue={customValue}
                     onSetValue={(value) => setCustomValue(value)}
                   />

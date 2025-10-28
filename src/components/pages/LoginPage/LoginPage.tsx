@@ -123,7 +123,14 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
 
   const handleTelegramAuth = async (user: any) => {
     try {
-      const response = await axiosClassic.post('/auth/login-with-telegram', user, {
+      console.log('user try tg', user)
+      const {first_name, last_name, ...userWithoutNames} = user
+      const updatedUser = {
+        ...userWithoutNames,
+        firstName: user.first_name,
+        lastName: user.last_name
+      }
+      const response = await axiosClassic.post('/auth/login-with-telegram', updatedUser, {
         headers: {
           'Accept-Language': currentLang
         }

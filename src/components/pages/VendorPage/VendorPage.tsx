@@ -11,15 +11,9 @@ import Image from 'next/image'
 import {useAnimatedCounter} from '@/hooks/useAnimatedCounter'
 import Comment from '@/components/UI-kit/elements/Comment/Comment'
 import {useProductReviews} from '@/hooks/useMyProductsReviews'
-import SearchInputUI from '@/components/UI-kit/inputs/SearchInputUI/SearchInputUI'
-import CardsCatalog from '@/components/screens/Catalog/CardsCatalog/CardsCatalog'
-import useWindowWidth from '@/hooks/useWindoWidth'
-import {removeFromStorage} from '@/services/auth/auth.helper'
-import {useRouter} from 'next/navigation'
+
 import {Product} from '@/services/products/product.types'
-import Accordion from '@/components/UI-kit/Texts/Accordions/Accordions'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
-import Filters from '@/components/screens/Filters/Filters'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {Country} from '@/services/users.types'
 import {Category} from '@/services/categoryes/categoryes.service'
@@ -151,19 +145,20 @@ const Sidebar: FC<{
 }> = ({currentTab, onTabChange, onLogout, userData, isPageForVendor, sidebarShow, setShowSidebar}) => {
   const t = useTranslations('VendorPage')
   const {updateUserAvatar} = useActions()
-
+  const handleAvatarChange = useCallback(
+    (newAvatarUrl: string | null) => {
+      if (isPageForVendor) {
+        updateUserAvatar(newAvatarUrl || '')
+      }
+    },
+    [updateUserAvatar, isPageForVendor]
+  )
   return (
     <div className={`${styles.account_layout__sidebar} ${sidebarShow ? styles.sidebarOpen : styles.sidebarClosed}`}>
       <nav className={styles.menu_company}>
         {/* Аватарка */}
         <div className={styles.acc_compavatar}>
-          <Avatar
-            onAvatarChange={(newAvatarUrl: string | null) => {
-              updateUserAvatar(newAvatarUrl || '')
-            }}
-            isOnlyShow={!isPageForVendor}
-            avatarUrl={userData?.avatarUrl}
-          />
+          <Avatar onAvatarChange={handleAvatarChange} isOnlyShow={!isPageForVendor} avatarUrl={userData?.avatarUrl} />
           <div className={styles.acc_compavatar__group}>
             <span className={styles.acc_compavatar__name}>{userData?.login}</span>
             <span className={styles.acc_compavatar__email}>{userData?.email}</span>
@@ -550,6 +545,10 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const {data: userData, isLoading: loading} = useUserQuery()
   const {mutate: logout, isPending: isLogoutPending} = useLogout()
 
+  const currentUserData = useMemo(() => {
+    return vendorData || (userData as any)
+  }, [vendorData, userData])
+
   const t = useTranslations('VendorPage')
   const currentLang = useCurrentLanguage()
   const [isQuestOpen, setIsQuestOpen] = useState(false)
@@ -581,7 +580,12 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const [newAnswerValue, setNewAnswerValue] = useState('')
 
   // Состояния для текущих значений
-  const [userPhoneNumber, setUserPhoneNumber] = useState(vendorData?.phoneNumber)
+  const [userPhoneNumber, setUserPhoneNumber] = useState('')
+  useEffect(() => {
+    if (vendorData?.phoneNumber) {
+      setUserPhoneNumber(vendorData.phoneNumber)
+    }
+  }, [])
   const [userCountries, setUserCountries] = useState(
     vendorData?.vendorDetails?.countries?.map((country) => country.name)
   )
@@ -659,7 +663,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
       setNeedToSave(false)
       setInitialLoadComplete(true)
     }
-  }, [loading, userData])
+  }, [loading])
 
   const handleActiveImagesChange = useCallback((remainingUrls: string[]) => {
     setDescriptionImages(remainingUrls)
@@ -807,6 +811,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
   const handleLogout = useCallback(() => {
     if (isLogoutPending) return
+    setWantQuite(false)
     logout()
   }, [isLogoutPending, logout])
 
@@ -820,11 +825,11 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
   const safeSetNeedToSave = useCallback(
     (value: boolean) => {
-      if (initialLoadComplete) {
+      if (initialLoadComplete && !isLogoutPending) {
         setNeedToSave(value)
       }
     },
-    [initialLoadComplete]
+    [initialLoadComplete, isLogoutPending]
   )
 
   const faqItems = useMemo(
@@ -915,6 +920,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
       )
     }
 
+    if (isLogoutPending) {
+      return null
+    }
     return (
       <div className={styles.justify_content_center}>
         <div className={styles.exp_pagination}>
@@ -979,7 +987,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
               onTabChange={setCurrentTab}
               onLogout={() => setWantQuite(true)}
               onDeleteAccount={() => {}}
-              userData={vendorData || (userData as any)}
+              userData={currentUserData}
               isPageForVendor={isPageForVendor}
               sidebarShow={sidebarShow}
               setShowSidebar={setSidebarShow}
@@ -1172,7 +1180,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                     setNeedToSave={safeSetNeedToSave}
                     isLoading={loading}
                     onlyShowAddress={onlyShowAddress}
-                    userData={vendorData || (userData as any)}
+                    userData={currentUserData}
                     regions={REGIONS}
                   />
 
@@ -1527,7 +1535,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
       </div>
 
       {/* Модальное окно выхода */}
-      <ModalWindowDefault isOpen={wantQuite} onClose={() => setWantQuite(false)}>
+      <ModalWindowDefault isOpen={wantQuite && !isLogoutPending} onClose={() => setWantQuite(false)}>
         <p style={{textAlign: 'center', fontWeight: '500', fontSize: '24px', margin: '10px 0 40px 0'}}>
           {t('wannaGetOut')}
         </p>

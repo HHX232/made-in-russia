@@ -980,7 +980,7 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
               className={`${styles.hide__sidebar__menu} ${!sidebarShow ? styles.showPhoneTitleSide : styles.hidePhoneTitleSide}`}
             >
               <h2 className={styles.account__title}>{getTabTitle()}</h2>
-              <div style={{display: 'flex', alignItems: 'center', gap: '20px'}}>
+              <div className={styles.full__mobile__width} style={{display: 'flex', alignItems: 'center', gap: '20px'}}>
                 {currentTab === 'profile' && (
                   <div className={styles.account__date}>
                     <span>{t('registrationDate')}</span>

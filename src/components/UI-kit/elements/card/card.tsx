@@ -320,7 +320,10 @@ const Card = memo<ICardProps>(
                     <use href='/iconsNew/symbol/sprite.svg#location-f'></use>
                   </svg>
                   <span>
-                    {vendorAddress} <span className={`${styles.sm_block}`}>“{vendorLogin}”</span>
+                    {vendorAddress}
+                    <span style={{marginLeft: '5px'}} className={`${styles.sm_block}`}>
+                      “{vendorLogin}”
+                    </span>
                   </span>
                 </div>
                 <h3 className={`${styles.product_card__title}`} itemProp='name'>
