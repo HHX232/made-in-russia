@@ -3,8 +3,6 @@
     "title": "你好世界！",
     "profile": "前往个人资料页面",
     "search": "搜索网站",
-    "profile": "前往个人资料页面",
-    "search": "搜索网站",
     "login": "登录",
     "category": "分类",
     "reviews": "个人中心",
@@ -23,8 +21,8 @@
     "privacy": "隐私政策",
     "contact": "联系我们"
   },
-  "dropdown":{
-     "enterValue": "输入值..."
+  "dropdown": {
+    "enterValue": "输入值..."
   },
   "Filters": {
     "filtersTitle": "筛选",
