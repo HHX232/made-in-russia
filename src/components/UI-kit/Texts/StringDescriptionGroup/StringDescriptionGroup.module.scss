@@ -16,16 +16,21 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: 10px; // Изменено на 10px между строками
+  gap: 10px;
 }
 
 .descr__list__item {
   display: flex;
   width: 100%;
-  align-items: baseline; // Изменено для правильного выравнивания линии
+  align-items: end;
   justify-content: space-between;
   color: rgb(47 47 47 / 70%); // 2F2F2F 70%
   gap: 0;
+
+  & > p {
+    max-width: 40%;
+    text-align: start;
+  }
 }
 
 .element__title {

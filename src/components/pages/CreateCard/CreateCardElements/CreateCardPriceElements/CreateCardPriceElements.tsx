@@ -562,6 +562,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               ]}
               initialRowsCount={1}
               maxRows={5}
+              inputType={['text', 'number']}
               idNames={['title-delivery', 'daysDelivery-delivery']}
               rowsInitialValues={deliveryMatrix}
               onSetValue={handleDeliverySetValue}
