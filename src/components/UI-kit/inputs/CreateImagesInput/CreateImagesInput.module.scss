@@ -31,6 +31,10 @@
   pointer-events: none;
   text-transform: uppercase;
   transform: translateX(-50%);
+
+  @media (max-width: 650px) {
+    font-size: 14px;
+  }
 }
 
 .menu__container {

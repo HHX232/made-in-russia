@@ -32,7 +32,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
 
   useEffect(() => {
     const checkHeight = () => {
-      if (minMediaHeight && window.innerHeight > minMediaHeight) {
+      if (minMediaHeight && window.innerHeight > minMediaHeight && window.innerWidth > 1000) {
         setIsFixedByHeight(true)
       } else {
         setIsFixedByHeight(false)

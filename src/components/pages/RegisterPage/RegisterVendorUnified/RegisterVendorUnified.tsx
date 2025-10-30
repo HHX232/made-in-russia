@@ -11,10 +11,10 @@ import {useCategories} from '@/services/categoryes/categoryes.service'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import axios from 'axios'
 
-const belarusSvg = '/countries/belarus.svg'
-const kazakhstanSvg = '/countries/kazakhstan.svg'
-const chinaSvg = '/countries/china.svg'
-const russiaSvg = '/countries/russia.svg'
+// const belarusSvg = '/countries/belarus.svg'
+// const kazakhstanSvg = '/countries/kazakhstan.svg'
+// const chinaSvg = '/countries/china.svg'
+// const russiaSvg = '/countries/russia.svg'
 
 interface RegisterVendorUnifiedProps {
   inn: string
@@ -58,7 +58,7 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
   setPassword,
   setAdress,
   onChangeTelNumber,
-  setSelectedCountries,
+  // setSelectedCountries,
   setSelectedCategories,
   handleOptionChange,
   onSubmit
@@ -76,12 +76,12 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
   }, [])
 
   // Опции стран для мультивыбора
-  const countryOptions: MultiSelectOption[] = [
-    {id: 'belarus', label: t('Belarus'), value: 'Belarus', icon: belarusSvg},
-    {id: 'kazakhstan', label: t('Kazakhstan'), value: 'Kazakhstan', icon: kazakhstanSvg},
-    {id: 'china', label: t('China'), value: 'China', icon: chinaSvg},
-    {id: 'russia', label: t('Russia'), value: 'Russia', icon: russiaSvg}
-  ]
+  // const countryOptions: MultiSelectOption[] = [
+  //   {id: 'belarus', label: t('Belarus'), value: 'Belarus', icon: belarusSvg},
+  //   {id: 'kazakhstan', label: t('Kazakhstan'), value: 'Kazakhstan', icon: kazakhstanSvg},
+  //   {id: 'china', label: t('China'), value: 'China', icon: chinaSvg},
+  //   {id: 'russia', label: t('Russia'), value: 'Russia', icon: russiaSvg}
+  // ]
 
   const validateInn = (value: string) => {
     return /^\d*$/.test(value)
@@ -99,7 +99,7 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
       ? selectedCountries.length === 1
         ? (selectedCountries[0].value as TNumberStart)
         : 'other'
-      : 'Russia'
+      : 'other'
 
   const isEmailValid = email.includes('@') && email.includes('.') && email.length !== 0
 
@@ -109,7 +109,6 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
     isEmailValid &&
     password.length >= 6 &&
     isValidNumber &&
-    selectedCountries.length > 0 &&
     selectedOption === 'Personal'
 
   const handleSubmitForm = async (e: MouseEvent<HTMLButtonElement>) => {
@@ -187,7 +186,7 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
         title={<p className={`${styles.input__title} ${styles.input__title__without}`}>{t('adress')}</p>}
       />
 
-      <div style={{zIndex: 1000000}} className={`${styles.some__drop__box}`}>
+      {/* <div style={{zIndex: 1000000}} className={`${styles.some__drop__box}`}>
         <p className={`${styles.input__title}`}>{t('companyCountryes')}</p>
         <MultiDropSelect
           options={countryOptions}
@@ -198,7 +197,7 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
           placeholder={t('companyCountryesPlaceholder')}
           direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}
         />
-      </div>
+      </div> */}
 
       <div className={`${styles.some__drop__box}`}>
         <p className={`${styles.input__title} ${styles.input__title__tel}`}>{t('companyTel')}</p>
@@ -214,8 +213,9 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
         <p className={`${styles.input__title} ${styles.input__title__tel}`}>{t('categories')}</p>
         <MultiDropSelect
           showSearchInput
-          extraClass={`${styles.profile__region__dropdown__extra} ${styles.extraDropClass}`}
-          extraDropListClass={`${styles.extra_extraDropListClass} ${styles.extra_extraDropListClassSecond}`}
+          useNewThemeTransparent
+          extraClass={`${styles.profile__region__dropdown__extra} ${styles.extraDropClass} `}
+          extraDropListClass={`${styles.extra_extraDropListClass} ${styles.extra_extraDropListClassSecond}  $`}
           options={(categories?.data || [])?.map((category) => ({
             id: category.id,
             label: category.name,
@@ -258,6 +258,7 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
           label={t('checkPolicy')}
           name='Business'
           value='Personal'
+          useRect
           checked={selectedOption === 'Personal'}
           onChange={handleOptionChange}
           textColor='dark'

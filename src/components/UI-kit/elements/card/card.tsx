@@ -399,8 +399,11 @@ const Card = memo<ICardProps>(
                     </svg>
                   </button>
 
-                  <Link href={`/create-card/${id}`} className={`${styles.button__span}`}>
+                  <Link href={`/create-card/${id}`} className={`${styles.button__span} ${styles.button__span__desct}`}>
                     {specialButtonText || t('edit')}
+                  </Link>
+                  <Link href={`/create-card/${id}`} className={`${styles.button__span} ${styles.button__span__mobile}`}>
+                    {specialButtonText || t('editmobile')}
                   </Link>
                 </div>
               )}

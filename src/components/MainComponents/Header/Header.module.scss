@@ -26,6 +26,27 @@
 .exp_catalog {
   min-height: fit-content !important;
   background-color: #0047ba;
+  overflow: hidden auto;
+
+  /* Добавляем внутренний скролл для каталога */
+
+  /* Стилизация скроллбара */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgb(255 255 255 / 10%);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgb(255 255 255 / 30%);
+
+    &:hover {
+      background: rgb(255 255 255 / 50%);
+    }
+  }
 }
 
 .btn_catalog {
@@ -322,6 +343,7 @@
 
 .exp_catalog__container__class {
   padding-top: 22px;
+  padding-bottom: 22px;
 }
 
 .hide_arrow {

@@ -139,6 +139,7 @@ const RegisterCompanySecond: React.FC<RegisterCompanySecondProps> = ({
         label={t('checkPolicy')}
         name='Business'
         value='Personal'
+        useRect
         checked={selectedOption === 'Personal'}
         onChange={handleOptionChange}
         textColor='dark'

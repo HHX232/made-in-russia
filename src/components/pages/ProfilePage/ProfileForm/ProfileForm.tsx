@@ -630,48 +630,50 @@ const ProfileForm: FC<ProfileFormProps> = ({
         </div>
       )}
 
-      <div className={styles.form_col_half}>
-        <div className={styles.editable}>
-          <span className={styles.editable_text}>{t('regions')}</span>
-          <div className={styles.editable_wrap}>
-            {!isVendor ? (
-              <div className={styles.region__box__input}>
-                <RegionDropList
-                  regions={regions}
-                  selectedRegion={selectedRegion}
-                  listIsOpen={listIsOpen}
-                  setListIsOpen={setListIsOpen}
-                  handleRegionSelect={handleRegionSelect}
-                  extraClass={styles.profile__region__dropdown}
-                />
-              </div>
-            ) : (
-              <MultiDropSelect
-                isOnlyShow={!isShowForOwner}
-                extraDropListClass={styles.extra_none_transform}
-                extraClass={styles.profile__region__dropdown__extra}
-                options={countryOptions}
-                selectedValues={selectedCountries}
-                onChange={(values) => {
-                  console.log('selected countries before change', selectedCountries)
-                  setSelectedCountries(values)
-                  setUserInteracted(true)
-                  console.log('country values', values)
-                  console.log('selected countries after change', selectedCountries)
-                  updateVendorDetailsAction({
-                    ...vendorDetails,
-                    countries: values.map((el) => {
-                      return {name: el.label, value: el.value}
+      {!isVendor && (
+        <div className={styles.form_col_half}>
+          <div className={styles.editable}>
+            <span className={styles.editable_text}>{t('regions')}</span>
+            <div className={styles.editable_wrap}>
+              {!isVendor ? (
+                <div className={styles.region__box__input}>
+                  <RegionDropList
+                    regions={regions}
+                    selectedRegion={selectedRegion}
+                    listIsOpen={listIsOpen}
+                    setListIsOpen={setListIsOpen}
+                    handleRegionSelect={handleRegionSelect}
+                    extraClass={styles.profile__region__dropdown}
+                  />
+                </div>
+              ) : (
+                <MultiDropSelect
+                  isOnlyShow={!isShowForOwner}
+                  extraDropListClass={styles.extra_none_transform}
+                  extraClass={styles.profile__region__dropdown__extra}
+                  options={countryOptions}
+                  selectedValues={selectedCountries}
+                  onChange={(values) => {
+                    console.log('selected countries before change', selectedCountries)
+                    setSelectedCountries(values)
+                    setUserInteracted(true)
+                    console.log('country values', values)
+                    console.log('selected countries after change', selectedCountries)
+                    updateVendorDetailsAction({
+                      ...vendorDetails,
+                      countries: values.map((el) => {
+                        return {name: el.label, value: el.value}
+                      })
                     })
-                  })
-                }}
-                placeholder={t('selectRegions')}
-                direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'bottom'}
-              />
-            )}
+                  }}
+                  placeholder={t('selectRegions')}
+                  direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'bottom'}
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       {/* </div> */}
 
       {isVendor && (

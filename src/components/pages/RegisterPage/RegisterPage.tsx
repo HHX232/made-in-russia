@@ -20,12 +20,20 @@ import RegisterUserUnified from './RegisterUserUnified/RegisterUserUnified'
 import {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import RegisterVendorUnified from './RegisterVendorUnified/RegisterVendorUnified'
 import Header from '@/components/MainComponents/Header/Header'
+import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 
 const russiaSvg = '/countries/russia.svg'
 
 interface AuthResponse {
   accessToken: string
   refreshToken: string
+}
+
+interface ErrorResponse {
+  message: string
+  code?: string
+  status: number
+  error?: string
 }
 
 const RegisterPage = ({categories}: {categories?: Category[]}) => {
@@ -35,6 +43,10 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
 
   // Состояния шагов
   const [showFinalStep, setShowFinalStep] = useState(false)
+
+  // Модальное окно
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalContent, setModalContent] = useState<React.ReactNode>(null)
 
   // Тип аккаунта
   const [isUser, setIsUser] = useState(true)
@@ -92,7 +104,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
 
     if (accessToken && refreshToken) {
       saveTokenStorage({accessToken, refreshToken})
-      router.replace('/')
+      router.replace('/profile')
       window.history.replaceState({}, '', window.location.pathname)
       return
     }
@@ -152,17 +164,51 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             inn,
             address: adress || '',
             password,
-            countries: selectedCountries.map((c) => c.value),
+            countries: ['other'],
             productCategories: selectedCategories.map((c) => c.value),
-            phoneNumber: fullPhoneNumber?.length <= 4 ? '' : fullPhoneNumber,
+            phoneNumber: fullPhoneNumber?.length <= 1 ? '' : fullPhoneNumber,
             avatarUrl: avatarUrl
           }
 
-      axiosClassic
+      await axiosClassic
         .post(isUser ? '/auth/register' : '/auth/register-vendor', registrationData, {
           headers: {'Accept-Language': currentLang}
         })
+        .then(() => {
+          // Сохраняем данные в Redux
+          setPassword(password)
+          setNumber(trueTelephoneNumber)
+          setName(name)
+          if (isUser) {
+            setRegion(selectedRegion.altName)
+          }
+
+          setShowFinalStep(true)
+        })
         .catch((error) => {
+          const errorData: ErrorResponse = error?.response?.data
+          const status = errorData?.status || error?.response?.status
+
+          // Обработка ошибки 409 - пользователь уже зарегистрирован
+          if (status === 409) {
+            setModalContent(
+              <div style={{padding: '20px', textAlign: 'center'}}>
+                <h3 style={{marginBottom: '16px', fontSize: '20px', fontWeight: 'bold'}}>
+                  {t('userAlreadyRegistered')}
+                </h3>
+                <p style={{marginBottom: '20px', lineHeight: 1.6}}>
+                  {t('userAlreadyRegisteredText').replace('{email}', email)}{' '}
+                  <Link href='/login?resetPassword=true' style={{color: '#0066cc', textDecoration: 'underline'}}>
+                    {t('loginOrResetPassword')}
+                  </Link>
+                </p>
+              </div>
+            )
+            setIsModalOpen(true)
+            return
+          }
+
+          // Обработка других ошибок
           toast.error(
             <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
               <strong
@@ -174,37 +220,14 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
               >
                 {t('defaultRegisterError')}
               </strong>
-              <span>{error?.response?.data?.message || ''}</span>
+              <span>{errorData?.message || error?.message || ''}</span>
             </div>,
             {style: {background: '#AC2525'}}
           )
         })
-
-      // Сохраняем данные в Redux
-      setPassword(password)
-      setNumber(trueTelephoneNumber)
-      setName(name)
-      if (isUser) {
-        setRegion(selectedRegion.altName)
-      }
-
-      setShowFinalStep(true)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error('Registration failed:', error.response?.data?.message)
-      const errorMessage = error.response?.data?.message || t('defaultRegisterError')
-
-      toast.error(
-        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('defaultRegisterError')}</strong>
-          <span>{errorMessage}</span>
-        </div>,
-        {
-          style: {
-            background: '#AC2525'
-          }
-        }
-      )
+      console.error('Registration failed:', error)
     }
   }
 
@@ -223,11 +246,71 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
       try {
         await refetch()
       } catch {
-        router.push('/')
+        router.push('/profile')
       }
-      router.push('/')
+      router.push('/profile')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
+      const errorData: ErrorResponse = e?.response?.data
+      const status = errorData?.status || e?.response?.status
+
+      // Обработка ошибки 409 - пользователь уже зарегистрирован
+      if (status === 409) {
+        setModalContent(
+          <div style={{padding: '20px', textAlign: 'center'}}>
+            <h3 style={{marginBottom: '16px', fontSize: '20px', fontWeight: 'bold'}}>{t('userAlreadyRegistered')}</h3>
+            <p style={{marginBottom: '20px', lineHeight: 1.6}}>
+              {t('userAlreadyRegisteredText').replace('{email}', email)}{' '}
+              <Link href='/login?resetPassword=true' style={{color: '#0066cc', textDecoration: 'underline'}}>
+                {t('loginOrResetPassword')}
+              </Link>
+            </p>
+          </div>
+        )
+        setIsModalOpen(true)
+        setShowFinalStep(false)
+        return
+      }
+
+      // Обработка других ошибок (400, 404, 429)
+      if (status === 400 || status === 404 || status === 429) {
+        let errorMessage = errorData?.message || t('errorWriteOTP')
+
+        // Специфичные сообщения для разных кодов ошибок
+        if (errorData?.code === 'INVALID_CODE') {
+          errorMessage = t('invalidCode')
+        } else if (errorData?.code === 'OUT_OF_ATTEMPTS') {
+          errorMessage = t('outOfAttempts')
+        } else if (status === 429) {
+          errorMessage = t('tooManyRequests')
+        } else if (status === 404) {
+          errorMessage = t('emailNotFound')
+        }
+
+        // Если код неверный или превышено количество попыток - оставляем на финальном шаге
+        if (errorData?.code !== 'INVALID_CODE' && errorData?.code !== 'OUT_OF_ATTEMPTS') {
+          setShowFinalStep(false)
+        }
+
+        toast.error(
+          <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+            <strong
+              style={{
+                display: 'block',
+                marginBottom: 4,
+                fontSize: '18px'
+              }}
+            >
+              {t('verificationError')}
+            </strong>
+            <span>{errorMessage}</span>
+          </div>,
+          {style: {background: '#AC2525'}}
+        )
+        return
+      }
+
+      // Обработка неожиданных ошибок
       toast.error(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
           <strong
@@ -237,9 +320,9 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
               fontSize: '18px'
             }}
           >
-            {t('defaultRegisterError')}
+            {t('verificationError')}
           </strong>
-          <span>{e?.response?.data?.message || t('errorWriteOTP')}</span>
+          <span>{errorData?.message || t('errorWriteOTP')}</span>
         </div>,
         {style: {background: '#AC2525'}}
       )
@@ -253,9 +336,14 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     setShowFinalStep(false)
   }
 
+  // Закрытие модального окна
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setModalContent(null)
+  }
+
   return (
     <div className={`${styles.login__box}`}>
-      {/* <MinimalHeader categories={categories} /> */}
       <Header categories={categories} />
       <div className='container'>
         <div className={`${styles.login__inner}`}>
@@ -358,26 +446,18 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
         </div>
       </div>
       <Footer useFixedFooter minMediaHeight={1250} extraClass={`${styles.extraFooter}`} />
+
+      {/* Модальное окно для ошибок */}
+      <ModalWindowDefault isOpen={isModalOpen} onClose={handleCloseModal}>
+        {modalContent}
+      </ModalWindowDefault>
     </div>
   )
 }
 
-// === Валидация длины номера ===
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
-  const cleaned = phone.replace(/\D/g, '')
-  if (cleaned.length === 0) return true
-  switch (country) {
-    case 'Belarus':
-      return cleaned.length === 9
-    case 'China':
-      return cleaned.length === 11
-    case 'Russia':
-    case 'Kazakhstan':
-      return cleaned.length >= 7
-    case 'other':
-    default:
-      return cleaned.length >= 1
-  }
+  return true
 }
 
 // === Определение телефонного кода страны ===

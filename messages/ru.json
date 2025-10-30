@@ -51,6 +51,14 @@
   },
   "RegisterUserPage": {
     "register": "Далее",
+    "userAlreadyRegistered": "Пользователь уже зарегистрирован",
+    "userAlreadyRegisteredText": "Пользователь {email} уже зарегистрирован.",
+    "loginOrResetPassword": "Авторизуйтесь заново или воспользуйтесь восстановлением пароля",
+    "invalidCode": "Неверный код подтверждения",
+    "outOfAttempts": "Превышен лимит попыток ввода кода",
+    "tooManyRequests": "Слишком много запросов. Попробуйте позже",
+    "emailNotFound": "Email не найден",
+    "verificationError": "Ошибка подтверждения",
     "adressPlaceholder": "Введите адрес...",
     "adress": "Адрес компании",
     "successTitleTG": "Успех!",
@@ -245,6 +253,7 @@
     "addRow": "Добавить строку"
   },
   "VendorPage": {
+    "deletedSuccess":"Успешно удалено!",
     "myAccount": "Мой профиль",
     "noFaqYet": "FAQ еще не создан",
     "writeSite": "Введите сайт",
@@ -601,6 +610,7 @@
     "cardImageAlt": "Изображение товара",
     "saw": "Просмотреть",
     "edit": "Редактировать",
+    "editmobile": "Изменить",
     "success": "Успешно!",
     "successDel": "Товар успешно удален",
     "error": "Ошибка!",
@@ -1015,5 +1025,9 @@
     "uploadError": "Ошибка загрузки данных",
     "invalidFileTypes": "Недопустимые типы файлов: {fileNames}",
     "fileSizeExceeded": "Превышен размер файлов (макс. {maxSizeMB} МБ): {fileNames}"
+  },
+  "previewText":{
+    "makePreview":"Сделать превью",
+    "preview":"Превью"
   }
 }

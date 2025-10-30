@@ -196,6 +196,7 @@ const RegisterUserUnified: React.FC<RegisterUserUnifiedProps> = ({
 
       <div className={`${styles.policy__checkbox}`}>
         <RadioButton
+          useRect
           label={t('checkPolicy')}
           name='Personal'
           value='Personal'

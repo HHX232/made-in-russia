@@ -3,6 +3,7 @@ import styles from './RadioButtonUI.module.scss'
 
 export interface RadioButtonProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
+  useRect?: boolean
   extraClassName?: string
   textColor?: 'dark' | 'white'
   extraStyle?: React.CSSProperties
@@ -47,6 +48,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
   label,
   extraClassName = '',
   extraStyle,
+  useRect,
   checked = false,
   onChange,
   name,
@@ -119,6 +121,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
             className={`
             ${styles.radioButtonCheckmark} 
             ${checked ? styles.checked : ''}
+            ${useRect ? styles.rect__chekMark : ''}
           `}
           >
             {checked && (

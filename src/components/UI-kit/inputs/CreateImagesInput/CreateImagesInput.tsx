@@ -141,6 +141,7 @@ const ImageUploadItem = memo<{
     onSwapWithMain
   }) => {
     const t = useTranslations('CreateImagesInput')
+    const t2 = useTranslations('previewText')
     const [isHovered, setIsHovered] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const menuRef = useRef<HTMLDivElement>(null)
@@ -370,7 +371,7 @@ const ImageUploadItem = memo<{
 
         {!hasContent && !isOnlyShow && (
           <>
-            {isBig && <div className={styles.preview__label}>{t('preview')}</div>}
+            {isBig && <div className={styles.preview__label}>{t2('preview')}</div>}
             <Image src={plusIcon} alt='plus' width={24} height={24} />
           </>
         )}
@@ -387,7 +388,7 @@ const ImageUploadItem = memo<{
             {isMenuOpen && (
               <div className={styles.dropdown__menu}>
                 <button className={styles.menu__item} onClick={handleSwapClick} type='button'>
-                  {t('makePreview')}
+                  {t2('makePreview')}
                 </button>
               </div>
             )}
@@ -438,6 +439,7 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
   showBigFirstItem = true
 }) => {
   const t = useTranslations('CreateImagesInput')
+
   const [localFiles, setLocalFiles] = useState<(File | null)[]>(() => new Array(maxFiles).fill(null))
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalImages, setModalImages] = useState<string[]>([])

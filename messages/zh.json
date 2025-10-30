@@ -50,6 +50,14 @@
   },
   "RegisterUserPage": {
     "register": "下一步",
+    "userAlreadyRegistered": "用户已注册",
+    "userAlreadyRegisteredText": "用户 {email} 已经注册。",
+    "loginOrResetPassword": "重新登录或使用密码恢复",
+    "invalidCode": "验证码无效",
+    "outOfAttempts": "超过最大尝试次数",
+    "tooManyRequests": "请求过多。请稍后再试",
+    "emailNotFound": "未找到电子邮件",
+    "verificationError": "验证错误",
     "adressPlaceholder": "输入地址...",
     "adress": "公司地址",
     "successTitleTG": "成功！",
@@ -235,6 +243,7 @@
     "addRow": "添加行"
   },
   "VendorPage": {
+    "deletedSuccess":"删除成功！",
     "myAccount": "我的账户",
     "noFaqYet": "暂无常见问题",
     "writeSite": "输入网站",
@@ -586,6 +595,7 @@
     "cardImageAlt": "产品图片",
     "saw": "查看",
     "edit": "编辑",
+    "editmobile": "编辑",
     "success": "成功！",
     "successDel": "产品删除成功",
     "error": "错误！",
@@ -1001,5 +1011,9 @@
     "uploadError": "数据上传错误",
     "invalidFileTypes": "无效的文件类型：{fileNames}",
     "fileSizeExceeded": "文件大小超出限制（最大 {maxSizeMB} MB）：{fileNames}"
+  },
+  "previewText":{
+    "makePreview": "生成预览",
+     "preview": "预览"
   }
 }

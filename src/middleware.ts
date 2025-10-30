@@ -678,7 +678,7 @@ export async function middleware(request: NextRequest) {
           // Перенаправление в зависимости от роли
           if (userData.role === 'Admin') {
             console.log('👑 Admin перенаправляется на главную')
-            const redirectResponse = NextResponse.redirect(new URL('/', request.url))
+            const redirectResponse = NextResponse.redirect(new URL('/profile', request.url))
             return setLocaleInResponse(
               redirectResponse,
               localeFromSubdomain || 'en',
@@ -705,7 +705,7 @@ export async function middleware(request: NextRequest) {
             )
           }
 
-          const redirectResponse = NextResponse.redirect(new URL('/', request.url))
+          const redirectResponse = NextResponse.redirect(new URL('/profile', request.url))
           return setLocaleInResponse(
             redirectResponse,
             localeFromSubdomain || 'en',
@@ -748,7 +748,7 @@ export async function middleware(request: NextRequest) {
               let redirectUrl = '/'
               if (userData.role === 'Admin') {
                 console.log('👑 Admin перенаправляется на главную')
-                redirectUrl = '/'
+                redirectUrl = '/profile'
               } else if (userData.role === 'Vendor') {
                 console.log('🔀 Перенаправление Vendor на /vendor')
                 redirectUrl = '/vendor'

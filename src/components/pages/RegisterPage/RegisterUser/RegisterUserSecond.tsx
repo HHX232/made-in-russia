@@ -44,6 +44,7 @@ const RegisterUserSecond: React.FC<RegisterUserSecondProps> = ({
       <RadioButton
         label={t('checkPolicy')}
         name='Personal'
+        useRect
         value='Personal'
         textColor='dark'
         checked={selectedOption === 'Personal'}

@@ -27,6 +27,7 @@ interface MultiDropSelectProps {
   isCategories?: boolean
   extraDropListClass?: string
   useNewTheme?: boolean
+  useNewThemeTransparent?: boolean
 }
 
 const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
@@ -42,7 +43,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   onSetSearchInput,
   isCategories = false,
   extraDropListClass,
-
+  useNewThemeTransparent = false,
   useNewTheme = true
 }) => {
   const t = useTranslations('multiDrop')
@@ -299,6 +300,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
       ${extraClass}
       ${isOnlyShow ? styles.readOnly : ''}
       ${useNewTheme ? styles.newThemeTitle : ''}
+      ${useNewThemeTransparent ? styles.newThemeTitleTransparent : ''}
     `}
       onClick={() => !isOnlyShow && setIsOpen(!isOpen)}
     >

@@ -4,7 +4,7 @@
 import Header from '@/components/MainComponents/Header/Header'
 import {FC, useCallback, useEffect, useState, useRef, useMemo} from 'react'
 import ProfileForm from '../ProfilePage/ProfileForm/ProfileForm'
-import {ProfileHeader, ASSETS_COUNTRIES} from '../ProfilePage/ProfilePage'
+import {ASSETS_COUNTRIES} from '../ProfilePage/ProfilePage'
 import styles from './VendorPage.module.scss'
 import instance from '@/api/api.interceptor'
 import Image from 'next/image'
@@ -774,6 +774,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
           }
         }
       )
+
       toast.success(t('successPublishedNewQuest'))
       setNewQuestionValue('')
       setNewAnswerValue('')
@@ -784,16 +785,19 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   }, [newQuestionValue, newAnswerValue, currentLang, t])
 
   const handleDeleteQuestion = useCallback(
-    (questionId: string) => {
+    async (questionId: string) => {
       try {
-        instance.delete(`/vendor/faq/${questionId}`, {
+        await instance.delete(`/vendor/faq/${questionId}`, {
           headers: {
             'Accept-Language': currentLang
           }
         })
+
+        setActiveFaq((prev) => (prev ? prev.filter((faq) => faq.id !== questionId) : prev))
+
         toast.success(t('sucessDeleatFaq'))
       } catch (e) {
-        console.log(e)
+        console.error(e)
         toast.error(t('errorDeleatFaq'))
       }
     },
@@ -1305,7 +1309,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 <div className={styles.account_tile}>
                   {/* Header */}
                   <div className={styles.account_tile__header}>
-                    <h2 className={styles.account_tile__title}>{t('faq')}</h2>
+                    <h2 style={{marginBottom: isPageForVendor ? 0 : '15px'}} className={styles.account_tile__title}>
+                      {t('faq')}
+                    </h2>
                   </div>
 
                   {/* Add FAQ Form (only for vendor) */}

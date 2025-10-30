@@ -34,6 +34,10 @@ $transition-speed: 0.2s;
   }
 }
 
+.rect__chekMark {
+  border-radius: 0 !important;
+}
+
 .radioButtonCheckmark {
   display: flex;
   width: 20px;

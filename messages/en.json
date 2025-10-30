@@ -52,6 +52,14 @@
     "register": "Next",
     "adressPlaceholder": "Enter address...",
     "adress": "Company address",
+    "userAlreadyRegistered": "User Already Registered",
+    "userAlreadyRegisteredText": "User {email} is already registered.",
+    "loginOrResetPassword": "Log in again or use password recovery",
+    "invalidCode": "Invalid verification code",
+    "outOfAttempts": "Maximum number of attempts exceeded",
+    "tooManyRequests": "Too many requests. Please try again later",
+    "emailNotFound": "Email not found",
+    "verificationError": "Verification Error",
     "successTitleTG": "Success!",
     "successBodyTG": "The bot has messaged you on Telegram! Please check",
     "errorTitleTG": "Telegram error",
@@ -235,6 +243,7 @@
     "addRow": "Add row"
   },
   "VendorPage": {
+    "deletedSuccess":"Successfully deleted!",
     "myAccount": "My Profile",
     "noFaqYet": "No FAQ created yet",
     "failedToSaveMedia": "Failed to save media",
@@ -586,6 +595,7 @@
     "cardImageAlt": "Product image",
     "saw": "View",
     "edit": "Edit",
+    "editmobile": "Edit",
     "success": "Success!",
     "successDel": "Product successfully deleted",
     "error": "Error!",
@@ -1001,5 +1011,9 @@
     "uploadError": "Data upload error",
     "invalidFileTypes": "Invalid file types: {fileNames}",
     "fileSizeExceeded": "File size exceeded (max {maxSizeMB} MB): {fileNames}"
+  },
+  "previewText":{
+    "makePreview": "Generate preview",
+    "preview": "Preview"
   }
 }

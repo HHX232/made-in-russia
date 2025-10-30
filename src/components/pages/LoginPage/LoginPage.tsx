@@ -32,20 +32,30 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
   const t = useTranslations('LoginPage')
   const currentLang = useCurrentLanguage()
   const id = useId()
+
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     const url = new URL(window.location.href)
     const accessToken = url.searchParams.get('accessToken')
     const refreshToken = url.searchParams.get('refreshToken')
+    const resetPassword = url.searchParams.get('resetPassword')
 
     if (accessToken && refreshToken) {
       saveTokenStorage({accessToken, refreshToken})
-      router.push('/') // Перенаправляем на главную после авторизации
+      router.push('/profile') // Перенаправляем на главную после авторизации
       // Очистка query из URL
       window.history.replaceState({}, '', window.location.pathname)
     }
+
+    // Если есть параметр resetPassword=true, показываем форму восстановления пароля
+    if (resetPassword === 'true') {
+      setShowResetForm(true)
+      // Очищаем параметр из URL
+      window.history.replaceState({}, '', window.location.pathname)
+    }
   }, [router])
+
   const handleNameChange = (value: SetStateAction<string>) => {
     setNameState(value)
     setError('')
