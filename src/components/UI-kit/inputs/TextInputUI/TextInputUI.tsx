@@ -38,6 +38,7 @@ interface ITextInputProps {
   autoFocus?: boolean
   idForLabel?: string
   refProps?: React.RefObject<HTMLInputElement> | null
+  maxLength?: number
 }
 
 const TextInputUI = memo<ITextInputProps>(
@@ -68,7 +69,8 @@ const TextInputUI = memo<ITextInputProps>(
     readOnly = false,
     autoComplete,
     autoFocus = false,
-    refProps
+    refProps,
+    maxLength
   }) => {
     const [textIsShow, setTextIsShow] = useState(false)
     const [displayValue, setDisplayValue] = useState(isSecret ? currentValue.replace(/./g, '*') : currentValue)
@@ -99,6 +101,11 @@ const TextInputUI = memo<ITextInputProps>(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
 
+        // Проверка на максимальную длину
+        if (maxLength !== undefined && value.length > maxLength) {
+          return
+        }
+
         if (inputType === 'number' && value !== '' && !isValidNumberInput(value)) {
           return
         }
@@ -107,7 +114,11 @@ const TextInputUI = memo<ITextInputProps>(
           // Упрощенная логика для секретного ввода
           if (value.length > displayValue.length) {
             const addedChars = value.slice(displayValue.length)
-            onSetValue(currentValue + addedChars)
+            const newValue = currentValue + addedChars
+            // Проверка на максимальную длину для секретного ввода
+            if (maxLength === undefined || newValue.length <= maxLength) {
+              onSetValue(newValue)
+            }
           } else {
             onSetValue(currentValue.slice(0, value.length))
           }
@@ -115,7 +126,7 @@ const TextInputUI = memo<ITextInputProps>(
           onSetValue(value)
         }
       },
-      [inputType, isValidNumberInput, isSecret, displayValue, currentValue, onSetValue]
+      [inputType, isValidNumberInput, isSecret, displayValue, currentValue, onSetValue, maxLength]
     )
 
     const toggleTextVisibility = useCallback(() => {
@@ -161,6 +172,7 @@ const TextInputUI = memo<ITextInputProps>(
             readOnly={readOnly}
             autoComplete={autoComplete}
             autoFocus={autoFocus}
+            maxLength={maxLength}
             className={cn(styles.input, {
               [styles.error__input]: errorValue,
               [styles.number__input]: inputType === 'number'

@@ -67,14 +67,15 @@
 }
 
 .rows__inputs__box__inner__description {
-  margin-top: 80px;
+  margin-top: 40px;
 }
 
 .rows__inputs__box__inner__description__extra {
   & > div > label {
     width: 100%;
     min-width: 140px;
-    max-width: 450px;
+
+    // max-width: 450px;
     margin: 0 auto;
   }
 }
@@ -139,8 +140,9 @@
 .package__box {
   display: flex;
   flex-direction: column;
-  padding: 20px 25px;
-  border: 1px solid #969696;
+
+  // padding: 20px 0px;
+  // border: 1px solid #969696;
   border-radius: 0;
 }
 

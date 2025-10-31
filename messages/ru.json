@@ -253,6 +253,7 @@
     "addRow": "Добавить строку"
   },
   "VendorPage": {
+    "noWriten":"Не заполнено",
     "deletedSuccess":"Успешно удалено!",
     "myAccount": "Мой профиль",
     "noFaqYet": "FAQ еще не создан",
@@ -543,17 +544,22 @@
     "currency": "Валюта",
     "unit": "Единица измерения",
     "characteristickTable": "Таблица описания и характеристик",
-    "title": "Название",
+    "title": "Вид транспорта",
     "characteristic": "Характеристика",
+    "characteristicPlaceholder": " Характеристика, ТУ, ГОСТ, ОСТ и тд",
     "infoAboutPrices": "Информация о ценах",
     "daysCountBeforeSale": "До окончания акции",
     "daysCountBeforeSalePlaceholder": "До окончания ... дней",
     "minimalVolumeTitle": "Минимальный объем",
     "minimalVolumePlaceholder": "Минимальный объем заказа ...",
-    "deliveryInfo": "Информация о доставке",
+    "deliveryInfo": "Условия доставки",
     "daysDelivery": "Сроки",
     "packagingOptions": "Варианты упаковки",
-    "price": "Цена"
+    "price": "Цена",
+    "rail": "Железнодорожная доставка",
+    "auto": "Автомобильная доставка", 
+    "sea": "Морская доставка",
+    "air": "Авиа доставка"
   },
   "CreateCardProductCategory": {
     "errorLoadingCategoryes": "Ошибка загрузки категорий",

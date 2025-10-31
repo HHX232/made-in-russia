@@ -44,6 +44,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
   // fullObjectForDescriptions,
   // setFullObjectForDescriptions
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {setDescriptionOne, setAdditionalDescription} = useActions()
   const {descriptions} = useTypedSelector((state) => state.multilingualDescriptions)
 
@@ -146,7 +147,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
           </div>
           {showDescriptionError && <p className={styles.error__message}>{descriptionError}</p>}
         </div>
-        <div className={`${styles.left__bottom__descr}`}>
+        {/* <div className={`${styles.left__bottom__descr}`}>
           <div className={`${styles.descr__el__title}`}>
             <p className={`${styles.descr__title}`}>
               {t('secondDescr')}
@@ -181,7 +182,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
             currentValue={descriptions[currentDynamicLang].additionalDescription}
             placeholder={t('writeSecondDescr')}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   )

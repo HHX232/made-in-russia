@@ -59,6 +59,7 @@ interface RowsInputsProps {
   externalValues?: string[][]
   dropdownOptions?: string[][]
   canCreateNewOption?: boolean[]
+  showClearButton?: boolean[]
   inputsTheme?: 'dark' | 'light' | 'superWhite' | 'lightBlue'
   textAreaProps?: {
     minRows?: number
@@ -107,6 +108,7 @@ interface DropdownProps {
   hasError?: boolean
   inputId: string
   canCreateNew?: boolean
+  showClear?: boolean
   readOnly?: boolean
   useClip?: boolean
   useClipOnSpan?: boolean
@@ -121,6 +123,7 @@ const Dropdown = ({
   hasError,
   inputId,
   canCreateNew = false,
+  showClear = false,
   readOnly = false,
   useClip = true,
   extraDropClass,
@@ -137,6 +140,12 @@ const Dropdown = ({
     ru: 'Создать',
     en: 'Create',
     zh: '创建'
+  }
+
+  const clearTranslates = {
+    ru: 'Очистить',
+    en: 'Clear',
+    zh: '清除'
   }
 
   useEffect(() => {
@@ -198,6 +207,12 @@ const Dropdown = ({
     setCustomValue('')
   }
 
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (readOnly) return
+    onSelect('')
+  }
+
   const handleCreateNew = () => {
     if (readOnly) return
     setIsCreatingNew(true)
@@ -232,7 +247,7 @@ const Dropdown = ({
   return (
     <div style={{overflowX: useClip ? 'clip' : 'visible'}} key={inputId} className={styles.dropdown} ref={dropdownRef}>
       <div
-        className={`${styles.dropdown__trigger} ${hasError ? styles.error__dropdown : ''} ${readOnly ? styles.dropdown__readonly : ''}`}
+        className={`${styles.dropdown__trigger} ${hasError ? styles.error__dropdown : ''} ${readOnly ? styles.dropdown__readonly : ''} ${showClear && value ? styles.dropdown__trigger__with__clear : ''}`}
         onClick={() => !readOnly && setIsOpen(!isOpen)}
         id={inputId}
         style={{cursor: readOnly ? 'default' : 'pointer', overflowX: useClipOnSpan ? 'clip' : 'visible'}}
@@ -240,6 +255,16 @@ const Dropdown = ({
         <span style={{margin: '0 auto'}} className={value ? styles.dropdown__value : styles.dropdown__placeholder}>
           {value || (placeholder || '')?.trim()?.split(' ')[0]}
         </span>
+        {showClear && value && !readOnly && (
+          <button
+            type='button'
+            className={styles.dropdown__clear__button}
+            onClick={handleClear}
+            aria-label='Clear value'
+          >
+            {clearTranslates?.[currentLang as keyof typeof clearTranslates] || 'Clear'}
+          </button>
+        )}
       </div>
 
       {isOpen && !readOnly && (
@@ -335,6 +360,7 @@ interface SortableRowProps {
   inputType?: TInputType[]
   dropdownOptions?: string[][]
   canCreateNewOption?: boolean[]
+  showClearButton?: boolean[]
   inputsTheme?: 'dark' | 'light' | 'superWhite' | 'lightBlue' | 'newGray'
   textAreaProps?: {
     minRows?: number
@@ -369,6 +395,7 @@ const SortableRow = ({
   inputType,
   dropdownOptions,
   canCreateNewOption,
+  showClearButton,
   inputsTheme,
   textAreaProps,
   buttonSizes,
@@ -401,6 +428,7 @@ const SortableRow = ({
     if (currentInputType === 'dropdown') {
       const options = dropdownOptions?.[inputIndex] || []
       const canCreateNew = canCreateNewOption?.[inputIndex] || false
+      const showClear = showClearButton?.[inputIndex] || false
 
       return (
         <Dropdown
@@ -415,6 +443,7 @@ const SortableRow = ({
           hasError={hasError && !value}
           inputId={inputId}
           canCreateNew={canCreateNew}
+          showClear={showClear}
           readOnly={isOnlyShow}
         />
       )
@@ -510,20 +539,8 @@ const SortableRow = ({
           >
             {useNewTheme ? (
               <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                <path
-                  d='M18 6L6 18'
-                  stroke='#2F2F2F'
-                  stroke-width='1.5'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                />
-                <path
-                  d='M6 6L18 18'
-                  stroke='#2F2F2F'
-                  stroke-width='1.5'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                />
+                <path d='M18 6L6 18' stroke='#2F2F2F' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
+                <path d='M6 6L18 18' stroke='#2F2F2F' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
               </svg>
             ) : (
               <Image
@@ -560,6 +577,7 @@ const RowsInputs = ({
   idNames,
   dropdownOptions,
   canCreateNewOption,
+  showClearButton,
   inputsTheme,
   textAreaProps = {
     minRows: 2,
@@ -584,7 +602,6 @@ const RowsInputs = ({
   extra__rows__grid
 }: RowsInputsProps) => {
   const t = useTranslations('rowsImputs')
-  // Инициализация состояния с учетом controlled режима
   const [rows, setRows] = useState<string[][]>(() => {
     if (controlled && externalValues && externalValues.length > 0) {
       return externalValues
@@ -599,7 +616,6 @@ const RowsInputs = ({
     return initialRows
   })
 
-  // Инициализация rowIds с уникальными значениями
   const [rowIds, setRowIds] = useState<string[]>(() => {
     const initialRows =
       controlled && externalValues
@@ -615,7 +631,6 @@ const RowsInputs = ({
 
   const buttonSizes = customButtonSizes || getDefaultButtonSizes(buttonsSizes)
 
-  // Синхронизация с externalValues в контролируемом режиме
   useEffect(() => {
     if (controlled && externalValues) {
       const currentDataString = JSON.stringify(rows)
@@ -630,13 +645,11 @@ const RowsInputs = ({
 
         setRows(externalValues)
 
-        // ВАЖНО: Пересоздаем rowIds ТОЛЬКО при изменении количества строк
         if (externalValues.length !== rowIds.length) {
-          const newRowIds = externalValues.map(
-            (_, index) =>
-              index < rowIds.length
-                ? rowIds[index] // Сохраняем существующий ID
-                : `row-${index}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` // Создаем новый только для новых строк
+          const newRowIds = externalValues.map((_, index) =>
+            index < rowIds.length
+              ? rowIds[index]
+              : `row-${index}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
           )
           setRowIds(newRowIds)
         }
@@ -644,7 +657,6 @@ const RowsInputs = ({
     }
   }, [controlled, externalValues])
 
-  // Дебаг информация
   useEffect(() => {
     const duplicates = rowIds.filter((id, index) => rowIds.indexOf(id) !== index)
     if (duplicates.length > 0) {
@@ -658,7 +670,7 @@ const RowsInputs = ({
       rowIdsLength: rowIds.length,
       currentRowsLength: currentRows.length,
       duplicatesFound: duplicates.length > 0,
-      rowIds: rowIds.slice(0, 3) // Показываем только первые 3 для краткости
+      rowIds: rowIds.slice(0, 3)
     })
   }, [controlled, externalValues, rows, rowIds])
 
@@ -750,7 +762,6 @@ const RowsInputs = ({
 
     const newRows = [...currentRows]
 
-    // Проверяем существование строки
     if (!newRows[rowIndex]) {
       console.warn('❌ Попытка обновить несуществующую строку:', rowIndex, 'в массиве длиной:', newRows.length)
       return
@@ -764,8 +775,6 @@ const RowsInputs = ({
 
     onSetValue(rowIndex, inputIndex, value)
 
-    // В контролируемом режиме НЕ вызываем onRowsChange при обновлении значения
-    // Родительский компонент сам решает, когда обновлять состояние
     if (onRowsChange && !controlled) {
       onRowsChange(newRows)
     }
@@ -805,7 +814,6 @@ const RowsInputs = ({
     }
   }
 
-  // Проверяем корректность состояния
   if (currentRows.length !== rowIds.length) {
     console.warn('⚠️ Несоответствие длины массивов:', {
       rowsLength: currentRows.length,
@@ -868,6 +876,7 @@ const RowsInputs = ({
                     hasError={rowsWithErrors.includes(rowIndex)}
                     dropdownOptions={dropdownOptions}
                     canCreateNewOption={canCreateNewOption}
+                    showClearButton={showClearButton}
                     textAreaProps={textAreaProps}
                     buttonSizes={buttonSizes}
                     showDnDButton={showDnDButton}
@@ -898,20 +907,8 @@ const RowsInputs = ({
                   {createButtonExtraText || specialCreatePlaceholder || t('addRow')}
                 </p>
                 <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M6 12H18'
-                    stroke='#2F2F2F'
-                    stroke-width='1.5'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                  />
-                  <path
-                    d='M12 18V6'
-                    stroke='#2F2F2F'
-                    stroke-width='1.5'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                  />
+                  <path d='M6 12H18' stroke='#2F2F2F' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
+                  <path d='M12 18V6' stroke='#2F2F2F' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
                 </svg>
               </div>
             ) : (

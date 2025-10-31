@@ -1225,7 +1225,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                       />
                     </div>
 
-                    {(canUpdateVendorMedia.current || needToSave) && (
+                    {((isPageForVendor && canUpdateVendorMedia.current) || needToSave) && (
                       <button
                         className={styles.vendor__save__button}
                         onClick={() => {

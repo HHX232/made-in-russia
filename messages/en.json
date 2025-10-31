@@ -243,6 +243,7 @@
     "addRow": "Add row"
   },
   "VendorPage": {
+    "noWriten": "Not filled",
     "deletedSuccess":"Successfully deleted!",
     "myAccount": "My Profile",
     "noFaqYet": "No FAQ created yet",
@@ -528,17 +529,22 @@
     "currency": "Currency",
     "unit": "Unit of measurement",
     "characteristickTable": "Description and characteristics table",
-    "title": "Title",
+    "characteristicPlaceholder": "Specification, TU, GOST, OST, etc.",
+    "title": "Mode of Transport",
     "characteristic": "Characteristic",
     "infoAboutPrices": "Price information",
     "daysCountBeforeSale": "Until promotion ends",
     "daysCountBeforeSalePlaceholder": "Until... days",
     "minimalVolumeTitle": "Minimum volume",
     "minimalVolumePlaceholder": "Minimum order volume...",
-    "deliveryInfo": "Delivery information",
+    "deliveryInfo": "Delivery terms",
     "daysDelivery": "Terms",
     "packagingOptions": "Packaging options",
-    "price": "Price"
+    "price": "Price",
+    "rail": "Railway Delivery",
+    "auto": "Road Delivery",
+    "sea": "Sea Delivery", 
+    "air": "Air Delivery"
   },
   "CreateCardProductCategory": {
     "errorLoadingCategoryes": "Categories loading error",

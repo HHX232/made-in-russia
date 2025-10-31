@@ -29,6 +29,65 @@
   }
 }
 
+/* Обертка для MediaRenderer с иконкой зума */
+.mediaRendererWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Иконка лупы */
+.zoomIcon {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 50%;
+  animation: fadeInZoom 0.3s ease forwards;
+  backdrop-filter: blur(8px);
+  background: rgb(0 0 0 / 40%);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+  user-select: none;
+
+  &:hover {
+    background: rgb(0 0 0 / 60%);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+    filter: drop-shadow(0 2px 4px rgb(0 0 0 / 20%));
+    pointer-events: none;
+  }
+
+  /* Скрываем иконку на мобильных устройствах */
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+@keyframes fadeInZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Кнопка закрытия */
 .modalClose {
   position: absolute;

@@ -243,6 +243,7 @@
     "addRow": "添加行"
   },
   "VendorPage": {
+    "noWriten": "未填写",
     "deletedSuccess":"删除成功！",
     "myAccount": "我的账户",
     "noFaqYet": "暂无常见问题",
@@ -528,17 +529,22 @@
     "currency": "货币",
     "unit": "计量单位",
     "characteristickTable": "描述和特性表",
-    "title": "标题",
+    "title": "运输方式",
     "characteristic": "特性",
+    "characteristicPlaceholder": "规格、TU、GOST、OST 等",
     "infoAboutPrices": "价格信息",
     "daysCountBeforeSale": "距促销结束",
     "daysCountBeforeSalePlaceholder": "距结束...天",
     "minimalVolumeTitle": "最小数量",
     "minimalVolumePlaceholder": "最小订购量...",
-    "deliveryInfo": "配送信息",
+    "deliveryInfo": "配送条款",
     "daysDelivery": "时间",
     "packagingOptions": "包装选项",
-    "price": "价格"
+    "price": "价格",
+    "rail": "铁路运输",
+    "auto": "公路运输",
+    "sea": "海运",
+    "air": "空运"
   },
   "CreateCardProductCategory": {
     "errorLoadingCategoryes": "类别加载错误",

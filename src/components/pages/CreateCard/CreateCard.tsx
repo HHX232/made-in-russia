@@ -473,6 +473,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 extraClass={`${styles.create__input__title}`}
                 idForLabel='cy-title-create-input'
                 placeholder={t('name')}
+                maxLength={65}
                 currentValue={getValueForLang(cardTitle, 'title')}
                 onSetValue={handleTitleChange}
                 theme='newWhite'

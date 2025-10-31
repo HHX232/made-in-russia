@@ -62,7 +62,7 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
     'vendorData full',
     vendorData?.data,
     'newVendorData.vendorDetails.countries',
-    vendorData?.data?.vendorDetails?.countries
+    vendorData?.data?.vendorDetails?.productCategories
   )
 
   return (

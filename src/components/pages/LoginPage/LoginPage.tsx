@@ -97,7 +97,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
       saveTokenStorage({accessToken, refreshToken})
       await refetch()
       console.log('Access Token:', accessToken, 'Refresh Token:', refreshToken)
-      router.push('/')
+      router.push('/profile')
     } catch (error: any) {
       console.error('Login error:', error)
 
@@ -151,7 +151,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
       if (accessToken && refreshToken) {
         // Пользователь уже зарегистрирован, сохраняем токены и перенаправляем
         saveTokenStorage({accessToken, refreshToken})
-        router.push('/')
+        router.push('/profile')
       }
     } catch (error: any) {
       console.error('Telegram auth error:', error)

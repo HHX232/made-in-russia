@@ -87,7 +87,7 @@ const Card = memo<ICardProps>(
             {/* Статус продукта изменен на */}
             <span>
               {t('successUpdateStatus')}
-              {newStatus}
+              <span style={{marginLeft: '5px'}}>{t(newStatus)}</span>
             </span>
           </div>,
           {

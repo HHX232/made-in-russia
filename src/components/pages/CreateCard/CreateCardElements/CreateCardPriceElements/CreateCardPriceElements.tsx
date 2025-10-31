@@ -397,6 +397,58 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               errorMessage={pricesError}
               minFilledRows={1}
             />
+            <div className={styles.seller__date__box}>
+              <div className={styles.seller__title}>
+                <p className={styles.seller__title__text}>{t('infoAboutPrices')} </p>
+                <DropList
+                  direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
+                  safeAreaEnabled
+                  extraClass={`${styles.drop__extra}`}
+                  positionIsAbsolute={false}
+                  trigger='hover'
+                  useNewTheme
+                  arrowClassName={`${styles.arrow__none}`}
+                  title={<Image src={vopros} alt='question' width={27} height={27} />}
+                  items={[
+                    <Image
+                      src={HELP_IMAGES.saleDate}
+                      className={styles.drop__extra__image__modal__second}
+                      alt='question'
+                      width={600}
+                      onClick={() => openModal(HELP_IMAGES.saleDate)}
+                      height={600}
+                      key={1}
+                    />
+                  ]}
+                />
+              </div>
+              <div className={styles.seller__date__box__inner}>
+                <div className={styles.seller__date__box__inner__date}>
+                  <p className={styles.seller__date__box__inner__date__text}>{t('daysCountBeforeSale')}</p>
+                  <TextInputUI
+                    idForLabel='cy-daysBeforeSale'
+                    inputType='number'
+                    currentValue={currentData.priceInfo.daysBeforeSale}
+                    onSetValue={handleSaleDateChange}
+                    theme='newWhite'
+                    placeholder={t('daysCountBeforeSalePlaceholder')}
+                    errorValue={currentErrors.saleDateError}
+                  />
+                </div>
+                <div className={styles.seller__date__box__inner__date}>
+                  <p className={styles.seller__date__box__inner__date__text}>{t('minimalVolumeTitle')}</p>
+                  <TextInputUI
+                    idForLabel='cy-minimalVolume'
+                    inputType='number'
+                    currentValue={currentData.priceInfo.minimalVolume}
+                    onSetValue={handleMinVolumeChange}
+                    theme='newWhite'
+                    placeholder={t('minimalVolumePlaceholder')}
+                    errorValue={currentErrors.minVolumeError}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           <div className={`${styles.rows__inputs__box__inner} ${styles.rows__inputs__box__inner__description}`}>
             <div className={`${styles.create__label__title__box}`}>
@@ -459,170 +511,69 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               ]}
               initialRowsCount={1}
               idNames={['title-characteristic', 'characteristic-characteristic']}
-              titles={[t('title'), t('characteristic')]}
+              titles={[t('title'), t('characteristicPlaceholder')]}
               rowsInitialValues={characteristicsMatrix}
               onSetValue={handleCharacteristicSetValue}
               onRowsChange={handleCharacteristicRowsChange}
               errorMessage={currentErrors.characteristicsError}
               minFilledRows={1}
             />
+            <div style={{zIndex: '7777'}} className={styles.del__box}>
+              <div className={styles.seller__title}>
+                <p className={styles.seller__title__text}>{t('deliveryInfo')}</p>
+                <DropList
+                  direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
+                  safeAreaEnabled
+                  extraClass={`${styles.drop__extra}`}
+                  positionIsAbsolute={false}
+                  trigger='hover'
+                  arrowClassName={`${styles.arrow__none}`}
+                  title={<Image src={vopros} alt='question' width={27} height={27} />}
+                  items={[
+                    <Image
+                      onClick={() => openModal(HELP_IMAGES.delivery)}
+                      src={HELP_IMAGES.delivery}
+                      alt='question'
+                      width={300}
+                      height={300}
+                      key={1}
+                    />
+                  ]}
+                />
+              </div>
+              <RowsInputs
+                key={`delivery-${deliveryKey}`}
+                useNewTheme
+                extraButtonPlusClass={styles.extra__plus__button__class}
+                extraButtonMinusClass={styles.minus__extra}
+                extraClasses={[
+                  styles.rows__extra__del,
+                  styles.rows__extra__del,
+                  styles.rows__extra__del,
+                  styles.rows__extra__del,
+                  styles.rows__extra__del,
+                  styles.rows__extra__del,
+                  styles.rows__extra__del,
+                  styles.rows__extra__del
+                ]}
+                initialRowsCount={1}
+                maxRows={5}
+                canCreateNewOption={[true]}
+                showClearButton={[true]}
+                inputType={['dropdown', 'number']}
+                dropdownOptions={[[t('rail'), t('auto'), t('sea'), t('air')]]}
+                idNames={['title-delivery', 'daysDelivery-delivery']}
+                rowsInitialValues={deliveryMatrix}
+                onSetValue={handleDeliverySetValue}
+                onRowsChange={handleDeliveryRowsChange}
+                titles={[t('title'), t('daysDelivery')]}
+                errorMessage={currentErrors.deliveryError}
+                minFilledRows={1}
+              />
+            </div>
           </div>
         </div>
         {/* Right */}
-        <div className={styles.right__box}>
-          <div className={styles.seller__date__box}>
-            <div className={styles.seller__title}>
-              <p className={styles.seller__title__text}>{t('infoAboutPrices')} </p>
-              <DropList
-                direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
-                safeAreaEnabled
-                extraClass={`${styles.drop__extra}`}
-                positionIsAbsolute={false}
-                trigger='hover'
-                useNewTheme
-                arrowClassName={`${styles.arrow__none}`}
-                title={<Image src={vopros} alt='question' width={27} height={27} />}
-                items={[
-                  <Image
-                    src={HELP_IMAGES.saleDate}
-                    className={styles.drop__extra__image__modal__second}
-                    alt='question'
-                    width={600}
-                    onClick={() => openModal(HELP_IMAGES.saleDate)}
-                    height={600}
-                    key={1}
-                  />
-                ]}
-              />
-            </div>
-            <div className={styles.seller__date__box__inner}>
-              <div className={styles.seller__date__box__inner__date}>
-                <p className={styles.seller__date__box__inner__date__text}>{t('daysCountBeforeSale')}</p>
-                <TextInputUI
-                  idForLabel='cy-daysBeforeSale'
-                  inputType='number'
-                  currentValue={currentData.priceInfo.daysBeforeSale}
-                  onSetValue={handleSaleDateChange}
-                  theme='newWhite'
-                  placeholder={t('daysCountBeforeSalePlaceholder')}
-                  errorValue={currentErrors.saleDateError}
-                />
-              </div>
-              <div className={styles.seller__date__box__inner__date}>
-                <p className={styles.seller__date__box__inner__date__text}>{t('minimalVolumeTitle')}</p>
-                <TextInputUI
-                  idForLabel='cy-minimalVolume'
-                  inputType='number'
-                  currentValue={currentData.priceInfo.minimalVolume}
-                  onSetValue={handleMinVolumeChange}
-                  theme='newWhite'
-                  placeholder={t('minimalVolumePlaceholder')}
-                  errorValue={currentErrors.minVolumeError}
-                />
-              </div>
-            </div>
-          </div>
-          <div className={styles.del__box}>
-            <div className={styles.seller__title}>
-              <p className={styles.seller__title__text}>{t('deliveryInfo')}</p>
-              <DropList
-                direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
-                safeAreaEnabled
-                extraClass={`${styles.drop__extra}`}
-                positionIsAbsolute={false}
-                trigger='hover'
-                arrowClassName={`${styles.arrow__none}`}
-                title={<Image src={vopros} alt='question' width={27} height={27} />}
-                items={[
-                  <Image
-                    onClick={() => openModal(HELP_IMAGES.delivery)}
-                    src={HELP_IMAGES.delivery}
-                    alt='question'
-                    width={300}
-                    height={300}
-                    key={1}
-                  />
-                ]}
-              />
-            </div>
-            <RowsInputs
-              key={`delivery-${deliveryKey}`}
-              useNewTheme
-              extraButtonPlusClass={styles.extra__plus__button__class}
-              extraButtonMinusClass={styles.minus__extra}
-              extraClasses={[
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del
-              ]}
-              initialRowsCount={1}
-              maxRows={5}
-              inputType={['text', 'number']}
-              idNames={['title-delivery', 'daysDelivery-delivery']}
-              rowsInitialValues={deliveryMatrix}
-              onSetValue={handleDeliverySetValue}
-              onRowsChange={handleDeliveryRowsChange}
-              titles={[t('title'), t('daysDelivery')]}
-              errorMessage={currentErrors.deliveryError}
-              minFilledRows={1}
-            />
-          </div>
-          <div className={styles.package__box}>
-            <div className={styles.seller__title}>
-              <p className={styles.seller__title__text}>{t('packagingOptions')}</p>
-              <DropList
-                direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
-                safeAreaEnabled
-                extraClass={`${styles.drop__extra}`}
-                positionIsAbsolute={false}
-                trigger='hover'
-                arrowClassName={`${styles.arrow__none}`}
-                title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                items={[
-                  <Image
-                    onClick={() => openModal(HELP_IMAGES.delivery)}
-                    src={HELP_IMAGES.delivery}
-                    alt='vopros'
-                    width={300}
-                    height={300}
-                    key={1}
-                  />
-                ]}
-              />
-            </div>
-            <RowsInputs
-              key={`packaging-${packagingKey}`}
-              idNames={['title-packaging', 'price-packaging']}
-              inputType={['text', 'number']}
-              extraButtonPlusClass={styles.extra__plus__button__class}
-              useNewTheme
-              extraButtonMinusClass={styles.minus__extra}
-              extraClasses={[
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del,
-                styles.rows__extra__del
-              ]}
-              initialRowsCount={1}
-              maxRows={5}
-              onSetValue={handlePackagingSetValue}
-              rowsInitialValues={packagingMatrix}
-              onRowsChange={handlePackagingRowsChange}
-              titles={[t('title'), t('price')]}
-              errorMessage={currentErrors.packagingError}
-              minFilledRows={1}
-            />
-          </div>
-        </div>
       </div>
     )
   }
