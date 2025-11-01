@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from '../RegisterPage.module.scss'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
-import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
+import {TelephoneInputUI} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import {useTranslations} from 'next-intl'
 import {useGoogleReCaptcha} from 'react-google-recaptcha-v3'
 import axios from 'axios'
@@ -196,7 +196,7 @@ const RegisterUserFirst: React.FC<RegisterUserFirstProps> = ({
           currentValue={telText}
           error={!isValidNumber ? 'error' : ''}
           onSetValue={onChangeTelNumber}
-          numberStartWith={selectedRegion.altName as TNumberStart}
+          // numberStartWith={selectedRegion.altName as TNumberStart}
         />
       </div>
 

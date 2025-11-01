@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import styles from '../RegisterPage.module.scss'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
-import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
+import {TelephoneInputUI} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import MultiDropSelect, {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
@@ -64,12 +64,6 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
   }
 
   // Определяем страну для телефонного номера (берем первую выбранную)
-  const phoneCountry =
-    selectedCountries.length > 0
-      ? selectedCountries.length === 1
-        ? (selectedCountries[0].value as TNumberStart)
-        : 'other'
-      : 'Russia'
 
   return (
     <>
@@ -109,7 +103,7 @@ const RegisterCompanyFirst: React.FC<RegisterCompanyFirstProps> = ({
           currentValue={telText}
           error={!isValidNumber ? 'error' : ''}
           onSetValue={onChangeTelNumber}
-          numberStartWith={phoneCountry}
+          // numberStartWith={phoneCountry}
         />
       </div>
 
