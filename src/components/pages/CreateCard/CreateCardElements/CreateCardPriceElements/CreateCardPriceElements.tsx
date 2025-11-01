@@ -511,7 +511,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               ]}
               initialRowsCount={1}
               idNames={['title-characteristic', 'characteristic-characteristic']}
-              titles={[t('title'), t('characteristicPlaceholder')]}
+              titles={[t('characteristicTitle'), t('characteristicPlaceholder')]}
               rowsInitialValues={characteristicsMatrix}
               onSetValue={handleCharacteristicSetValue}
               onRowsChange={handleCharacteristicRowsChange}

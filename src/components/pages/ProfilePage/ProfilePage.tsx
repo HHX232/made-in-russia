@@ -4,11 +4,8 @@ import styles from './ProfilePage.module.scss'
 import Header from '@/components/MainComponents/Header/Header'
 import instance from '@/api/api.interceptor'
 import {getAccessToken} from '@/services/auth/auth.helper'
-// import Image from 'next/image'
-// import Link from 'next/link'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import Card from '@/components/UI-kit/elements/card/card'
-// import ProfilePageBottomHelp from './ProfilePageBottom/ProfilePageBottomHelp'
 import ProfilePageBottomDelivery from './ProfilePageBottom/ProfilePageBottomDelivery'
 import ProfileForm from './ProfileForm/ProfileForm'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
@@ -107,6 +104,7 @@ function formatDateLocalized(dateString: string, currentLang: TCurrentLang): str
 interface ProfileHeaderProps {
   userData?: User
   isPageForVendor?: boolean
+  onLoginChange?: (newLogin: string) => void
 }
 
 interface ProfileActionsProps {
@@ -121,6 +119,7 @@ interface ProfileActionsProps {
   address?: string
   countries?: string[]
   categories?: string[]
+  login?: string
 }
 
 interface RecentlyViewedProps {
@@ -167,8 +166,25 @@ export const useUserData = () => {
 }
 
 // Компонент заголовка профиля
-export const ProfileHeader: FC<ProfileHeaderProps> = ({userData, isPageForVendor = true}) => {
+export const ProfileHeader: FC<ProfileHeaderProps> = ({userData, isPageForVendor = true, onLoginChange}) => {
   const {updateUserAvatar} = useActions()
+  const [login, setLogin] = useState(userData?.login || '')
+  const t = useTranslations('ProfilePage')
+
+  useEffect(() => {
+    if (userData?.login) {
+      setLogin(userData.login)
+    }
+  }, [userData?.login])
+
+  const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newLogin = e.target.value
+    setLogin(newLogin)
+    if (onLoginChange) {
+      onLoginChange(newLogin)
+    }
+  }
+
   return (
     <div className={styles.profile__user__box__inner}>
       <Avatar
@@ -180,7 +196,14 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({userData, isPageForVendor
         avatarUrl={userData?.avatarUrl}
       />
       <div className={styles.user__names__box}>
-        <p className={styles.user__name}>{userData?.login} </p>
+        <input
+          type='text'
+          value={login}
+          onChange={handleLoginChange}
+          className={styles.user__name__input}
+          placeholder={t('enterLogin') || 'Введите логин'}
+          disabled={!isPageForVendor}
+        />
         <p className={styles.user__email}>{userData?.email}</p>
       </div>
     </div>
@@ -469,7 +492,6 @@ const Sidebar: FC<{
 // Компонент действий профиля
 export const ProfileActions: FC<ProfileActionsProps> = ({
   needToSave,
-  // onLogout,
   isLoading,
   phoneNumber,
   region,
@@ -477,11 +499,13 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
   countries,
   categories,
   isForVendor,
-  address
+  address,
+  login
 }) => {
   const t = useTranslations('ProfilePage')
   const currentLang = useCurrentLanguage()
   const vendorDetails = useTypedSelector((state) => state.user?.user?.vendorDetails)
+  const userData = useTypedSelector((state) => state.user?.user)
 
   const onSave = () => {
     let numberStartWith = ''
@@ -511,7 +535,8 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
             inn,
             countries,
             categories,
-            address: vendorDetails?.address || address || ''
+            address: vendorDetails?.address || address || '',
+            login: login || userData?.login
           },
           {
             headers: {
@@ -526,7 +551,8 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
           '/me',
           {
             phoneNumber: numberStartWith + phoneNumber,
-            region
+            region,
+            login: login || userData?.login
           },
           {
             headers: {
@@ -578,11 +604,9 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
       const minColWidth = 200
       const gap = 20
 
-      // Рассчитываем количество колонок (минимум 2, максимум 3)
       let columns = Math.floor((containerWidth + gap) / (minColWidth + gap))
       columns = Math.max(2, Math.min(3, columns))
 
-      // Всегда 2 строки × количество колонок
       setItemsPerPage(columns * 2)
     }
 
@@ -609,7 +633,6 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
 
     const pages = []
 
-    // Первая страница
     pages.push(
       <a
         key={1}
@@ -627,7 +650,6 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
     const startPage = Math.max(2, currentPage - 1)
     const endPage = Math.min(totalPages - 1, currentPage + 1)
 
-    // Многоточие после первой страницы
     if (startPage > 2) {
       pages.push(
         <span key='ellipsis-start' className={styles.exp_pagination__ellipsis}>
@@ -636,7 +658,6 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
       )
     }
 
-    // Страницы в середине
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <a
@@ -653,7 +674,6 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
       )
     }
 
-    // Многоточие перед последней страницей
     if (endPage < totalPages - 1) {
       pages.push(
         <span key='ellipsis-end' className={styles.exp_pagination__ellipsis}>
@@ -662,7 +682,6 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
       )
     }
 
-    // Последняя страница
     if (totalPages > 1) {
       pages.push(
         <a
@@ -740,6 +759,7 @@ const RecentlyViewed: FC<RecentlyViewedProps> = ({latestViews, isEmpty}) => {
     </div>
   )
 }
+
 // Компонент сессий
 const SessionsTab: FC = () => {
   const t = useTranslations('ProfilePage')
@@ -880,7 +900,6 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
   const {latestViews, isEmpty} = useTypedSelector((state) => state.latestViews)
   const [needToSave, setNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
-  // const {productInFavorites} = useTypedSelector((state) => state.favorites)
   const router = useRouter()
   const {mutate: logout, isPending: isLogoutPending} = useLogout()
   const [wantQuite, setWantQuite] = useState(false)
@@ -896,6 +915,7 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
 
   const [userPhoneNumber, setUserPhoneNumber] = useState(firstUserData?.phoneNumber)
   const [userRegion, setUserRegion] = useState(firstUserData?.region)
+  const [userLogin, setUserLogin] = useState(firstUserData?.login)
 
   const t = useTranslations('ProfilePage')
 
@@ -998,23 +1018,23 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
                   <path
                     d='M9.16602 5.08325H18.3327'
                     stroke='#000000'
-                    stroke-width='1.375'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
+                    strokeWidth='1.375'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                   />
                   <path
                     d='M3.66602 11.5H18.3327'
                     stroke='#000000'
-                    stroke-width='1.375'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
+                    strokeWidth='1.375'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                   />
                   <path
                     d='M3.66602 17.9167H12.8327'
                     stroke='#000000'
-                    stroke-width='1.375'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
+                    strokeWidth='1.375'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                   />
                 </svg>
               </div>
@@ -1042,7 +1062,14 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
                     </div>
                   </div>
 
-                  <ProfileHeader userData={firstUserData || userData} isPageForVendor={true} />
+                  <ProfileHeader
+                    userData={firstUserData || userData}
+                    isPageForVendor={true}
+                    onLoginChange={(newLogin) => {
+                      setUserLogin(newLogin)
+                      safeSetNeedToSave(true)
+                    }}
+                  />
 
                   <ProfileForm
                     setNeedToSave={safeSetNeedToSave}
@@ -1058,6 +1085,7 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
                   <ProfileActions
                     phoneNumber={userPhoneNumber}
                     region={userRegion}
+                    login={userLogin}
                     isLoading={loading}
                     needToSave={needToSave}
                     onDeleteAccount={handleDeleteAccount}

@@ -121,7 +121,7 @@ const PhoneInputSection: FC<PhoneInputSectionProps> = ({
         extraClass={styles.extra__phone__class}
         error={!isValidNumber ? 'error' : ''}
         onSetValue={onChangeTelNumber}
-        numberStartWith={numberStartWith}
+        // numberStartWith={numberStartWith}
       />
     </div>
   )
@@ -715,7 +715,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
                 extraClass={styles.extra__phone__class}
                 error={!isValidNumber ? 'error' : ''}
                 onSetValue={onChangeTelNumber}
-                numberStartWith={getSafeNumberStart(selectedRegion.altName)}
+                // numberStartWith={getSafeNumberStart(selectedRegion.altName)}
               />
             </div>
           </div>

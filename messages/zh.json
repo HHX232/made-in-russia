@@ -49,6 +49,8 @@
     "loading": "加载中..."
   },
   "RegisterUserPage": {
+    "iSuccessWith": "我同意用户协议和 ",
+"policy": "隐私政策",
     "register": "下一步",
     "userAlreadyRegistered": "用户已注册",
     "userAlreadyRegisteredText": "用户 {email} 已经注册。",
@@ -375,9 +377,11 @@
       "description": "描述",
       "technicalCharacteristics": "技术规格：",
       "companyDescription": "供应商信息",
-      "deliveryDescription": "配送信息",
+      "locationInfo": "位置信息",
+      "deliveryDescription": "配送方式信息",
       "emptyAddress": "未指定地址",
-      "INN": "税号"
+      "INN": "税号",
+      "days": "{count, plural, other {天}}"
     },
     "CardBottomPage": {
       "success": "成功！",
@@ -435,11 +439,13 @@
   },
   "CardMiddlePage": {
     "description": "描述",
-    "technicalCharacteristics": "技术规格：",
-    "companyDescription": "供应商信息",
-    "deliveryDescription": "配送信息",
-    "emptyAddress": "未指定地址",
-    "INN": "税号"
+      "technicalCharacteristics": "技术规格：",
+      "companyDescription": "供应商信息",
+      "locationInfo": "位置信息",
+      "deliveryDescription": "配送方式信息",
+      "emptyAddress": "未指定地址",
+      "INN": "税号",
+      "days": "{count, plural, other {天}}"
   },
   "CardBottomPage": {
     "success": "成功！",
@@ -497,7 +503,7 @@
     "saveError": "保存错误",
     "saveErrorText": "保存产品时发生错误",
     "createCardTitle": "创建产品",
-    "name": "名称",
+    "name": "商品名称",
     "altHelpWithName": "名称帮助",
     "categoryTitle": "产品类别",
     "imageCard": "产品图片",
@@ -519,6 +525,7 @@
     "fullFaqError": "每个问题都必须有答案，反之亦然"
   },
   "CreateCardPriceElementsText": {
+    "characteristicTitle": "特性名称",
     "daysBeforeSale": "指定促销结束前的天数",
     "daysBeforeSaleNotMinus": "天数必须为正数",
     "minimalVolume": "指定最小订购量",

@@ -100,6 +100,7 @@ export const useUserQuery = () => {
 }
 
 // Hook для логаута
+
 export const useLogout = () => {
   const queryClient = useQueryClient()
   const {clearUser} = useActions()
@@ -113,13 +114,21 @@ export const useLogout = () => {
         console.error('Server logout failed:', error)
       }
     },
-    onSettled: () => {
+    onSuccess: async () => {
+      // 1. Сначала очищаем состояние и токены
       clearUser()
       removeFromStorage()
 
+      // 2. Отменяем все активные запросы
+      await queryClient.cancelQueries()
+
+      // 3. Очищаем кэш пользователя
       queryClient.removeQueries({queryKey: USER_QUERY_KEY})
+
+      // 4. Очищаем весь кэш
       queryClient.clear()
 
+      // 5. Только после этого делаем редирект
       router.push('/')
     }
   })

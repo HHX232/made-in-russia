@@ -21,6 +21,7 @@ interface VendorUpdatePayload {
   phoneNumbers?: string[]
   emails?: string[]
   address?: string
+  login?: string
 }
 
 export const useUpdateVendorDetails = () => {

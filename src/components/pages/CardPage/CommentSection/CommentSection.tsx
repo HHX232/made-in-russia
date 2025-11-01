@@ -1,10 +1,13 @@
-// CommentSection/CommentSection.tsx
 'use client'
+
 import {useEffect, useRef, useState} from 'react'
-import CardBottomPage from '../CardBottomPage/CardBottomPage'
+// import CardBottomPage from '../CardBottomPage/CardBottomPage'
 import cardService from '@/services/card/card.service'
 import ICardFull, {Review} from '@/services/card/card.types'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import dynamic from 'next/dynamic'
+
+const CardBottomPageClient = dynamic(() => import('../CardBottomPage/CardBottomPage'), {ssr: false})
 
 interface CommentsSectionProps {
   cardId: string
@@ -113,9 +116,9 @@ export default function CommentsSection({cardId}: CommentsSectionProps) {
   }
 
   return (
-    <CardBottomPage
+    <CardBottomPageClient
       isLoading={isLoading}
-      cardData={cardDataNew ?? null}
+      cardData={cardDataNew ?? ({} as ICardFull)}
       comments={comments}
       hasMore={hasMore}
       onLoadMore={handleLoadMore}

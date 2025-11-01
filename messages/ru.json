@@ -50,6 +50,8 @@
     "loading": "Загрузка..."
   },
   "RegisterUserPage": {
+    "iSuccessWith":"Я согласен с пользовательским соглашением и ",
+    "policy":"политикой конфиденциальности",
     "register": "Далее",
     "userAlreadyRegistered": "Пользователь уже зарегистрирован",
     "userAlreadyRegisteredText": "Пользователь {email} уже зарегистрирован.",
@@ -387,9 +389,11 @@
       "description": "Описание",
       "technicalCharacteristics": "Технические характеристики:",
       "companyDescription": "Информация о поставщике",
-      "deliveryDescription": "Информация о доставке",
+      "locationInfo": "Информация о местонахождении",
+      "deliveryDescription": "Информация о способах доставки",
       "emptyAddress": "адрес не указан",
-      "INN": "ИНН"
+      "INN": "ИНН",
+      "days": "{count, plural, one {день} few {дня} many {дней} other {дня}}"
     },
     "CardBottomPage": {
       "success": "Успешно!",
@@ -446,9 +450,11 @@
     "description": "Описание",
     "technicalCharacteristics": "Технические характеристики:",
     "companyDescription": "Информация о поставщике",
-    "deliveryDescription": "Информация о доставке",
+    "locationInfo": "Информация о местонахождении",
+    "deliveryDescription": "Информация о способах доставки",
     "emptyAddress": "адрес не указан",
-    "INN": "ИНН"
+    "INN": "ИНН",
+    "days": "{count, plural, one {день} few {дня} many {дней} other {дня}}"
   },
   "CardBottomPage": {
     "success": "Успешно!",
@@ -511,7 +517,7 @@
     "saveError": "Ошибка сохранения",
     "saveErrorText": "Произошла ошибка при сохранении товара",
     "createCardTitle": "Создание товара",
-    "name": "Название",
+    "name": "Наименование товара",
     "altHelpWithName": "Помощь по названию",
     "categoryTitle": "Категория товара",
     "imageCard": "Изображения товара",
@@ -545,6 +551,7 @@
     "unit": "Единица измерения",
     "characteristickTable": "Таблица описания и характеристик",
     "title": "Вид транспорта",
+    "characteristicTitle":"Наименования характеристики",
     "characteristic": "Характеристика",
     "characteristicPlaceholder": " Характеристика, ТУ, ГОСТ, ОСТ и тд",
     "infoAboutPrices": "Информация о ценах",

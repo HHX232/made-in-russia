@@ -1,8 +1,8 @@
-import React, {useRef} from 'react'
+import React, {ReactNode, useRef} from 'react'
 import styles from './RadioButtonUI.module.scss'
 
 export interface RadioButtonProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string
+  label?: string | ReactNode
   useRect?: boolean
   extraClassName?: string
   textColor?: 'dark' | 'white'

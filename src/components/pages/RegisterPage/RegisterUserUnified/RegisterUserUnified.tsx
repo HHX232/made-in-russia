@@ -3,11 +3,12 @@ import Image from 'next/image'
 import styles from '../RegisterPage.module.scss'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
-import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
+import {TelephoneInputUI} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI'
 import {useTranslations} from 'next-intl'
 import {useGoogleReCaptcha} from 'react-google-recaptcha-v3'
 import axios from 'axios'
+import Link from 'next/link'
 
 const belarusSvg = '/countries/belarus.svg'
 const kazakhstanSvg = '/countries/kazakhstan.svg'
@@ -190,14 +191,18 @@ const RegisterUserUnified: React.FC<RegisterUserUnifiedProps> = ({
           currentValue={telText}
           error={!isValidNumber ? 'error' : ''}
           onSetValue={onChangeTelNumber}
-          numberStartWith={selectedRegion.altName as TNumberStart}
+          // numberStartWith={selectedRegion.altName as TNumberStart}
         />
       </div>
 
       <div className={`${styles.policy__checkbox}`}>
         <RadioButton
           useRect
-          label={t('checkPolicy')}
+          label={
+            <>
+              {t('iSuccessWith')} <Link href={'/privacy'}>{t('policy')}</Link>
+            </>
+          }
           name='Personal'
           value='Personal'
           textColor='dark'

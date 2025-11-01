@@ -49,6 +49,8 @@
     "loading": "Loading..."
   },
   "RegisterUserPage": {
+    "iSuccessWith": "I agree with the user agreement and ",
+"policy": "privacy policy",
     "register": "Next",
     "adressPlaceholder": "Enter address...",
     "adress": "Company address",
@@ -375,9 +377,11 @@
       "description": "Description",
       "technicalCharacteristics": "Technical specifications:",
       "companyDescription": "Supplier information",
-      "deliveryDescription": "Delivery information",
+      "locationInfo": "Location Information",
+      "deliveryDescription": "Delivery Methods Information",
       "emptyAddress": "address not specified",
-      "INN": "TIN"
+      "INN": "TIN",
+      "days": "{count, plural, one {day} other {days}}"
     },
     "CardBottomPage": {
       "success": "Success!",
@@ -435,11 +439,13 @@
   },
   "CardMiddlePage": {
     "description": "Description",
-    "technicalCharacteristics": "Technical specifications:",
-    "companyDescription": "Supplier information",
-    "deliveryDescription": "Delivery information",
-    "emptyAddress": "address not specified",
-    "INN": "TIN"
+      "technicalCharacteristics": "Technical specifications:",
+      "companyDescription": "Supplier information",
+     "locationInfo": "Location Information",
+      "deliveryDescription": "Delivery Methods Information",
+      "emptyAddress": "address not specified",
+      "INN": "TIN",
+      "days": "{count, plural, one {day} other {days}}"
   },
   "CardBottomPage": {
     "success": "Success!",
@@ -497,7 +503,7 @@
     "saveError": "Save error",
     "saveErrorText": "An error occurred while saving the product",
     "createCardTitle": "Create product",
-    "name": "Name",
+    "name": "Product name",
     "altHelpWithName": "Name help",
     "categoryTitle": "Product category",
     "imageCard": "Product images",
@@ -519,6 +525,7 @@
     "fullFaqError": "Each question must have an answer and vice versa"
   },
   "CreateCardPriceElementsText": {
+    "characteristicTitle": "Characteristic name",
     "daysBeforeSale": "Specify the number of days until the promotion ends",
     "daysBeforeSaleNotMinus": "Number of days must be a positive number",
     "minimalVolume": "Specify minimum order volume",

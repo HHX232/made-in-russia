@@ -1,6 +1,7 @@
+'use client'
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
+
 import Skeleton from 'react-loading-skeleton'
 import styles from './CardBottomPage.module.scss'
 import React, {useState, useRef, useEffect, useCallback} from 'react'
@@ -13,7 +14,6 @@ import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {getAccessToken} from '@/services/auth/auth.helper'
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
-import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import CreateImagesInputMinimalistic from '@/components/UI-kit/inputs/CreateImagesInputMinimalistic/CreateImagesInputMinimalistic'
 
 interface ICardBottomPageProps {
@@ -21,7 +21,7 @@ interface ICardBottomPageProps {
   comments: Review[]
   cardData: ICardFull | null
   hasMore: boolean
-  onLoadMore: () => void
+  onLoadMore?: () => void
 }
 
 interface IUploadedFile {
@@ -77,7 +77,7 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: IC
   const [commentValue, setCommentValue] = useState('')
   const [uploadedFiles, setUploadedFiles] = useState<IUploadedFile[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [starsCountSet, setStarsCountSet] = useState<number>(4)
+  const [starsCountSet, setStarsCountSet] = useState<number>(5)
   const MAX_IMAGE_SIZE = 5 * 1024 * 1024
   const MAX_VIDEO_SIZE = 200 * 1024 * 1024
   const MAX_FILES_COUNT = 20
@@ -342,7 +342,11 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: IC
 
               {hasMore && (
                 <div className={`${styles.load__more__container}`}>
-                  <button onClick={onLoadMore} className={`${styles.load__more__button}`} disabled={isLoading}>
+                  <button
+                    onClick={onLoadMore || function () {}}
+                    className={`${styles.load__more__button}`}
+                    disabled={isLoading}
+                  >
                     {isLoading ? t('loading') || 'Загрузка...' : t('loadMore') || 'Просмотреть еще'}
                   </button>
                 </div>

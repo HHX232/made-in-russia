@@ -141,8 +141,9 @@ const Sidebar: FC<{
   userData?: IVendorData
   isPageForVendor: boolean
   sidebarShow: boolean
+  onLoginChange?: (newLogin: string) => void
   setShowSidebar: (val: boolean) => void
-}> = ({currentTab, onTabChange, onLogout, userData, isPageForVendor, sidebarShow, setShowSidebar}) => {
+}> = ({currentTab, onTabChange, onLogout, userData, isPageForVendor, sidebarShow, setShowSidebar, onLoginChange}) => {
   const t = useTranslations('VendorPage')
   const {updateUserAvatar} = useActions()
   const handleAvatarChange = useCallback(
@@ -153,6 +154,13 @@ const Sidebar: FC<{
     },
     [updateUserAvatar, isPageForVendor]
   )
+  const [login, setLogin] = useState(userData?.login || '')
+
+  useEffect(() => {
+    if (userData?.login) {
+      setLogin(userData.login)
+    }
+  }, [userData?.login])
   return (
     <div className={`${styles.account_layout__sidebar} ${sidebarShow ? styles.sidebarOpen : styles.sidebarClosed}`}>
       <nav className={styles.menu_company}>
@@ -160,7 +168,34 @@ const Sidebar: FC<{
         <div className={styles.acc_compavatar}>
           <Avatar onAvatarChange={handleAvatarChange} isOnlyShow={!isPageForVendor} avatarUrl={userData?.avatarUrl} />
           <div className={styles.acc_compavatar__group}>
-            <span className={styles.acc_compavatar__name}>{userData?.login}</span>
+            <span className={styles.acc_compavatar__name}>
+              {isPageForVendor && (
+                <input
+                  type='text'
+                  value={login}
+                  onChange={(e) => {
+                    setLogin(e.target.value)
+                    if (onLoginChange) {
+                      onLoginChange(e.target.value)
+                    }
+                  }}
+                  className={styles.acc_compavatar__name_input}
+                  placeholder={t('enterLogin') || 'Введите логин'}
+                  disabled={!isPageForVendor}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit',
+                    color: 'inherit',
+                    width: '100%',
+                    cursor: isPageForVendor ? 'text' : 'default'
+                  }}
+                />
+              )}
+              {!isPageForVendor && <span className={styles.acc_compavatar__name}>{userData?.login}</span>}
+            </span>
             <span className={styles.acc_compavatar__email}>{userData?.email}</span>
           </div>
         </div>
@@ -594,7 +629,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   )
   const [userInn, setUserInn] = useState(vendorData?.vendorDetails?.inn)
   const [userAddress, setUserAddress] = useState(vendorData?.vendorDetails?.address)
-
+  const [userLogin, setUserLogin] = useState(vendorData?.login)
   const REGIONS = [
     {imageSrc: ASSETS_COUNTRIES.belarusSvg, title: t('belarus'), altName: 'Belarus'},
     {imageSrc: ASSETS_COUNTRIES.kazakhstanSvg, title: t('kazakhstan'), altName: 'Kazakhstan'},
@@ -762,20 +797,30 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
   const handleCreateNewQuestion = useCallback(() => {
     try {
-      instance.post(
-        '/vendor/faq',
-        {
-          question: newQuestionValue,
-          answer: newAnswerValue
-        },
-        {
-          headers: {
-            'Accept-Language': currentLang
+      instance
+        .post(
+          '/vendor/faq',
+          {
+            question: newQuestionValue,
+            answer: newAnswerValue
+          },
+          {
+            headers: {
+              'Accept-Language': currentLang
+            }
           }
-        }
-      )
+        )
+        .then((res) => {
+          setActiveFaq((prev) => [
+            ...(prev || []),
+            {question: newQuestionValue, answer: newAnswerValue, id: res.data.id}
+          ])
+          toast.success(t('successPublishedNewQuest'))
+        })
+        .catch(() => {
+          toast.error(t('errorCreatingQuestion'))
+        })
 
-      toast.success(t('successPublishedNewQuest'))
       setNewQuestionValue('')
       setNewAnswerValue('')
     } catch (e) {
@@ -995,6 +1040,10 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
               isPageForVendor={isPageForVendor}
               sidebarShow={sidebarShow}
               setShowSidebar={setSidebarShow}
+              onLoginChange={(newLogin) => {
+                setUserLogin(newLogin)
+                safeSetNeedToSave(true)
+              }}
             />
 
             {/* Mobile header */}
@@ -1240,7 +1289,8 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                             phoneNumbers: user?.vendorDetails?.phoneNumbers,
                             emails: user?.vendorDetails?.emails,
                             sites: user?.vendorDetails?.sites,
-                            address: user?.vendorDetails?.address || ''
+                            address: user?.vendorDetails?.address || '',
+                            login: userLogin || user?.login
                           })
                         }}
                         disabled={isSavingMedia}

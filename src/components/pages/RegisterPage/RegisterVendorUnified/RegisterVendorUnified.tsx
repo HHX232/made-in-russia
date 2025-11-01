@@ -1,7 +1,7 @@
 import React, {MouseEvent, useState, useEffect} from 'react'
 import styles from '../RegisterPage.module.scss'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
-import {TelephoneInputUI, TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
+import {TelephoneInputUI} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
 import MultiDropSelect, {MultiSelectOption} from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI'
 import useWindowWidth from '@/hooks/useWindoWidth'
@@ -10,6 +10,7 @@ import {useGoogleReCaptcha} from 'react-google-recaptcha-v3'
 import {useCategories} from '@/services/categoryes/categoryes.service'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import axios from 'axios'
+import Link from 'next/link'
 
 // const belarusSvg = '/countries/belarus.svg'
 // const kazakhstanSvg = '/countries/kazakhstan.svg'
@@ -48,6 +49,7 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
   password,
   adress,
   telText,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectedCountries,
   selectedCategories,
   isValidNumber,
@@ -92,14 +94,6 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
       setInn(value)
     }
   }
-
-  // Определяем страну для телефонного номера
-  const phoneCountry =
-    selectedCountries.length > 0
-      ? selectedCountries.length === 1
-        ? (selectedCountries[0].value as TNumberStart)
-        : 'other'
-      : 'other'
 
   const isEmailValid = email.includes('@') && email.includes('.') && email.length !== 0
 
@@ -205,7 +199,7 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
           currentValue={telText}
           error={!isValidNumber ? 'error' : ''}
           onSetValue={onChangeTelNumber}
-          numberStartWith={phoneCountry}
+          // numberStartWith={phoneCountry}
         />
       </div>
 
@@ -255,7 +249,11 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
 
       <div className={`${styles.policy__checkbox}`}>
         <RadioButton
-          label={t('checkPolicy')}
+          label={
+            <>
+              {t('iSuccessWith')} <Link href={'/privacy'}>{t('policy')}</Link>
+            </>
+          }
           name='Business'
           value='Personal'
           useRect
