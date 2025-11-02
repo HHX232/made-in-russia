@@ -360,8 +360,10 @@
     aspect-ratio: 650/350;
   }
 
-  &__mainImage {
+  // Фоновое изображение (размытое с opacity)
+  &__backgroundImage {
     position: absolute;
+    z-index: 0;
     top: 0;
     left: 0;
     width: 100%;
@@ -369,8 +371,29 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    object-fit: cover;
+    filter: blur(20px);
+    opacity: 0.7;
+    transform: scale(1.1); // Чтобы не было видно размытых краев
+  }
+
+  &__mainImage {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    object-fit: contain;
     transition: transform 0.3s ease;
+  }
+
+  // Вертикальные изображения - contain для основного изображения
+  &__mainImageVertical {
+    background-size: contain !important;
+    object-fit: contain !important;
   }
 
   .imageSlider__mainVideo {

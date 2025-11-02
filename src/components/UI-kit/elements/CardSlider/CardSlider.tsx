@@ -26,6 +26,12 @@ interface SlickCardSliderProps {
   productId?: string | number
 }
 
+interface ImageDimensions {
+  width: number
+  height: number
+  aspectRatio: number
+}
+
 // Константы
 const DEFAULT_IMAGES = [
   '/new_login.jpg',
@@ -36,6 +42,8 @@ const DEFAULT_IMAGES = [
   '/new_login.jpg',
   '/login__image.jpg'
 ]
+
+const SLIDER_ASPECT_RATIO = 650 / 350 // ~1.857
 
 // Вспомогательные функции
 const getMediaType = (src: string): 'image' | 'video' => (src.match(/\.(mp4|webm|mov)$/i) ? 'video' : 'image')
@@ -54,6 +62,42 @@ const calculateSlidesToShow = (containerWidth: number, imagesLength: number): nu
   const gap = 16
   const availableSlides = Math.floor((containerWidth + gap) / (thumbnailWidth + gap))
   return Math.min(Math.max(availableSlides, 1), imagesLength)
+}
+
+// Функция для загрузки размеров изображения
+const loadImageDimensions = (src: string): Promise<ImageDimensions> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const aspectRatio = img.naturalWidth / img.naturalHeight
+      resolve({
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+        aspectRatio
+      })
+    }
+    img.onerror = reject
+    img.src = src
+  })
+}
+
+// Функция для определения типа отображения изображения
+const getImageDisplayType = (
+  aspectRatio: number,
+  sliderAspectRatio: number = SLIDER_ASPECT_RATIO
+): 'vertical' | 'horizontal' | 'wide' => {
+  // Вертикальное изображение (портрет)
+  if (aspectRatio < 0.9) {
+    return 'vertical'
+  }
+
+  // Горизонтальное, близкое к пропорциям слайдера
+  if (aspectRatio >= 0.9 && aspectRatio <= sliderAspectRatio * 1.2) {
+    return 'horizontal'
+  }
+
+  // Широкоформатное
+  return 'wide'
 }
 
 // Компоненты
@@ -218,8 +262,22 @@ const MediaRenderer: React.FC<{
   onClick?: () => void
   showZoomIcon?: boolean
   onZoomClick?: () => void
+  aspectRatio?: number
+  displayType?: 'vertical' | 'horizontal' | 'wide'
 }> = React.memo(
-  ({media, alt, type, className = '', isThumbnail = false, onClick, showZoomIcon = false, onZoomClick}) => {
+  ({
+    media,
+    alt,
+    type,
+    className = '',
+    isThumbnail = false,
+    onClick,
+    showZoomIcon = false,
+    onZoomClick,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    aspectRatio,
+    displayType
+  }) => {
     const [isHovered, setIsHovered] = useState(false)
 
     const videoProps = useMemo(
@@ -252,8 +310,39 @@ const MediaRenderer: React.FC<{
       }
     }
 
-    if (type === 'video') {
+    // Для миниатюр и видео не используем фоновое изображение
+    if (type === 'video' || isThumbnail) {
       const videoClass = isThumbnail ? styles.imageSlider__thumbnailVideo : styles.imageSlider__mainVideo
+
+      if (type === 'video') {
+        return (
+          <div
+            className={styles.mediaRendererWrapper}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            <video
+              src={media}
+              {...videoProps}
+              className={`${videoClass} ${className}`}
+              style={styleProps}
+              onClick={onClick}
+              aria-label={alt}
+            />
+            {showZoomIcon && !isThumbnail && isHovered && (
+              <div
+                onClick={handleZoomClick}
+                onDoubleClick={handleZoomClick}
+                style={{position: 'absolute', top: '16px', right: '16px', zIndex: 10}}
+              >
+                <ZoomIcon />
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      const imageClass = styles.imageSlider__thumbnailImage
 
       return (
         <div
@@ -261,28 +350,19 @@ const MediaRenderer: React.FC<{
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <video
-            src={media}
-            {...videoProps}
-            className={`${videoClass} ${className}`}
-            style={styleProps}
-            onClick={onClick}
+          <div
+            style={{backgroundImage: `url(${media})`, cursor: 'pointer', height: '100%'}}
+            className={`${imageClass} ${className}`}
+            role='img'
             aria-label={alt}
+            onClick={onClick}
           />
-          {showZoomIcon && !isThumbnail && isHovered && (
-            <div
-              onClick={handleZoomClick}
-              onDoubleClick={handleZoomClick}
-              style={{position: 'absolute', top: '16px', right: '16px', zIndex: 10}}
-            >
-              <ZoomIcon />
-            </div>
-          )}
         </div>
       )
     }
 
-    const imageClass = isThumbnail ? styles.imageSlider__thumbnailImage : styles.imageSlider__mainImage
+    // Для главного изображения используем логику с фоном
+    const needsBackground = displayType === 'vertical' || displayType === 'wide'
 
     return (
       <div
@@ -290,14 +370,25 @@ const MediaRenderer: React.FC<{
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        {needsBackground && (
+          <div className={styles.imageSlider__backgroundImage} style={{backgroundImage: `url(${media})`}} />
+        )}
         <div
-          style={{backgroundImage: `url(${media})`, cursor: 'pointer', height: '100%'}}
-          className={`${imageClass} ${className}`}
+          style={{
+            backgroundImage: `url(${media})`,
+            cursor: 'pointer',
+            height: '100%',
+            position: needsBackground ? 'relative' : 'static',
+            zIndex: needsBackground ? 1 : 'auto'
+          }}
+          className={`${styles.imageSlider__mainImage} ${className} ${
+            displayType === 'vertical' ? styles.imageSlider__mainImageVertical : ''
+          }`}
           role='img'
           aria-label={alt}
           onClick={onClick}
         />
-        {showZoomIcon && !isThumbnail && isHovered && (
+        {showZoomIcon && isHovered && (
           <div
             onClick={handleZoomClick}
             onDoubleClick={handleZoomClick}
@@ -363,6 +454,42 @@ const useContainerWidth = (isClient: boolean) => {
   return containerWidth
 }
 
+// Хук для загрузки размеров изображений
+const useImageDimensions = (images: string[]) => {
+  const [dimensions, setDimensions] = useState<Map<string, ImageDimensions>>(new Map())
+
+  useEffect(() => {
+    const loadDimensions = async () => {
+      const newDimensions = new Map<string, ImageDimensions>()
+
+      for (const image of images) {
+        if (getMediaType(image) === 'image') {
+          try {
+            const dims = await loadImageDimensions(image)
+            newDimensions.set(image, dims)
+
+            const displayType = getImageDisplayType(dims.aspectRatio)
+            console.log(`📐 Image: ${image}`)
+            console.log(`   Size: ${dims.width}x${dims.height}`)
+            console.log(`   Aspect Ratio: ${dims.aspectRatio.toFixed(3)}`)
+            console.log(`   Display Type: ${displayType}`)
+            console.log(`   Slider Aspect Ratio: ${SLIDER_ASPECT_RATIO.toFixed(3)}`)
+            console.log('---')
+          } catch (error) {
+            console.error(`Failed to load dimensions for ${image}:`, error)
+          }
+        }
+      }
+
+      setDimensions(newDimensions)
+    }
+
+    loadDimensions()
+  }, [images])
+
+  return dimensions
+}
+
 // Основной компонент
 const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
   isLoading,
@@ -374,6 +501,7 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
   const images = imagesCustom ?? DEFAULT_IMAGES
   const [isClient, setIsClient] = useState(false)
   const containerWidth = useContainerWidth(isClient)
+  const imageDimensions = useImageDimensions(images)
 
   // Состояния слайдера
   const [activeIndex, setActiveIndex] = useState(0)
@@ -394,6 +522,24 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  // Логирование активного изображения
+  useEffect(() => {
+    const activeImage = images[activeIndex]
+    const dims = imageDimensions.get(activeImage)
+
+    if (dims) {
+      const displayType = getImageDisplayType(dims.aspectRatio)
+      console.log('🎯 ACTIVE SLIDE:')
+      console.log(`   Index: ${activeIndex}`)
+      console.log(`   Image: ${activeImage}`)
+      console.log(`   Size: ${dims.width}x${dims.height}`)
+      console.log(`   Aspect Ratio: ${dims.aspectRatio.toFixed(3)}`)
+      console.log(`   Display Type: ${displayType}`)
+      console.log(`   Slider Aspect Ratio: ${SLIDER_ASPECT_RATIO.toFixed(3)}`)
+      console.log('========================')
+    }
+  }, [activeIndex, images, imageDimensions])
 
   // Конфигурации слайдеров
   const mainSliderOptions = useMemo(
@@ -587,6 +733,7 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
         mainInstanceRef={mainInstanceRef}
         onThumbnailClick={handleThumbnailClick}
         onDoubleClick={handleDoubleClick}
+        imageDimensions={imageDimensions}
       />
     </>
   )
@@ -750,6 +897,7 @@ const ImageGallery: React.FC<{
   mainInstanceRef: any
   onThumbnailClick: (index: number) => void
   onDoubleClick: (index: number) => void
+  imageDimensions: Map<string, ImageDimensions>
 }> = ({
   images,
   activeIndex,
@@ -763,7 +911,8 @@ const ImageGallery: React.FC<{
   thumbnailLoaded,
   mainInstanceRef,
   onThumbnailClick,
-  onDoubleClick
+  onDoubleClick,
+  imageDimensions
 }) => (
   <div
     className={`spec__slider ${styles.imageSlider} ${extraClass}`}
@@ -782,6 +931,7 @@ const ImageGallery: React.FC<{
       mainInstanceRef={mainInstanceRef}
       isSingleImage={isSingleImage}
       onDoubleClick={onDoubleClick}
+      imageDimensions={imageDimensions}
     />
 
     {!isSingleImage && (
@@ -830,12 +980,15 @@ const MainSlider: React.FC<{
   mainInstanceRef: any
   isSingleImage: boolean
   onDoubleClick: (index: number) => void
-}> = ({images, activeIndex, productName, mainSliderRef, onDoubleClick}) => (
+  imageDimensions: Map<string, ImageDimensions>
+}> = ({images, activeIndex, productName, mainSliderRef, onDoubleClick, imageDimensions}) => (
   <div className={styles.imageSlider__main}>
     <div ref={mainSliderRef} className='keen-slider'>
       {images.map((image, index) => {
         const type = getMediaType(image)
         const isActive = index === activeIndex
+        const dims = imageDimensions.get(image)
+        const displayType = dims ? getImageDisplayType(dims.aspectRatio) : undefined
 
         return (
           <div key={index} className={`keen-slider__slide ${styles.imageSlider__slide}`}>
@@ -846,6 +999,8 @@ const MainSlider: React.FC<{
               productName={productName}
               isActive={isActive}
               onDoubleClick={onDoubleClick}
+              aspectRatio={dims?.aspectRatio}
+              displayType={displayType}
             />
           </div>
         )
@@ -861,7 +1016,9 @@ const MediaItem: React.FC<{
   productName: string
   isActive: boolean
   onDoubleClick: (index: number) => void
-}> = React.memo(({media, type, index, productName, isActive, onDoubleClick}) => {
+  aspectRatio?: number
+  displayType?: 'vertical' | 'horizontal' | 'wide'
+}> = React.memo(({media, type, index, productName, isActive, onDoubleClick, aspectRatio, displayType}) => {
   const mediaUrl = getMediaUrl(media)
 
   return (
@@ -878,6 +1035,8 @@ const MediaItem: React.FC<{
         type={type}
         showZoomIcon={true}
         onZoomClick={() => onDoubleClick(index)}
+        aspectRatio={aspectRatio}
+        displayType={displayType}
       />
 
       {type === 'video' ? (
