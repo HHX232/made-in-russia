@@ -20,6 +20,7 @@ import {NextIntlClientProvider} from 'next-intl'
 import ClientStyleLoader from '@/components/ClientStyleLoader'
 import {getMessages, getTranslations} from 'next-intl/server'
 import {getCurrentLocale} from '@/lib/locale-detection'
+import FavoritesProvider from '@/providers/FavoritesProvider'
 
 // import GoogleRecaptchaProviderComponent from '@/providers/GoogleRecaptchaProviderComponent'
 // import {NextIntlClientProvider} from 'next-intl'
@@ -36,7 +37,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           <DefaultProvider>
             <NextIntlClientProvider messages={messages}>
               {/* <GoogleRecaptchaProviderComponent> */}
-              {children}
+              <FavoritesProvider>{children}</FavoritesProvider>
               {/* </GoogleRecaptchaProviderComponent> */}
               <ClientStyleLoader />
               <Toaster style={{zIndex: '10100009999'}} theme={'dark'} position={'top-right'} duration={3500} />

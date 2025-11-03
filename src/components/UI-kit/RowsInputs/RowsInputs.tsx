@@ -23,7 +23,7 @@ const plusCircle = '/create-card/plus-circle.svg'
 const minusCircle = '/create-card/minusCircle.svg'
 const dragHandle = '/create-card/drag-handle.svg'
 
-type TInputType = 'text' | 'number' | 'password' | 'dropdown' | 'textarea'
+type TInputType = 'text' | 'number' | 'password' | 'dropdown' | 'textarea' | 'numbersWithSpec'
 type ButtonSize = 'small' | 'medium' | 'large'
 
 interface ButtonSizes {
@@ -35,6 +35,7 @@ interface ButtonSizes {
 interface RowsInputsProps {
   hideTitles?: boolean
   useNewTheme?: boolean
+  useOneWord?: boolean
   extra__rows__grid?: string
   specialCreatePlaceholder?: string
   extraTextareaClass?: string
@@ -113,6 +114,7 @@ interface DropdownProps {
   useClip?: boolean
   useClipOnSpan?: boolean
   extraDropClass?: string
+  useOneWord?: boolean
 }
 
 const Dropdown = ({
@@ -127,7 +129,8 @@ const Dropdown = ({
   readOnly = false,
   useClip = true,
   extraDropClass,
-  useClipOnSpan = false
+  useClipOnSpan = false,
+  useOneWord = false
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [customValue, setCustomValue] = useState('')
@@ -253,7 +256,8 @@ const Dropdown = ({
         style={{cursor: readOnly ? 'default' : 'pointer', overflowX: useClipOnSpan ? 'clip' : 'visible'}}
       >
         <span style={{margin: '0 auto'}} className={value ? styles.dropdown__value : styles.dropdown__placeholder}>
-          {value || (placeholder || '')?.trim()?.split(' ')[0]}
+          {useOneWord && (value || placeholder || '')?.trim()?.split(' ')[0]}
+          {!useOneWord && (value || placeholder || '')?.trim()}
         </span>
         {showClear && value && !readOnly && (
           <button
@@ -371,6 +375,7 @@ interface SortableRowProps {
   showDnDButton: boolean
   isOnlyShow?: boolean
   useNewTheme?: boolean
+  useOneWord?: boolean
   onBlur?: (rowIndex: number, inputIndex: number, value: string) => void
   onClick?: (rowIndex: number, inputIndex: number, value: string) => void
   onFocus?: (rowIndex: number, inputIndex: number, value: string) => void
@@ -408,7 +413,8 @@ const SortableRow = ({
   useNewTheme,
   extraPlaceholder,
   totalRows,
-  extra__rows__grid
+  extra__rows__grid,
+  useOneWord
 }: SortableRowProps) => {
   const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id})
   const shouldShowDnD = showDnDButton && !isOnlyShow && totalRows > 1
@@ -437,6 +443,7 @@ const SortableRow = ({
           value={value}
           useClip={!lastElemet}
           options={options}
+          useOneWord={useOneWord}
           extraDropClass={(lastElemet && styles.extraDropClass) || ''}
           placeholder={titles[inputIndex] || 'Выберите значение'}
           onSelect={(newValue) => !isOnlyShow && onUpdateValue(rowIndex, inputIndex, newValue)}
@@ -599,7 +606,8 @@ const RowsInputs = ({
   extraTextareaClass,
   createButtonExtraText,
   extraPlaceholder,
-  extra__rows__grid
+  extra__rows__grid,
+  useOneWord = false
 }: RowsInputsProps) => {
   const t = useTranslations('rowsImputs')
   const [rows, setRows] = useState<string[][]>(() => {
@@ -663,15 +671,15 @@ const RowsInputs = ({
       console.warn('🚨 Дублирующиеся rowIds найдены:', duplicates)
     }
 
-    console.log('📊 RowsInputs Debug:', {
-      controlled,
-      externalValuesLength: externalValues?.length || 0,
-      rowsLength: rows.length,
-      rowIdsLength: rowIds.length,
-      currentRowsLength: currentRows.length,
-      duplicatesFound: duplicates.length > 0,
-      rowIds: rowIds.slice(0, 3)
-    })
+    // console.log('📊 RowsInputs Debug:', {
+    //   controlled,
+    //   externalValuesLength: externalValues?.length || 0,
+    //   rowsLength: rows.length,
+    //   rowIdsLength: rowIds.length,
+    //   currentRowsLength: currentRows.length,
+    //   duplicatesFound: duplicates.length > 0,
+    //   rowIds: rowIds.slice(0, 3)
+    // })
   }, [controlled, externalValues, rows, rowIds])
 
   const currentRows = controlled && externalValues ? externalValues : rows
@@ -853,6 +861,7 @@ const RowsInputs = ({
 
                 return (
                   <SortableRow
+                    useOneWord={useOneWord}
                     totalRows={currentRows.length}
                     useNewTheme={useNewTheme}
                     key={rowId}

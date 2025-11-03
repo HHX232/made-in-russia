@@ -281,7 +281,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
         </div>
         <div className={`${styles.margin__box}`}></div>
       </div>
-      <Footer useFixedFooter minMediaHeight={1070} extraClass={`${styles.extraFooter}`} />
+      <Footer useFixedFooter minMediaHeight={1044} extraClass={`${styles.extraFooter}`} />
     </div>
   )
 }

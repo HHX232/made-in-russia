@@ -12,11 +12,12 @@ import 'react-loading-skeleton/dist/skeleton.css'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import Link from 'next/link'
-import {useTranslations} from 'next-intl'
+import {useLocale, useTranslations} from 'next-intl'
 import instance from '@/api/api.interceptor'
 import {toast} from 'sonner'
 import DropList from '../../Texts/DropList/DropList'
 import {useNProgress} from '@/hooks/useProgress'
+import ServiceFavorites from '@/services/favorite/favorite.service'
 
 const t1 = '/tree.jpg'
 const t2 = '/tree2.jpg'
@@ -69,6 +70,8 @@ const Card = memo<ICardProps>(
     const t = useTranslations('CardComponent')
     const {hide} = useNProgress()
     const [status, setStatus] = useState(approveStatus)
+    const locale = useLocale()
+    const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
     // Функция для смены статуса продукта
     const changeProductStatus = async (productId: number, newStatus: ApproveStatus) => {
       const loadingToast = toast.loading('Обновление статуса...')
@@ -112,6 +115,42 @@ const Card = memo<ICardProps>(
             }
           }
         )
+      }
+    }
+
+    const handleToggleFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
+      e.preventDefault()
+
+      if (isTogglingFavorite) return
+
+      setIsTogglingFavorite(true)
+
+      try {
+        // Сначала обновляем UI оптимистично
+        toggleToFavorites(fullProduct as Product)
+
+        // Затем отправляем на сервер
+        await ServiceFavorites.toggleFavorite(fullProduct.id, locale)
+      } catch (error) {
+        console.error('Failed to toggle favorite:', error)
+
+        // Откатываем изменения при ошибке
+        toggleToFavorites(fullProduct as Product)
+
+        toast.error(
+          <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+            <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('error')}</strong>
+            <span>{t('errorUpdatingFavorites')}</span>
+          </div>,
+          {
+            style: {
+              background: '#AC2525'
+            }
+          }
+        )
+      } finally {
+        setIsTogglingFavorite(false)
       }
     }
 
@@ -355,13 +394,8 @@ const Card = memo<ICardProps>(
                 <div className={`${styles.product_card__like}`}>
                   <button
                     className={`${styles.product_card__like} ${isInFavorite ? styles.active : ''}`}
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                      e.stopPropagation()
-                      e.preventDefault()
-                      toggleToFavorites(fullProduct as Product)
-                      console.log('toggleFav', productInFavorites)
-                      console.log('fullProduc was toggle to favorites', fullProduct)
-                    }}
+                    onClick={handleToggleFavorite}
+                    disabled={isTogglingFavorite}
                   >
                     <svg className={`${styles.icon} ${styles.icon__star_e}`}>
                       <use href='/iconsNew/symbol/sprite.svg#star-e'></use>

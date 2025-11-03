@@ -36,7 +36,7 @@ interface CardsCatalogProps {
 const SLIDES_COUNT = 5
 const GAP = 22
 
-const CardsCatalog: FC<CardsCatalogProps> = ({
+const CardsCatalogv2: FC<CardsCatalogProps> = ({
   initialProducts = [],
   initialHasMore = true,
   specialRoute = undefined,
@@ -83,7 +83,9 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const [isSliderInitialized, setIsSliderInitialized] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [sliderHeight, setSliderHeight] = useState<number | null>(null)
-  const [cardHeight, setCardHeight] = useState<number | null>(null)
+
+  // ИСПРАВЛЕНИЕ: Устанавливаем начальное значение высоты карточки (стандартное соотношение)
+  const [cardHeight, setCardHeight] = useState<number | null>(330)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const activeSlideRef = useRef<HTMLDivElement | null>(null)
@@ -91,7 +93,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // НОВОЕ: Ref для хранения последнего измеренного значения
   const lastMeasuredWidth = useRef<number | null>(null)
-  const lastMeasuredHeight = useRef<number | null>(null)
+  const lastMeasuredHeight = useRef<number | null>(330)
 
   const [queryParams, setQueryParams] = useState<ProductQueryParams>({
     page: 0,
@@ -217,14 +219,19 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       }
     }
 
+    // ИСПРАВЛЕНИЕ: При первом рендере (когда lastMeasuredWidth === null) всегда измеряем
+    const isFirstRender = lastMeasuredWidth.current === null
+
     // Проверяем, изменилась ли ширина значительно (больше 50px)
-    if (!width || (lastMeasuredWidth.current && Math.abs(width - lastMeasuredWidth.current) < 50)) {
+    if (!isFirstRender && width && lastMeasuredWidth.current && Math.abs(width - lastMeasuredWidth.current) < 50) {
       return
     }
 
-    lastMeasuredWidth.current = width
+    if (width) {
+      lastMeasuredWidth.current = width
+    }
 
-    const timer = setTimeout(measureCardHeight, 100)
+    const timer = setTimeout(measureCardHeight, isFirstRender ? 50 : 100)
 
     const resizeObserver = new ResizeObserver(measureCardHeight)
     const firstCard = cardRefs.current.values().next().value
@@ -238,11 +245,31 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }
   }, [width, pages.length])
 
+  // НОВОЕ: Дополнительное измерение сразу после появления продуктов
+  useEffect(() => {
+    if (products.length > 0 && pages.length > 0) {
+      const timer = setTimeout(() => {
+        const firstCard = cardRefs.current.values().next().value
+        if (firstCard) {
+          const height = firstCard.offsetHeight
+          if (height > 0 && height !== lastMeasuredHeight.current) {
+            setCardHeight(height)
+            lastMeasuredHeight.current = height
+            console.log('📏 Card height measured after products loaded:', height)
+          }
+        }
+      }, 50)
+
+      return () => clearTimeout(timer)
+    }
+  }, [products.length, pages.length])
+
   const onImageLoad = () => {
+    // ИСПРАВЛЕНИЕ: Измеряем сразу после загрузки изображения
     const firstCard = cardRefs.current.values().next().value
-    if (firstCard && !cardHeight) {
+    if (firstCard) {
       const height = firstCard.offsetHeight
-      if (height > 0) {
+      if (height > 0 && height !== lastMeasuredHeight.current) {
         setCardHeight(height)
         lastMeasuredHeight.current = height
         console.log('📏 Card height measured on image load:', height)
@@ -252,13 +279,15 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // СТАБИЛЬНЫЙ расчет высоты - только при изменении ключевых параметров
   const calculatedHeight = useMemo(() => {
-    if (!mathMinHeight || !cardHeight) return null
+    if (!mathMinHeight) return null
 
     const currentPage = pages[currentSlide]
-    if (!currentPage) return null
+    if (!currentPage || currentPage.length === 0) return null
 
     const itemsCount = currentPage.length
     const currentWidth = width || 1920
+    // ИСПРАВЛЕНИЕ: используем cardHeight или дефолтное значение 330
+    const heightToUse = cardHeight || 330
 
     let itemsPerRow: number
     if (currentWidth > 1270) {
@@ -270,13 +299,15 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }
 
     const rowsCount = Math.ceil(itemsCount / itemsPerRow)
-    const totalHeight = cardHeight * rowsCount + 20 + ((width || 1270) < 1420 ? 30 : GAP) * (rowsCount - 1)
+    const gapSize = currentWidth < 1420 ? 30 : GAP
+    const totalHeight = heightToUse * rowsCount + 20 + gapSize * (rowsCount - 1) + (currentWidth >= 1270 ? 55 : 0)
 
     console.log('📐 Calculated height:', {
-      cardHeight,
+      cardHeight: heightToUse,
       itemsCount,
       itemsPerRow,
       rowsCount,
+      gapSize,
       totalHeight
     })
 
@@ -285,29 +316,12 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
 
   // СТАБИЛЬНЫЙ расчет max-width карточки - мемоизируем результат
   const cardMaxWidth = useMemo(() => {
-    // Если mathMinHeight отключен, не ограничиваем ширину
-    if (!mathMinHeight) return undefined
-
-    // Если высота еще не измерена, возвращаем дефолтное значение вместо undefined
-    // чтобы предотвратить растягивание на 100% ширины
-    if (!cardHeight) {
-      const currentWidth = width || 1920
-      let defaultMaxWidth: number
-      if (currentWidth > 1270) {
-        defaultMaxWidth = 400 // примерная ширина для desktop
-      } else if (currentWidth > 768) {
-        defaultMaxWidth = 288 // для tablet
-      } else {
-        defaultMaxWidth = 180 // для mobile
-      }
-      console.log('📦 Card max-width (default):', defaultMaxWidth)
-      return defaultMaxWidth
-    }
+    if (!mathMinHeight || !cardHeight) return undefined
 
     const calculatedMaxWidth = (cardHeight * 300) / 330
-    console.log('📦 Card max-width calculated:', calculatedMaxWidth)
+    console.log('📦 Card max-width calculated:', calculatedMaxWidth, 'from cardHeight:', cardHeight)
     return calculatedMaxWidth
-  }, [mathMinHeight, cardHeight, width])
+  }, [mathMinHeight, cardHeight])
 
   const [sliderRef, instanceRef] = useKeenSlider({
     slides: {
@@ -362,6 +376,17 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
         if (instanceRef.current) {
           setIsSliderInitialized(true)
           setCurrentSlide(0)
+
+          // ИСПРАВЛЕНИЕ: Принудительно измеряем высоту после инициализации слайдера
+          const firstCard = cardRefs.current.values().next().value
+          if (firstCard) {
+            const height = firstCard.offsetHeight
+            if (height > 0) {
+              setCardHeight(height)
+              lastMeasuredHeight.current = height
+              console.log('📏 Card height measured after init:', height)
+            }
+          }
         }
       }, 200)
       return () => clearTimeout(timer)
@@ -409,8 +434,28 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     if (sliderHeight) {
       return `${sliderHeight}px`
     }
+    // ИСПРАВЛЕНИЕ: Для первого рендера с mathMinHeight используем минимальную высоту
+    if (mathMinHeight && pages.length > 0) {
+      const currentWidth = width || 1920
+      const heightToUse = cardHeight || 330
+      let itemsPerRow: number
+      if (currentWidth > 1270) {
+        itemsPerRow = 4
+      } else if (currentWidth > 768) {
+        itemsPerRow = 3
+      } else {
+        itemsPerRow = 2
+      }
+      const currentPage = pages[currentSlide]
+      const itemsCount = currentPage?.length || 8
+      const rowsCount = Math.ceil(itemsCount / itemsPerRow)
+      const gapSize = currentWidth < 1420 ? 30 : GAP
+      const minHeight = heightToUse * rowsCount + 20 + gapSize * (rowsCount - 1)
+      console.log('📏 Using fallback height:', minHeight)
+      return `${minHeight}px`
+    }
     return 'auto'
-  }, [mathMinHeight, calculatedHeight, customMinHeight, sliderHeight])
+  }, [mathMinHeight, calculatedHeight, customMinHeight, sliderHeight, pages, currentSlide, width, cardHeight])
 
   const handlePrevClick = useCallback(() => {
     if (canGoPrev && instanceRef.current) {
@@ -623,4 +668,4 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   )
 }
 
-export default CardsCatalog
+export default CardsCatalogv2

@@ -1,5 +1,8 @@
 import React, {useState} from 'react'
 import styles from './StarRating.module.scss'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useTranslations} from 'next-intl'
+import {toast} from 'sonner'
 
 interface StarRatingProps {
   starsCountSet: number
@@ -8,7 +11,8 @@ interface StarRatingProps {
 
 const StarRating: React.FC<StarRatingProps> = ({starsCountSet, setStarsCountSet}) => {
   const [hoveredStar, setHoveredStar] = useState<number>(0)
-
+  const user = useTypedSelector((state) => state.user)
+  const t = useTranslations('CardPage.CardBottomPage')
   const handleMouseEnter = (starIndex: number) => {
     setHoveredStar(starIndex)
   }
@@ -18,6 +22,42 @@ const StarRating: React.FC<StarRatingProps> = ({starsCountSet, setStarsCountSet}
   }
 
   const handleClick = (starIndex: number) => {
+    const registrationDateStr = user.user?.registrationDate
+    if (registrationDateStr) {
+      const registrationDate = new Date(registrationDateStr)
+      const currentDate = new Date()
+      const diffDays = Math.floor((currentDate.getTime() - registrationDate.getTime()) / (1000 * 60 * 60 * 24))
+
+      if (diffDays < 7) {
+        console.log('error')
+        toast.error(
+          <div style={{lineHeight: 1.5}}>
+            <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+            <span>{t('newDayerror')}</span>
+          </div>,
+          {
+            style: {
+              background: '#AC2525'
+            }
+          }
+        )
+        return
+      }
+    }
+    if (!registrationDateStr) {
+      return toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('newDayerror')}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
+    }
+
     setStarsCountSet(starIndex)
   }
 

@@ -23,6 +23,7 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
+  user-select: none;
 
   @media (max-width: 768px) {
     padding: 10px;
@@ -200,16 +201,28 @@
   background: rgb(255 255 255 / 20%);
   color: #fff;
   cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
   transition: all 0.3s ease;
+
+  /* Добавьте эти свойства */
+  user-select: none;
 
   svg {
     width: 24px;
     height: 24px;
+    pointer-events: none;
+
+    /* Чтобы клик не регистрировался на SVG */
   }
 
   &:hover {
     background: rgb(255 255 255 / 30%);
     transform: scale(1.1);
+  }
+
+  &:focus {
+    outline: none;
   }
 
   @media (max-width: 700px) {

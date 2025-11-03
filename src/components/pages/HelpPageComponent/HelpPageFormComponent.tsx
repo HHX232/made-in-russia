@@ -1,15 +1,109 @@
-import {FC, useState} from 'react'
+import {FC, useState, useEffect} from 'react'
 import styles from './HelpPageFormComponent.module.scss'
 import {useTranslations} from 'next-intl'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {toast} from 'sonner'
 import CreateImagesInputMinimalistic from '@/components/UI-kit/inputs/CreateImagesInputMinimalistic/CreateImagesInputMinimalistic'
+import {useRouter} from 'next/navigation'
+
+// Коды стран для валидации
+const COUNTRY_CODES = {
+  RU: '+7',
+  BY: '+375',
+  KZ: '+7',
+  CN: '+86'
+}
 
 const HelpPageFormComponent: FC = () => {
   const t = useTranslations('HelpPage.Form')
   const user = useTypedSelector((state) => state.user.user)
 
   const [images, setImages] = useState<File[]>([])
+  const [formData, setFormData] = useState({
+    firstName: '',
+    phone: '',
+    email: ''
+  })
+
+  // Функция для нормализации телефона (убирает дубли кода страны)
+  const normalizePhone = (phone: string): string => {
+    if (!phone) return ''
+
+    // Убираем все пробелы и нецифровые символы кроме +
+    let cleaned = phone.replace(/[^\d+]/g, '')
+
+    // Проверяем на дублирование кодов стран
+    const codes = Object.values(COUNTRY_CODES)
+
+    for (const code of codes) {
+      const codeDigits = code.replace('+', '')
+      const regex = new RegExp(`^\\+?${codeDigits}${codeDigits}`, 'g')
+
+      // Если код дублируется - убираем первое вхождение
+      if (regex.test(cleaned)) {
+        cleaned = cleaned.replace(regex, code)
+        break
+      }
+    }
+
+    return cleaned
+  }
+
+  const router = useRouter()
+  // Инициализация данных из user
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.login || '',
+        phone: normalizePhone(user.phoneNumber || ''),
+        email: user.email || ''
+      })
+    }
+  }, [user])
+
+  const handleSuccess = () => {
+    toast.success(
+      <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+        <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successMessage')}</strong>
+      </div>,
+      {
+        style: {
+          background: '#2E7D32'
+        }
+      }
+    )
+    router.push('/')
+  }
+
+  const handleError = () => {
+    toast.error(
+      <div style={{lineHeight: 1.5}}>
+        <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
+      </div>,
+      {
+        style: {
+          background: '#AC2525'
+        }
+      }
+    )
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const {name, value} = e.target
+
+    if (name === 'phone') {
+      // При изменении телефона тоже нормализуем
+      setFormData((prev) => ({
+        ...prev,
+        [name]: normalizePhone(value)
+      }))
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value
+      }))
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,8 +114,8 @@ const HelpPageFormComponent: FC = () => {
 
       // JSON-данные
       const data = {
-        username: fd.get('firstName'),
-        email: fd.get('email'),
+        username: formData.firstName,
+        email: formData.email,
         subject: t('subject', {defaultMessage: 'Сообщение в поддержку'}),
         body: fd.get('message')
       }
@@ -31,7 +125,6 @@ const HelpPageFormComponent: FC = () => {
 
       // Картинки
       images.forEach((image) => {
-        // Если image это File — просто добавляем
         if (image instanceof File) {
           submitData.append('media', image, image.name)
         }
@@ -57,32 +150,14 @@ const HelpPageFormComponent: FC = () => {
   const clearForm = (elem: HTMLFormElement) => {
     elem.reset()
     setImages([])
-  }
-
-  const handleSuccess = () => {
-    toast.success(
-      <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
-        <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successMessage')}</strong>
-      </div>,
-      {
-        style: {
-          background: '#2E7D32'
-        }
-      }
-    )
-  }
-
-  const handleError = () => {
-    toast.error(
-      <div style={{lineHeight: 1.5}}>
-        <strong style={{display: 'block', marginBottom: 4}}>{t('errorMessage')}</strong>
-      </div>,
-      {
-        style: {
-          background: '#AC2525'
-        }
-      }
-    )
+    // Возвращаем данные пользователя
+    if (user) {
+      setFormData({
+        firstName: user.login || '',
+        phone: normalizePhone(user.phoneNumber || ''),
+        email: user.email || ''
+      })
+    }
   }
 
   return (
@@ -99,7 +174,8 @@ const HelpPageFormComponent: FC = () => {
               className={styles.contacts_form__input}
               placeholder={t('namePlaceholder')}
               autoComplete='firstName'
-              value={user?.login}
+              value={formData.firstName}
+              onChange={handleInputChange}
               required
             />
           </div>
@@ -110,7 +186,8 @@ const HelpPageFormComponent: FC = () => {
               className={styles.contacts_form__input}
               placeholder={t('phonePlaceholder')}
               autoComplete='tel'
-              value={user?.phoneNumber}
+              value={formData.phone}
+              onChange={handleInputChange}
               required
             />
           </div>
@@ -121,7 +198,8 @@ const HelpPageFormComponent: FC = () => {
               className={styles.contacts_form__input}
               placeholder={t('emailPlaceholder')}
               autoComplete='email'
-              value={user?.email}
+              value={formData.email}
+              onChange={handleInputChange}
               required
             />
           </div>

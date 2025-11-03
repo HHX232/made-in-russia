@@ -59,6 +59,7 @@ const latestViewsSlice = createSlice({
   initialState,
   reducers: {
     // Добавление товара в список последних просмотренных
+    // Добавление товара в список последних просмотренных
     addToLatestViews: (state, action: PayloadAction<Product>) => {
       const product = action.payload
 
@@ -70,8 +71,8 @@ const latestViewsSlice = createSlice({
         state.latestViews.splice(existingIndex, 1)
       }
 
-      // Добавляем товар в конец массива (как самый новый)
-      state.latestViews.push(product)
+      // Добавляем товар в НАЧАЛО массива (как самый новый)
+      state.latestViews.unshift(product)
 
       // Обновляем флаг isEmpty
       state.isEmpty = state.latestViews.length === 0

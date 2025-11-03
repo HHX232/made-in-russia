@@ -12,13 +12,13 @@ import {toast} from 'sonner'
 
 // utils/createCardHelpers.ts
 export const parseQuantityRange = (quantityStr: string): {from: number; to: number | null} => {
-  const trimmed = quantityStr.trim()
+  const trimmed = quantityStr?.trim()
   const separators = ['-', '–', '—', '––']
   let parts: string[] = []
 
   for (const separator of separators) {
-    if (trimmed.includes(separator)) {
-      parts = trimmed.split(separator).map((p) => p.trim())
+    if (trimmed?.includes(separator)) {
+      parts = trimmed.split(separator).map((p) => p?.trim())
       break
     }
   }
@@ -46,9 +46,9 @@ export const validateField = (
 ): string => {
   switch (fieldName) {
     case 'cardTitle':
-      const titleError = !cardTitle || cardTitle.trim().length === 0 ? translations('titleError') : ''
+      const titleError = !cardTitle || cardTitle?.trim().length === 0 ? translations('titleError') : ''
       // console.log(
-      //   `Title validation - input: "${cardTitle}", trimmed length: ${cardTitle?.trim()?.length || 0}, error: "${titleError}"`
+      //   `Title validation - input: "${cardTitle}", trimmed length: ${cardTitle??.trim()?.length || 0}, error: "${titleError}"`
       // )
       return titleError
 
@@ -65,12 +65,12 @@ export const validateField = (
       return pricesError
 
     case 'description':
-      const descError = !description || description.trim().length === 0 ? translations('descriptionError') : ''
+      const descError = !description || description?.trim().length === 0 ? translations('descriptionError') : ''
       // console.log(`Description validation result: "${descError}" with description "${description}"`)
       return descError
 
     case 'descriptionMatrix':
-      const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell.trim()))
+      const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell?.trim()))
       const matrixError = filledRows.length === 0 ? translations('characteristicError') : ''
       // console.log(
       //   `Description matrix validation result: "${matrixError}" with description matrix "${descriptionMatrix}"`
@@ -78,20 +78,20 @@ export const validateField = (
       return matrixError
 
     // case 'companyData':
-    //   if (!companyData.topDescription.trim()) return translations('topDescrError')
-    //   if (!companyData.bottomDescription.trim()) return translations('bottomError')
+    //   if (!companyData.topDescription?.trim()) return translations('topDescrError')
+    //   if (!companyData.bottomDescription?.trim()) return translations('bottomError')
     //   const companyImagesWithContent = companyData.images.filter((img) => img.image !== null)
     //   if (companyImagesWithContent.length === 0) return translations('companyImagesError')
-    //   const imagesWithoutDescription = companyImagesWithContent.filter((img) => !img.description.trim())
+    //   const imagesWithoutDescription = companyImagesWithContent.filter((img) => !img.description?.trim())
     //   if (imagesWithoutDescription.length > 0) return translations('altTextImagesError')
     //   return ''
 
     // case 'faqMatrix':
     //   // console.log('faqMatrix in valid', faqMatrix)
-    //   const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
+    //   const filledFaqRows = faqMatrix.filter((row) => row[0]?.trim() || row[1]?.trim())
     //   if (filledFaqRows.length === 0) return translations('oneFaqError')
     //   const incompleteRows = filledFaqRows.filter(
-    //     (row) => (row[0].trim() && !row[1].trim()) || (!row[0].trim() && row[1].trim())
+    //     (row) => (row[0]?.trim() && !row[1]?.trim()) || (!row[0]?.trim() && row[1]?.trim())
     //   )
     //   if (incompleteRows.length > 0) return translations('fullFaqError')
     //   return ''
@@ -390,11 +390,11 @@ export const submitFormCardData = async ({
       }))
       .filter((item) => {
         // Проверяем что name не пустое и хотя бы один перевод не пустой
-        const hasName = item.name && item.name.trim() !== ''
+        const hasName = item.name && item.name?.trim() !== ''
         const hasAtLeastOneTranslation =
-          (item.nameTranslations.ru && item.nameTranslations.ru.trim() !== '') ||
-          (item.nameTranslations.en && item.nameTranslations.en.trim() !== '') ||
-          (item.nameTranslations.zh && item.nameTranslations.zh.trim() !== '')
+          (item.nameTranslations.ru && item.nameTranslations.ru?.trim() !== '') ||
+          (item.nameTranslations.en && item.nameTranslations.en?.trim() !== '') ||
+          (item.nameTranslations.zh && item.nameTranslations.zh?.trim() !== '')
         return hasName && hasAtLeastOneTranslation
       }) || []
 
@@ -413,11 +413,11 @@ export const submitFormCardData = async ({
       }))
       .filter((item) => {
         // Проверяем что name не пустое и хотя бы один перевод не пустой
-        const hasName = item.name && item.name.trim() !== ''
+        const hasName = item.name && item.name?.trim() !== ''
         const hasAtLeastOneTranslation =
-          (item.nameTranslations.ru && item.nameTranslations.ru.trim() !== '') ||
-          (item.nameTranslations.en && item.nameTranslations.en.trim() !== '') ||
-          (item.nameTranslations.zh && item.nameTranslations.zh.trim() !== '')
+          (item.nameTranslations.ru && item.nameTranslations.ru?.trim() !== '') ||
+          (item.nameTranslations.en && item.nameTranslations.en?.trim() !== '') ||
+          (item.nameTranslations.zh && item.nameTranslations.zh?.trim() !== '')
         return hasName && hasAtLeastOneTranslation
       }) || []
 

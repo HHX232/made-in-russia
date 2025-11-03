@@ -384,6 +384,7 @@
       "days": "{count, plural, other {天}}"
     },
     "CardBottomPage": {
+      "newDayerror": "您必须经过授权且账户注册时间需超过7天",
       "success": "成功！",
       "successPublished": "评论已提交审核",
       "errorPublished": "发布评论时出错",
@@ -448,7 +449,9 @@
       "days": "{count, plural, other {天}}"
   },
   "CardBottomPage": {
+     "errorUpdatingFavorites": "更新收藏时出错",
     "success": "成功！",
+    "newDayerror": "您必须经过授权且账户注册时间需超过7天",
     "successPublished": "评论已提交审核",
     "errorPublished": "发布评论时出错",
     "errorPublishedText": "发布前需要联系卖家，且账户年龄至少为7天",
@@ -545,7 +548,7 @@
     "minimalVolumeTitle": "最小数量",
     "minimalVolumePlaceholder": "最小订购量...",
     "deliveryInfo": "配送条款",
-    "daysDelivery": "时间",
+    "daysDelivery": "交付天数",
     "packagingOptions": "包装选项",
     "price": "价格",
     "rail": "铁路运输",
@@ -626,7 +629,7 @@
     "policyLists": {
       "1": {
         "title": "总则",
-        "text": "本个人数据处理政策根据2006年7月27日第152-FZ号联邦法律\"关于个人数据\"（以下简称个人数据法）的要求制定，规定了个人数据处理程序和LLC 'EXPORTERU'（以下简称运营商）采取的个人数据安全措施",
+        "text": "本个人数据处理政策根据2006年7月27日第152-FZ号联邦法律《关于个人数据》（以下简称个人数据法）的要求制定，规定了个人数据处理程序和有限责任公司 '出口商', OGRN 1207700054891, INN 9721094393（以下简称运营商）采取的个人数据安全措施",
         "1-1": "运营商将遵守在处理个人数据时对人权和公民自由的尊重作为其最重要的目标和活动条件，包括保护隐私权、个人和家庭秘密",
         "1-2": "运营商关于个人数据处理的政策（以下简称政策）适用于运营商可能获得的有关网站 https://exporteru.com 访问者的所有信息"
       },
@@ -763,7 +766,7 @@
     },
     "back": " 返回",
     "download": " 下载文件 \"用户协议\"",
-    "text": "本用户协议（以下简称“协议”）规范有限责任公司 EXPORTERU（以下简称 exporteru.com 或 管理方）与网站用户之间的关系。网站 exporteru.com 不是大众传媒。",
+    "text": "本用户协议（以下简称“协议”）规范有限责任公司 '出口商', OGRN 1207700054891, INN 9721094393（以下简称 exporteru.com 或 管理方）与网站用户之间的关系。网站 exporteru.com 不是大众传媒。",
     "secondText": "使用本网站即表示您同意本协议条款。<br/>如果您不同意本协议条款，请不要使用 exporteru.com！<br/>",
     "agreementList": {
       "2": {

@@ -88,7 +88,14 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     const cleanedNumber = telText.replace(/\D/g, '')
     setTrueTelephoneNumber(cleanedNumber)
   }, [telText])
-
+  useEffect(() => {
+    if (showFinalStep) {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    }
+  }, [showFinalStep])
   // Обработка OAuth (Google / Telegram)
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -445,7 +452,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
           <LoginSlider />
         </div>
       </div>
-      <Footer useFixedFooter minMediaHeight={1250} extraClass={`${styles.extraFooter}`} />
+      <Footer useFixedFooter minMediaHeight={isUser ? 1250 : 1435} extraClass={`${styles.extraFooter}`} />
 
       {/* Модальное окно для ошибок */}
       <ModalWindowDefault isOpen={isModalOpen} onClose={handleCloseModal}>

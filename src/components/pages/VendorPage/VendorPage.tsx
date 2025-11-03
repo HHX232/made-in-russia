@@ -1578,6 +1578,14 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}
               /> */}
                 <Catalog
+                  useNewvendorCaralog
+                  isPageForVendor={isPageForVendor}
+                  initialHasMore
+                  mathMinHeight
+                  initialProducts={[]}
+                  specialRoute={isPageForVendor ? '/me/products-summary' : `/vendor/${vendorData?.id}/products-summary`}
+                />
+                <Catalog
                   isPageForVendor={isPageForVendor}
                   initialHasMore
                   mathMinHeight

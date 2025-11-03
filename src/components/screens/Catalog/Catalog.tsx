@@ -10,6 +10,7 @@ import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import {useActions} from '@/hooks/useActions'
 import ProductService from '@/services/products/product.service'
 import {useTranslations} from 'next-intl'
+import CardsCatalogv2 from './CardsCatalogv2/CardsCatalog'
 
 export interface CatalogProps {
   initialProducts: Product[]
@@ -27,6 +28,7 @@ export interface CatalogProps {
   customMinHeight?: string
   isPageForVendor?: boolean
   extraSwiperClass?: string
+  useNewvendorCaralog?: boolean
   searchParams?: {[key: string]: string | string[] | undefined}
 }
 
@@ -46,7 +48,8 @@ const Catalog: FC<CatalogProps> = ({
   searchParams = {},
   extraSwiperClass,
   useContainer = true,
-  isPageForVendor = false
+  isPageForVendor = false,
+  useNewvendorCaralog = false
 }) => {
   const [activeFilterName, setActiveFilterName] = useState<'originPrice' | 'creationDate'>('creationDate')
   const [activeFilterDirect, setActiveFilterDirect] = useState<'asc' | 'desc'>('desc')
@@ -399,8 +402,19 @@ const Catalog: FC<CatalogProps> = ({
             canCreateNewProduct={false}
           />
         )}
-        {!usePagesCatalog && (
+        {!usePagesCatalog && !useNewvendorCaralog && (
           <CardsCatalog
+            canCreateNewProduct={isPageForVendor}
+            mathMinHeight={mathMinHeight}
+            extraSwiperClass={extraSwiperClass}
+            customMinHeight={customMinHeight}
+            specialRoute={specialRoute}
+            initialProducts={initialProducts}
+            initialHasMore={initialHasMore}
+          />
+        )}
+        {!usePagesCatalog && useNewvendorCaralog && (
+          <CardsCatalogv2
             canCreateNewProduct={isPageForVendor}
             mathMinHeight={mathMinHeight}
             extraSwiperClass={extraSwiperClass}

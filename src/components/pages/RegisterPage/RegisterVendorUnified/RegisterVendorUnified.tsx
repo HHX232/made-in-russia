@@ -251,7 +251,10 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
         <RadioButton
           label={
             <>
-              {t('iSuccessWith')} <Link href={'/privacy'}>{t('policy')}</Link>
+              {t('iSuccessWith')}{' '}
+              <Link style={{color: '#0047BA', textDecoration: 'underline'}} href={'/privacy'}>
+                {t('policy')}
+              </Link>
             </>
           }
           name='Business'

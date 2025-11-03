@@ -32,6 +32,10 @@ interface CreateCardPriceElementsProps {
   canCreateNewOption?: boolean[]
   extra__rows__grid?: string
 }
+const sanitizeQuantity = (value: string) => {
+  const match = value.match(/^\d+/)
+  return match ? match[0] : ''
+}
 
 const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
   ({
@@ -70,7 +74,16 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     const storeCurrentLanguage = useTypedSelector((state) => state.multiLanguageCardPriceData.currentLanguage)
 
     // Локальное состояние только для списка цен (так как он не в слайсе)
-    const [pricesMatrix, setPricesMatrix] = useState<string[][]>(pricesArray || [])
+    const [pricesMatrix, setPricesMatrix] = useState<string[][]>(
+      (pricesArray || []).map((row) => {
+        const newRow = [...row]
+        if (newRow[0]) {
+          const match = newRow[0].match(/^\d+/)
+          newRow[0] = match ? match[0] : ''
+        }
+        return newRow
+      })
+    )
 
     // Добавляем ключи для принудительного ре-рендера RowsInputs при смене языка
     const [characteristicsKey, setCharacteristicsKey] = useState(0)
@@ -151,7 +164,16 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
         newMatrix[rowIndex] = new Array(5).fill('')
       }
 
-      newMatrix[rowIndex][inputIndex] = value
+      let sanitizedValue = value
+
+      // Если это первая колонка (quantity), фильтруем ввод
+      if (inputIndex === 0) {
+        // Оставляем только цифры перед любым дефисом
+        const match = sanitizedValue.match(/^\d+/)
+        sanitizedValue = match ? match[0] : ''
+      }
+
+      newMatrix[rowIndex][inputIndex] = sanitizedValue
       setPricesMatrix(newMatrix)
 
       // Преобразуем в формат для родительского компонента
@@ -560,7 +582,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 maxRows={5}
                 canCreateNewOption={[true]}
                 showClearButton={[true]}
-                inputType={['dropdown', 'number']}
+                inputType={['dropdown', 'numbersWithSpec']}
                 dropdownOptions={[[t('rail'), t('auto'), t('sea'), t('air')]]}
                 idNames={['title-delivery', 'daysDelivery-delivery']}
                 rowsInitialValues={deliveryMatrix}

@@ -228,7 +228,11 @@ const FavoritesForProfile: FC = () => {
           {renderPagination()}
         </>
       )}
-      {isClient && isEmpty && <p className={styles.empty__message}>{t('noFavorites')}</p>}
+      {isClient && isEmpty && (
+        <p style={{padding: '30px 0px'}} className={styles.empty__message}>
+          {t('noFavorites')}
+        </p>
+      )}
     </div>
   )
 }

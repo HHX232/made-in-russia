@@ -10,7 +10,7 @@ const hideIcon = '/hide__text.svg'
 const showIcon = '/show__text.svg'
 
 interface ITextInputProps {
-  inputType?: 'text' | 'password' | 'email' | 'number'
+  inputType?: 'text' | 'password' | 'email' | 'number' | 'numbersWithSpec'
   extraClass?: string
   extraStyle?: CSSProperties
   placeholder: string
@@ -84,6 +84,10 @@ const TextInputUI = memo<ITextInputProps>(
       return /^-?[\d.,]*$/.test(value)
     }, [])
 
+    const isValidNumbersWithSpec = useCallback((value: string): boolean => {
+      return /^[\d\-.,%]*$/.test(value)
+    }, [])
+
     const handleNumberKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (inputType === 'number' && ['e', 'E', '+'].includes(e.key)) {
@@ -110,6 +114,10 @@ const TextInputUI = memo<ITextInputProps>(
           return
         }
 
+        if (inputType === 'numbersWithSpec' && value !== '' && !isValidNumbersWithSpec(value)) {
+          return
+        }
+
         if (isSecret) {
           // Упрощенная логика для секретного ввода
           if (value.length > displayValue.length) {
@@ -126,7 +134,16 @@ const TextInputUI = memo<ITextInputProps>(
           onSetValue(value)
         }
       },
-      [inputType, isValidNumberInput, isSecret, displayValue, currentValue, onSetValue, maxLength]
+      [
+        inputType,
+        isValidNumberInput,
+        isValidNumbersWithSpec,
+        isSecret,
+        displayValue,
+        currentValue,
+        onSetValue,
+        maxLength
+      ]
     )
 
     const toggleTextVisibility = useCallback(() => {
@@ -158,7 +175,15 @@ const TextInputUI = memo<ITextInputProps>(
           <input
             ref={refProps}
             placeholder={placeholder}
-            type={isSecret && !textIsShow ? 'password' : inputType ? inputType : 'text'}
+            type={
+              isSecret && !textIsShow
+                ? 'password'
+                : inputType === 'numbersWithSpec'
+                  ? 'text'
+                  : inputType
+                    ? inputType
+                    : 'text'
+            }
             value={isSecret ? (textIsShow ? currentValue : displayValue) : currentValue}
             onChange={handleChange}
             onBlur={onBlur}
@@ -175,7 +200,7 @@ const TextInputUI = memo<ITextInputProps>(
             maxLength={maxLength}
             className={cn(styles.input, {
               [styles.error__input]: errorValue,
-              [styles.number__input]: inputType === 'number'
+              [styles.number__input]: inputType === 'number' || inputType === 'numbersWithSpec'
             })}
             id={idForLabel ? idForLabel : id}
           />

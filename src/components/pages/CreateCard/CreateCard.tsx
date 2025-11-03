@@ -273,7 +273,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       setCardObjectForOthers(updatedCardTitleForOthers)
 
       // Очищаем ошибку заголовка при изменении (быстрая валидация)
-      if (errors.cardTitle && value.trim().length > 0) {
+      if (errors.cardTitle && value?.trim().length > 0) {
         setErrors((prev) => ({...prev, cardTitle: ''}))
       }
     },
@@ -559,7 +559,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             </div>
             {/* CreateCardPriceElements */}
             <CreateCardPriceElements
-              inputType={['number', 'number', 'number', 'dropdown', 'dropdown']}
+              inputType={['text', 'number', 'number', 'dropdown', 'dropdown']}
               pricesArray={pricesArray.map((item) => [
                 item.quantity,
                 item.priceWithoutDiscount,

@@ -385,6 +385,7 @@
     },
     "CardBottomPage": {
       "success": "Success!",
+      "newDayerror": "You must be authorized and your account age must be more than 7 days",
       "successPublished": "Review sent for moderation",
       "errorPublished": "Error publishing review",
       "errorPublishedText": "Before publishing, you must contact the seller, and the account age must be at least 7 days",
@@ -449,6 +450,7 @@
   },
   "CardBottomPage": {
     "success": "Success!",
+    "newDayerror": "You must be authorized and your account age must be more than 7 days",
     "successPublished": "Review sent for moderation",
     "errorPublished": "Error publishing review",
     "errorPublishedText": "Before publishing, you must contact the seller, and the account age must be at least 7 days",
@@ -545,7 +547,7 @@
     "minimalVolumeTitle": "Minimum volume",
     "minimalVolumePlaceholder": "Minimum order volume...",
     "deliveryInfo": "Delivery terms",
-    "daysDelivery": "Terms",
+    "daysDelivery": "Delivery time in days",
     "packagingOptions": "Packaging options",
     "price": "Price",
     "rail": "Railway Delivery",
@@ -604,6 +606,7 @@
     }
   },
   "CardComponent": {
+    "errorUpdatingFavorites": "Error updating favorites",
     "defaultTitle": "Great deal",
     "cardImageAlt": "Product image",
     "saw": "View",
@@ -626,7 +629,7 @@
     "policyLists": {
       "1": {
         "title": "General provisions",
-        "text": "This personal data processing policy is compiled in accordance with the requirements of Federal Law No. 152-FZ dated July 27, 2006 \"On Personal Data\" (hereinafter - the Personal Data Law) and defines the procedure for processing personal data and measures to ensure the security of personal data taken by LLC 'EXPORTERU' (hereinafter - the Operator)",
+        "text": "This personal data processing policy is compiled in accordance with the requirements of Federal Law No. 152-FZ dated July 27, 2006 \"On Personal Data\" (hereinafter - the Personal Data Law) and defines the procedure for processing personal data and measures to ensure the security of personal data taken by LLC 'EXPORTERU', OGRN 1207700054891, INN 9721094393 (hereinafter - the Operator)",
         "1-1": "The Operator sets as its most important goal and condition for carrying out its activities the observance of human and civil rights and freedoms when processing personal data, including the protection of the right to privacy, personal and family secrets",
         "1-2": "This Operator's policy regarding personal data processing (hereinafter - the Policy) applies to all information that the Operator may receive about visitors to the website https://exporteru.com"
       },
@@ -763,7 +766,7 @@
     },
     "back": " Go back",
     "download": " Download file \"User Agreement\"",
-    "text": "This User Agreement (hereinafter referred to as the Agreement) governs the relationship between EXPORTERU LLC (hereinafter exporteru.com or Administration) on the one hand and the user of the website on the other. The website exporteru.com is not a mass media outlet.",
+    "text": "This User Agreement (hereinafter referred to as the Agreement) governs the relationship between LLC 'EXPORTERU', OGRN 1207700054891, INN 9721094393 (hereinafter exporteru.com or Administration) on the one hand and the user of the website on the other. The website exporteru.com is not a mass media outlet.",
     "secondText": "By using the website, you agree to the terms of this Agreement. <br/>If you do not agree with the terms of this Agreement, do not use exporteru.com!<br/>",
     "agreementList": {
       "2": {
