@@ -498,7 +498,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             <RowsInputs
               key={`characteristics-${characteristicsKey}`}
               inputsInRowCount={2}
-              maxRows={20}
+              maxRows={6}
               extraButtonPlusClass={styles.extra__plus__button__class}
               useNewTheme
               inputType={['text', 'textarea']}

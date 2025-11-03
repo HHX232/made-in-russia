@@ -3,7 +3,7 @@
     "title": "你好世界！",
     "profile": "前往个人资料页面",
     "search": "搜索网站",
-    "login": "登录",
+    "login": "登录和注册",
     "category": "分类",
     "reviews": "个人中心",
     "delivery": "配送",
@@ -258,6 +258,7 @@
     "rating": "评级",
     "description": "描述",
     "photos": "照片",
+    "noPhotos": "未添加照片",
     "contacts": "联系方式",
     "mySessions": "我的会话",
     "reviews": "评论",
@@ -384,6 +385,7 @@
       "days": "{count, plural, other {天}}"
     },
     "CardBottomPage": {
+      "send": "发送",
       "newDayerror": "您必须经过授权且账户注册时间需超过7天",
       "success": "成功！",
       "successPublished": "评论已提交审核",
@@ -449,6 +451,7 @@
       "days": "{count, plural, other {天}}"
   },
   "CardBottomPage": {
+    "send": "发送",
      "errorUpdatingFavorites": "更新收藏时出错",
     "success": "成功！",
     "newDayerror": "您必须经过授权且账户注册时间需超过7天",
@@ -1009,7 +1012,7 @@
     "slide4Description": "我们汇集了数千家供应商，助您轻松找到所需商品和服务。"
   },
   "CreateImagesInput": {
-    "makePreview": "生成预览",
+    "makePreview": "设为主图",
     "preview": "预览",
     "uploadError": "数据上传错误",
     "invalidFileTypes": "无效的文件类型：{fileNames}",
@@ -1029,7 +1032,7 @@
     "fileSizeExceeded": "文件大小超出限制（最大 {maxSizeMB} MB）：{fileNames}"
   },
   "previewText":{
-    "makePreview": "生成预览",
+    "makePreview": "设为主图",
      "preview": "预览"
   }
 }

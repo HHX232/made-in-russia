@@ -6,6 +6,8 @@ import VendorPageComponent from '@/components/pages/VendorPage/VendorPage'
 import {User} from '@/store/User/user.slice'
 import {useUserQuery} from '@/hooks/useUserApi'
 import {useTranslations} from 'next-intl'
+import Footer from '@/components/MainComponents/Footer/Footer'
+import Catalog from '@/components/screens/Catalog/Catalog'
 
 interface VendorPageClientProps {
   serverUser: User | null
@@ -60,7 +62,37 @@ export default function VendorPageClient({serverUser, phoneNumberCode, serverErr
     return <AccessDenied userRole={currentUser.role} />
   }
 
-  return <VendorPageComponent isPageForVendor={true} vendorData={currentUser} numberCode={phoneNumberCode} />
+  return (
+    <>
+      {' '}
+      <VendorPageComponent isPageForVendor={true} vendorData={currentUser} numberCode={phoneNumberCode} />
+      <Catalog
+        useNewvendorCaralog
+        isPageForVendor={true}
+        initialHasMore
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={'/me/products-summary'}
+      />
+      <Catalog
+        isPageForVendor={true}
+        initialHasMore
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={'/me/products-summary'}
+      />
+      <Catalog
+        isShowFilters
+        isPageForVendor={true}
+        initialHasMore
+        usePagesCatalog
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={'/me/products-summary'}
+      />
+      <Footer />
+    </>
+  )
 }
 
 // Компоненты для различных состояний

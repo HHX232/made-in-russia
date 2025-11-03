@@ -26,13 +26,19 @@
 }
 
 .editable_input > div:last-child {
-  padding: 13px 25px !important;
+  padding: 12px 25px !important;
+}
+
+.form_row_grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .region__box__input {
   display: flex;
   width: 100%;
-  padding: 14px 15px;
+  padding: 12px 15px;
   border: 1px solid rgb(47 47 47 / 20%);
 }
 
@@ -51,7 +57,7 @@
     background-color: #fff !important;
 
     & > div {
-      padding: 14px 15px;
+      padding: 12px 15px;
 
       // border-radius: 8px;
 
@@ -63,8 +69,9 @@
     }
 
     & > input {
-      min-height: 40px;
+      min-height: 45px;
       border: none !important;
+      line-height: 21px !important;
     }
   }
 }
@@ -108,7 +115,7 @@
 .region__box__input {
   display: flex;
   width: 100%;
-  padding: 14px 15px;
+  padding: 12px 15px;
   border: 1px solid rgb(47 47 47 / 20%);
   background-color: #fff;
 

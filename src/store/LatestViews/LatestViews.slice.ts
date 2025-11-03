@@ -2,7 +2,7 @@ import {Product} from '@/services/products/product.types'
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 // Ключ для localStorage
-const LATEST_VIEWS_STORAGE_KEY = 'latestViews'
+const LATEST_VIEWS_IDS_KEY = 'latestViewsIds'
 
 // Интерфейс состояния
 interface LatestViewsState {
@@ -10,55 +10,55 @@ interface LatestViewsState {
   isEmpty: boolean
 }
 
-// Функция для загрузки данных из localStorage
-const loadFromLocalStorage = (): Product[] => {
-  // Проверка на клиентскую сторону (Next.js)
+// Функция для загрузки ID из localStorage
+export const loadIdsFromLocalStorage = (): number[] => {
   if (typeof window === 'undefined') {
     return []
   }
 
   try {
-    const storedData = localStorage.getItem(LATEST_VIEWS_STORAGE_KEY)
+    const storedData = localStorage.getItem(LATEST_VIEWS_IDS_KEY)
     if (storedData) {
       const parsed = JSON.parse(storedData)
       return Array.isArray(parsed) ? parsed : []
     }
   } catch (error) {
-    console.error('Ошибка при загрузке данных из localStorage:', error)
+    console.error('Ошибка при загрузке ID из localStorage:', error)
   }
 
   return []
 }
 
-// Функция для сохранения данных в localStorage
-const saveToLocalStorage = (products: Product[]): void => {
-  // Проверка на клиентскую сторону (Next.js)
+// Функция для сохранения ID в localStorage
+export const saveIdsToLocalStorage = (ids: number[]): void => {
   if (typeof window === 'undefined') {
     return
   }
 
   try {
-    localStorage.setItem(LATEST_VIEWS_STORAGE_KEY, JSON.stringify(products))
+    localStorage.setItem(LATEST_VIEWS_IDS_KEY, JSON.stringify(ids))
   } catch (error) {
-    console.error('Ошибка при сохранении данных в localStorage:', error)
+    console.error('Ошибка при сохранении ID в localStorage:', error)
   }
 }
 
-// Начальное состояние с загрузкой из localStorage
-const initialState: LatestViewsState = (() => {
-  const loadedViews = loadFromLocalStorage()
-  return {
-    latestViews: loadedViews,
-    isEmpty: loadedViews.length === 0
-  }
-})()
+// Начальное состояние
+const initialState: LatestViewsState = {
+  latestViews: [],
+  isEmpty: true
+}
 
 // Создание slice
 const latestViewsSlice = createSlice({
   name: 'latestViews',
   initialState,
   reducers: {
-    // Добавление товара в список последних просмотренных
+    // Установка всего списка просмотренных товаров
+    setLatestViews: (state, action: PayloadAction<Product[]>) => {
+      state.latestViews = action.payload
+      state.isEmpty = state.latestViews.length === 0
+    },
+
     // Добавление товара в список последних просмотренных
     addToLatestViews: (state, action: PayloadAction<Product>) => {
       const product = action.payload
@@ -77,8 +77,9 @@ const latestViewsSlice = createSlice({
       // Обновляем флаг isEmpty
       state.isEmpty = state.latestViews.length === 0
 
-      // Сохраняем в localStorage
-      saveToLocalStorage(state.latestViews)
+      // Сохраняем только ID в localStorage
+      const ids = state.latestViews.map((p) => p.id)
+      saveIdsToLocalStorage(ids)
     },
 
     // Удаление конкретного товара из списка
@@ -87,8 +88,9 @@ const latestViewsSlice = createSlice({
       state.latestViews = state.latestViews.filter((product) => product.id !== productId)
       state.isEmpty = state.latestViews.length === 0
 
-      // Сохраняем в localStorage
-      saveToLocalStorage(state.latestViews)
+      // Сохраняем обновленные ID в localStorage
+      const ids = state.latestViews.map((p) => p.id)
+      saveIdsToLocalStorage(ids)
     },
 
     // Очистка всего списка
@@ -97,22 +99,13 @@ const latestViewsSlice = createSlice({
       state.isEmpty = true
 
       // Очищаем localStorage
-      saveToLocalStorage([])
-    },
-
-    setLatestViews: (state, action: PayloadAction<Product[]>) => {
-      // Берем все переданные товары без ограничения по количеству
-      state.latestViews = action.payload
-      state.isEmpty = state.latestViews.length === 0
-
-      // Сохраняем в localStorage
-      saveToLocalStorage(state.latestViews)
+      saveIdsToLocalStorage([])
     }
   }
 })
 
 // Экспорт actions
-export const {addToLatestViews, removeFromLatestViews, clearLatestViews, setLatestViews} = latestViewsSlice.actions
+export const {setLatestViews, addToLatestViews, removeFromLatestViews, clearLatestViews} = latestViewsSlice.actions
 
 // Селекторы
 export const selectLatestViews = (state: {latestViews: LatestViewsState}) => state.latestViews.latestViews

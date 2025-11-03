@@ -362,6 +362,7 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: IC
               </h3>
               <div className={`${styles.questions__content}`}>
                 <Accordion
+                  extraClass={styles.extra__accordion}
                   items={cardData.faq.map((el) => ({title: el.question, value: el.answer, id: el.id.toString()})) || []}
                   multiActive={false}
                 />
@@ -395,7 +396,7 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: IC
             />
 
             <button type='submit' className={`${styles.send__comment__button}`} disabled={!commentValue.trim()}>
-              Отправить
+              {t('send')}
             </button>
           </form>
         </div>

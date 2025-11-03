@@ -399,6 +399,7 @@ const Catalog: FC<CatalogProps> = ({
             sortField={activeFilterName}
             direction={activeFilterDirect}
             initialTotalPages={100}
+            specialRoute={specialRoute}
             canCreateNewProduct={false}
           />
         )}

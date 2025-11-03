@@ -96,7 +96,7 @@
   gap: 6px;
 
   & > span {
-    min-width: max-content;
+    // min-width: max-content;
 
     & > span {
       display: -webkit-box;
@@ -477,6 +477,7 @@
 /* Контейнер выбранных элементов — горизонтальный скролл */
 .newThemeItems {
   display: flex;
+  flex-wrap: wrap;
   padding-bottom: 4px;
   gap: 8px;
 
@@ -486,7 +487,8 @@
 
   /* Скрыть скроллбар для всех браузеров */
   scrollbar-width: none;
-  white-space: nowrap;
+
+  // white-space: nowrap;
 
   /* Internet Explorer и Edge */
 }

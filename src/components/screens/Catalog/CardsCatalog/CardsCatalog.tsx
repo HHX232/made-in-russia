@@ -298,7 +298,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       } else if (currentWidth > 768) {
         defaultMaxWidth = 288 // для tablet
       } else {
-        defaultMaxWidth = 180 // для mobile
+        defaultMaxWidth = 240 // для mobile
       }
       console.log('📦 Card max-width (default):', defaultMaxWidth)
       return defaultMaxWidth

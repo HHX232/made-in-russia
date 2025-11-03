@@ -3,7 +3,6 @@ import {CSSProperties, FC, useEffect, useState, useMemo, useCallback, useRef} fr
 import styles from './profileButtonUI.module.scss'
 import Image from 'next/image'
 import {useRouter} from 'next/navigation'
-
 import {useTranslations} from 'next-intl'
 import {useNProgress} from '@/hooks/useProgress'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
@@ -143,7 +142,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
             width={28}
             height={28}
           />
-          <p className={styles.profile_text}>{t('login')}</p>
+          <p dangerouslySetInnerHTML={{__html: t('login')}} className={styles.profile_text}></p>{' '}
         </>
       )}
     </div>

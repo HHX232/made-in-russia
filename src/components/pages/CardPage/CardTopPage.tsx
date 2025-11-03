@@ -532,15 +532,12 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             titleMain=''
             items={[
               {title: t('articul'), value: cardMiniData!.article},
-              ...(cardMiniData?.characteristics[0]?.name
-                ? [{title: cardMiniData.characteristics[0].name, value: cardMiniData.characteristics[0].value}]
-                : []),
-              ...(cardMiniData?.characteristics[1]?.name
-                ? [{title: cardMiniData.characteristics[1].name, value: cardMiniData.characteristics[1].value}]
-                : []),
-              ...(cardMiniData?.characteristics[2]?.name
-                ? [{title: cardMiniData.characteristics[2].name, value: cardMiniData.characteristics[2].value}]
-                : [])
+              ...(cardMiniData?.characteristics
+                ?.filter((char) => char?.name && char?.value)
+                .map((char) => ({
+                  title: char.name,
+                  value: char.value
+                })) || [])
             ]}
           />
         ) : (

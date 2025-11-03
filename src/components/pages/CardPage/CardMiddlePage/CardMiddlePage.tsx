@@ -1,7 +1,7 @@
 'use client'
 import {FC, useEffect} from 'react'
 import styles from './CardMiddlePage.module.scss'
-import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
+// import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
 // import Image from 'next/image'
 import Skeleton from 'react-loading-skeleton'
 import ICardFull from '@/services/card/card.types'
@@ -17,12 +17,12 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
   const t = useTranslations('CardMiddlePage')
   return (
     <div className={`${styles.card__middle__box}`}>
-      <h3 id='description__title__id' style={{marginBottom: '15px'}} className={`${styles.card__middle__title}`}>
-        {t('description')}
-      </h3>
       <div className={`${styles.descr__box}`}>
         <div className={`${styles.mark__span__box}`}>
-          {!isLoading ? (
+          <h3 id='description__title__id' style={{marginBottom: '15px'}} className={`${styles.card__middle__title}`}>
+            {t('description')}
+          </h3>
+          {/* {!isLoading ? (
             <StringDescriptionGroup
               extraBoxClass={`${styles.extra__group__class}`}
               titleFontSize='16'
@@ -32,7 +32,7 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
             />
           ) : (
             <></>
-          )}
+          )} */}
           {!isLoading ? (
             <ShowMarkdown extraClass={styles.margin__bottom__mark} markValue={cardData.mainDescription} />
           ) : (
@@ -115,19 +115,21 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
             </div>
           </div>
 
-          <div className={styles.about__vendor}>
-            <h3 className={styles.vendor__title}>{t('deliveryDescription')}</h3>
-            <div className={styles.vendor__box__del__info}>
-              <ul className={styles.del__list}>
-                {cardData.deliveryMethodsDetails?.map((el, i) => (
-                  <li className={styles.del__list__item} key={i}>
-                    <p>{el.name}</p>
-                    <p>{el.value + ' ' + t('days', {count: el.value})}</p>
-                  </li>
-                ))}
-              </ul>
+          {cardData?.deliveryMethodsDetails && cardData?.deliveryMethodsDetails?.length !== 0 && (
+            <div className={styles.about__vendor}>
+              <h3 className={styles.vendor__title}>{t('deliveryDescription')}</h3>
+              <div className={styles.vendor__box__del__info}>
+                <ul className={styles.del__list}>
+                  {cardData.deliveryMethodsDetails?.map((el, i) => (
+                    <li className={styles.del__list__item} key={i}>
+                      <p>{el.name}</p>
+                      <p>{el.value + ' ' + t('days', {count: el.value})}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

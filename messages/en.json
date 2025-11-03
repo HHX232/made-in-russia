@@ -3,7 +3,7 @@
     "title": "Hello world!",
     "profile": "Go to profile page",
     "search": "Search the site",
-    "login": "Log in",
+    "login": "Login and </br> registration",
     "category": "Categories",
     "reviews": "Dashboard",
     "delivery": "Delivery",
@@ -258,6 +258,7 @@
     "rating": "Rating",
     "description": "Description",
     "photos": "Photos",
+      "noPhotos": "No photos added",
     "contacts": "Contacts",
     "mySessions": "My sessions",
     "reviews": "Reviews",
@@ -384,6 +385,7 @@
       "days": "{count, plural, one {day} other {days}}"
     },
     "CardBottomPage": {
+       "send": "Send",
       "success": "Success!",
       "newDayerror": "You must be authorized and your account age must be more than 7 days",
       "successPublished": "Review sent for moderation",
@@ -449,6 +451,7 @@
       "days": "{count, plural, one {day} other {days}}"
   },
   "CardBottomPage": {
+     "send": "Send",
     "success": "Success!",
     "newDayerror": "You must be authorized and your account age must be more than 7 days",
     "successPublished": "Review sent for moderation",
@@ -1009,7 +1012,7 @@
     "slide4Description": "Thousands of suppliers united to help you easily find the right goods and services."
   },
   "CreateImagesInput": {
-        "makePreview": "Generate preview",
+    "makePreview": "Set as main",
     "preview": "Preview",
     "uploadError": "Data upload error",
     "invalidFileTypes": "Invalid file types: {fileNames}",
@@ -1029,7 +1032,7 @@
     "fileSizeExceeded": "File size exceeded (max {maxSizeMB} MB): {fileNames}"
   },
   "previewText":{
-    "makePreview": "Generate preview",
+    "makePreview": "Set as main",
     "preview": "Preview"
   }
 }

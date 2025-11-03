@@ -704,7 +704,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
         </div>
       )}
 
-      <div className={styles.form_row}>
+      <div className={`${styles.form_row} ${styles.form_row_grid}`}>
         <div className={styles.form_col_half}>
           <div className={styles.editable}>
             <span className={styles.editable_text}>{t('phoneNumber')}</span>
@@ -720,7 +720,59 @@ const ProfileForm: FC<ProfileFormProps> = ({
             </div>
           </div>
         </div>
+        {isVendor && isShowForOwner && (
+          <div className={styles.form_row}>
+            <div className={styles.form_col_full}>
+              <div className={styles.editable}>
+                <span className={styles.editable_text}>{t('inn')}</span>
+                <div className={styles.editable_wrap}>
+                  <TextInputUI
+                    disabled={!isShowForOwner}
+                    extraClass={styles.editable_input}
+                    theme='newWhite'
+                    currentValue={inn}
+                    onSetValue={(value) => {
+                      setInn(value)
+                      setUserInteracted(true)
+                      updateVendorDetailsAction({...vendorDetails, inn: value})
+                      if (value.length > 0) {
+                        setUserInteracted(true)
+                      }
+                    }}
+                    placeholder={t('innPlaceholder')}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+      {isVendor && !isShowForOwner && (
+        <div className={styles.form_row}>
+          <div className={styles.form_col_full}>
+            <div className={styles.editable}>
+              <span className={styles.editable_text}>{t('inn')}</span>
+              <div className={styles.editable_wrap}>
+                <TextInputUI
+                  disabled={!isShowForOwner}
+                  extraClass={styles.editable_input}
+                  theme='newWhite'
+                  currentValue={inn}
+                  onSetValue={(value) => {
+                    setInn(value)
+                    setUserInteracted(true)
+                    updateVendorDetailsAction({...vendorDetails, inn: value})
+                    if (value.length > 0) {
+                      setUserInteracted(true)
+                    }
+                  }}
+                  placeholder={t('innPlaceholder')}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {isVendor && (
         <div className={styles.form_col_half}>
           <div className={styles.editable}>
@@ -770,29 +822,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
                 placeholder={t('selectCategoryes')}
                 direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'bottom'}
               />
-            </div>
-          </div>
-        </div>
-      )}
-      {isVendor && (
-        <div className={styles.form_row}>
-          <div className={styles.form_col_full}>
-            <div className={styles.editable}>
-              <span className={styles.editable_text}>{t('inn')}</span>
-              <div className={styles.editable_wrap}>
-                <TextInputUI
-                  disabled={!isShowForOwner}
-                  extraClass={styles.editable_input}
-                  theme='newWhite'
-                  currentValue={inn}
-                  onSetValue={(value) => {
-                    setInn(value)
-                    setUserInteracted(true)
-                    updateVendorDetailsAction({...vendorDetails, inn: value})
-                  }}
-                  placeholder={t('innPlaceholder')}
-                />
-              </div>
             </div>
           </div>
         </div>

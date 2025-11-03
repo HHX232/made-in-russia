@@ -1076,6 +1076,26 @@
   }
 }
 
+.stroke__white > path {
+  opacity: 1 !important;
+  stroke: #fff !important;
+  stroke-opacity: 1 !important;
+}
+
+.spec__create {
+  background-color: #0047ba;
+  color: #fff;
+
+  & > a {
+    width: 100%;
+    margin: 12px 10px;
+  }
+
+  & > a > span {
+    color: #fff;
+  }
+}
+
 .products__list {
   display: flex;
   gap: 25px;

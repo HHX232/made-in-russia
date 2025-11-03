@@ -258,7 +258,7 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
     sameAs: [emailUrl, telegramUrl],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '+78005553535',
+      telephone: process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '+74959233888',
       contactType: 'customer service',
       availableLanguage: ['Russian', 'English', 'Chinese']
     }

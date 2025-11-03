@@ -10,6 +10,10 @@
   & > div:last-child {
     max-width: 70vw;
 
+    & > textarea {
+      overflow-y: scroll !important;
+    }
+
     @media (max-width: 900px) {
       max-width: 90vw;
       margin: 0 auto !important;

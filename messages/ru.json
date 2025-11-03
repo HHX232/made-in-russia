@@ -3,7 +3,7 @@
     "title": "Привет мир!",
     "profile": "Перейти на страницу профиля",
     "search": "Поиск по сайту",
-    "login": "Войти",
+    "login": "Вход и </br> регистрация",
     "category": "Категории",
     "reviews": "Личный кабинет",
     "delivery": "Доставка",
@@ -268,6 +268,7 @@
     "rating": "Рейтинг",
     "description": "Описание",
     "photos": "Фото",
+    "noPhotos":" Фото не добавлены",
     "contacts": "Контакты",
     "mySessions": "Мои сессии",
     "reviews": "Отзывы",
@@ -396,6 +397,7 @@
       "days": "{count, plural, one {день} few {дня} many {дней} other {дня}}"
     },
     "CardBottomPage": {
+      "send":"Отправить",
       "success": "Успешно!",
       "successPublished": "Отзыв отправлен на модерацию",
       "errorPublished": "Ошибка при публикации отзыва",
@@ -458,6 +460,7 @@
     "days": "{count, plural, one {день} few {дня} many {дней} other {дня}}"
   },
   "CardBottomPage": {
+    "send":"Отправить",
     "success": "Успешно!",
     "successPublished": "Отзыв отправлен на модерацию",
     "errorPublished": "Ошибка при публикации отзыва",
@@ -1023,7 +1026,7 @@
     "slide4Description": "Тысячи поставщиков объединены, чтобы вы легко нашли нужные товары и услуги."
   },
   "CreateImagesInput": {
-    "makePreview":"Сделать превью",
+    "makePreview": "Сделать главной",
     "preview":"Превью",
     "uploadError": "Ошибка загрузки данных",
     "invalidFileTypes": "Недопустимые типы файлов: {fileNames}",
@@ -1043,7 +1046,7 @@
     "fileSizeExceeded": "Превышен размер файлов (макс. {maxSizeMB} МБ): {fileNames}"
   },
   "previewText":{
-    "makePreview":"Сделать превью",
+    "makePreview": "Сделать главной",
     "preview":"Превью"
   }
 }

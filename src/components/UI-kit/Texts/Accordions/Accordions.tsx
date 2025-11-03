@@ -16,6 +16,7 @@ interface AccordionProps {
   multiActive?: boolean
   needDeleteButton?: boolean
   onDelete?: (item: AccordionItem) => void
+  extraClass?: string
   onUpdate?: (item: AccordionItem) => void
 }
 
@@ -24,6 +25,7 @@ const Accordion: React.FC<AccordionProps> = ({
   multiActive = false,
   needDeleteButton = false,
   onDelete,
+  extraClass,
   onUpdate
 }) => {
   const [activeItems, setActiveItems] = useState<number[]>(() => {
@@ -41,7 +43,7 @@ const Accordion: React.FC<AccordionProps> = ({
   const isActive = (index: number) => activeItems.includes(index)
 
   return (
-    <div className={styles.accordion}>
+    <div className={`${styles.accordion} ${extraClass}`}>
       {items.map((item, index) => (
         <div
           key={item.id}

@@ -4,6 +4,8 @@ import {axiosClassic} from '@/api/api.interceptor'
 import VendorPageComponent from '@/components/pages/VendorPage/VendorPage'
 import {Product} from '@/services/products/product.types'
 import {cookies} from 'next/headers'
+import Catalog from '@/components/screens/Catalog/Catalog'
+import Footer from '@/components/MainComponents/Footer/Footer'
 
 export default async function VendorDataPage({params}: {params: Promise<{id: string}>}) {
   const {id} = await params
@@ -66,18 +68,47 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
   )
 
   return (
-    <VendorPageComponent
-      onlyShowDescr={vendorData?.data?.vendorDetails?.description}
-      onlyShowPhones={vendorData?.data?.vendorDetails?.phoneNumbers}
-      onlyShowWebsites={vendorData?.data?.vendorDetails?.sites}
-      onlyShowEmail={vendorData?.data?.vendorDetails?.emails}
-      onlyShowAddress={vendorData?.data?.vendorDetails?.address}
-      vendorData={{
-        ...vendorData?.data,
-        phoneNumber: trimPhonePrefix(vendorData?.data.phoneNumber)
-      }}
-      initialProductsForView={initialProductsForView?.data.content}
-      isPageForVendor={false}
-    />
+    <>
+      <VendorPageComponent
+        onlyShowDescr={vendorData?.data?.vendorDetails?.description}
+        onlyShowPhones={vendorData?.data?.vendorDetails?.phoneNumbers}
+        onlyShowWebsites={vendorData?.data?.vendorDetails?.sites}
+        onlyShowEmail={vendorData?.data?.vendorDetails?.emails}
+        onlyShowAddress={vendorData?.data?.vendorDetails?.address}
+        vendorData={{
+          ...vendorData?.data,
+          phoneNumber: trimPhonePrefix(vendorData?.data.phoneNumber)
+        }}
+        initialProductsForView={initialProductsForView?.data.content}
+        isPageForVendor={false}
+      />
+
+      <Catalog
+        useNewvendorCaralog
+        isPageForVendor={false}
+        initialHasMore
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
+      />
+      <Catalog
+        isPageForVendor={false}
+        initialHasMore
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
+      />
+
+      <Catalog
+        isShowFilters
+        isPageForVendor={false}
+        initialHasMore
+        usePagesCatalog
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
+      />
+      <Footer />
+    </>
   )
 }
