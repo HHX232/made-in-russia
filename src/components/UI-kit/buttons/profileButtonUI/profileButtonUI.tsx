@@ -21,7 +21,6 @@ const ava6 = '/avatars/avatar-v-6.svg'
 const ava7 = '/avatars/avatar-v-7.svg'
 const ava8 = '/avatars/avatar-v-8.svg'
 const ava9 = '/avatars/avatar-v-9.svg'
-// const userLogin = '/man_login.svg'
 const userLogin2 = '/iconsNew/userNew.svg'
 const avatarsArray = [ava, ava1, ava2, ava3, ava4, ava5, ava6, ava7, ava8, ava9]
 
@@ -34,8 +33,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
   const {user, isAuthenticated} = useTypedSelector((state) => state.user)
   const {clearUser} = useActions()
   const {removeUserFromCache} = useUserCache()
-  const accessToken = getAccessToken()
-  const {isLoading, error, isError} = useUserQuery()
+  const {data: queryUser, isLoading, error, isError} = useUserQuery()
   const didRun = useRef(false)
 
   const [randomAvatar, setRandomAvatar] = useState<string>(ava)
@@ -52,15 +50,9 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
     const accessFromQuery = url.searchParams.get('accessToken')
     const refreshFromQuery = url.searchParams.get('refreshToken')
 
-    // console.log('access token in ProfileButtonUI', accessFromQuery?.slice(0, 5))
-    // console.log('refresh token in ProfileButtonUI', refreshFromQuery?.slice(0, 5))
-
     if (!!accessFromQuery && !!refreshFromQuery) {
       console.log('найден access token в ProfileButtonUI')
-      console.log('access token in ProfileButtonUI', accessFromQuery?.slice(0, 5))
-      console.log('refresh token in ProfileButtonUI', refreshFromQuery?.slice(0, 5))
       saveTokenStorage({accessToken: accessFromQuery, refreshToken: refreshFromQuery})
-      // можно сразу очистить query из адреса:
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
@@ -71,6 +63,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
 
     setRandomAvatar(avatarsArray[0])
 
+    const accessToken = getAccessToken()
     if (!accessToken) {
       console.log('не найден access token в ProfileButtonUI')
       if (typeof window !== 'undefined') {
@@ -79,26 +72,43 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
         clearUser()
       }
     }
-  }, [accessToken, removeUserFromCache, clearUser])
+  }, [removeUserFromCache, clearUser])
+
+  // Используем данные из React Query если есть, иначе из Redux
+  const currentUser = queryUser || user
 
   const userName = useMemo(() => {
-    if (!user?.login) return null
-    if (user.login.length > 13) {
-      return user.login.substring(0, 12) + '...'
+    if (!currentUser?.login) return null
+    if (currentUser.login.length > 13) {
+      return currentUser.login.substring(0, 12) + '...'
     }
-    return user.login
-  }, [user?.login])
+    return currentUser.login
+  }, [currentUser?.login])
+
+  // Проверяем актуальное состояние: есть ли токен И (загружаются данные ИЛИ есть данные пользователя)
+  const accessToken = getAccessToken()
+  const hasValidToken = !!accessToken
+
+  // Пользователь залогинен если:
+  // 1. Есть токен
+  // 2. И (данные загружаются ИЛИ уже есть данные пользователя)
+  const isUserLoggedIn = hasValidToken && (isLoading || (isAuthenticated && !!currentUser?.login))
 
   const handleClick = useCallback(() => {
     start()
-    if (!isAuthenticated || !user?.login) {
+    // Проверяем актуальное состояние токенов прямо сейчас
+    const currentToken = getAccessToken()
+    const hasUser = !!(user?.login || queryUser?.login)
+
+    if (!currentToken || !hasUser) {
       router.push('/login')
     } else {
       router.push('/profile')
     }
-  }, [isAuthenticated, user?.login, router, start])
+  }, [user?.login, queryUser?.login, router, start])
 
-  if (isLoading) {
+  // Показываем loading state только если есть токен и идёт загрузка
+  if (isLoading && hasValidToken) {
     return (
       <div className={`${styles.profile_box} ${extraClass}`} style={extraStyles}>
         <div className={styles.loading}>
@@ -120,12 +130,12 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
       style={extraStyles}
       className={`${styles.profile_box} ${extraClass}`}
     >
-      {isAuthenticated && user?.login ? (
+      {isUserLoggedIn ? (
         <>
           <Image
             style={{borderRadius: '50%', aspectRatio: '1/1'}}
             className={styles.image}
-            src={user?.avatarUrl || randomAvatar}
+            src={currentUser?.avatarUrl || randomAvatar}
             alt='Profile'
             width={28}
             height={28}
@@ -136,13 +146,13 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
       ) : (
         <>
           <Image
-            className={`${styles.image} ${isAuthenticated && styles.image__white}`}
+            className={`${styles.image} ${styles.back_transparent}`}
             src={userLogin2}
             alt='Please login'
             width={28}
             height={28}
           />
-          <p dangerouslySetInnerHTML={{__html: t('login')}} className={styles.profile_text}></p>{' '}
+          <p dangerouslySetInnerHTML={{__html: t('login')}} className={styles.profile_text}></p>
         </>
       )}
     </div>

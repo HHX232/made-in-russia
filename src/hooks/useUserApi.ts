@@ -95,12 +95,17 @@ export const useUserQuery = () => {
     retry: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    refetchOnReconnect: false
+    refetchOnReconnect: false,
+    // НОВОЕ: Добавляем плейсхолдер для мгновенной очистки
+    placeholderData: (previousData) => {
+      // Если нет токенов, возвращаем undefined вместо старых данных
+      const hasTokens = !!(getAccessToken() && getRefreshToken())
+      return hasTokens ? previousData : undefined
+    }
   })
 }
 
 // Hook для логаута
-
 export const useLogout = () => {
   const queryClient = useQueryClient()
   const {clearUser} = useActions()
@@ -112,24 +117,32 @@ export const useLogout = () => {
         await instance.post('/auth/logout', {})
       } catch (error) {
         console.error('Server logout failed:', error)
+        // Продолжаем выполнение даже при ошибке
       }
     },
-    onSuccess: async () => {
-      // 1. Сначала очищаем состояние и токены
+    onMutate: async () => {
+      // Выполняется ДО отправки запроса - мгновенно очищаем состояние
+      // Отменяем все активные запросы
+      await queryClient.cancelQueries()
+
+      // Немедленно очищаем пользователя из состояния
       clearUser()
       removeFromStorage()
 
-      // 2. Отменяем все активные запросы
-      await queryClient.cancelQueries()
-
-      // 3. Очищаем кэш пользователя
+      // Очищаем кэш пользователя
       queryClient.removeQueries({queryKey: USER_QUERY_KEY})
 
-      // 4. Очищаем весь кэш
+      // Очищаем весь кэш
       queryClient.clear()
-
-      // 5. Только после этого делаем редирект
+    },
+    onSettled: () => {
+      // Выполняется всегда - и при успехе, и при ошибке
+      // Делаем редирект после очистки
       router.push('/')
+    },
+    onError: (error) => {
+      // Даже при ошибке пользователь должен быть разлогинен
+      console.error('Logout error, but user cleared anyway:', error)
     }
   })
 }

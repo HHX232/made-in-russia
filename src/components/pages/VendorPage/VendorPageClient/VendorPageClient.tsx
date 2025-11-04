@@ -65,27 +65,36 @@ export default function VendorPageClient({serverUser, phoneNumberCode, serverErr
   return (
     <>
       {' '}
-      <VendorPageComponent isPageForVendor={true} vendorData={currentUser} numberCode={phoneNumberCode} />
-      <Catalog
-        useNewvendorCaralog
-        isPageForVendor={true}
-        initialHasMore
-        mathMinHeight
-        initialProducts={[]}
-        specialRoute={'/me/products-summary'}
-      />
-      <Catalog
-        isPageForVendor={true}
-        initialHasMore
-        mathMinHeight
-        initialProducts={[]}
-        specialRoute={'/me/products-summary'}
-      />
       <Catalog
         isShowFilters
         isPageForVendor={true}
         initialHasMore
         usePagesCatalog
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={'/me/products-summary'}
+      />
+      <VendorPageComponent isPageForVendor={true} vendorData={currentUser} numberCode={phoneNumberCode} />
+      <Catalog
+        isShowFilters
+        isPageForVendor={true}
+        initialHasMore
+        usePagesCatalog
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={'/me/products-summary'}
+      />
+      <Catalog
+        isPageForVendor={true}
+        initialHasMore
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={'/me/products-summary'}
+      />
+      <Catalog
+        useNewvendorCaralog
+        isPageForVendor={true}
+        initialHasMore
         mathMinHeight
         initialProducts={[]}
         specialRoute={'/me/products-summary'}

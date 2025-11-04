@@ -69,6 +69,15 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
 
   return (
     <>
+      <Catalog
+        isShowFilters
+        isPageForVendor={false}
+        initialHasMore
+        usePagesCatalog
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
+      />
       <VendorPageComponent
         onlyShowDescr={vendorData?.data?.vendorDetails?.description}
         onlyShowPhones={vendorData?.data?.vendorDetails?.phoneNumbers}
@@ -82,23 +91,6 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
         initialProductsForView={initialProductsForView?.data.content}
         isPageForVendor={false}
       />
-
-      <Catalog
-        useNewvendorCaralog
-        isPageForVendor={false}
-        initialHasMore
-        mathMinHeight
-        initialProducts={[]}
-        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
-      />
-      <Catalog
-        isPageForVendor={false}
-        initialHasMore
-        mathMinHeight
-        initialProducts={[]}
-        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
-      />
-
       <Catalog
         isShowFilters
         isPageForVendor={false}
@@ -108,6 +100,22 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
         initialProducts={[]}
         specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
       />
+      <Catalog
+        isPageForVendor={false}
+        initialHasMore
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
+      />
+      <Catalog
+        useNewvendorCaralog
+        isPageForVendor={false}
+        initialHasMore
+        mathMinHeight
+        initialProducts={[]}
+        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
+      />
+
       <Footer />
     </>
   )
