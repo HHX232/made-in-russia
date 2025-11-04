@@ -30,7 +30,7 @@ interface IProfileProps {
 }
 
 const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
-  const {user, isAuthenticated} = useTypedSelector((state) => state.user)
+  const {user} = useTypedSelector((state) => state.user)
   const {clearUser} = useActions()
   const {removeUserFromCache} = useUserCache()
   const {data: queryUser, isLoading, error, isError} = useUserQuery()
@@ -85,27 +85,27 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
     return currentUser.login
   }, [currentUser?.login])
 
-  // Проверяем актуальное состояние: есть ли токен И (загружаются данные ИЛИ есть данные пользователя)
+  // КРИТИЧНО: Токен - источник истины. Если токена нет, игнорируем Redux state
   const accessToken = getAccessToken()
   const hasValidToken = !!accessToken
 
-  // Пользователь залогинен если:
+  // Пользователь залогинен только если:
   // 1. Есть токен
   // 2. И (данные загружаются ИЛИ уже есть данные пользователя)
-  const isUserLoggedIn = hasValidToken && (isLoading || (isAuthenticated && !!currentUser?.login))
+  const isUserLoggedIn = hasValidToken && (isLoading || !!currentUser?.login)
 
   const handleClick = useCallback(() => {
     start()
-    // Проверяем актуальное состояние токенов прямо сейчас
+    // КРИТИЧНО: Проверяем токен ПРЯМО СЕЙЧАС, игнорируя любой state
     const currentToken = getAccessToken()
-    const hasUser = !!(user?.login || queryUser?.login)
 
-    if (!currentToken || !hasUser) {
+    if (!currentToken) {
+      // Нет токена = точно не залогинен
       router.push('/login')
     } else {
       router.push('/profile')
     }
-  }, [user?.login, queryUser?.login, router, start])
+  }, [router, start])
 
   // Показываем loading state только если есть токен и идёт загрузка
   if (isLoading && hasValidToken) {

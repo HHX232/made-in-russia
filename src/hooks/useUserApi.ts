@@ -117,32 +117,28 @@ export const useLogout = () => {
         await instance.post('/auth/logout', {})
       } catch (error) {
         console.error('Server logout failed:', error)
-        // Продолжаем выполнение даже при ошибке
       }
     },
     onMutate: async () => {
-      // Выполняется ДО отправки запроса - мгновенно очищаем состояние
-      // Отменяем все активные запросы
-      await queryClient.cancelQueries()
-
-      // Немедленно очищаем пользователя из состояния
-      clearUser()
+      // 1. ПЕРВЫМ ДЕЛОМ очищаем токены
       removeFromStorage()
 
-      // Очищаем кэш пользователя
+      // 2. Затем очищаем Redux state
+      clearUser()
+
+      // 3. Отменяем все активные запросы
+      await queryClient.cancelQueries()
+
+      // 4. СИНХРОННО очищаем кэш React Query
+      queryClient.setQueryData(USER_QUERY_KEY, null)
       queryClient.removeQueries({queryKey: USER_QUERY_KEY})
 
-      // Очищаем весь кэш
+      // 5. Очищаем весь остальной кэш
       queryClient.clear()
     },
     onSettled: () => {
-      // Выполняется всегда - и при успехе, и при ошибке
-      // Делаем редирект после очистки
+      // Редирект после очистки
       router.push('/')
-    },
-    onError: (error) => {
-      // Даже при ошибке пользователь должен быть разлогинен
-      console.error('Logout error, but user cleared anyway:', error)
     }
   })
 }
