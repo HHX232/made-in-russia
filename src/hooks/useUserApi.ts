@@ -152,7 +152,7 @@ export const useLogout = () => {
     onSettled: async () => {
       // КРИТИЧНО: Делаем server-side запрос для удаления cookies через API route
       try {
-        await fetch('/api/auth/logout', {
+        await fetch('/backend/auth/logout', {
           method: 'POST',
           credentials: 'include'
         })
