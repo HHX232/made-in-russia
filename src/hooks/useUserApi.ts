@@ -114,13 +114,14 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: async () => {
       try {
+        // КРИТИЧНО: Отправляем запрос на сервер для удаления cookies
         await instance.post('/auth/logout', {})
       } catch (error) {
         console.error('Server logout failed:', error)
       }
     },
     onMutate: async () => {
-      // 1. ПЕРВЫМ ДЕЛОМ очищаем токены
+      // 1. ПЕРВЫМ ДЕЛОМ очищаем токены на КЛИЕНТЕ
       removeFromStorage()
 
       // 2. Затем очищаем Redux state
@@ -136,9 +137,34 @@ export const useLogout = () => {
       // 5. Очищаем весь остальной кэш
       queryClient.clear()
     },
-    onSettled: () => {
-      // Редирект после очистки
+    onError: async () => {
+      removeFromStorage()
+
+      clearUser()
+
+      await queryClient.cancelQueries()
+
+      queryClient.setQueryData(USER_QUERY_KEY, null)
+      queryClient.removeQueries({queryKey: USER_QUERY_KEY})
+
+      queryClient.clear()
+    },
+    onSettled: async () => {
+      // КРИТИЧНО: Делаем server-side запрос для удаления cookies через API route
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include'
+        })
+      } catch (error) {
+        console.error('Failed to clear server cookies:', error)
+      }
+
+      // Редирект после полной очистки
       router.push('/')
+
+      // Принудительная перезагрузка для гарантии синхронизации
+      router.refresh()
     }
   })
 }
