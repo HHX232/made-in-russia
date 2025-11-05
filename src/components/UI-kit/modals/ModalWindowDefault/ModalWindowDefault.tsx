@@ -8,9 +8,16 @@ interface IModalWindowDefaultProps {
   isOpen: boolean
   onClose: (e: React.MouseEvent) => void
   extraClass?: string
+  useAbsoluteClose?: boolean
 }
 
-const ModalWindowDefault: FC<IModalWindowDefaultProps> = ({children, isOpen, onClose, extraClass}) => {
+const ModalWindowDefault: FC<IModalWindowDefaultProps> = ({
+  children,
+  isOpen,
+  onClose,
+  extraClass,
+  useAbsoluteClose = false
+}) => {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -33,7 +40,7 @@ const ModalWindowDefault: FC<IModalWindowDefaultProps> = ({children, isOpen, onC
   return createPortal(
     <div className={`${styles.modal__window__default__back} ${extraClass}`} onClick={onBackClick}>
       <div className={`${styles.modal__inner}`} onClick={(e) => e.stopPropagation()}>
-        <div className={`${styles.modal__header}`}>
+        <div className={`${styles.modal__header} ${useAbsoluteClose && styles.absolute_close}`}>
           <button
             id='cy-modal-window-default-close-button'
             className={`${styles.modal__header__close__button}`}

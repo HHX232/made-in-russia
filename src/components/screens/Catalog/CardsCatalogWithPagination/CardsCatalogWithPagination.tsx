@@ -26,6 +26,8 @@ interface CardsCatalogWithPaginationProps {
   extraButtonsBoxClass?: string
   approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL'
   direction?: 'asc' | 'desc'
+  showTableFilters?: boolean
+  showSearchFilters?: boolean
   isForAdmin?: boolean
   pageSize?: number
   specialFilters?: {name: string; id: string}[]
@@ -42,6 +44,7 @@ interface PageParams {
   direction?: 'asc' | 'desc'
   deliveryMethodIds?: string
   sort?: string
+
   [key: string]: any
 }
 
@@ -58,6 +61,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   sortField = 'creationDate',
   approveStatuses = 'ALL',
   pageSize = DEFAULT_PAGE_SIZE,
+  showTableFilters = true,
   specialFilters
 }) => {
   // console.log('🎯 CardsCatalogWithPagination: Component render')
@@ -354,7 +358,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
         {/* Сетка товаров */}
         <div className={`${styled.catalog__vitrine}`}>
           <div ref={gridContainerRef} className={styled.vitrine__grid}>
-            {!!specialFilters && specialFilters?.length !== 0 && (
+            {showTableFilters && !!specialFilters && specialFilters?.length !== 0 && (
               <div className={`${styled.section_flexheader}`}>
                 <div ref={filtersContainerRef} className={styled.filters_scroll_container}>
                   <ul className={styled.absolute__list}>

@@ -1013,7 +1013,7 @@
   },
   "CreateImagesInput": {
     "makePreview": "设为主图",
-    "preview": "预览",
+    "preview": "主照片",
     "uploadError": "数据上传错误",
     "invalidFileTypes": "无效的文件类型：{fileNames}",
     "fileSizeExceeded": "文件大小超出限制（最大 {maxSizeMB} MB）：{fileNames}",
@@ -1033,6 +1033,9 @@
   },
   "previewText":{
     "makePreview": "设为主图",
-     "preview": "预览"
+     "preview": "主照片"
+  },
+  "vendorCatalog": {
+    "vendorProducts": "卖家商品"
   }
 }

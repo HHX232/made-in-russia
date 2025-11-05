@@ -29,6 +29,8 @@ export interface CatalogProps {
   isPageForVendor?: boolean
   extraSwiperClass?: string
   useNewvendorCaralog?: boolean
+  showTableFilters?: boolean
+  showSearchFilters?: boolean
   searchParams?: {[key: string]: string | string[] | undefined}
 }
 
@@ -49,7 +51,9 @@ const Catalog: FC<CatalogProps> = ({
   extraSwiperClass,
   useContainer = true,
   isPageForVendor = false,
-  useNewvendorCaralog = false
+  useNewvendorCaralog = false,
+  showTableFilters = true,
+  showSearchFilters = true
 }) => {
   const [activeFilterName, setActiveFilterName] = useState<'originPrice' | 'creationDate'>('creationDate')
   const [activeFilterDirect, setActiveFilterDirect] = useState<'asc' | 'desc'>('desc')
@@ -105,7 +109,7 @@ const Catalog: FC<CatalogProps> = ({
       <div
         className={`${useContainer ? 'container' : ''}  ${styles.top__fliters__container} ${showSpecialSearchFilters && styles.without__big__top__margin}`}
       >
-        {isShowFilters && !showSpecialSearchFilters && (
+        {showSearchFilters && isShowFilters && !showSpecialSearchFilters && (
           <div className={`${styles.top__fliters__container__inner}`}>
             {/* Кнопка фильтра для мобильных устройств */}
             {showSearchTitle && <h2>Результат поиска по запросу: {resultTitle || textParams}</h2>}
@@ -331,13 +335,13 @@ const Catalog: FC<CatalogProps> = ({
         className={`${useContainer ? 'container' : ''} ${styles.catalog__box}`}
       >
         {/* Десктопный фильтр */}
-        {isShowFilters && (
+        {showTableFilters && isShowFilters && (
           <div className={styles.desktop__filter}>
             <Filters />
           </div>
         )}
         {/* Мобильная выдвигающаяся панель с фильтрами */}
-        {isShowFilters && (
+        {showTableFilters && isShowFilters && (
           <div
             className={`${styles.mobile__filter__sidebar} ${isMobileFilterOpen ? styles.mobile__filter__sidebar__open : ''}`}
           >
@@ -398,9 +402,11 @@ const Catalog: FC<CatalogProps> = ({
             initialCurrentPage={0}
             sortField={activeFilterName}
             direction={activeFilterDirect}
+            showTableFilters={showTableFilters}
+            showSearchFilters={showSearchFilters}
             initialTotalPages={100}
             specialRoute={specialRoute}
-            canCreateNewProduct={false}
+            canCreateNewProduct={isPageForVendor}
           />
         )}
         {!usePagesCatalog && !useNewvendorCaralog && (

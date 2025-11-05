@@ -1013,7 +1013,7 @@
   },
   "CreateImagesInput": {
     "makePreview": "Set as main",
-    "preview": "Preview",
+   "preview": "Main photo",
     "uploadError": "Data upload error",
     "invalidFileTypes": "Invalid file types: {fileNames}",
     "fileSizeExceeded": "File size exceeded (max {maxSizeMB} MB): {fileNames}",
@@ -1033,6 +1033,9 @@
   },
   "previewText":{
     "makePreview": "Set as main",
-    "preview": "Preview"
-  }
+    "preview": "Main photo"
+  },
+  "vendorCatalog": {
+      "vendorProducts": "Seller's products"
+    }
 }

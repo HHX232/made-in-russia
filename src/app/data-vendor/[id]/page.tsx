@@ -1,11 +1,12 @@
 import {getCurrentLocale} from '@/lib/locale-detection'
-
+import styles from './VendorPageClient.module.scss'
 import {axiosClassic} from '@/api/api.interceptor'
 import VendorPageComponent from '@/components/pages/VendorPage/VendorPage'
 import {Product} from '@/services/products/product.types'
 import {cookies} from 'next/headers'
 import Catalog from '@/components/screens/Catalog/Catalog'
 import Footer from '@/components/MainComponents/Footer/Footer'
+import {getTranslations} from 'next-intl/server'
 
 export default async function VendorDataPage({params}: {params: Promise<{id: string}>}) {
   const {id} = await params
@@ -13,6 +14,7 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
   const cookieStore = await cookies()
   const accessToken = cookieStore.get('accessToken')?.value || ''
   const currentLang = await getCurrentLocale()
+  const t = await getTranslations('vendorCatalog')
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,15 +71,6 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
 
   return (
     <>
-      <Catalog
-        isShowFilters
-        isPageForVendor={false}
-        initialHasMore
-        usePagesCatalog
-        mathMinHeight
-        initialProducts={[]}
-        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
-      />
       <VendorPageComponent
         onlyShowDescr={vendorData?.data?.vendorDetails?.description}
         onlyShowPhones={vendorData?.data?.vendorDetails?.phoneNumbers}
@@ -91,29 +84,21 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
         initialProductsForView={initialProductsForView?.data.content}
         isPageForVendor={false}
       />
+      <div className='container'>
+        {' '}
+        <h2 className={styles.title}>{t('vendorProducts')}</h2>
+      </div>
       <Catalog
         isShowFilters
         isPageForVendor={false}
         initialHasMore
         usePagesCatalog
         mathMinHeight
+        showTableFilters={false}
+        showSpecialSearchFilters={false}
+        showSearchFilters={false}
         initialProducts={[]}
-        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
-      />
-      <Catalog
-        isPageForVendor={false}
-        initialHasMore
-        mathMinHeight
-        initialProducts={[]}
-        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
-      />
-      <Catalog
-        useNewvendorCaralog
-        isPageForVendor={false}
-        initialHasMore
-        mathMinHeight
-        initialProducts={[]}
-        specialRoute={false ? '/me/products-summary' : `/vendor/${vendorData?.data?.id}/products-summary`}
+        specialRoute={`/vendor/${vendorData?.data?.id}/products-summary`}
       />
 
       <Footer />

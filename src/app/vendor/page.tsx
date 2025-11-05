@@ -1,6 +1,5 @@
 // app/vendor/page.tsx
 import {getCurrentLocale} from '@/lib/locale-detection'
-
 import VendorPageClient from '@/components/pages/VendorPage/VendorPageClient/VendorPageClient'
 import {getQueryClient} from '@/lib/get-query-client'
 import {fetchUserDataOnServer} from '@/lib/server/userDataFetcher'
@@ -11,33 +10,49 @@ export const metadata: Metadata = {
   title: 'Vendor'
 }
 
-export default async function VendorPage() {
-  // Получаем данные пользователя на сервере
+// Важно! Отключаем статический рендеринг
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+export default async function VendorPage({
+  searchParams
+}: {
+  searchParams: Promise<{[key: string]: string | string[] | undefined}>
+}) {
+  const search = await searchParams
   const lang = await getCurrentLocale()
+
+  // Используем searchParams для инвалидации кэша
+  const cacheKey = search.t || Date.now()
+
+  console.log('Fetching user data with lang:', lang, 'cache key:', cacheKey)
 
   const {user, phoneNumberCode, error} = await fetchUserDataOnServer()
 
-  // Создаем клиент для предзаполнения кэша
   const queryClient = getQueryClient()
 
-  // Если есть данные пользователя, предзаполняем кэш
+  // Предзаполняем кэш с правильным ключом
   if (user) {
     queryClient.setQueryData(['user', lang], user)
   }
 
-  // Если ошибка или нет данных, можно вернуть страницу с ошибкой или редирект
   if (error && !user) {
-    // Можно редиректить на страницу логина или показать ошибку
     console.error('Failed to fetch user data:', error)
   }
 
-  // Дегидрируем состояние для передачи на клиент
   const dehydratedState = dehydrate(queryClient)
 
-  console.log('full vendor user on server', user)
+  console.log('Full vendor user on server with lang', lang, user)
+
   return (
     <HydrationBoundary state={dehydratedState}>
-      <VendorPageClient serverUser={user} phoneNumberCode={phoneNumberCode} serverError={error} />
+      <VendorPageClient
+        serverUser={user}
+        phoneNumberCode={phoneNumberCode}
+        serverError={error}
+        initialLang={lang}
+        cacheKey={cacheKey.toString()}
+      />
     </HydrationBoundary>
   )
 }

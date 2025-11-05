@@ -146,6 +146,9 @@ const Sidebar: FC<{
 }> = ({currentTab, onTabChange, onLogout, userData, isPageForVendor, sidebarShow, setShowSidebar, onLoginChange}) => {
   const t = useTranslations('VendorPage')
   const {updateUserAvatar} = useActions()
+  const {user} = useTypedSelector((state) => state.user)
+  const {updateVendorDetails} = useActions()
+  const {mutate: updateVendorDetailsAPI} = useUpdateVendorDetails()
   const handleAvatarChange = useCallback(
     (newAvatarUrl: string | null) => {
       if (isPageForVendor) {
@@ -178,6 +181,21 @@ const Sidebar: FC<{
                     if (onLoginChange) {
                       onLoginChange(e.target.value)
                     }
+                  }}
+                  onBlur={(e) => {
+                    updateVendorDetailsAPI({
+                      categories: user?.vendorDetails?.productCategories?.map((cat) => cat.name) || [],
+                      countries: user?.vendorDetails?.countries?.map((country) => country) || [],
+                      description: user?.vendorDetails?.description,
+                      inn: user?.vendorDetails?.inn,
+                      phoneNumber: user?.phoneNumber,
+                      region: user?.region,
+                      phoneNumbers: user?.vendorDetails?.phoneNumbers,
+                      emails: user?.vendorDetails?.emails,
+                      sites: user?.vendorDetails?.sites,
+                      address: user?.vendorDetails?.address || '',
+                      login: e.target.value || user?.login
+                    })
                   }}
                   className={styles.acc_compavatar__name_input}
                   placeholder={t('enterLogin') || 'Введите логин'}
@@ -568,7 +586,7 @@ const SessionsTab: FC = () => {
 
 const VendorPageComponent: FC<IVendorPageProps> = ({
   isPageForVendor = true,
-  vendorData,
+  vendorData: initialVendorData,
   numberCode = '',
   initialProductsForView,
   onlyShowDescr,
@@ -587,13 +605,35 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const [openFaqId, setOpenFaqId] = useState<number | null>(null)
   const {data: userData, isLoading: loading} = useUserQuery()
   const {mutate: logout, isPending: isLogoutPending} = useLogout()
+  const currentLang = useCurrentLanguage()
+  const [vendorData, setVendorData] = useState(initialVendorData)
+
+  useEffect(() => {
+    const fetchVendorData = async () => {
+      try {
+        const response = await instance.get(`/vendor/${initialVendorData?.id}`, {
+          headers: {
+            'Accept-Language': currentLang,
+            'x-language': currentLang
+          }
+        })
+        setVendorData(response.data)
+      } catch (error) {
+        console.error('Error fetching vendor data:', error)
+      }
+    }
+
+    if (initialVendorData?.id) {
+      fetchVendorData()
+    }
+  }, [currentLang, initialVendorData?.id])
 
   const currentUserData = useMemo(() => {
     return vendorData || (userData as any)
-  }, [vendorData, userData])
+  }, [vendorData, userData, currentLang])
 
   const t = useTranslations('VendorPage')
-  const currentLang = useCurrentLanguage()
+
   const [isQuestOpen, setIsQuestOpen] = useState(false)
   const [editingFaqId, setEditingFaqId] = useState<string | null>(null)
   const [editQuestion, setEditQuestion] = useState('')
@@ -1264,7 +1304,10 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                     />
 
                     <div className={styles.vendor__description__photos}>
-                      <div className={`${styles.vendor__description__label} ${styles.vendor__description__photos_new}`}>
+                      <div
+                        style={{marginTop: '30px'}}
+                        className={`${styles.vendor__description__label} ${styles.vendor__description__photos_new}`}
+                      >
                         {isPageForVendor ? t('photos') : descriptionImages.length === 0 ? t('noPhotos') : t('photos')}
                       </div>
                       <CreateImagesInput

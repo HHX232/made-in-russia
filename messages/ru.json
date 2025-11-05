@@ -1027,7 +1027,7 @@
   },
   "CreateImagesInput": {
     "makePreview": "Сделать главной",
-    "preview":"Превью",
+    "preview":"Главная фотография",
     "uploadError": "Ошибка загрузки данных",
     "invalidFileTypes": "Недопустимые типы файлов: {fileNames}",
     "fileSizeExceeded": "Превышен размер файлов (макс. {maxSizeMB} МБ): {fileNames}",
@@ -1047,6 +1047,9 @@
   },
   "previewText":{
     "makePreview": "Сделать главной",
-    "preview":"Превью"
+    "preview":"Главная фотография"
+  },
+  "vendorCatalog":{
+    "vendorProducts":"Товары продавца"
   }
 }

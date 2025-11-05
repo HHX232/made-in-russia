@@ -967,6 +967,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
         
       </span> */}
       <PurchaseModal
+        useAbsoluteClose
         isOpen={purchaseModalOpen}
         onClose={() => setPurchaseModalOpen(false)}
         productTitle={cardMiniData?.title || ''}

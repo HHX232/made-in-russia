@@ -21,6 +21,7 @@ interface IPurchaseModalProps {
   productTitle: string
   prices: DiscountPriceRange[]
   minimumOrderQuantity: number
+  useAbsoluteClose?: boolean
   onSubmit: (data: {
     name: string
     email: string
@@ -37,7 +38,8 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
   productTitle,
   prices,
   minimumOrderQuantity,
-  onSubmit
+  onSubmit,
+  useAbsoluteClose = false
 }) => {
   const {user} = useTypedSelector((state) => state.user)
   const t = useTranslations('CardPage.PurchaseModal')
@@ -202,7 +204,12 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
   }
 
   return (
-    <ModalWindowDefault isOpen={isOpen} onClose={onClose} extraClass={styles.purchaseModal}>
+    <ModalWindowDefault
+      useAbsoluteClose={useAbsoluteClose}
+      isOpen={isOpen}
+      onClose={onClose}
+      extraClass={styles.purchaseModal}
+    >
       <div className={styles.modalContent}>
         <h2 className={styles.modalTitle}>{t('title')}</h2>
 

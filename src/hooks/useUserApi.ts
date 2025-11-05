@@ -1,4 +1,5 @@
 // hooks/api/useUserApi.ts
+// hooks/api/useUserApi.ts
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import instance, {axiosClassic} from '@/api/api.interceptor'
 import {getAccessToken, getRefreshToken, removeFromStorage, saveTokenStorage} from '@/services/auth/auth.helper'
@@ -30,7 +31,7 @@ export const useUserQuery = () => {
   const currentLang = useCurrentLanguage()
 
   return useQuery({
-    queryKey: [USER_QUERY_KEY, currentLang],
+    queryKey: [...USER_QUERY_KEY, currentLang],
     queryFn: async (): Promise<User> => {
       const accessToken = getAccessToken()
       const refreshToken = getRefreshToken()
@@ -42,7 +43,8 @@ export const useUserQuery = () => {
       try {
         const response = await instance.get<User>('/me', {
           headers: {
-            'Accept-Language': currentLang
+            'Accept-Language': currentLang,
+            'x-language': currentLang
           }
         })
 
@@ -63,7 +65,8 @@ export const useUserQuery = () => {
             {refreshToken},
             {
               headers: {
-                'Accept-Language': currentLang
+                'Accept-Language': currentLang,
+                'x-language': currentLang
               }
             }
           )
@@ -75,7 +78,8 @@ export const useUserQuery = () => {
 
           const response = await instance.get<User>('/me', {
             headers: {
-              'Accept-Language': currentLang
+              'Accept-Language': currentLang,
+              'x-language': currentLang
             }
           })
 
@@ -90,18 +94,13 @@ export const useUserQuery = () => {
       }
     },
     enabled: !!(getAccessToken() && getRefreshToken()),
-    staleTime: 10 * 60 * 1000,
-    gcTime: 15 * 60 * 1000,
+    // КЛЮЧЕВЫЕ ИЗМЕНЕНИЯ для мультиязычности:
+    staleTime: 0, // Данные сразу считаются устаревшими при смене языка
+    gcTime: 5 * 60 * 1000, // Сократили время хранения до 5 минут
     retry: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    // НОВОЕ: Добавляем плейсхолдер для мгновенной очистки
-    placeholderData: (previousData) => {
-      // Если нет токенов, возвращаем undefined вместо старых данных
-      const hasTokens = !!(getAccessToken() && getRefreshToken())
-      return hasTokens ? previousData : undefined
-    }
+    refetchOnMount: true, // ИЗМЕНЕНО: включаем рефетч при монтировании
+    refetchOnReconnect: false
   })
 }
 
