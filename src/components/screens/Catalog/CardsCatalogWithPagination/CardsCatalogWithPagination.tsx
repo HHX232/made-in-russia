@@ -24,13 +24,15 @@ interface CardsCatalogWithPaginationProps {
   sortField?: string
   onPreventCardClick?: (item: Product) => void
   extraButtonsBoxClass?: string
-  approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL'
+  approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL' | '' | 'REJECTED'
   direction?: 'asc' | 'desc'
   showTableFilters?: boolean
   showSearchFilters?: boolean
   isForAdmin?: boolean
   pageSize?: number
   specialFilters?: {name: string; id: string}[]
+  showAdminStatusFilters?: boolean
+  onApproveStatusChange?: (status: 'APPROVED' | 'PENDING' | 'ALL' | 'REJECTED') => void
 }
 
 interface PageParams {
@@ -40,7 +42,7 @@ interface PageParams {
   maxPrice?: number
   categoryIds?: string
   title?: string
-  approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL' | ''
+  approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL' | '' | 'REJECTED'
   direction?: 'asc' | 'desc'
   deliveryMethodIds?: string
   sort?: string
@@ -62,9 +64,10 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   approveStatuses = 'ALL',
   pageSize = DEFAULT_PAGE_SIZE,
   showTableFilters = true,
-  specialFilters
+  specialFilters,
+  showAdminStatusFilters = false,
+  onApproveStatusChange
 }) => {
-  // console.log('🎯 CardsCatalogWithPagination: Component render')
   const t = useTranslations('CardsCatalogWithPagination')
   const windowWidth = useWindowWidth()
 
@@ -88,16 +91,21 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   const filtersContainerRef = useRef<HTMLDivElement>(null)
   const gridContainerRef = useRef<HTMLDivElement>(null)
 
+  // Локальное состояние для статуса
+  const [localApproveStatus, setLocalApproveStatus] = useState<'APPROVED' | 'PENDING' | 'ALL' | '' | 'REJECTED'>(
+    approveStatuses
+  )
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false)
+  const statusDropdownRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     const updateFiltersWidth = () => {
       if (filtersContainerRef.current && gridContainerRef.current) {
         const gridWidth = gridContainerRef.current.getBoundingClientRect().width
         filtersContainerRef.current.style.maxWidth = `${gridWidth}px`
-        // console.log('📏 Filters width updated:', gridWidth)
       }
     }
 
-    // Используем ResizeObserver для отслеживания изменений размера грида
     const resizeObserver = new ResizeObserver(() => {
       updateFiltersWidth()
     })
@@ -106,11 +114,24 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
       resizeObserver.observe(gridContainerRef.current)
     }
 
-    // Также обновляем при первом рендере
     updateFiltersWidth()
 
     return () => {
       resizeObserver.disconnect()
+    }
+  }, [])
+
+  // Закрытие выпадающего списка при клике вне его
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target as Node)) {
+        setIsStatusDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
 
@@ -130,7 +151,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     title: searchTitle,
     sort: sortField || 'creationDate',
     direction: direction,
-    approveStatuses: approveStatuses === 'ALL' ? '' : approveStatuses
+    approveStatuses: localApproveStatus === 'ALL' ? '' : localApproveStatus
   })
 
   // Обновляем размер страницы при изменении ширины экрана
@@ -149,8 +170,6 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     }))
   }, [direction, sortField])
 
-  // console.log('📄 Current page params:', pageParams)
-
   // Загрузка продуктов
   const {
     data: pageResponse,
@@ -160,24 +179,13 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     isFetching
   } = useProductsWithPagination(pageParams, undefined, specialRoute, accessToken || undefined)
 
-  // console.log('📦 Products state:', {
-  //   productsOnPage: products.length,
-  //   isLoading,
-  //   isFetching,
-  //   currentPage: pageParams.page,
-  //   totalPages: pageResponse?.totalPages || 0
-  // })
-
   useEffect(() => {
     console.log('products in catalog', products)
-    // originalPrice
-    // creationDate
   }, [products])
 
   // Мемоизированные данные
   const showSkeleton = useMemo(() => {
     const result = isLoading && products.length === 0
-    // console.log('💀 Show skeleton:', result)
     return result
   }, [isLoading, products.length])
 
@@ -187,7 +195,6 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   // Инициализация начальных продуктов
   useEffect(() => {
     if (initialProducts.length > 0 && isFirstRender.current) {
-      // console.log('🎬 Initial products loaded:', initialProducts.length)
       isFirstRender.current = false
     }
   }, [initialProducts])
@@ -197,13 +204,11 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     const numericKeys = Object.keys(selectedFilters)
       .filter((key) => !isNaN(Number(key)))
       .map(Number)
-    // console.log('🔢 Numeric filters updated:', numericKeys)
     setNumericFilters(numericKeys)
   }, [selectedFilters])
 
   // Сброс при изменении поискового запроса
   useEffect(() => {
-    // console.log('🔍 Search title changed:', searchTitle)
     setCurrentPage(0)
     setPageParams((prev) => ({
       ...prev,
@@ -214,7 +219,6 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
 
   // Сброс при изменении фильтров
   useEffect(() => {
-    // console.log('🎛️ Filters changed:', {numericFilters, priceRange, delivery})
     setCurrentPage(0)
     setPageParams((prev) => {
       const newParams: PageParams = {
@@ -238,20 +242,18 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   // Сброс для админки при изменении статусов
   useEffect(() => {
     if (isForAdmin) {
-      // console.log('👨‍💼 Admin approve status changed:', approveStatuses)
       setCurrentPage(0)
       setPageParams((prev) => ({
         ...prev,
         page: 0,
-        approveStatuses: approveStatuses === 'ALL' ? '' : approveStatuses
+        approveStatuses: localApproveStatus === 'ALL' ? '' : localApproveStatus
       }))
     }
-  }, [approveStatuses, isForAdmin])
+  }, [localApproveStatus, isForAdmin])
 
   // Сброс для админки при изменении направления
   useEffect(() => {
     if (isForAdmin) {
-      // console.log('🔀 Admin direction changed:', direction)
       setCurrentPage(0)
       setPageParams((prev) => ({
         ...prev,
@@ -261,36 +263,43 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     }
   }, [direction, isForAdmin])
 
+  // Обработчик изменения статуса
+  const handleStatusChange = useCallback(
+    (status: 'APPROVED' | 'PENDING' | 'ALL') => {
+      setLocalApproveStatus(status)
+      setIsStatusDropdownOpen(false)
+      if (onApproveStatusChange) {
+        onApproveStatusChange(status)
+      }
+    },
+    [onApproveStatusChange]
+  )
+
   // Генерация массива номеров страниц для пагинации
   const getPageNumbers = useCallback(() => {
     const pages: (number | string)[] = []
     const maxVisible = 7
 
     if (totalPages <= maxVisible) {
-      // Показываем все страницы
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i)
       }
     } else {
-      // Сложная логика с многоточием
-      const current = currentPage + 1 // Преобразуем в 1-based индекс
+      const current = currentPage + 1
 
       if (current <= 4) {
-        // Начало
         for (let i = 1; i <= 4; i++) {
           pages.push(i)
         }
         pages.push('...')
         pages.push(totalPages)
       } else if (current >= totalPages - 3) {
-        // Конец
         pages.push(1)
         pages.push('...')
         for (let i = totalPages - 3; i <= totalPages; i++) {
           pages.push(i)
         }
       } else {
-        // Середина
         pages.push(1)
         pages.push('...')
         for (let i = current - 1; i <= current + 1; i++) {
@@ -311,14 +320,12 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     (page: number) => {
       if (page < 0 || page >= totalPages || page === currentPage) return
 
-      // console.log('📄 Page change:', currentPage, '->', page)
       setCurrentPage(page)
       setPageParams((prev) => ({
         ...prev,
         page: page
       }))
 
-      // Скролл к началу каталога
       if (catalogRef.current) {
         const offsetTop = catalogRef.current.offsetTop - 100
         window.scrollTo({
@@ -332,18 +339,32 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
 
   // Обработчики навигации
   const handlePrevClick = useCallback(() => {
-    // console.log('⬅️ Previous page clicked')
     if (currentPage > 0) {
       handlePageChange(currentPage - 1)
     }
   }, [currentPage, handlePageChange])
 
   const handleNextClick = useCallback(() => {
-    // console.log('➡️ Next page clicked')
     if (currentPage < totalPages - 1) {
       handlePageChange(currentPage + 1)
     }
   }, [currentPage, totalPages, handlePageChange])
+
+  // Получение текста для статуса
+  const getStatusText = (status: 'APPROVED' | 'PENDING' | 'ALL' | 'REJECTED' | '') => {
+    switch (status) {
+      case 'APPROVED':
+        return t('approved') || 'Одобренные'
+      case 'PENDING':
+        return t('pending') || 'На рассмотрении'
+      case 'ALL':
+        return t('all') || 'Все'
+      case 'REJECTED':
+        return t('rejected') || 'Отклоненные'
+      default:
+        return t('all') || 'Все'
+    }
+  }
 
   if (isError) {
     console.error('❌ Error loading products')
@@ -353,33 +374,89 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   return (
     <section className={`section ${styled.catalog}`} ref={catalogRef}>
       <div>
-        {/* Заголовок */}
-
         {/* Сетка товаров */}
         <div className={`${styled.catalog__vitrine}`}>
           <div ref={gridContainerRef} className={styled.vitrine__grid}>
-            {showTableFilters && !!specialFilters && specialFilters?.length !== 0 && (
+            {(showTableFilters && !!specialFilters && specialFilters?.length !== 0) || showAdminStatusFilters ? (
               <div className={`${styled.section_flexheader}`}>
                 <div ref={filtersContainerRef} className={styled.filters_scroll_container}>
                   <ul className={styled.absolute__list}>
-                    {specialFilters?.map((filter) => {
-                      const isActive = Object.keys(selectedFilters).includes(filter.id)
-                      return (
-                        <li
-                          style={{cursor: 'pointer'}}
-                          onClick={() => {
-                            setFilter({filterName: filter.id, checked: !isActive})
-                          }}
-                          key={filter.id}
-                          className={`${styled.section_flexheader__title} ${
-                            isActive ? styled.section_flexheader__title__active : ''
-                          }`}
-                        >
-                          {filter.name}
-                        </li>
-                      )
-                    })}
-                    {!!specialFilters && specialFilters?.length !== 0 && (
+                    {/* Фильтры статусов для админки */}
+                    {showAdminStatusFilters && (
+                      <li className={styled.status_filter_wrapper}>
+                        <div ref={statusDropdownRef} className={styled.status_dropdown}>
+                          <button
+                            className={styled.status_dropdown_button}
+                            onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
+                          >
+                            <span>{getStatusText(localApproveStatus)}</span>
+                            <svg
+                              width='16'
+                              height='16'
+                              viewBox='0 0 16 16'
+                              fill='none'
+                              style={{
+                                transform: isStatusDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                transition: 'transform 0.2s'
+                              }}
+                            >
+                              <path
+                                d='M4 6L8 10L12 6'
+                                stroke='currentColor'
+                                strokeWidth='1.5'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                              />
+                            </svg>
+                          </button>
+                          {isStatusDropdownOpen && (
+                            <div className={styled.status_dropdown_menu}>
+                              <button
+                                className={`${styled.status_dropdown_item} ${localApproveStatus === 'ALL' ? styled.active : ''}`}
+                                onClick={() => handleStatusChange('ALL')}
+                              >
+                                {getStatusText('ALL')}
+                              </button>
+                              <button
+                                className={`${styled.status_dropdown_item} ${localApproveStatus === 'APPROVED' ? styled.active : ''}`}
+                                onClick={() => handleStatusChange('APPROVED')}
+                              >
+                                {getStatusText('APPROVED')}
+                              </button>
+                              <button
+                                className={`${styled.status_dropdown_item} ${localApproveStatus === 'PENDING' ? styled.active : ''}`}
+                                onClick={() => handleStatusChange('PENDING')}
+                              >
+                                {getStatusText('PENDING')}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </li>
+                    )}
+
+                    {/* Обычные фильтры */}
+                    {showTableFilters &&
+                      specialFilters?.map((filter) => {
+                        const isActive = Object.keys(selectedFilters).includes(filter.id)
+                        return (
+                          <li
+                            style={{cursor: 'pointer'}}
+                            onClick={() => {
+                              setFilter({filterName: filter.id, checked: !isActive})
+                            }}
+                            key={filter.id}
+                            className={`${styled.section_flexheader__title} ${
+                              isActive ? styled.section_flexheader__title__active : ''
+                            }`}
+                          >
+                            {filter.name}
+                          </li>
+                        )
+                      })}
+
+                    {((showTableFilters && !!specialFilters && specialFilters?.length !== 0) ||
+                      showAdminStatusFilters) && (
                       <div
                         style={{backgroundColor: 'transparent', minWidth: '65px', height: '10px'}}
                         className=''
@@ -388,10 +465,10 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
                   </ul>
                 </div>
               </div>
-            )}
+            ) : null}
+
             {showSkeleton
-              ? // Скелетоны при загрузке
-                Array.from({length: dynamicPageSize}).map((_, index) => (
+              ? Array.from({length: dynamicPageSize}).map((_, index) => (
                   <div key={`skeleton-${index}`} className={styled.card_wrapper}>
                     <Card
                       isForAdmin={isForAdmin}
@@ -411,8 +488,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
                     />
                   </div>
                 ))
-              : // Реальные карточки товаров
-                products.map((product) => (
+              : products.map((product) => (
                   <div className={styled.card_wrapper} key={product.id}>
                     <Card
                       isForAdmin={isForAdmin}
@@ -442,7 +518,6 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
         {!showSkeleton && totalPages > 1 && (
           <div className={styled.catalog__pagination}>
             <div className={styled.exp_pagination}>
-              {/* Кнопка "Назад" */}
               <button
                 onClick={handlePrevClick}
                 disabled={currentPage === 0}
@@ -460,7 +535,6 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
                 />
               </button>
 
-              {/* Номера страниц */}
               {pageNumbers.map((page, index) => {
                 if (page === '...') {
                   return (
@@ -484,7 +558,6 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
                 )
               })}
 
-              {/* Кнопка "Вперед" */}
               <button
                 onClick={handleNextClick}
                 disabled={currentPage === totalPages - 1}
@@ -499,24 +572,12 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
           </div>
         )}
 
-        {/* Индикатор загрузки */}
         {isFetching && !showSkeleton && (
           <div className={styled.loading_indicator}>
             <div className={styled.loading_spinner} />
             <span>{t('loadingCards')}</span>
-            {/* <span>Загрузка товаров...</span> */}
           </div>
         )}
-
-        {/* Мобильная кнопка */}
-        {/* <div
-          className={`${styled.catalog__header_group} ${styled.catalog__header_group__for_unvis}`}
-          id='catalog-header-group-mobile'
-        >
-          <Link href='#' className={`${styled.btn_accent} ${styled.btn_accent_bottom}`}>
-            {t('viewAll')}
-          </Link>
-        </div> */}
       </div>
     </section>
   )

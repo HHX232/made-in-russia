@@ -32,6 +32,8 @@ export interface CatalogProps {
   showTableFilters?: boolean
   showSearchFilters?: boolean
   searchParams?: {[key: string]: string | string[] | undefined}
+  showAdminStatusFilters?: boolean
+  initialApproveStatus?: 'APPROVED' | 'PENDING' | 'ALL' | 'REJECTED'
 }
 
 const Catalog: FC<CatalogProps> = ({
@@ -53,11 +55,14 @@ const Catalog: FC<CatalogProps> = ({
   isPageForVendor = false,
   useNewvendorCaralog = false,
   showTableFilters = true,
-  showSearchFilters = true
+  showSearchFilters = true,
+  showAdminStatusFilters = false,
+  initialApproveStatus = 'ALL'
 }) => {
   const [activeFilterName, setActiveFilterName] = useState<'originPrice' | 'creationDate'>('creationDate')
   const [activeFilterDirect, setActiveFilterDirect] = useState<'asc' | 'desc'>('desc')
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [approveStatus, setApproveStatus] = useState<'APPROVED' | 'PENDING' | 'ALL' | 'REJECTED'>(initialApproveStatus)
   const {clearFilters, clearDelivery, setSearchTitle} = useActions()
   const [productsCountGlobal, setProductsCountGlobal] = useState(0)
   const t = useTranslations('CatalogNew')
@@ -102,6 +107,10 @@ const Catalog: FC<CatalogProps> = ({
 
   const handleCloseMobileFilter = () => {
     setIsMobileFilterOpen(false)
+  }
+
+  const handleApproveStatusChange = (status: 'APPROVED' | 'PENDING' | 'ALL' | 'REJECTED') => {
+    setApproveStatus(status)
   }
 
   return (
@@ -207,7 +216,6 @@ const Catalog: FC<CatalogProps> = ({
             {showSearchInput && <SearchInputUI useNewBorder />}
             {showCardsCount && (
               <p style={{fontSize: '14px', color: '#2F2F2F'}}>
-                {/* Найдено 123 товаров */}
                 {t('found')} {productsCountGlobal} {t('products')}
               </p>
             )}
@@ -222,7 +230,6 @@ const Catalog: FC<CatalogProps> = ({
               <h2 className={styles.search__title__big}>
                 {t('resultTitle')}: {resultTitle || textParams}
               </h2>
-              // <h2 className={styles.search__title__big}>Результат поиска по запросу: {resultTitle || textParams}</h2>
             )}
             <div className={styles.spec__search__line}>
               <button className={styles.mobile__filter__button} onClick={() => setIsMobileFilterOpen(true)}>
@@ -236,7 +243,6 @@ const Catalog: FC<CatalogProps> = ({
                     fill='#2F2F2F'
                   />
                 </svg>
-                {/* Фильтр */}
                 {t('filter')}
               </button>
 
@@ -320,8 +326,6 @@ const Catalog: FC<CatalogProps> = ({
               {showSearchInput && <SearchInputUI useNewBorder />}
               {showCardsCount && (
                 <p className={styles.global_count__cards}>
-                  {' '}
-                  {/* Найдено 123 товаров */}
                   {t('found')} {productsCountGlobal} {t('products')}
                 </p>
               )}
@@ -376,7 +380,6 @@ const Catalog: FC<CatalogProps> = ({
 
               <div className={styles.mobile__filter__footer}>
                 <button className={styles.mobile__filter__apply__btn} onClick={handleCloseMobileFilter}>
-                  {/* Применить */}
                   {t('apply')}
                 </button>
                 <button
@@ -387,7 +390,6 @@ const Catalog: FC<CatalogProps> = ({
                     setSearchTitle('')
                   }}
                 >
-                  {/* Сбросить */}
                   {t('reset')}
                 </button>
               </div>
@@ -407,6 +409,9 @@ const Catalog: FC<CatalogProps> = ({
             initialTotalPages={100}
             specialRoute={specialRoute}
             canCreateNewProduct={isPageForVendor}
+            showAdminStatusFilters={showAdminStatusFilters}
+            approveStatuses={approveStatus}
+            onApproveStatusChange={handleApproveStatusChange}
           />
         )}
         {!usePagesCatalog && !useNewvendorCaralog && (

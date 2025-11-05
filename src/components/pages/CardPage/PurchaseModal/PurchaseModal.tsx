@@ -44,21 +44,61 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
   const {user} = useTypedSelector((state) => state.user)
   const t = useTranslations('CardPage.PurchaseModal')
 
+  // Функция для очистки дублирующихся кодов стран
+  const cleanPhoneNumber = (phone: string): string => {
+    if (!phone) return ''
+
+    const countryCodes = [
+      {code: '+375', length: 12}, // Беларусь: +375 + 9 цифр
+      {code: '+7', length: 11}, // Россия/Казахстан: +7 + 10 цифр
+      {code: '+86', length: 13} // Китай: +86 + 11 цифр
+    ]
+
+    // Удаляем все пробелы для проверки
+    const cleanPhone = phone.replace(/\s/g, '')
+
+    // Проверяем каждый код страны
+    for (const {code, length} of countryCodes) {
+      if (cleanPhone.startsWith(code)) {
+        // Проверяем, не дублируется ли код сразу после себя
+        const codeDigits = code.slice(1) // убираем +
+        const afterCode = cleanPhone.slice(code.length, code.length + codeDigits.length)
+
+        // Если после кода идут те же цифры, что и в коде - это дублирование
+        if (afterCode === codeDigits) {
+          return code + cleanPhone.slice(code.length + codeDigits.length)
+        }
+
+        // Проверяем общую длину - если номер слишком длинный, возможно дублирование
+        if (cleanPhone.length > length + codeDigits.length) {
+          // Проверяем точное дублирование: +7 7... или +375 375...
+          if (cleanPhone.slice(code.length, code.length + codeDigits.length) === codeDigits) {
+            return code + cleanPhone.slice(code.length + codeDigits.length)
+          }
+        }
+      }
+    }
+
+    return phone
+  }
+
   // Отладочная информация
   useEffect(() => {
     if (isOpen) {
       console.log('PurchaseModal открыт:', {
+        user,
+        phoneNumber: user?.phoneNumber,
         productTitle,
         prices,
         minimumOrderQuantity
       })
     }
-  }, [isOpen, productTitle, prices, minimumOrderQuantity])
+  }, [isOpen, productTitle, prices, minimumOrderQuantity, user])
 
   const [formData, setFormData] = useState({
     name: user?.login || '',
     email: user?.email || '',
-    phone: user?.phoneNumber || '',
+    phone: cleanPhoneNumber(user?.phoneNumber || ''),
     quantity: minimumOrderQuantity.toString()
   })
 
@@ -73,6 +113,18 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
     email: false,
     quantity: false
   })
+
+  // Обновление данных формы при изменении данных пользователя или открытии модального окна
+  useEffect(() => {
+    if (isOpen && user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: user.login || prev.name,
+        email: user.email || prev.email,
+        phone: cleanPhoneNumber(user.phoneNumber || prev.phone)
+      }))
+    }
+  }, [isOpen, user])
 
   // Функция для определения подходящей цены на основе количества
   const getApplicablePrice = (quantity: number): DiscountPriceRange | null => {
@@ -160,18 +212,6 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
     return isValid
   }
 
-  // Проверка валидности формы в реальном времени
-  // const isFormValid = useMemo(() => {
-  //   const quantity = parseInt(formData.quantity)
-  //   return (
-  //     formData.name.trim() &&
-  //     formData.email.trim() &&
-  //     /\S+@\S+\.\S+/.test(formData.email) &&
-  //     quantity >= minimumOrderQuantity &&
-  //     priceCalculation.selectedPrice
-  //   )
-  // }, [formData, minimumOrderQuantity, priceCalculation.selectedPrice])
-
   const handleSubmit = () => {
     if (validateForm() && priceCalculation.selectedPrice) {
       onSubmit({
@@ -231,7 +271,6 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               inputType='text'
               errorValue={getFieldError('name')}
             />
-            {/* {getFieldError('name') && <span className={styles.error}>{getFieldError('name')}</span>} */}
           </div>
 
           <div className={styles.inputGroup}>
@@ -247,7 +286,6 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               inputType='email'
               errorValue={getFieldError('email')}
             />
-            {/* {getFieldError('email') && <span className={styles.error}>{getFieldError('email')}</span>} */}
           </div>
 
           <div className={styles.inputGroup}>
@@ -274,7 +312,6 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               inputType='number'
               errorValue={getFieldError('quantity')}
             />
-            {/* {getFieldError('quantity') && <span className={styles.error}>{getFieldError('quantity')}</span>} */}
           </div>
         </div>
 

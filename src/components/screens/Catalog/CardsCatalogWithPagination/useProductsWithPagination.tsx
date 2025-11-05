@@ -2,6 +2,7 @@ import {useEffect, useState, useRef} from 'react'
 import {useQuery} from '@tanstack/react-query'
 import {Product} from '@/services/products/product.types'
 import ProductService from '@/services/products/product.service'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 interface PageParams {
   page: number
@@ -10,7 +11,7 @@ interface PageParams {
   maxPrice?: number
   categoryIds?: string
   title?: string
-  approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL' | ''
+  approveStatuses?: 'APPROVED' | 'PENDING' | 'ALL' | '' | 'REJECTED'
   direction?: 'asc' | 'desc'
   deliveryMethodIds?: string
   sort?: string
@@ -67,7 +68,7 @@ const useProductsWithPagination = (
 ): UseProductsWithPaginationReturn => {
   const [currentPageProducts, setCurrentPageProducts] = useState<Product[]>([])
   const previousPageRef = useRef<number>(-1)
-
+  const currentLang = useCurrentLanguage()
   // Создаем уникальный ключ для React Query
   // Включаем все параметры для правильного кэширования
   const queryKey = [
@@ -104,10 +105,10 @@ const useProductsWithPagination = (
 
       if (specialRoute) {
         // Если есть специальный роут
-        response = await ProductService.getAll(params, specialRoute, accessToken)
+        response = await ProductService.getAll(params, specialRoute, currentLang, accessToken)
       } else {
         // Стандартный запрос
-        response = await ProductService.getAll(params)
+        response = await ProductService.getAll(params, undefined, currentLang, accessToken)
       }
 
       console.log('✅ useProductsWithPagination: Products fetched successfully', {

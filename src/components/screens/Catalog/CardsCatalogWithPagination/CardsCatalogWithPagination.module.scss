@@ -7,6 +7,112 @@
   color: var(--text);
 }
 
+// Добавьте эти стили в CardsCatalogWithPagination.module.scss
+
+.status_filter_wrapper {
+  position: relative;
+  list-style: none;
+}
+
+.status_dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.status_dropdown_button {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #fff;
+  color: #2f2f2f;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  gap: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: #d4d4d4;
+    background: #f5f5f5;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.status_dropdown_menu {
+  position: absolute;
+  z-index: 100;
+  top: calc(100% + 4px);
+  left: 0;
+  overflow: hidden;
+  min-width: 180px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  animation: fadeIn 0.2s ease;
+  background: #fff;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.status_dropdown_item {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: #2f2f2f;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+
+  &.active {
+    background: #f0f9ff;
+    color: #06c;
+    font-weight: 500;
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+  }
+}
+
+// Адаптивность для мобильных устройств
+@media (max-width: 768px) {
+  .status_dropdown_button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .status_dropdown_menu {
+    min-width: 160px;
+  }
+
+  .status_dropdown_item {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
 /// Секция каталога на мобильных
 @media (max-width: 576px) {
   .catalog.section {
