@@ -3,6 +3,7 @@ import {FC, useState, useRef, useEffect} from 'react'
 import styles from './AdminReviewsPage.module.scss'
 import Comment from '@/components/UI-kit/elements/Comment/Comment'
 import instance from '@/api/api.interceptor'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 // Типы для отзывов и пользователей
 interface User {
@@ -95,7 +96,7 @@ const AdminReviewsPage: FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [approveStatusDropdownOpen, setApproveStatusDropdownOpen] = useState(false)
   const [timeFilterDropdownOpen, setTimeFilterDropdownOpen] = useState(false)
-
+  const currentLang = useCurrentLanguage()
   // Модалка редактирования
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editingReview, setEditingReview] = useState<Review | null>(null)
@@ -137,7 +138,12 @@ const AdminReviewsPage: FC = () => {
         params.append('direction', timeFilterDirection)
       }
 
-      const response = await instance.get(`/product-reviews?${params.toString()}`)
+      const response = await instance.get(`/product-reviews?${params.toString()}`, {
+        headers: {
+          'Accept-language': currentLang,
+          'x-language': currentLang
+        }
+      })
       const data: ReviewsResponse = response.data as ReviewsResponse
 
       setReviews((prev) => {
@@ -518,7 +524,7 @@ const AdminReviewsPage: FC = () => {
 
           {reviews.map((review) => (
             <div key={review.id} className={styles['review-wrapper']}>
-              <Comment product={{title: review.text, previewImageUrl: review.media[0].url}} {...review} isForAdmin />
+              <Comment product={{title: review.text, previewImageUrl: review.media[0]?.url}} {...review} isForAdmin />
               <div className={styles['review-buttons']}>
                 <button
                   onClick={() => handleEditReview(review.id)}
