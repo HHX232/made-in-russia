@@ -265,7 +265,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
 
   // Обработчик изменения статуса
   const handleStatusChange = useCallback(
-    (status: 'APPROVED' | 'PENDING' | 'ALL') => {
+    (status: 'APPROVED' | 'PENDING' | 'ALL' | 'REJECTED') => {
       setLocalApproveStatus(status)
       setIsStatusDropdownOpen(false)
       if (onApproveStatusChange) {
@@ -354,13 +354,13 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   const getStatusText = (status: 'APPROVED' | 'PENDING' | 'ALL' | 'REJECTED' | '') => {
     switch (status) {
       case 'APPROVED':
-        return t('approved') || 'Одобренные'
+        return 'Одобренные'
       case 'PENDING':
-        return t('pending') || 'На рассмотрении'
+        return 'На рассмотрении'
       case 'ALL':
-        return t('all') || 'Все'
+        return 'Все'
       case 'REJECTED':
-        return t('rejected') || 'Отклоненные'
+        return 'Отклоненные'
       default:
         return t('all') || 'Все'
     }
@@ -378,7 +378,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
         <div className={`${styled.catalog__vitrine}`}>
           <div ref={gridContainerRef} className={styled.vitrine__grid}>
             {(showTableFilters && !!specialFilters && specialFilters?.length !== 0) || showAdminStatusFilters ? (
-              <div className={`${styled.section_flexheader}`}>
+              <div className={`${styled.section_flexheader} ${isForAdmin && styled.noOverflow}`}>
                 <div ref={filtersContainerRef} className={styled.filters_scroll_container}>
                   <ul className={styled.absolute__list}>
                     {/* Фильтры статусов для админки */}
@@ -428,6 +428,12 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
                                 onClick={() => handleStatusChange('PENDING')}
                               >
                                 {getStatusText('PENDING')}
+                              </button>
+                              <button
+                                className={`${styled.status_dropdown_item} ${localApproveStatus === 'REJECTED' ? styled.active : ''}`}
+                                onClick={() => handleStatusChange('REJECTED')}
+                              >
+                                {getStatusText('REJECTED')}
                               </button>
                             </div>
                           )}

@@ -30,6 +30,7 @@ export interface CatalogProps {
   extraSwiperClass?: string
   useNewvendorCaralog?: boolean
   showTableFilters?: boolean
+  isForAdmin?: boolean
   showSearchFilters?: boolean
   searchParams?: {[key: string]: string | string[] | undefined}
   showAdminStatusFilters?: boolean
@@ -57,7 +58,8 @@ const Catalog: FC<CatalogProps> = ({
   showTableFilters = true,
   showSearchFilters = true,
   showAdminStatusFilters = false,
-  initialApproveStatus = 'ALL'
+  initialApproveStatus = 'ALL',
+  isForAdmin = false
 }) => {
   const [activeFilterName, setActiveFilterName] = useState<'originPrice' | 'creationDate'>('creationDate')
   const [activeFilterDirect, setActiveFilterDirect] = useState<'asc' | 'desc'>('desc')
@@ -398,7 +400,7 @@ const Catalog: FC<CatalogProps> = ({
         )}
         {usePagesCatalog && (
           <CardsCatalogWithPagination
-            isForAdmin={false}
+            isForAdmin={isForAdmin}
             pageSize={9}
             initialProducts={initialProducts}
             initialCurrentPage={0}

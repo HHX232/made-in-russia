@@ -21,6 +21,7 @@ const AdminCards = ({initialProducts, hasMore}: {initialProducts: Product[]; has
         initialHasMore={true || hasMore}
       /> */}
       <Catalog
+        isForAdmin
         showAdminStatusFilters={true}
         initialApproveStatus='ALL'
         isPageForVendor

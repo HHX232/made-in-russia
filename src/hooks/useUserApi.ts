@@ -107,7 +107,7 @@ export const useUserQuery = () => {
 // Hook для логаута
 export const useLogout = () => {
   const queryClient = useQueryClient()
-  const {clearUser} = useActions()
+  const {clearUser, clearFavorites} = useActions()
   const router = useRouter()
 
   return useMutation({
@@ -125,7 +125,7 @@ export const useLogout = () => {
 
       // 2. Затем очищаем Redux state
       clearUser()
-
+      clearFavorites()
       // 3. Отменяем все активные запросы
       await queryClient.cancelQueries()
 
@@ -140,7 +140,7 @@ export const useLogout = () => {
       removeFromStorage()
 
       clearUser()
-
+      clearFavorites()
       await queryClient.cancelQueries()
 
       queryClient.setQueryData(USER_QUERY_KEY, null)

@@ -19,6 +19,10 @@
   display: inline-block;
 }
 
+.noOverflow {
+  overflow: visible !important;
+}
+
 .status_dropdown_button {
   display: flex;
   align-items: center;

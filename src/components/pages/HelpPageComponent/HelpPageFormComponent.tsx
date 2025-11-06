@@ -116,6 +116,7 @@ const HelpPageFormComponent: FC = () => {
       const data = {
         username: formData.firstName,
         email: formData.email,
+        phoneNumber: formData.phone,
         subject: t('subject', {defaultMessage: 'Сообщение в поддержку'}),
         body: fd.get('message')
       }

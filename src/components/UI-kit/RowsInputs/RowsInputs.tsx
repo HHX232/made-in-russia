@@ -136,6 +136,7 @@ const Dropdown = ({
   const [customValue, setCustomValue] = useState('')
   const [isCreatingNew, setIsCreatingNew] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const dropdownListRef = useRef<HTMLDivElement>(null)
   const customInputRef = useRef<HTMLInputElement>(null)
   const currentLang = useCurrentLanguageWithCookie()
   const t = useTranslations('dropdown')
@@ -149,6 +150,20 @@ const Dropdown = ({
     ru: 'Очистить',
     en: 'Clear',
     zh: '清除'
+  }
+
+  // Функция проверки видимости dropdown меню
+  const isDropdownVisible = () => {
+    if (!dropdownListRef.current) return true
+
+    const rect = dropdownListRef.current.getBoundingClientRect()
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth
+
+    // Проверяем, находится ли dropdown в пределах экрана
+    const isInViewport = rect.top >= 0 && rect.left >= 0 && rect.bottom <= viewportHeight && rect.right <= viewportWidth
+
+    return isInViewport
   }
 
   useEffect(() => {
@@ -168,17 +183,13 @@ const Dropdown = ({
     const handleScroll = (event: Event) => {
       const target = event.target as Element
 
+      // Если скролл происходит внутри самого dropdown - игнорируем
       if (dropdownRef.current && (dropdownRef.current === target || dropdownRef.current.contains(target))) {
         return
       }
 
-      if (
-        target === document.documentElement ||
-        target === document.body ||
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (target as any) === window ||
-        !dropdownRef.current?.contains(target)
-      ) {
+      // Проверяем, выходит ли dropdown за пределы экрана
+      if (!isDropdownVisible()) {
         setIsOpen(false)
         setIsCreatingNew(false)
         setCustomValue('')
@@ -186,12 +197,20 @@ const Dropdown = ({
     }
 
     if (isOpen) {
-      document.addEventListener('scroll', handleScroll, true)
-      window.addEventListener('scroll', handleScroll)
+      // Добавляем слушатель с небольшой задержкой для debounce
+      let scrollTimeout: NodeJS.Timeout
+      const debouncedScroll = (e: Event) => {
+        clearTimeout(scrollTimeout)
+        scrollTimeout = setTimeout(() => handleScroll(e), 50)
+      }
+
+      document.addEventListener('scroll', debouncedScroll, true)
+      window.addEventListener('scroll', debouncedScroll)
 
       return () => {
-        document.removeEventListener('scroll', handleScroll, true)
-        window.removeEventListener('scroll', handleScroll)
+        clearTimeout(scrollTimeout)
+        document.removeEventListener('scroll', debouncedScroll, true)
+        window.removeEventListener('scroll', debouncedScroll)
       }
     }
   }, [isOpen])
@@ -272,7 +291,7 @@ const Dropdown = ({
       </div>
 
       {isOpen && !readOnly && (
-        <div className={`${styles.dropdown__list} ${extraDropClass}`}>
+        <div ref={dropdownListRef} className={`${styles.dropdown__list} ${extraDropClass}`}>
           {canCreateNew && (
             <>
               {isCreatingNew ? (
