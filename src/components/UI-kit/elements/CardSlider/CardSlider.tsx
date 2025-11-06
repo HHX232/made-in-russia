@@ -43,7 +43,7 @@ const DEFAULT_IMAGES = [
   '/login__image.jpg'
 ]
 
-const SLIDER_ASPECT_RATIO = 650 / 350 // ~1.857
+const SLIDER_ASPECT_RATIO = 4 / 3 // 1.333
 
 // Вспомогательные функции
 const getMediaType = (src: string): 'image' | 'video' => (src.match(/\.(mp4|webm|mov)$/i) ? 'video' : 'image')
