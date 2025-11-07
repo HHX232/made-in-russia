@@ -524,7 +524,12 @@ const AdminReviewsPage: FC = () => {
 
           {reviews.map((review) => (
             <div key={review.id} className={styles['review-wrapper']}>
-              <Comment product={{title: review.text, previewImageUrl: review.media[0]?.url}} {...review} isForAdmin />
+              <Comment
+                extra_comm__header__class={styles.extra__comm_wrap}
+                product={{title: review.text, previewImageUrl: review.media[0]?.url}}
+                {...review}
+                isForAdmin
+              />
               <div className={styles['review-buttons']}>
                 <button
                   onClick={() => handleEditReview(review.id)}

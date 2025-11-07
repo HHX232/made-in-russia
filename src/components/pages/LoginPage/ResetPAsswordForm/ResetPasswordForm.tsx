@@ -63,7 +63,7 @@ const ResetPasswordForm = ({onBack}: ResetPasswordFormProps) => {
     setError('')
 
     try {
-      axiosClassic.post(
+      await axiosClassic.post(
         '/auth/recover-password',
         {
           email: email,

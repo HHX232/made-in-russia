@@ -139,6 +139,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
   onVendorDataChange
 }) => {
   const [password, setPassword] = useState('')
+  const [showPasswordSaveButton, setShowPasswordSaveButton] = useState(false)
   const [telText, setTelText] = useState('')
   const [isValidNumber, setIsValidNumber] = useState(true)
   const [allCategories, setAllCategories] = useState<Category[]>([])
@@ -257,6 +258,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
     phoneNumber: string
     region: string
     address: string
+    inn: string
   } | null>(null)
 
   useEffect(() => {
@@ -361,7 +363,8 @@ const ProfileForm: FC<ProfileFormProps> = ({
       setOriginalData({
         phoneNumber: userData.phoneNumber || '',
         region: originalRegion,
-        address: (userData as any)?.vendorDetails?.address || ''
+        address: (userData as any)?.vendorDetails?.address || '',
+        inn: userData.vendorDetails?.inn || ''
       })
 
       setTelText(userData.phoneNumber || '')
@@ -380,8 +383,9 @@ const ProfileForm: FC<ProfileFormProps> = ({
 
     const currentAddress = vendorDetails?.address || ''
     const isAddressChanged = currentAddress !== originalData.address
+    const isInnChange = vendorDetails?.inn !== originalData.inn
 
-    safeSetNeedToSave(isRegionChanged || isPhoneChanged || isAddressChanged)
+    safeSetNeedToSave(isRegionChanged || isPhoneChanged || isAddressChanged || isInnChange)
   }, [
     telText,
     selectedRegion,
@@ -390,7 +394,8 @@ const ProfileForm: FC<ProfileFormProps> = ({
     userInteracted,
     originalData,
     safeSetNeedToSave,
-    vendorDetails?.address
+    vendorDetails?.address,
+    inn
   ])
 
   useEffect(() => {
@@ -480,45 +485,35 @@ const ProfileForm: FC<ProfileFormProps> = ({
     }
   }
 
-  const handlePasswordBlur = () => {
-    if (password.length <= 0) return
+  const handleSavePassword = async () => {
+    if (password.length <= 3) return
 
-    timerRef.current = setTimeout(() => {
-      console.log('Таймер сработал: прошло 2 секунды после потери фокуса инпута пароля')
-      try {
-        const res = axiosClassic.post<{accessToken: string; refreshToken: string}>(
-          '/auth/recover-password',
-          {
-            email: userData?.email,
-            newPassword: password
-          },
-          {
-            headers: {
-              'Accept-Language': currentLang
-            }
+    try {
+      const res = await axiosClassic.post<{accessToken: string; refreshToken: string}>(
+        '/auth/recover-password',
+        {
+          email: userData?.email,
+          newPassword: password
+        },
+        {
+          headers: {
+            'Accept-Language': currentLang
           }
-        )
+        }
+      )
 
-        toast.success(t('codeInEmail') + userData?.email)
-        setModalIsOpen(true)
-      } catch {
-        toast.error(t('errorUpdatePassword'))
-        setModalIsOpen(false)
-      }
-    }, 2000)
-  }
-
-  const handlePasswordFocus = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current)
-      timerRef.current = null
-      console.log('Таймер отменен: инпут снова получил фокус')
+      toast.success(t('codeInEmail') + userData?.email)
+      setModalIsOpen(true)
+    } catch {
+      toast.error(t('errorUpdatePassword'))
+      setModalIsOpen(false)
     }
   }
 
   const closeModal = () => {
     setModalIsOpen(false)
     setPassword('')
+    setShowPasswordSaveButton(false)
   }
 
   const closeModalOtp = async (code: string) => {
@@ -552,6 +547,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
         setModalIsOpen(false)
       }, 1000)
       setPassword('')
+      setShowPasswordSaveButton(false)
     } catch {
       toast.error(t('dontChangePassword'))
     }
@@ -616,15 +612,34 @@ const ProfileForm: FC<ProfileFormProps> = ({
                 currentValue={password}
                 onSetValue={(value) => {
                   setPassword(value)
-                  if (value.length > 0) {
+                  if (value.length > 3) {
+                    setShowPasswordSaveButton(true)
                     setUserInteracted(true)
+                  } else {
+                    setShowPasswordSaveButton(false)
                   }
                 }}
                 isSecret={true}
                 placeholder={t('createNewPassword')}
-                onBlur={handlePasswordBlur}
-                onFocus={handlePasswordFocus}
               />
+              {showPasswordSaveButton && (
+                <button
+                  onClick={handleSavePassword}
+                  style={{
+                    marginTop: '10px',
+                    padding: '8px 16px',
+                    backgroundColor: '#2E7D32',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
+                >
+                  {t('savePassword') || 'Сохранить пароль'}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -731,6 +746,9 @@ const ProfileForm: FC<ProfileFormProps> = ({
                     extraClass={styles.editable_input}
                     theme='newWhite'
                     currentValue={inn}
+                    onFocus={() => {
+                      setUserInteracted(true)
+                    }}
                     onSetValue={(value) => {
                       setInn(value)
                       setUserInteracted(true)
@@ -758,6 +776,9 @@ const ProfileForm: FC<ProfileFormProps> = ({
                   extraClass={styles.editable_input}
                   theme='newWhite'
                   currentValue={inn}
+                  onFocus={() => {
+                    setUserInteracted(true)
+                  }}
                   onSetValue={(value) => {
                     setInn(value)
                     setUserInteracted(true)

@@ -304,7 +304,7 @@ const Card = memo<ICardProps>(
         {!onPreventCardClick && (
           <Link
             href={`/card/${id}`}
-            className={`${styles.product_card} ${status === 'PENDING' ? styles.pending : ''}`}
+            className={`${styles.product_card} ${status === 'PENDING' ? styles.pending : status === 'REJECTED' ? styles.rejected : ''}`}
             key={id + idFromHook}
             onClick={(e) => onClickFunction?.(e)}
             itemScope
@@ -322,7 +322,11 @@ const Card = memo<ICardProps>(
 
               {+discount > 0 && <div className={`${styles.product_card__discount}`}>-{discount}%</div>}
 
-              {!isForAdmin && status === 'PENDING' && <p className={styles.approveStatus__text}>{t(status)}</p>}
+              {!isForAdmin && (status === 'PENDING' || status === 'REJECTED') && (
+                <p className={`${styles.approveStatus__text} ${status === 'REJECTED' && styles.reject__text}`}>
+                  {t(status)}
+                </p>
+              )}
 
               {isForAdmin && (
                 <div

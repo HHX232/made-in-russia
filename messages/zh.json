@@ -14,7 +14,9 @@
     "noResults": "未找到任何内容",
     "catalog": "目录",
     "searchLoading": "搜索中...",
-    "noResultsCatalog": "未找到符合您查询的内容"
+    "noResultsCatalog": "未找到符合您查询的内容",
+    "showAllResults": "显示全部",
+    "hideAllResults": "收起"
   },
   "Footer": {
     "ugreement": "用户协议",
@@ -49,6 +51,11 @@
     "loading": "加载中..."
   },
   "RegisterUserPage": {
+      "chooseAccountType": "选择账户类型",
+      "selectRoleDescription": "选择适合的注册角色",
+      "buyerDescription": "寻找商品和服务进行购买",
+      "vendorDescription": "提供商品和服务进行销售",
+      "canChangeType": "您可以稍后在设置中更改账户类型",
     "iSuccessWith": "我同意用户协议和 ",
 "policy": "隐私政策",
     "register": "下一步",
@@ -187,6 +194,7 @@
     "deleting": "删除中...",
     "defaultError": "错误！",
     "ProfileForm": {
+      "savePassword": "保存密码",
       "address": "地址",
       "addressPlaceholder": "输入地址",
       "belarus": "白俄罗斯",

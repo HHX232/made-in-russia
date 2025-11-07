@@ -14,7 +14,9 @@
     "noResults": "Nothing found",
     "catalog": "Catalog",
     "searchLoading": "Searching...",
-    "noResultsCatalog": "Nothing found for your query"
+    "noResultsCatalog": "Nothing found for your query",
+     "showAllResults": "Show all", 
+    "hideAllResults": "Collapse"
   },
   "Footer": {
     "ugreement": "User Agreement",
@@ -49,6 +51,11 @@
     "loading": "Loading..."
   },
   "RegisterUserPage": {
+     "chooseAccountType": "Choose account type",
+      "selectRoleDescription": "Select the appropriate role for registration",
+      "buyerDescription": "Looking for products and services to buy",
+      "vendorDescription": "Offering products and services for sale",
+      "canChangeType": "You can change your account type later in settings",
     "iSuccessWith": "I agree with the user agreement and ",
 "policy": "privacy policy",
     "register": "Next",
@@ -187,6 +194,7 @@
     "deleting": "Deleting...",
     "defaultError": "Error!",
     "ProfileForm": {
+      "savePassword": "Save password",
       "address": "Address",
       "addressPlaceholder": "Enter address",
       "belarus": "Belarus",

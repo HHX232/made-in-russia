@@ -9,6 +9,12 @@
   box-shadow: -2px 4px 4px rgb(0 0 0 / 5%);
 }
 
+.extra__comm_wrap {
+  @media (max-width: 1000px) {
+    flex-direction: column !important;
+  }
+}
+
 .reviews-title {
   margin-bottom: 25px;
   color: #333;
@@ -372,11 +378,11 @@
 .modal-overlay {
   position: fixed;
   z-index: 1000;
-  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgb(0 0 0 / 50%);
+  inset: 0;
 }
 
 .modal-content {

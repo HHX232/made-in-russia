@@ -15,7 +15,9 @@
     "defaultRegisterError": "Ошибка регистрации",
     "catalog": "Каталог",
     "searchLoading": "Поиск...",
-    "noResultsCatalog": "По вашему запросу ничего не найдено"
+    "noResultsCatalog": "По вашему запросу ничего не найдено",
+    "showAllResults":"Показать все",
+    "hideAllResults":"Свернуть"
   },
   "dropdown":{
     "enterValue":"Значение..."
@@ -113,7 +115,12 @@
     "corporateEmailPlaceholder": "Введите корпоративную почту...",
     "categories": "Категории товаров",
     "categoriesPlaceholder": "Выберите категории товаров...",
-    "categoriesSubtext": "Выберите основные категории товаров, с которыми работает ваша компания"
+    "categoriesSubtext": "Выберите основные категории товаров, с которыми работает ваша компания",
+    "chooseAccountType": "Выберите тип аккаунта",
+      "selectRoleDescription": "Выберите подходящую роль для регистрации",
+      "buyerDescription": "Ищу товары и услуги для покупки",
+      "vendorDescription": "Предлагаю товары и услуги для продажи",
+      "canChangeType": "Вы сможете изменить тип аккаунта позже в настройках"
   },
   "MinimalHeader": {
     "category": "Категории",
@@ -193,6 +200,7 @@
     "defaultError": "Ошибка!",
 
     "ProfileForm": {
+      "savePassword":"Сохранить пароль",
       "address": "Адрес",
       "addressPlaceholder": "Введите адрес",
       "belarus": "Беларусь",

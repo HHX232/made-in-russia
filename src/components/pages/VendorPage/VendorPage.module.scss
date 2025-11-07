@@ -783,6 +783,18 @@
   }
 }
 
+.extra_area_class > div:last-child {
+  padding: 0 !important;
+  border: none !important;
+  background-color: transparent !important;
+  font-size: 22px !important;
+  font-weight: 500 !important;
+
+  @media (max-width: 800px) {
+    font-size: 19px !important;
+  }
+}
+
 .accordion__title {
   flex: 1;
   margin: 0;

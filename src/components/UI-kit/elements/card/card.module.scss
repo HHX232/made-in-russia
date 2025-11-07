@@ -28,6 +28,10 @@
   border: 2px solid #fcc54a;
 }
 
+.rejected {
+  border: 2px solid #ac2525;
+}
+
 .deleate__button {
   display: flex;
   height: 100%;
@@ -287,10 +291,10 @@
 
     span {
       display: inline;
-      color: var(--text);
+      color: #151515;
       font-size: rem(14);
       line-height: 145%;
-      opacity: 0.5;
+      opacity: 0.7;
       vertical-align: middle;
 
       @include sm {
@@ -348,7 +352,7 @@
       font-size: rem(20);
       font-weight: 400;
       line-height: 100%;
-      opacity: 0.5;
+      opacity: 0.7;
 
       @include xl {
         font-size: rem(18);
@@ -435,7 +439,7 @@
     span {
       color: var(--text);
       font-size: rem(14);
-      opacity: 0.5;
+      opacity: 0.7;
     }
   }
 }

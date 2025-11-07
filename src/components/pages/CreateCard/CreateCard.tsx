@@ -66,7 +66,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const currentLangFromHook = useCurrentLanguage()
   const currentLang = currentLangFromHook
 
-  const [currentLangState, setCurrentLangState] = useState<ICurrentLanguage>(currentLang as ICurrentLanguage)
+  const [currentLangState, setCurrentLangState] = useState<ICurrentLanguage>('ru')
   // Language end ===========
 
   const [cardTitle, setCardTitle] = useState(initialData?.title || '')
@@ -404,7 +404,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
         <div className={`${styles.create__inner}`}>
           <h1 className={`${styles.create__title}`}>{t('createCardTitle')}</h1>
 
-          <div className={`${styles.language__switcher}`}>
+          <div style={{display: 'none'}} className={`${styles.language__switcher}`}>
             <p className={`${styles.language__switcher__title}`}>{t('languageForInput')}</p>
             <p className={`${styles.language__switcher__subtitle}`}>
               {t('languageForInputSubtitle')} - {currentLang}

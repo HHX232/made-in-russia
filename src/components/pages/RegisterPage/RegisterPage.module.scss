@@ -1,5 +1,244 @@
 /* stylelint-disable no-duplicate-selectors */
 
+// ============================================
+// Стили для страницы выбора типа аккаунта
+// ============================================
+
+.page__wrapper {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.type_selection__wrapper {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+
+  @media (max-width: 768px) {
+    padding: 40px 0;
+  }
+}
+
+.type_selection__box {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  padding: 60px 80px;
+  background-color: #f6f6f6;
+
+  @media (max-width: 1024px) {
+    max-width: 700px;
+    padding: 50px 60px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 40px 30px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 30px 20px;
+  }
+}
+
+.top__link {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+
+  @media (max-width: 480px) {
+    top: 15px;
+    right: 15px;
+  }
+}
+
+.login__link {
+  color: #2f2f2f;
+  font-size: 14px;
+  line-height: 17px;
+  opacity: 0.5;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: all 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+}
+
+.type_selection__title {
+  margin-bottom: 12px;
+  color: #2f2f2f;
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 24px;
+  }
+}
+
+.type_selection__subtitle {
+  margin-bottom: 50px;
+  color: #2f2f2f;
+  font-size: 16px;
+  line-height: 1.5;
+  opacity: 0.7;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    margin-bottom: 40px;
+    font-size: 14px;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 30px;
+  }
+}
+
+.type_buttons__container {
+  display: flex;
+  margin-bottom: 40px;
+  gap: 30px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    margin-bottom: 30px;
+    gap: 20px;
+  }
+}
+
+.type__button {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 30px;
+  border: 3px solid transparent;
+  background-color: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+    transform: translateY(-4px);
+  }
+
+  @media (max-width: 768px) {
+    padding: 30px 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 25px 15px;
+  }
+}
+
+.user__type__button {
+  &:hover {
+    border-color: #0047ba;
+  }
+
+  .type_button__icon {
+    color: #0047ba;
+  }
+
+  &:hover .type_button__title {
+    color: #0047ba;
+  }
+}
+
+.vendor__type__button {
+  &:hover {
+    border-color: #e1251b;
+  }
+
+  .type_button__icon {
+    color: #e1251b;
+  }
+
+  &:hover .type_button__title {
+    color: #e1251b;
+  }
+}
+
+.type_button__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+
+  svg {
+    width: 48px;
+    height: 48px;
+
+    @media (max-width: 480px) {
+      width: 40px;
+      height: 40px;
+    }
+  }
+}
+
+.type_button__title {
+  margin-bottom: 12px;
+  color: #2f2f2f;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+  transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 8px;
+    font-size: 18px;
+  }
+}
+
+.type_button__description {
+  color: #2f2f2f;
+  font-size: 15px;
+  line-height: 1.5;
+  opacity: 0.7;
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
+}
+
+.type_selection__info {
+  text-align: center;
+}
+
+.type_selection__info_text {
+  color: #2f2f2f;
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0.6;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+}
+
+// ============================================
+// Основные стили формы регистрации
+// ============================================
+
 .login__box {
   min-height: 100vh;
 }
@@ -52,23 +291,6 @@
 .decor__image {
   width: 44%;
 }
-
-// .toggle__action__button {
-//   display: block;
-//   margin-bottom: 10px;
-
-//   font-size: 14px;
-//   line-height: 17px;
-//   text-decoration: underline;
-//   text-underline-offset: 2px;
-//   color: #2f2f2f;
-//   opacity: .5;
-//   transition: all .2s;
-
-//   &:hover {
-//     opacity: 1;
-//   }
-// }
 
 .top__links {
   position: absolute;
@@ -173,8 +395,6 @@
   width: calc(100% + 30px) !important;
   border: 1px solid #fff !important;
   border-radius: 0 !important;
-
-  // background-color: #fff !important;
   transform: translateX(0) !important;
 }
 
@@ -239,7 +459,6 @@
   margin-top: 10px;
 }
 
-// Step-based styles (для старых компонентов)
 .buttons__box {
   display: flex;
   width: 100%;
@@ -283,6 +502,14 @@
   cursor: pointer;
   font-size: 16px;
   line-height: 18px;
+
+  @media (max-width: 850px) {
+    font-size: 12px;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 10px;
+  }
 }
 
 .active__user_button {
@@ -291,7 +518,7 @@
 }
 
 .grayBack {
-  background-color: red !important;
+  // background-color: red !important;
 }
 
 .back_step_button {
@@ -368,56 +595,21 @@
   }
 }
 
-// Стили для мультиселектов категорий
 .extra_extraDropListClass {
   & > li:hover {
     background-color: transparent !important;
   }
 }
 
-// Дополнительный класс для дропдауна регионов/категорий
 .profile__region__dropdown__extra {
   // Можно добавить специфичные стили если понадобится
 }
 
-// Для полей без обязательной звездочки (например, адрес)
 .input__title__without {
   &::before {
     display: none !important;
     content: '' !important;
   }
-}
-
-// Обновленный drop__box для белого фона (вместо синего)
-.drop__box {
-  width: 100%;
-  padding: 15px;
-  border: 2px solid #e0e0e0;
-  transition: all 0.2s;
-
-  &:hover {
-    border-color: #c0c0c0;
-  }
-}
-
-// Обновленные стили для extra__list__style (dropdown список)
-.extra__list__style {
-  top: calc(100% + 16px) !important;
-  left: -15px !important;
-  width: calc(100% + 30px) !important;
-  border: 1px solid #fff !important;
-  border-radius: 0 !important;
-
-  // background-color: #fff !important;
-  transform: translateX(0) !important;
-}
-
-// Стили для свитчера (переключатель пользователь/вендор)
-.button__box__switch {
-  display: flex;
-  align-items: center;
-  margin: 0 auto;
-  margin-bottom: 40px;
 }
 
 .extraDropClass {
@@ -429,27 +621,4 @@
   border: 1px solid rgb(47 47 47 / 20%) !important;
   border-radius: 0 !important;
   background-color: #f6f6f6 !important;
-}
-
-.toggle__action__button {
-  padding: 8px 30px;
-  margin-left: auto;
-  background-color: #dedede;
-  color: #2f2f2fa4;
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 18px;
-
-  @media (max-width: 850px) {
-    font-size: 12px;
-  }
-
-  @media (max-width: 600px) {
-    font-size: 10px;
-  }
-}
-
-.active__user_button {
-  background-color: #006bff;
-  color: #fff;
 }

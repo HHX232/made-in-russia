@@ -7,7 +7,7 @@ import {useActions} from '@/hooks/useActions'
 import Link from 'next/link'
 import {axiosClassic} from '@/api/api.interceptor'
 import {saveTokenStorage} from '@/services/auth/auth.helper'
-import {useRouter} from 'next/navigation'
+import {useRouter, useSearchParams} from 'next/navigation'
 import {toast} from 'sonner'
 import RegisterUserThird from './RegisterUser/RegisterUserThird'
 import Footer from '@/components/MainComponents/Footer/Footer'
@@ -38,10 +38,12 @@ interface ErrorResponse {
 
 const RegisterPage = ({categories}: {categories?: Category[]}) => {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const t = useTranslations('RegisterUserPage')
   const id = useId()
 
-  // Состояния шагов
+  // Состояние для этапа выбора типа аккаунта
+  const [showTypeSelection, setShowTypeSelection] = useState(true)
   const [showFinalStep, setShowFinalStep] = useState(false)
 
   // Модальное окно
@@ -83,11 +85,21 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   // Redux actions
   const {setRegion, setPassword, setNumber, setName} = useActions()
 
+  // Проверка URL параметра type
+  useEffect(() => {
+    const typeParam = searchParams.get('type')
+    if (typeParam === 'user' || typeParam === 'vendor') {
+      setShowTypeSelection(false)
+      setIsUser(typeParam === 'user')
+    }
+  }, [searchParams])
+
   // Эффект для обновления «чистого» номера телефона
   useEffect(() => {
     const cleanedNumber = telText.replace(/\D/g, '')
     setTrueTelephoneNumber(cleanedNumber)
   }, [telText])
+
   useEffect(() => {
     if (showFinalStep) {
       window.scrollTo({
@@ -96,6 +108,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
       })
     }
   }, [showFinalStep])
+
   // Обработка OAuth (Google / Telegram)
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -124,6 +137,19 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
       if (fullName) setNameState(fullName)
     }
   }, [router])
+
+  // Хендлеры для страницы выбора типа
+  const handleSelectUserType = () => {
+    setIsUser(true)
+    setShowTypeSelection(false)
+    router.push('/register?type=user', {scroll: false})
+  }
+
+  const handleSelectVendorType = () => {
+    setIsUser(false)
+    setShowTypeSelection(false)
+    router.push('/register?type=vendor', {scroll: false})
+  }
 
   // Хендлеры
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,7 +208,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
           headers: {'Accept-Language': currentLang}
         })
         .then(() => {
-          // Сохраняем данные в Redux
           setPassword(password)
           setNumber(trueTelephoneNumber)
           setName(name)
@@ -196,7 +221,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
           const errorData: ErrorResponse = error?.response?.data
           const status = errorData?.status || error?.response?.status
 
-          // Обработка ошибки 409 - пользователь уже зарегистрирован
           if (status === 409) {
             setModalContent(
               <div style={{padding: '20px', textAlign: 'center'}}>
@@ -215,7 +239,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
             return
           }
 
-          // Обработка других ошибок
           toast.error(
             <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
               <strong
@@ -238,7 +261,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     }
   }
 
-  // Подтверждение кода
   const onSubmitThirdStep = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     try {
@@ -261,7 +283,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
       const errorData: ErrorResponse = e?.response?.data
       const status = errorData?.status || e?.response?.status
 
-      // Обработка ошибки 409 - пользователь уже зарегистрирован
       if (status === 409) {
         setModalContent(
           <div style={{padding: '20px', textAlign: 'center'}}>
@@ -279,11 +300,9 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
         return
       }
 
-      // Обработка других ошибок (400, 404, 429)
       if (status === 400 || status === 404 || status === 429) {
         let errorMessage = errorData?.message || t('errorWriteOTP')
 
-        // Специфичные сообщения для разных кодов ошибок
         if (errorData?.code === 'INVALID_CODE') {
           errorMessage = t('invalidCode')
         } else if (errorData?.code === 'OUT_OF_ATTEMPTS') {
@@ -294,7 +313,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
           errorMessage = t('emailNotFound')
         }
 
-        // Если код неверный или превышено количество попыток - оставляем на финальном шаге
         if (errorData?.code !== 'INVALID_CODE' && errorData?.code !== 'OUT_OF_ATTEMPTS') {
           setShowFinalStep(false)
         }
@@ -317,7 +335,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
         return
       }
 
-      // Обработка неожиданных ошибок
       toast.error(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
           <strong
@@ -337,18 +354,117 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     }
   }
 
-  // Обратный переход
   const handleBackToSecond = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     setShowFinalStep(false)
   }
 
-  // Закрытие модального окна
   const handleCloseModal = () => {
     setIsModalOpen(false)
     setModalContent(null)
   }
 
+  // Рендер страницы выбора типа аккаунта
+  if (showTypeSelection) {
+    return (
+      <div className={styles.page__wrapper}>
+        <Header categories={categories} />
+
+        <div className='container'>
+          <div className={styles.type_selection__wrapper}>
+            <div className={styles.type_selection__box}>
+              <div className={styles.top__link}>
+                <Link href='/login' className={styles.login__link}>
+                  {t('haveAccount') || 'Уже есть аккаунт?'}
+                </Link>
+              </div>
+
+              <h1 className={styles.type_selection__title}>{t('chooseAccountType') || 'Выберите тип аккаунта'}</h1>
+
+              <p className={styles.type_selection__subtitle}>
+                {t('selectRoleDescription') || 'Выберите подходящую роль для регистрации'}
+              </p>
+
+              <div className={styles.type_buttons__container}>
+                <button
+                  onClick={handleSelectUserType}
+                  className={`${styles.type__button} ${styles.user__type__button}`}
+                >
+                  <div className={styles.type_button__icon}>
+                    <svg width='48' height='48' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <path
+                        d='M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                      <path
+                        d='M20 21C20 16.5817 16.4183 13 12 13C7.58172 13 4 16.5817 4 21'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </svg>
+                  </div>
+                  <h2 className={styles.type_button__title}>{t('imUser') || 'Я покупатель'}</h2>
+                  <p className={styles.type_button__description}>
+                    {t('buyerDescription') || 'Ищу товары и услуги для покупки'}
+                  </p>
+                </button>
+
+                <button
+                  onClick={handleSelectVendorType}
+                  className={`${styles.type__button} ${styles.vendor__type__button}`}
+                >
+                  <div className={styles.type_button__icon}>
+                    <svg width='48' height='48' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <path
+                        d='M21 8V16C21 16.5304 20.7893 17.0391 20.4142 17.4142C20.0391 17.7893 19.5304 18 19 18H5C4.46957 18 3.96086 17.7893 3.58579 17.4142C3.21071 17.0391 3 16.5304 3 16V8'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                      <path
+                        d='M23 3H1V8H23V3Z'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                      <path
+                        d='M12 18V3'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </svg>
+                  </div>
+                  <h2 className={styles.type_button__title}>{t('imVendor') || 'Я поставщик'}</h2>
+                  <p className={styles.type_button__description}>
+                    {t('vendorDescription') || 'Предлагаю товары и услуги для продажи'}
+                  </p>
+                </button>
+              </div>
+
+              {/* <div className={styles.type_selection__info}>
+                <p className={styles.type_selection__info_text}>
+                  {t('canChangeType') || 'Вы сможете изменить тип аккаунта позже в настройках'}
+                </p>
+              </div> */}
+            </div>
+          </div>
+        </div>
+
+        <Footer useFixedFooter minMediaHeight={800} />
+      </div>
+    )
+  }
+
+  // Основная форма регистрации
   return (
     <div className={`${styles.login__box}`}>
       <Header categories={categories} />
@@ -368,6 +484,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
                 onClick={(e) => {
                   e.preventDefault()
                   setIsUser(true)
+                  router.push('/register?type=user', {scroll: false})
                 }}
                 className={`${styles.toggle__action__button} ${isUser && styles.active__user_button}`}
               >
@@ -377,6 +494,7 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
                 onClick={(e) => {
                   e.preventDefault()
                   setIsUser(false)
+                  router.push('/register?type=vendor', {scroll: false})
                 }}
                 className={`${styles.toggle__action__button} ${!isUser && styles.active__user_button}`}
               >
@@ -384,7 +502,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
               </button>
             </div>
             <div className={`${styles.inputs__box}`}>
-              {/* Форма пользователя */}
               {isUser && !showFinalStep && (
                 <RegisterUserUnified
                   name={name}
@@ -408,7 +525,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
                 />
               )}
 
-              {/* Форма компании */}
               {!isUser && !showFinalStep && (
                 <RegisterVendorUnified
                   inn={inn}
@@ -436,7 +552,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
                 />
               )}
 
-              {/* Третий шаг — подтверждение email */}
               {showFinalStep && (
                 <RegisterUserThird
                   email={email}
@@ -454,7 +569,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
       </div>
       <Footer useFixedFooter minMediaHeight={isUser ? 1250 : 1435} extraClass={`${styles.extraFooter}`} />
 
-      {/* Модальное окно для ошибок */}
       <ModalWindowDefault isOpen={isModalOpen} onClose={handleCloseModal}>
         {modalContent}
       </ModalWindowDefault>
@@ -467,7 +581,6 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
   return true
 }
 
-// === Определение телефонного кода страны ===
 const getCountryCode = (country: string): string => {
   switch (country) {
     case 'Belarus':

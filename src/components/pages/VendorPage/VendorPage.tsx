@@ -173,15 +173,17 @@ const Sidebar: FC<{
           <div className={styles.acc_compavatar__group}>
             <span className={styles.acc_compavatar__name}>
               {isPageForVendor && (
-                <input
-                  type='text'
-                  value={login}
-                  onChange={(e) => {
-                    setLogin(e.target.value)
+                <TextAreaUI
+                  extraClass={styles.extra_area_class}
+                  currentValue={login}
+                  onSetValue={(val) => {
+                    setLogin(val)
                     if (onLoginChange) {
-                      onLoginChange(e.target.value)
+                      onLoginChange(val)
                     }
                   }}
+                  minRows={1}
+                  autoResize
                   onBlur={(e) => {
                     updateVendorDetailsAPI({
                       categories: user?.vendorDetails?.productCategories?.map((cat) => cat.name) || [],
@@ -197,19 +199,8 @@ const Sidebar: FC<{
                       login: e.target.value || user?.login
                     })
                   }}
-                  className={styles.acc_compavatar__name_input}
                   placeholder={t('enterLogin') || 'Введите логин'}
                   disabled={!isPageForVendor}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    fontSize: 'inherit',
-                    fontWeight: 'inherit',
-                    color: 'inherit',
-                    width: '100%',
-                    cursor: isPageForVendor ? 'text' : 'default'
-                  }}
                 />
               )}
               {!isPageForVendor && <span className={styles.acc_compavatar__name}>{userData?.login}</span>}
@@ -1182,7 +1173,12 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                           <div className={styles.account_stat_card__value}>{animatedViews.toLocaleString()}</div>
                         </div>
 
-                        <div className={styles.account_stat_card}>
+                        <div
+                          onClick={() => {
+                            setCurrentTab('reviews')
+                          }}
+                          className={styles.account_stat_card}
+                        >
                           <div className={styles.account_stat_card__header}>
                             <svg
                               width='28'

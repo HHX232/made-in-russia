@@ -5,12 +5,39 @@ function formatDateToDayMonth(inputDate: string, lang: 'ru' | 'en' | 'zh' = 'en'
     throw new Error('Invalid date format')
   }
 
-  const day = date.getDate().toString().padStart(2, '0')
+  const day = date.getDate()
   const monthIndex = date.getMonth()
+  const year = date.getFullYear()
 
   const monthNames: {[key: string]: string[]} = {
-    en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    ru: ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'],
+    en: [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ],
+    ru: [
+      'января',
+      'февраля',
+      'марта',
+      'апреля',
+      'мая',
+      'июня',
+      'июля',
+      'августа',
+      'сентября',
+      'октября',
+      'ноября',
+      'декабря'
+    ],
     zh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
   }
 
@@ -19,9 +46,13 @@ function formatDateToDayMonth(inputDate: string, lang: 'ru' | 'en' | 'zh' = 'en'
   }
 
   const monthName = monthNames[lang][monthIndex]
-  return `${day} ${monthName}.`
-}
 
+  if (lang === 'zh') {
+    return `${year}年${monthName}${day}日`
+  }
+
+  return `${day} ${monthName} ${year}`
+}
 // Example usage:
 // const inputDate = '2023-05-16T14:45:00Z';
 // const formattedDateEn = formatDateToDayMonth(inputDate, 'en'); // "16 May."

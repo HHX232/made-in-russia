@@ -17,6 +17,7 @@ interface CommentProps extends Review {
   isForAdmin?: boolean
   isForVendor?: boolean
   isForOwner?: boolean
+  extra_comm__header__class?: string
 }
 
 const Comment: FC<CommentProps> = ({
@@ -30,7 +31,8 @@ const Comment: FC<CommentProps> = ({
   isForAdmin = false,
   isForVendor = false,
   product,
-  isForOwner = false
+  isForOwner = false,
+  extra_comm__header__class
 }) => {
   const id = useId()
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -152,7 +154,7 @@ const Comment: FC<CommentProps> = ({
       </ModalWindowDefault>
 
       {/* Header */}
-      <div className={`${styles['review-acc-header']}`}>
+      <div className={`${styles['review-acc-header']} ${extra_comm__header__class}`}>
         {/* Left Group */}
         <div className={`${styles['review-acc-header__group']}`}>
           <div className={`${styles['review-acc-header__avatar']}`}>

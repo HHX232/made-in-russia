@@ -73,6 +73,7 @@ const useProductsWithPagination = (
   // Включаем все параметры для правильного кэширования
   const queryKey = [
     'products-pagination',
+    currentLang,
     params.page,
     params.size,
     params.minPrice,
