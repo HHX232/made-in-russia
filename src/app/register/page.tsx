@@ -1,19 +1,5 @@
-// import {getCurrentLocale} from '@/lib/locale-detection'
-
-// import RegisterPage from '@/components/pages/RegisterPage/RegisterPage'
-// import CategoriesService from '@/services/categoryes/categoryes.service'
-
-// export default async function Login() {
-//   const locale = await getCurrentLocale()
-
-//   const categories = await CategoriesService.getAll(locale)
-//   return <RegisterPage categories={categories} />
-// }
-
-// app/register/page.tsx
-// import {getCurrentLocale} from '@/lib/locale-detection'
-
 import RegisterPage from '@/components/pages/RegisterPage/RegisterPage'
+import {Suspense} from 'react'
 // import CategoriesService, {categoriesKeys} from '@/services/categoryes/categoryes.service'
 // import {dehydrate, HydrationBoundary, QueryClient} from '@tanstack/react-query'
 
@@ -31,7 +17,9 @@ export default function Register() {
 
   return (
     // <HydrationBoundary state={dehydratedState}>
-    <RegisterPage />
+    <Suspense>
+      <RegisterPage />
+    </Suspense>
     // {/* </HydrationBoundary> */}
   )
 }
