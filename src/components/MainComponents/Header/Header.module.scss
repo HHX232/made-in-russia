@@ -24,9 +24,9 @@
 }
 
 .exp_catalog {
-  min-height: fit-content !important;
-  background-color: #0047ba;
   overflow: hidden auto;
+  min-height: fit-content !important;
+  background-color: #fff;
 
   /* Добавляем внутренний скролл для каталога */
 
@@ -266,7 +266,7 @@
   align-items: center;
 
   // justify-content: space-between;
-  background-color: #0047ba !important;
+  background: linear-gradient(#104acf, #1a6df3) !important;
 }
 
 .extra__drop__list {

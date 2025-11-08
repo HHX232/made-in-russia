@@ -53,21 +53,21 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   overflow-y: auto;
 
   &::-webkit-scrollbar {
-    background: rgb(255 255 255 / 18%);
+    background: rgb(0 0 0 / 8%);
     inline-size: rem(2);
   }
 
   &::-webkit-scrollbar-track {
-    background: rgb(255 255 255 / 18%);
+    background: rgb(0 0 0 / 8%);
   }
 
   &::-webkit-scrollbar-thumb {
     border-radius: rem(10);
-    background-color: var(--white);
+    background-color: #333;
     cursor: pointer;
 
     @include any-hover {
-      background-color: transparent;
+      background-color: #000;
     }
   }
 
@@ -93,8 +93,36 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     }
 
     @media (min-width: 992px) {
+      &:hover {
+        background-color: #e1251b;
+
+        .exp_catalog__cat_link {
+          color: #fff;
+        }
+
+        .category_icon {
+          filter: brightness(0) invert(1);
+        }
+
+        .exp_catalog__cat_arrow {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
+        }
+      }
+
       &.active {
-        background-color: var(--red);
+        background-color: #e1251b;
+
+        .exp_catalog__cat_link {
+          color: #fff;
+        }
+
+        .category_icon {
+          filter: brightness(0) invert(1);
+        }
+
+        .exp_catalog__cat_arrow {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
+        }
       }
     }
 
@@ -109,7 +137,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     width: 100%;
     min-height: rem(47);
     align-items: center;
-    color: var(--white);
+    color: #000;
     font-size: rem(16);
     font-weight: 500;
     gap: 6px;
@@ -130,11 +158,12 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     width: rem(30);
     height: rem(30);
     flex-shrink: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
     background-position: right center;
     background-repeat: no-repeat;
     background-size: 75%;
     cursor: pointer;
+    transition: background-image 0.2s ease-in-out;
 
     @include lg {
       display: block;
@@ -178,13 +207,13 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     height: 100%;
     max-height: calc(100vh - 120px);
     padding: rem(20);
-    background-color: #0047ba;
+    background-color: #fff;
     overflow-y: auto;
     padding-inline: var(--container-padding-large);
     transition: all 0.3s ease-in-out;
 
     &::-webkit-scrollbar {
-      background: rgb(255 255 255 / 18%);
+      background: rgb(0 0 0 / 8%);
       inline-size: rem(0);
     }
 
@@ -240,13 +269,13 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     svg {
       width: 75%;
       aspect-ratio: 1/1;
-      fill: #fff;
-      stroke: #fff;
+      fill: #000;
+      stroke: #000;
     }
   }
 
   &_title {
-    color: var(--white);
+    color: #000;
     font-size: 22px;
     font-weight: 600;
 
@@ -255,7 +284,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     }
 
     a {
-      color: var(--white);
+      color: #000;
 
       &:hover {
         text-decoration: underline;
@@ -283,6 +312,19 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
       padding-bottom: 17px;
       break-inside: avoid;
       page-break-inside: avoid;
+      transition: background-color 0.2s ease-in-out;
+
+      &:hover {
+        background-color: #e1251b;
+
+        .exp_catalog__subcats_link {
+          color: #fff;
+        }
+
+        .subcategory_icon {
+          filter: brightness(0) invert(1);
+        }
+      }
 
       @include lg {
         padding-bottom: 0;
@@ -301,7 +343,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   &_link {
     display: block;
     width: 100%;
-    color: var(--white);
+    color: #000;
     font-size: rem(16);
     font-weight: 500;
     line-height: 160%;
@@ -309,7 +351,8 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     transition: all 0.2s ease-in-out;
 
     &:hover {
-      text-decoration: underline;
+      color: #fff;
+      text-decoration: none;
     }
 
     @include sm {
@@ -335,13 +378,13 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
 
 .no_categories {
   padding: 20px;
-  color: var(--white);
+  color: #333;
   font-size: 18px;
   text-align: center;
 }
 
 .empty_category {
-  color: var(--white);
+  color: #666;
   font-style: italic;
   opacity: 0.7;
 }
@@ -355,31 +398,35 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   .mobile_menu {
     overflow: hidden;
     width: 100%;
+    border: 1px solid #e0e0e0;
     border-radius: 0;
-    background: #0047ba;
+    background: #fff;
   }
 
   .mobile_menu_header {
     display: flex;
     align-items: center;
     padding: 10px;
-    border-bottom: 1px solid rgb(255 255 255 / 20%);
-    background: rgb(0 0 0 / 10%);
+    border-bottom: 1px solid #e0e0e0;
+    background: #f5f5f5;
     gap: 10px;
   }
 
   .back_button {
     padding: 5px 10px;
-    border: 1px solid rgb(255 255 255 / 30%);
+    border: 1px solid #ccc;
     border-radius: 0;
-    background: rgb(255 255 255 / 10%);
-    color: white;
+    background: #fff;
+    color: #000;
     cursor: pointer;
     font-size: 14px;
+    transition: all 0.2s ease-in-out;
     white-space: nowrap;
 
     &:hover {
-      background: rgb(255 255 255 / 20%);
+      border-color: #e1251b;
+      background: #e1251b;
+      color: #fff;
     }
   }
 
@@ -389,23 +436,26 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     height: 30px;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgb(255 255 255 / 30%);
+    border: 1px solid #ccc;
     border-radius: 0;
     margin-left: auto;
-    background: rgb(255 255 255 / 10%);
-    color: white;
+    background: #fff;
+    color: #000;
     cursor: pointer;
     font-size: 18px;
+    transition: all 0.2s ease-in-out;
 
     &:hover {
-      background: rgb(255 255 255 / 20%);
+      border-color: #e1251b;
+      background: #e1251b;
+      color: #fff;
     }
   }
 
   .breadcrumbs {
     overflow: hidden;
     flex: 1;
-    color: white;
+    color: #000;
     font-size: 14px;
     font-weight: 500;
     text-overflow: ellipsis;
@@ -420,7 +470,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
 
   .mobile_menu_item {
     display: flex;
-    border-bottom: 1px solid rgb(255 255 255 / 10%);
+    border-bottom: 1px solid #e0e0e0;
 
     &:last-child {
       border-bottom: none;
@@ -432,11 +482,17 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     flex: 1;
     align-items: center;
     padding: 15px;
-    color: white;
+    color: #000;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;
 
     &:hover {
-      background: rgb(255 255 255 / 10%);
+      background: #e1251b;
+      color: #fff;
+
+      .category_icon {
+        filter: brightness(0) invert(1);
+      }
     }
   }
 
@@ -448,15 +504,17 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     align-items: center;
     justify-content: center;
     border: none;
-    border-left: 1px solid rgb(255 255 255 / 10%);
-    background: rgb(0 0 0 / 10%);
-    color: white;
+    border-left: 1px solid #e0e0e0;
+    background: #f5f5f5;
+    color: #000;
     cursor: pointer;
     font-size: 20px;
     text-decoration: none;
+    transition: all 0.2s ease-in-out;
 
     &:hover {
-      background: rgb(255 255 255 / 10%);
+      background: #e1251b;
+      color: #fff;
     }
   }
 
@@ -466,15 +524,21 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     align-items: center;
     justify-content: space-between;
     padding: 10px 3px;
-    color: white;
+    color: #000;
     text-decoration: none;
+    transition: all 0.2s ease-in-out;
 
     & > span:first-child {
       padding: 0 15px;
     }
 
     &:hover {
-      background: rgb(255 255 255 / 10%);
+      background: #e1251b;
+      color: #fff;
+
+      .category_icon {
+        filter: brightness(0) invert(1);
+      }
     }
   }
 }
@@ -484,8 +548,6 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     display: none;
   }
 }
-
-// Добавьте эти стили в конец вашего CategoryesMenuDesktop.module.scss
 
 // Планшетная версия (600px - 992px)
 @media (min-width: 600px) and (max-width: 991px) {
@@ -497,32 +559,36 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     display: block;
     overflow: hidden;
     width: 100%;
+    border: 1px solid #e0e0e0;
     border-radius: 0;
     margin-top: 10px;
-    background: #0047ba;
+    background: #fff;
   }
 
   .mobile_menu_header {
     display: flex;
     align-items: center;
     padding: 15px;
-    border-bottom: 1px solid rgb(255 255 255 / 20%);
-    background: rgb(0 0 0 / 10%);
+    border-bottom: 1px solid #e0e0e0;
+    background: #f5f5f5;
     gap: 15px;
   }
 
   .back_button {
     padding: 8px 15px;
-    border: 1px solid rgb(255 255 255 / 30%);
+    border: 1px solid #ccc;
     border-radius: 0;
-    background: rgb(255 255 255 / 10%);
-    color: white;
+    background: #fff;
+    color: #000;
     cursor: pointer;
     font-size: 16px;
+    transition: all 0.2s ease-in-out;
     white-space: nowrap;
 
     &:hover {
-      background: rgb(255 255 255 / 20%);
+      border-color: #e1251b;
+      background: #e1251b;
+      color: #fff;
     }
   }
 
@@ -532,23 +598,26 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     height: 35px;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgb(255 255 255 / 30%);
+    border: 1px solid #ccc;
     border-radius: 0;
     margin-left: auto;
-    background: rgb(255 255 255 / 10%);
-    color: white;
+    background: #fff;
+    color: #000;
     cursor: pointer;
     font-size: 20px;
+    transition: all 0.2s ease-in-out;
 
     &:hover {
-      background: rgb(255 255 255 / 20%);
+      border-color: #e1251b;
+      background: #e1251b;
+      color: #fff;
     }
   }
 
   .breadcrumbs {
     overflow: hidden;
     flex: 1;
-    color: white;
+    color: #000;
     font-size: 16px;
     font-weight: 500;
     text-overflow: ellipsis;
@@ -563,7 +632,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
 
   .mobile_menu_item {
     display: flex;
-    border-bottom: 1px solid rgb(255 255 255 / 10%);
+    border-bottom: 1px solid #e0e0e0;
 
     &:last-child {
       border-bottom: none;
@@ -575,12 +644,18 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     flex: 1;
     align-items: center;
     padding: 18px 20px;
-    color: white;
+    color: #000;
     cursor: pointer;
     font-size: 16px;
+    transition: all 0.2s ease-in-out;
 
     &:hover {
-      background: rgb(255 255 255 / 10%);
+      background: #e1251b;
+      color: #fff;
+
+      .category_icon {
+        filter: brightness(0) invert(1);
+      }
     }
   }
 
@@ -592,15 +667,17 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     align-items: center;
     justify-content: center;
     border: none;
-    border-left: 1px solid rgb(255 255 255 / 10%);
-    background: rgb(0 0 0 / 10%);
-    color: white;
+    border-left: 1px solid #e0e0e0;
+    background: #f5f5f5;
+    color: #000;
     cursor: pointer;
     font-size: 24px;
     text-decoration: none;
+    transition: all 0.2s ease-in-out;
 
     &:hover {
-      background: rgb(255 255 255 / 10%);
+      background: #e1251b;
+      color: #fff;
     }
   }
 
@@ -610,12 +687,18 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     align-items: center;
     justify-content: space-between;
     padding: 15px 20px;
-    color: white;
+    color: #000;
     font-size: 16px;
     text-decoration: none;
+    transition: all 0.2s ease-in-out;
 
     &:hover {
-      background: rgb(255 255 255 / 10%);
+      background: #e1251b;
+      color: #fff;
+
+      .category_icon {
+        filter: brightness(0) invert(1);
+      }
     }
   }
 }
@@ -632,6 +715,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   flex-shrink: 0;
   margin-right: 8px;
   object-fit: contain;
+  transition: filter 0.2s ease-in-out;
 
   @media (max-width: 767px) {
     width: 20px;
@@ -644,6 +728,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   flex-shrink: 0;
   margin-right: 8px;
   object-fit: contain;
+  transition: filter 0.2s ease-in-out;
   vertical-align: middle;
 }
 
@@ -653,7 +738,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   width: 100%;
   min-height: rem(47);
   align-items: center;
-  color: var(--white);
+  color: #000;
   font-size: rem(16);
   font-weight: 500;
   gap: 0;
@@ -680,9 +765,10 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   flex: 1;
   align-items: center;
   padding: 15px;
-  color: white;
+  color: #000;
   cursor: pointer;
   gap: 0;
+  transition: all 0.2s ease-in-out;
 
   @media (min-width: 600px) and (max-width: 991px) {
     padding: 18px 20px;
@@ -690,7 +776,8 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   }
 
   &:hover {
-    background: rgb(255 255 255 / 10%);
+    background: #e1251b;
+    color: #fff;
   }
 }
 
@@ -700,9 +787,10 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   align-items: center;
   justify-content: flex-start;
   padding: 10px 3px;
-  color: white;
+  color: #000;
   gap: 0;
   text-decoration: none;
+  transition: all 0.2s ease-in-out;
 
   @media (min-width: 600px) and (max-width: 991px) {
     padding: 15px 20px;
@@ -714,7 +802,8 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   }
 
   &:hover {
-    background: rgb(255 255 255 / 10%);
+    background: #e1251b;
+    color: #fff;
   }
 }
 
@@ -722,7 +811,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   display: inline-flex;
   width: 100%;
   align-items: center;
-  color: var(--white);
+  color: #000;
   font-size: rem(16);
   font-weight: 500;
   gap: 0;
@@ -731,7 +820,8 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   transition: all 0.2s ease-in-out;
 
   &:hover {
-    text-decoration: underline;
+    color: #fff;
+    text-decoration: none;
   }
 
   @include sm {
