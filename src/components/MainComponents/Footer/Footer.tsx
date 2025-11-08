@@ -120,6 +120,14 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
                   <span>@exporteru</span>
                 </Link>
               </li>
+              <li>
+                <Link className={`${styles.footer__link}`} href='https://wa.me/79859233888' target='_blank'>
+                  <svg className={`${styles.icon}`} width={20} height={20}>
+                    <use href='/iconsNew/contacts-whatsapp-bw.svg#whatsapp' width={20} height={20}></use>
+                  </svg>
+                  <span>+7-495-923-38-88</span>
+                </Link>
+              </li>
             </ul>
           </div>
 
