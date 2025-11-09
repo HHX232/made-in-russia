@@ -9,7 +9,7 @@ import Footer from '@/components/MainComponents/Footer/Footer'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useKeenSlider} from 'keen-slider/react'
 import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
-import {usePathname, useRouter} from 'next/navigation'
+import {usePathname} from 'next/navigation'
 import Link from 'next/link'
 import {useTranslations} from 'next-intl'
 import Image from 'next/image'
@@ -45,7 +45,6 @@ const CategoryPage = ({
 
   const listRef = useRef<HTMLUListElement>(null)
   const pathname = usePathname()
-  const router = useRouter()
   const {clearFilters, setFilter} = useActions()
   const windowWidth = useWindowWidth()
 
@@ -55,9 +54,6 @@ const CategoryPage = ({
   const isLastCategoryLevel =
     level >= 3 && categories.length > 0 && (!categories[0]?.children || categories[0]?.children?.length === 0)
 
-  const isPreLastCategoryLevel =
-    level === 2 && categories.length > 0 && categories[0]?.children && categories[0].children.length > 0
-
   useEffect(() => {
     setMounted(true)
     return () => {
@@ -65,7 +61,6 @@ const CategoryPage = ({
     }
   }, [clearFilters])
 
-  // ИСПРАВЛЕНО: используем переданные categories, а не перезагружаем
   useEffect(() => {
     setSortedCategories(categories)
   }, [categories, language])
@@ -320,17 +315,6 @@ const CategoryPage = ({
     }
   }
 
-  const handleSubcategoryClick = (parentCategory: Category, childCategory: Category, e: React.MouseEvent) => {
-    e.preventDefault()
-    const parentHref = buildHref(parentCategory)
-    clearFilters()
-    if (idOfFilter) {
-      setFilter({filterName: idOfFilter.toString(), checked: true})
-    }
-    setFilter({filterName: childCategory.id?.toString() || '', checked: true})
-    router.push(parentHref)
-  }
-
   const slidesForLastLevel = groupCategoriesIntoSlides(categoriesToDisplay)
   const shouldUseSlider = slidesForLastLevel.length > 1
 
@@ -358,9 +342,9 @@ const CategoryPage = ({
                 >
                   <div className={styles.category_in_card}>
                     {category.imageUrl && (
-                      <div className={styles.category_in_card__image}>
+                      <Link href={buildHref(category)} className={styles.category_in_card__image}>
                         <Image src={category.imageUrl || ''} alt={category.name} width={302} height={201} />
-                      </div>
+                      </Link>
                     )}
                     <div className={styles.category_in_card__content}>
                       <Link href={buildHref(category)}>
@@ -370,13 +354,10 @@ const CategoryPage = ({
                         <ul className={styles.category_in_card__list}>
                           {category.children.slice(0, 8).map((child) => (
                             <li key={child.id || child.slug}>
-                              {isPreLastCategoryLevel ? (
-                                <a
-                                  href={buildHref(category)}
-                                  onClick={(e) => handleSubcategoryClick(category, child, e)}
-                                >
+                              {level === 2 ? (
+                                <Link href={`${buildHref(category)}?lastFilterName=${child.slug.toLowerCase()}`}>
                                   {child.name}
-                                </a>
+                                </Link>
                               ) : (
                                 <Link href={`${buildHref(category)}/${child.slug.toLowerCase()}`}>{child.name}</Link>
                               )}
@@ -397,9 +378,9 @@ const CategoryPage = ({
                 <div key={category.id || category.slug} className={`col-12 ${styles.category__card__col}`}>
                   <div className={styles.category_in_card}>
                     {category.imageUrl && (
-                      <div className={styles.category_in_card__image}>
+                      <Link href={buildHref(category)} className={styles.category_in_card__image}>
                         <Image src={category.imageUrl || ''} alt={category.name} width={302} height={201} />
-                      </div>
+                      </Link>
                     )}
                     <div className={styles.category_in_card__content}>
                       <Link href={buildHref(category)}>
@@ -409,13 +390,10 @@ const CategoryPage = ({
                         <ul className={styles.category_in_card__list}>
                           {category.children.slice(0, 8).map((child) => (
                             <li key={child.id || child.slug}>
-                              {isPreLastCategoryLevel ? (
-                                <a
-                                  href={buildHref(category)}
-                                  onClick={(e) => handleSubcategoryClick(category, child, e)}
-                                >
+                              {level === 2 ? (
+                                <Link href={`${buildHref(category)}?lastFilterName=${child.slug.toLowerCase()}`}>
                                   {child.name}
-                                </a>
+                                </Link>
                               ) : (
                                 <Link href={`${buildHref(category)}/${child.slug.toLowerCase()}`}>{child.name}</Link>
                               )}

@@ -61,10 +61,10 @@ export async function generateMetadata() {
   try {
     return {
       title: {
-        absolute: 'Exporteru',
+        absolute: `${t('title')} | Exporteru`,
         template: `%s | Exporteru`
       },
-      description: `Exporteru — ${t('firstText')}.`,
+      description: `${t('firstText')}.`,
       openGraph: {
         title: 'Exporteru',
         description: `Exporteru — ${t('secondText')}.`

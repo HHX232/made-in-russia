@@ -913,7 +913,8 @@
   },
   "MetaTags": {
     "MainPage": {
-      "firstText": "online platform for exporting goods from Russia. We help Russian companies find foreign counterparties and enter international markets. We specialize in wholesale supplies of products. Comprehensive support: from placement to concluding an export contract. Personal manager for the entire period of cooperation",
+      "title": "Wholesale goods and suppliers from Russia for export",
+      "firstText": "Exporteru is a reliable B2B platform for finding wholesale goods and suppliers from Russia. Explore our catalog and contact manufacturers directly for export",
       "secondText": "service for exporting goods from Russia. We offer support at all stages: selection of counterparties, negotiations, conclusion of deals. We work directly with suppliers and international buyers"
     }
   },
@@ -1045,5 +1046,14 @@
   },
   "vendorCatalog": {
       "vendorProducts": "Seller's products"
-    }
+    },
+    "VendorMeta":{
+    "title":"Exporter"
+  },
+  "metaTitles": {
+    "login": "Login",
+    "register": "Registration",
+    "profile": "Profile",
+     "create": "Create product"
+  }
 }

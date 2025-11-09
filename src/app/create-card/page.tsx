@@ -1,8 +1,11 @@
 import CreateCard from '@/components/pages/CreateCard/CreateCard'
-import {Metadata} from 'next'
+import {getTranslations} from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: 'Create card'
+export async function generateMetadata() {
+  const t = await getTranslations('metaTitles')
+  return {
+    title: t('create')
+  }
 }
 
 export default function CreateCardPage() {

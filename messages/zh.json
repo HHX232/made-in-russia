@@ -913,7 +913,8 @@
   },
   "MetaTags": {
     "MainPage": {
-      "firstText": "俄罗斯商品出口在线平台。我们帮助俄罗斯公司寻找外国合作伙伴并进入国际市场。专注于产品批发供应。全面支持：从展示到签订出口合同。在整个合作期间提供专属经理",
+      "title": "Wholesale goods and suppliers from Russia for export",
+      "firstText": "Exporteru 是一个可靠的B2B平台，用于寻找来自俄罗斯的批发商品和供应商。浏览我们的目录并直接联系制造商进行出口",
       "secondText": "俄罗斯商品出口服务。我们在所有阶段提供支持：选择合作伙伴、谈判、达成交易。我们直接与供应商和国际买家合作"
     }
   },
@@ -1045,5 +1046,14 @@
   },
   "vendorCatalog": {
     "vendorProducts": "卖家商品"
-  }
+  },
+  "VendorMeta":{
+    "title":"出口商"
+  },
+  "metaTitles": {
+      "login": "登录",
+      "register": "注册",
+      "profile": "个人资料",
+      "create": "创建商品"
+    }
 }

@@ -47,6 +47,10 @@ REVIEW ACCOUNT BLOCK
   }
 }
 
+.review-acc-header__avatar > img {
+  aspect-ratio: 1/1 !important;
+}
+
 .review-acc-header {
   display: flex;
   align-items: flex-start;

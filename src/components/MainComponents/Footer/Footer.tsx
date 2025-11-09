@@ -125,7 +125,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
                   <svg className={`${styles.icon}`} width={20} height={20}>
                     <use href='/iconsNew/contacts-whatsapp-bw.svg#whatsapp' width={20} height={20}></use>
                   </svg>
-                  <span>+7-495-923-38-88</span>
+                  <span>+7-985-923-38-88</span>
                 </Link>
               </li>
             </ul>

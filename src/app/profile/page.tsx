@@ -4,13 +4,10 @@ import instance from '@/api/api.interceptor'
 import ProfilePage from '@/components/pages/ProfilePage/ProfilePage'
 import {User} from '@/services/users.types'
 import {cookies} from 'next/headers'
-import {Metadata} from 'next'
 import {saveTokenStorage} from '@/middleware'
 import {removeFromStorage} from '@/services/auth/auth.helper'
-
-export const metadata: Metadata = {
-  title: 'Profile'
-}
+import {NO_INDEX_PAGE} from '@/constants/seo.constants'
+import {getTranslations} from 'next-intl/server'
 
 export default async function ProfilePageMain() {
   let userData
@@ -86,4 +83,12 @@ export default async function ProfilePageMain() {
   }
   // console.log('initialUserData:', initialUserData)
   return <ProfilePage firstUserData={initialUserData} />
+}
+
+export async function generateMetadata() {
+  const t = await getTranslations('metaTitles')
+  return {
+    title: t('profile'),
+    ...NO_INDEX_PAGE
+  }
 }

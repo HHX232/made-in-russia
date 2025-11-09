@@ -502,7 +502,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
         }
       )
 
-      toast.success(t('codeInEmail') + userData?.email)
+      toast.success(t('codeInEmail') + ' ' + userData?.email)
       setModalIsOpen(true)
     } catch {
       toast.error(t('errorUpdatePassword'))

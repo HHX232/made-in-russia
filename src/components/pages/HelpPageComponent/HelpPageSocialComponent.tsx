@@ -40,7 +40,7 @@ const HelpPageSocialComponent: FC = () => {
               </svg>
               <span>{t('whatsapp')}</span>
             </div>
-            <div className={styles.contacts_social__nikname}>+7-495-923-38-88</div>
+            <div className={styles.contacts_social__nikname}>+7-985-923-38-88</div>
           </Link>
         </div>
         <div className={styles.contacts_social__col}>

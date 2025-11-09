@@ -1,5 +1,4 @@
 'use client'
-
 import styles from './RegisterPage.module.scss'
 import {useEffect, useState, useId} from 'react'
 import {TNumberStart} from '@/components/UI-kit/inputs/TelephoneInputUI/TelephoneInputUI'
@@ -367,23 +366,23 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
   // Рендер страницы выбора типа аккаунта
   if (showTypeSelection) {
     return (
-      <div className={styles.page__wrapper}>
+      <div className={`${styles.login__box}`}>
         <Header categories={categories} />
-
         <div className='container'>
-          <div className={styles.type_selection__wrapper}>
-            <div className={styles.type_selection__box}>
-              <div className={styles.top__link}>
-                <Link href='/login' className={styles.login__link}>
-                  {t('haveAccount') || 'Уже есть аккаунт?'}
+          <div className={`${styles.login__inner}`}>
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className={`${styles.login__form__box} ${styles.select_role_box}`}
+            >
+              <div className={styles.top__links}>
+                <Link href='/login' className={styles.toggle__action__button}>
+                  {t('haveAccount')}
                 </Link>
               </div>
 
-              <h1 className={styles.type_selection__title}>{t('chooseAccountType') || 'Выберите тип аккаунта'}</h1>
+              <h2 className={styles.login__title}>{t('chooseAccountType')}</h2>
 
-              <p className={styles.type_selection__subtitle}>
-                {t('selectRoleDescription') || 'Выберите подходящую роль для регистрации'}
-              </p>
+              <p className={styles.type_selection__subtitle}>{t('selectRoleDescription')}</p>
 
               <div className={styles.type_buttons__container}>
                 <button
@@ -408,10 +407,10 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
                       />
                     </svg>
                   </div>
-                  <h2 className={styles.type_button__title}>{t('imUser') || 'Я покупатель'}</h2>
-                  <p className={styles.type_button__description}>
-                    {t('buyerDescription') || 'Ищу товары и услуги для покупки'}
-                  </p>
+                  <div className={styles.type_button__content}>
+                    <h3 className={styles.type_button__title}>{t('imUser')}</h3>
+                    <p className={styles.type_button__description}>{t('buyerDescription')}</p>
+                  </div>
                 </button>
 
                 <button
@@ -443,23 +442,21 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
                       />
                     </svg>
                   </div>
-                  <h2 className={styles.type_button__title}>{t('imVendor') || 'Я поставщик'}</h2>
-                  <p className={styles.type_button__description}>
-                    {t('vendorDescription') || 'Предлагаю товары и услуги для продажи'}
-                  </p>
+                  <div className={styles.type_button__content}>
+                    <h3 className={styles.type_button__title}>{t('imVendor')}</h3>
+                    <p className={styles.type_button__description}>{t('vendorDescription')}</p>
+                  </div>
                 </button>
               </div>
 
-              {/* <div className={styles.type_selection__info}>
-                <p className={styles.type_selection__info_text}>
-                  {t('canChangeType') || 'Вы сможете изменить тип аккаунта позже в настройках'}
-                </p>
-              </div> */}
-            </div>
+              <div className={styles.type_selection__info}>
+                <p className={styles.type_selection__info_text}>{t('canChangeType')}</p>
+              </div>
+            </form>
+            <LoginSlider />
           </div>
         </div>
-
-        <Footer useFixedFooter minMediaHeight={800} />
+        <Footer useFixedFooter minMediaHeight={900} extraClass={`${styles.extraFooter}`} />
       </div>
     )
   }
@@ -479,28 +476,6 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
 
             <h2 className={`${styles.login__title}`}>{isUser ? t('registerTitle') : t('registerTitleCompany')}</h2>
 
-            <div className={styles.button__box__switch}>
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  setIsUser(true)
-                  router.push('/register?type=user', {scroll: false})
-                }}
-                className={`${styles.toggle__action__button} ${isUser && styles.active__user_button}`}
-              >
-                {t('imUser')}
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  setIsUser(false)
-                  router.push('/register?type=vendor', {scroll: false})
-                }}
-                className={`${styles.toggle__action__button} ${!isUser && styles.active__user_button}`}
-              >
-                {t('imVendor')}
-              </button>
-            </div>
             <div className={`${styles.inputs__box}`}>
               {isUser && !showFinalStep && (
                 <RegisterUserUnified

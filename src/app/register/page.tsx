@@ -1,4 +1,6 @@
 import RegisterPage from '@/components/pages/RegisterPage/RegisterPage'
+import {NO_INDEX_PAGE} from '@/constants/seo.constants'
+import {getTranslations} from 'next-intl/server'
 import {Suspense} from 'react'
 // import CategoriesService, {categoriesKeys} from '@/services/categoryes/categoryes.service'
 // import {dehydrate, HydrationBoundary, QueryClient} from '@tanstack/react-query'
@@ -22,4 +24,12 @@ export default function Register() {
     </Suspense>
     // {/* </HydrationBoundary> */}
   )
+}
+
+export async function generateMetadata() {
+  const t = await getTranslations('metaTitles')
+  return {
+    title: t('register'),
+    ...NO_INDEX_PAGE
+  }
 }

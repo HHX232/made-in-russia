@@ -1,12 +1,15 @@
 import CreateCard from '@/components/pages/CreateCard/CreateCard'
 import {getCurrentLocale} from '@/lib/locale-detection'
 import cardService from '@/services/card/card.service'
-import {Metadata} from 'next'
+import {getTranslations} from 'next-intl/server'
 // import {headers} from 'next/headers'
 import {notFound} from 'next/navigation'
 
-export const metadata: Metadata = {
-  title: 'Create card'
+export async function generateMetadata() {
+  const t = await getTranslations('metaTitles')
+  return {
+    title: t('create')
+  }
 }
 
 export default async function CreateCardPageWithId({params}: {params: Promise<{id: string; locale: string}>}) {

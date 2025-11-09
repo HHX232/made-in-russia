@@ -4,11 +4,8 @@ import VendorPageClient from '@/components/pages/VendorPage/VendorPageClient/Ven
 import {getQueryClient} from '@/lib/get-query-client'
 import {fetchUserDataOnServer} from '@/lib/server/userDataFetcher'
 import {HydrationBoundary, dehydrate} from '@tanstack/react-query'
-import {Metadata} from 'next'
-
-export const metadata: Metadata = {
-  title: 'Vendor'
-}
+import {getTranslations} from 'next-intl/server'
+import {NO_INDEX_PAGE} from '@/constants/seo.constants'
 
 // Важно! Отключаем статический рендеринг
 export const dynamic = 'force-dynamic'
@@ -55,4 +52,12 @@ export default async function VendorPage({
       />
     </HydrationBoundary>
   )
+}
+
+export async function generateMetadata() {
+  const t = await getTranslations('VendorMeta')
+  return {
+    title: t('title'),
+    ...NO_INDEX_PAGE
+  }
 }

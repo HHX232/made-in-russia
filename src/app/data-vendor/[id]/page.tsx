@@ -105,3 +105,28 @@ export default async function VendorDataPage({params}: {params: Promise<{id: str
     </>
   )
 }
+export async function generateMetadata({params}: {params: Promise<{id: string}>}) {
+  const t = await getTranslations('metaTitles')
+  const {id} = await params
+  let vendorData
+  const currentLang = await getCurrentLocale()
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vendorData = await axiosClassic.get<any>(`/vendor/${id}`, {
+      headers: {
+        'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!,
+        'Accept-Language': currentLang,
+        'x-language': currentLang
+      }
+    })
+    return {
+      title: vendorData?.data?.login || t('vendor')
+    }
+  } catch (e) {
+    console.log('vendorData dy', e)
+    return {
+      title: t('vendor')
+    }
+  }
+}
