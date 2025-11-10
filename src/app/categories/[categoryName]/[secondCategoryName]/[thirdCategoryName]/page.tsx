@@ -6,7 +6,8 @@ import {findCategoryByPath, buildBreadcrumbsByPath} from '@/utils/findCategoryPa
 import {notFound} from 'next/navigation'
 
 export default async function CategoryPageSpecialThirdAlt({
-  params
+  params,
+  searchParams
 }: {
   params: Promise<{
     categoryName: string
@@ -14,12 +15,17 @@ export default async function CategoryPageSpecialThirdAlt({
     thirdCategoryName: string
     thirdCAtegoryName: string
   }>
+  searchParams: Promise<{[key: string]: string | string[] | undefined}>
 }) {
   const {categoryName, secondCategoryName, thirdCategoryName, thirdCAtegoryName} = await params
+  const resolvedSearchParams = await searchParams
 
   // thirdCategoryName и thirdCAtegoryName - это один и тот же уровень (level 3)
   // один из них будет undefined в зависимости от роута
   const actualThirdSlug = thirdCategoryName || thirdCAtegoryName
+
+  // Получаем lastFilterName из query параметров
+  const lastFilterName = resolvedSearchParams?.lastFilterName as string | undefined
 
   let categories
   let allCategories
@@ -104,6 +110,7 @@ export default async function CategoryPageSpecialThirdAlt({
       categoryTitleName={categories.name}
       level={3}
       language={locale}
+      initialLastFilterSlug={lastFilterName}
     />
   )
 }

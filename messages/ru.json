@@ -402,7 +402,7 @@
       "deliveryDescription": "Информация о способах доставки",
       "emptyAddress": "адрес не указан",
       "INN": "ИНН",
-      "days": "{count, plural, one {день} few {дня} many {дней} other {дня}}"
+      "days": "{count, plural, one {день} few {дня} many {дней} other {дней}}"
     },
     "CardBottomPage": {
       "send":"Отправить",

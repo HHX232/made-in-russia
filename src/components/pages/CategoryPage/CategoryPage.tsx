@@ -1,5 +1,6 @@
 'use client'
 import {useEffect, useState, useRef, useMemo} from 'react'
+import {useSearchParams, useRouter, usePathname} from 'next/navigation'
 import Header from '@/components/MainComponents/Header/Header'
 import styles from './CategoryPage.module.scss'
 import Catalog from '@/components/screens/Catalog/Catalog'
@@ -9,7 +10,6 @@ import Footer from '@/components/MainComponents/Footer/Footer'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import {useKeenSlider} from 'keen-slider/react'
 import BreadCrumbs from '@/components/UI-kit/Texts/Breadcrumbs/Breadcrumbs'
-import {usePathname} from 'next/navigation'
 import Link from 'next/link'
 import {useTranslations} from 'next-intl'
 import Image from 'next/image'
@@ -22,7 +22,8 @@ const CategoryPage = ({
   categoryTitleName,
   companyes,
   breadcrumbs,
-  language
+  language,
+  initialLastFilterSlug
 }: {
   categoryName: string
   categoryTitleName?: string
@@ -33,18 +34,21 @@ const CategoryPage = ({
   breadcrumbs?: {title: string; link: string}[]
   companyes?: {name: string; inn: string; ageInYears: string}[]
   language?: 'ru' | 'en' | 'zh'
+  initialLastFilterSlug?: string
 }) => {
   const isServer = typeof window === 'undefined'
   const t = useTranslations('CategoryPage')
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
   const [sortedCategories, setSortedCategories] = useState<Category[]>(categories)
-  const [activeFilterId, setActiveFilterId] = useState<number | null>(idOfFilter || null)
+  const [activeFilterId, setActiveFilterId] = useState<number | null>(null)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [currentCompSlide, setCurrentCompSlide] = useState(0)
   const [mounted, setMounted] = useState(false)
   const [companiesSliderHeight, setCompaniesSliderHeight] = useState<number>(0)
 
   const listRef = useRef<HTMLUListElement>(null)
-  const pathname = usePathname()
   const {clearFilters, setFilter} = useActions()
   const windowWidth = useWindowWidth()
 
@@ -65,15 +69,41 @@ const CategoryPage = ({
     setSortedCategories(categories)
   }, [categories, language])
 
+  // Обработка query параметра lastFilterName
   useEffect(() => {
     clearFilters()
-    setFilter({filterName: idOfFilter?.toString() || '', checked: idOfFilter ? true : false})
-    setActiveFilterId(idOfFilter || null)
+
+    // Приоритет: query параметр > initialLastFilterSlug > idOfFilter
+    const lastFilterNameFromQuery = searchParams?.get('lastFilterName')
+    const lastFilterSlug = lastFilterNameFromQuery || initialLastFilterSlug
+
+    if (lastFilterSlug) {
+      // Ищем категорию по slug
+      const foundCategory = categories.find((cat) => cat.slug.toLowerCase() === lastFilterSlug.toLowerCase())
+
+      if (foundCategory && foundCategory.id) {
+        // Устанавливаем фильтр основной категории если есть
+        if (idOfFilter) {
+          setFilter({filterName: idOfFilter.toString(), checked: true})
+        }
+        // Устанавливаем фильтр для найденной категории
+        setFilter({filterName: foundCategory.id.toString(), checked: true})
+        setActiveFilterId(foundCategory.id)
+      } else if (idOfFilter) {
+        // Если категория не найдена, используем idOfFilter
+        setFilter({filterName: idOfFilter.toString(), checked: true})
+        setActiveFilterId(idOfFilter)
+      }
+    } else if (idOfFilter) {
+      // Если нет lastFilterName, используем idOfFilter
+      setFilter({filterName: idOfFilter.toString(), checked: true})
+      setActiveFilterId(idOfFilter)
+    }
 
     return () => {
       clearFilters()
     }
-  }, [clearFilters, idOfFilter, setFilter])
+  }, [clearFilters, idOfFilter, setFilter, categories, searchParams, initialLastFilterSlug])
 
   const companiesSlides = useMemo(
     () => (companyes && !isServer ? groupCompaniesIntoSlides(companyes, windowWidth || 1200) : []),
@@ -299,20 +329,35 @@ const CategoryPage = ({
   }
 
   const handleFilterClick = (category: Category) => {
+    const currentParams = new URLSearchParams(searchParams?.toString() || '')
+
     if (activeFilterId === category.id) {
+      // Снимаем активный фильтр
       clearFilters()
       if (idOfFilter) {
         setFilter({filterName: idOfFilter.toString(), checked: true})
       }
       setActiveFilterId(null)
+
+      // Удаляем query параметр
+      currentParams.delete('lastFilterName')
     } else {
+      // Устанавливаем новый активный фильтр
       clearFilters()
       if (idOfFilter) {
         setFilter({filterName: idOfFilter.toString(), checked: true})
       }
       setFilter({filterName: category.id?.toString() || '', checked: true})
       setActiveFilterId(category.id || null)
+
+      // Добавляем/обновляем query параметр
+      currentParams.set('lastFilterName', category.slug.toLowerCase())
     }
+
+    // Обновляем URL
+    const newUrl = currentParams.toString() ? `${pathname}?${currentParams.toString()}` : pathname
+
+    router.push(newUrl, {scroll: false})
   }
 
   const slidesForLastLevel = groupCategoriesIntoSlides(categoriesToDisplay)
