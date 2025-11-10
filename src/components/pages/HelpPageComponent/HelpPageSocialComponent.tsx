@@ -44,7 +44,7 @@ const HelpPageSocialComponent: FC = () => {
           </Link>
         </div>
         <div className={styles.contacts_social__col}>
-          <Link href='#wechat' className={styles.contacts_social__item}>
+          <Link href='https://u.wechat.com/kNmqSJ-CMtHIHZvSvUgEFZ8?s=0' className={styles.contacts_social__item}>
             <div className={styles.contacts_social__network}>
               <svg className={styles.contacts_social__icon_wechat}>
                 <use href='/iconsNew/symbol/sprite.svg#contacts-wechat'></use>

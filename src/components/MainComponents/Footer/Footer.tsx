@@ -203,7 +203,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
               </Link>
 
               <Link
-                href='#wechat'
+                href='https://u.wechat.com/kNmqSJ-CMtHIHZvSvUgEFZ8?s=0'
                 className={`${styles.footer__social_link} ${styles.footer__social_link_wechat}`}
                 aria-label='WeChat'
               >
