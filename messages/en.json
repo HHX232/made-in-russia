@@ -617,7 +617,7 @@
     }
   },
   "CardComponent": {
-    "errorUpdatingFavorites": "Error updating favorites",
+    "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account",
     "defaultTitle": "Great deal",
     "cardImageAlt": "Product image",
     "saw": "View",

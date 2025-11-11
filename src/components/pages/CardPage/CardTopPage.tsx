@@ -278,9 +278,9 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             />
           </svg>
           <div className={styles.gray__dot}></div>
-          <p className={styles.reviews__count}>
+          <a href='#cardCommentsSection' className={styles.reviews__count}>
             {cardData?.reviewsCount} {t('revues')}
-          </p>
+          </a>
         </div>
         <div className={styles.prices__box__new}>
           <p className={styles.main__price}>

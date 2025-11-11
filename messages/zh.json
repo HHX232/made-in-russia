@@ -460,7 +460,7 @@
   },
   "CardBottomPage": {
     "send": "发送",
-     "errorUpdatingFavorites": "更新收藏时出错",
+     "errorUpdatingFavorites": "更新收藏时出错。请注册或登录您的账户",
     "success": "成功！",
     "newDayerror": "您必须经过授权且账户注册时间需超过7天",
     "successPublished": "评论已提交审核",

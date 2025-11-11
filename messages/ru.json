@@ -632,7 +632,7 @@
     }
   },
   "CardComponent": {
-    "errorUpdatingFavorites": "Ошибка при обновлении избранного",
+    "errorUpdatingFavorites": "Ошибка при обновлении избранного. Зарегистрируйтесь или войдите в свой аккаунт",
     "defaultTitle": "Выгодный товар",
     "cardImageAlt": "Изображение товара",
     "saw": "Просмотреть",

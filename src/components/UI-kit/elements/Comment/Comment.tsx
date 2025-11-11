@@ -134,7 +134,7 @@ const Comment: FC<CommentProps> = ({
                 borderRadius: '20px',
                 width: '100%',
                 height: 'auto',
-                aspectRatio: '1 / 1',
+                // aspectRatio: '1 / 1',
                 maxWidth: '600px',
                 maxHeight: '600px'
               }}

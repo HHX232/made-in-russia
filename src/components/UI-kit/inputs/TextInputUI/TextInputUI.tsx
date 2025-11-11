@@ -1,5 +1,5 @@
 'use client'
-import {CSSProperties, memo, ReactNode, useCallback, useEffect, useId, useState} from 'react'
+import {CSSProperties, memo, ReactNode, useCallback, useId, useState} from 'react'
 import styles from './TextInputUI.module.scss'
 import Image, {StaticImageData} from 'next/image'
 import cn from 'clsx'
@@ -24,7 +24,6 @@ interface ITextInputProps {
   customIconOnAlternativeState?: StaticImageData
   linkToHelp?: Url
   theme?: 'dark' | 'light' | 'superWhite' | 'lightBlue' | 'newGray' | 'newWhite'
-  // Дополнительные события для input
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
@@ -73,12 +72,7 @@ const TextInputUI = memo<ITextInputProps>(
     maxLength
   }) => {
     const [textIsShow, setTextIsShow] = useState(false)
-    const [displayValue, setDisplayValue] = useState(isSecret ? currentValue.replace(/./g, '*') : currentValue)
     const id = useId()
-
-    useEffect(() => {
-      setDisplayValue(isSecret && !textIsShow ? currentValue.replace(/./g, '*') : currentValue)
-    }, [isSecret, textIsShow, currentValue])
 
     const isValidNumberInput = useCallback((value: string): boolean => {
       return /^-?[\d.,]*$/.test(value)
@@ -118,37 +112,25 @@ const TextInputUI = memo<ITextInputProps>(
           return
         }
 
-        if (isSecret) {
-          // Упрощенная логика для секретного ввода
-          if (value.length > displayValue.length) {
-            const addedChars = value.slice(displayValue.length)
-            const newValue = currentValue + addedChars
-            // Проверка на максимальную длину для секретного ввода
-            if (maxLength === undefined || newValue.length <= maxLength) {
-              onSetValue(newValue)
-            }
-          } else {
-            onSetValue(currentValue.slice(0, value.length))
-          }
-        } else {
-          onSetValue(value)
-        }
+        onSetValue(value)
       },
-      [
-        inputType,
-        isValidNumberInput,
-        isValidNumbersWithSpec,
-        isSecret,
-        displayValue,
-        currentValue,
-        onSetValue,
-        maxLength
-      ]
+      [inputType, isValidNumberInput, isValidNumbersWithSpec, onSetValue, maxLength]
     )
 
     const toggleTextVisibility = useCallback(() => {
       setTextIsShow((prev) => !prev)
     }, [])
+
+    // Определяем тип input в зависимости от isSecret и textIsShow
+    const getInputType = () => {
+      if (isSecret) {
+        return textIsShow ? 'text' : 'password'
+      }
+      if (inputType === 'numbersWithSpec') {
+        return 'text'
+      }
+      return inputType || 'text'
+    }
 
     return (
       <label
@@ -175,16 +157,8 @@ const TextInputUI = memo<ITextInputProps>(
           <input
             ref={refProps}
             placeholder={placeholder}
-            type={
-              isSecret && !textIsShow
-                ? 'password'
-                : inputType === 'numbersWithSpec'
-                  ? 'text'
-                  : inputType
-                    ? inputType
-                    : 'text'
-            }
-            value={isSecret ? (textIsShow ? currentValue : displayValue) : currentValue}
+            type={getInputType()}
+            value={currentValue}
             onChange={handleChange}
             onBlur={onBlur}
             onFocus={onFocus}
