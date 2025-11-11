@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // path: src/components/AdminUsersPage/UserRow.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
@@ -11,6 +12,7 @@ import CategoriesService, {Category} from '@/services/categoryes/categoryes.serv
 import {User} from '@/store/User/user.slice'
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import MultiDropSelect from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
+import {toast} from 'sonner'
 
 const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'Kazakhstan']
 const trashImage = '/admin/trash.svg'
@@ -32,6 +34,22 @@ type UserEditData = {
   emails?: string[]
 }
 
+// Утилита для обработки ошибок API
+const handleApiError = (error: any, defaultMessage: string = 'Произошла ошибка') => {
+  if (error?.response?.data) {
+    const errorData = error.response.data
+    const errorMessage = errorData?.errors?.message || errorData.message || errorData.error || defaultMessage
+    toast.error(errorMessage)
+    console.error('API Error:', errorData)
+  } else if (error?.message) {
+    toast.error(error.message)
+    console.error('Error:', error.message)
+  } else {
+    toast.error(defaultMessage)
+    console.error('Unknown error:', error)
+  }
+}
+
 // ---- helpers (типо‑гвард, нормализация) ----
 function notNull<T>(v: T | null | undefined): v is T {
   return v != null
@@ -50,7 +68,7 @@ function buildOptionsFromCategories(categories: Category[]): MultiSelectOption[]
   const recur = (nodes: Category[]): MultiSelectOption[] =>
     nodes.map((c) => ({
       id: c.id,
-      value: c.name, // работаем по name
+      value: c.name,
       label: c.name,
       imageUrl: c.imageUrl,
       children: c.children ? recur(c.children) : undefined
@@ -74,8 +92,6 @@ function dedupe(arr: string[]): string[] {
   return Array.from(new Set(arr))
 }
 
-// если внезапно в selectedCategories пришли строки‑числа (старые данные),
-// попробуем сопоставить их с id→name из справочника категорий
 function normalizeByDictionary(values: string[], idToName: Map<string, string>): string[] {
   return values.map((v) => idToName.get(v) ?? v)
 }
@@ -103,7 +119,7 @@ const UserRow: FC<{
     role: 'User',
     inn: '',
     description: '',
-    countries: [],
+    countries: ['Russia'],
     productCategories: [],
     sites: [],
     phoneNumbers: [],
@@ -111,13 +127,11 @@ const UserRow: FC<{
   })
   const [activeImages, setActiveImages] = useState<string[]>([user?.avatarUrl])
   const [categories, setCategories] = useState<Category[]>([])
-  const [selectedCountries, setSelectedCountries] = useState<string[]>([])
-  // ВАЖНО: здесь всегда имена категорий
+  const [selectedCountries, setSelectedCountries] = useState<string[]>(['Russia'])
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     user.vendorDetails?.productCategories?.map((cat) => String(cat.name)).filter(Boolean) || []
   )
 
-  // ---- derive options + быстрый поиск ----
   const options = useMemo(() => buildOptionsFromCategories(categories), [categories])
   const flatOptions = useMemo(() => flattenOptions(options), [options])
   const idToName = useMemo(() => {
@@ -128,7 +142,6 @@ const UserRow: FC<{
     return m
   }, [flatOptions])
 
-  // нормализуем старые значения, если вдруг там id‑строки
   useEffect(() => {
     if (!selectedCategories.length || idToName.size === 0) return
     const withNames = normalizeByDictionary(selectedCategories, idToName)
@@ -137,7 +150,6 @@ const UserRow: FC<{
     }
   }, [idToName])
 
-  // Загрузка категорий при открытии редактирования вендора
   useEffect(() => {
     const fetchCategories = async () => {
       if (editData.role === 'Vendor' && categories.length === 0) {
@@ -145,7 +157,7 @@ const UserRow: FC<{
           const categoriesRussian = await CategoriesService.getAll('ru')
           setCategories(categoriesRussian)
         } catch (error) {
-          console.error('Ошибка загрузки категорий:', error)
+          handleApiError(error, 'Ошибка загрузки категорий')
         }
       }
     }
@@ -156,7 +168,7 @@ const UserRow: FC<{
     setActiveCountry(newCountry)
     onUpdateUser?.(user.id, {
       ...user,
-      ...(editData.role !== 'Vendor' ? {region: newCountry} : {}) // фикс: сравнение по правильному регистру
+      ...(editData.role !== 'Vendor' ? {region: newCountry} : {})
     })
   }
 
@@ -173,9 +185,9 @@ const UserRow: FC<{
       setIsLoading(true)
       await instance.delete(`/user/${user.id}`)
       onDeleteUser?.(user.id)
+      toast.success('Пользователь успешно удален')
     } catch (error) {
-      console.error('Ошибка при удалении пользователя:', error)
-      alert('Произошла ошибка при удалении пользователя')
+      handleApiError(error, 'Произошла ошибка при удалении пользователя')
     } finally {
       setIsLoading(false)
     }
@@ -204,7 +216,6 @@ const UserRow: FC<{
           faq: any[]
         } = userData.vendorDetails || ({} as any)
 
-        const countries = vendorDetails.countries || []
         const productCategories = vendorDetails.productCategories || []
 
         setEditData({
@@ -215,15 +226,14 @@ const UserRow: FC<{
           role: 'Vendor',
           inn: vendorDetails.inn || '',
           description: vendorDetails.description || '',
-          countries: countries.map((c) => c.name).filter(Boolean),
+          countries: ['Russia'],
           productCategories: productCategories.map((c) => c.name).filter(Boolean),
           sites: vendorDetails.sites || [],
           phoneNumbers: vendorDetails.phoneNumbers || [],
           emails: vendorDetails.emails || []
         })
 
-        // ключевой момент: храним только name
-        setSelectedCountries(countries.map((c) => c.name).filter(Boolean))
+        setSelectedCountries(['Russia'])
         setSelectedCategories(productCategories.map((c) => c.name).filter(Boolean))
       } else {
         const response = await instance.get(`/user/${user.id}`)
@@ -236,19 +246,18 @@ const UserRow: FC<{
           role: userData.role || 'User',
           inn: '',
           description: '',
-          countries: [],
+          countries: ['Russia'],
           productCategories: [],
           sites: [],
           phoneNumbers: [],
           emails: []
         })
-        setSelectedCountries([])
+        setSelectedCountries(['Russia'])
         setSelectedCategories([])
       }
       setIsEditModalOpen(true)
     } catch (error) {
-      console.error('Ошибка при получении данных пользователя:', error)
-      alert('Произошла ошибка при загрузке данных пользователя')
+      handleApiError(error, 'Произошла ошибка при загрузке данных пользователя')
     } finally {
       setIsLoading(false)
     }
@@ -256,6 +265,9 @@ const UserRow: FC<{
 
   const handleSaveChanges = async () => {
     if (!instance) return
+
+    // Валидация для Vendor
+
     try {
       setIsLoading(true)
       if (editData.role === 'Vendor') {
@@ -264,8 +276,8 @@ const UserRow: FC<{
           login: editData.login,
           phoneNumber: editData.phoneNumber,
           inn: editData.inn,
-          countries: selectedCountries, // массив имён стран
-          productCategories: selectedCategories, // массив имён категорий
+          countries: ['Russia'],
+          productCategories: selectedCategories.filter((cat) => cat && cat.trim() !== ''),
           description: editData.description,
           sites: editData.sites,
           phoneNumbers: editData.phoneNumbers,
@@ -293,9 +305,9 @@ const UserRow: FC<{
       setActiveCountry(editData.region)
       setActiveRole(editData.role)
       setIsEditModalOpen(false)
+      toast.success('Изменения успешно сохранены')
     } catch (error) {
-      console.error('Ошибка при сохранении изменений:', error)
-      alert('Произошла ошибка при сохранении изменений')
+      handleApiError(error, 'Произошла ошибка при сохранении изменений')
     } finally {
       setIsLoading(false)
     }
@@ -309,28 +321,26 @@ const UserRow: FC<{
       if (isBanned) {
         await instance.patch(`/user/${user.id}/unban`)
         onUnbanUser?.(user.id)
+        toast.success('Пользователь разбанен')
       } else {
         await instance.patch(`/user/${user.id}/ban`)
         onBanUser?.(user.id)
+        toast.success('Пользователь забанен')
       }
     } catch (error) {
-      console.error('Ошибка при изменении статуса бана:', error)
-      alert('Произошла ошибка при изменении статуса пользователя')
+      handleApiError(error, 'Произошла ошибка при изменении статуса пользователя')
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const toggleCountrySelection = (country: string) => {
-    setSelectedCountries((prev) => (prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]))
   }
 
   const handleAvatarUpload = async (files: File[]) => {
     if (!instance || files.length === 0) {
       try {
         instance?.delete?.(`/user/${user.id}/avatar`)
+        toast.success('Аватар удален')
       } catch (e) {
-        console.error('Ошибка при удалении аватара:', e)
+        handleApiError(e, 'Ошибка при удалении аватара')
       }
       return
     }
@@ -344,15 +354,14 @@ const UserRow: FC<{
       })
       const updatedUser: User = {...user, avatarUrl: response.data.avatarUrl || response.data.url}
       onUpdateUser?.(user.id, updatedUser)
+      toast.success('Аватар успешно загружен')
     } catch (error) {
-      console.error('Ошибка при загрузке аватара:', error)
-      alert('Произошла ошибка при загрузке аватара')
+      handleApiError(error, 'Произошла ошибка при загрузке аватара')
     } finally {
       setIsLoading(false)
     }
   }
 
-  // ---- ВЫЧИСЛЯЕМ selectedValues для MultiDropSelect ИСКЛЮЧИТЕЛЬНО ИЗ name ----
   const selectedOptions: MultiSelectOption[] = useMemo(() => {
     return selectedCategories
       .map((name) => flatOptions.find((o) => o.label === name || o.value === name) || null)
@@ -568,23 +577,6 @@ const UserRow: FC<{
                 >
                   + Добавить Email
                 </button>
-              </div>
-
-              {/* Страны */}
-              <div className={styles.multi__select__section}>
-                <h4>Страны работы:</h4>
-                <div className={styles.multi__select__grid}>
-                  {REGION_OPTIONS.map((country) => (
-                    <label key={country} className={styles.checkbox__item}>
-                      <input
-                        type='checkbox'
-                        checked={selectedCountries.includes(country)}
-                        onChange={() => toggleCountrySelection(country)}
-                      />
-                      <span>{country}</span>
-                    </label>
-                  ))}
-                </div>
               </div>
 
               {/* Категории по name */}

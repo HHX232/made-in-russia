@@ -12,8 +12,8 @@ Allow: /help
 Allow: /privacy
 Allow: /terms
 Allow: /login
+Allow: /
 
-Disallow: /
 Disallow: /vendor
 Disallow: /profile
 Disallow: /register

@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
-import {FC, useState, useRef, useEffect} from 'react'
+import {FC, useState, useRef, useEffect, useMemo} from 'react'
 import styles from './AdminUsersPage.module.scss'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import Skeleton from 'react-loading-skeleton'
@@ -11,8 +13,8 @@ import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/Mo
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import CategoriesService from '@/services/categoryes/categoryes.service'
 import {User} from '@/store/User/user.slice'
+import MultiDropSelect from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 
-const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'Kazakhstan']
 const TIME_FILTER_OPTIONS = [
   {label: 'Без фильтров', value: undefined},
   {label: 'Сначала новые', value: 'desc'},
@@ -26,7 +28,6 @@ type CreateUserData = {
   phoneNumber: string
   region: string
   role: User['role']
-  // Дополнительные поля для вендора
   inn?: string
   countries?: string[]
   productCategories?: string[]
@@ -42,6 +43,45 @@ export interface Category {
   childrenCount?: number
   creationDate: string
   lastModificationDate: string
+}
+
+export type MultiSelectOption = {
+  id?: number | string
+  value: string
+  label: string
+  imageUrl?: string
+  children?: MultiSelectOption[]
+}
+
+// Утилита для удаления дубликатов
+function dedupe(arr: string[]): string[] {
+  return Array.from(new Set(arr))
+}
+
+// Построение опций из категорий
+function buildOptionsFromCategories(categories: Category[]): MultiSelectOption[] {
+  const recur = (nodes: Category[]): MultiSelectOption[] =>
+    nodes.map((c) => ({
+      id: c.id,
+      value: c.name,
+      label: c.name,
+      imageUrl: c.imageUrl,
+      children: c.children ? recur(c.children) : undefined
+    }))
+  return recur(categories)
+}
+
+// Плоский список всех опций
+function flattenOptions(options: MultiSelectOption[]): MultiSelectOption[] {
+  const out: MultiSelectOption[] = []
+  const walk = (nodes: MultiSelectOption[]) => {
+    nodes.forEach((n) => {
+      out.push(n)
+      if (n.children?.length) walk(n.children)
+    })
+  }
+  walk(options)
+  return out
 }
 
 const LoadMoreTrigger: FC<{onLoadMore: () => void; hasMore: boolean}> = ({onLoadMore, hasMore}) => {
@@ -64,7 +104,7 @@ const LoadMoreTrigger: FC<{onLoadMore: () => void; hasMore: boolean}> = ({onLoad
         })
       },
       {
-        rootMargin: '0px 0px 500px 0px', // 500px от низа экрана
+        rootMargin: '0px 0px 500px 0px',
         threshold: 0.1
       }
     )
@@ -103,7 +143,6 @@ const LoadMoreTrigger: FC<{onLoadMore: () => void; hasMore: boolean}> = ({onLoad
 const AdminUsersPage: FC = () => {
   const allTitles = ['ID', 'Имя', 'Почта', 'Страна', 'Роль', 'Изменить']
 
-  // Используем наш хук для управления пользователями
   const {
     users,
     loading,
@@ -118,12 +157,10 @@ const AdminUsersPage: FC = () => {
     refreshUsers
   } = useUsers(instance, 10)
 
-  // Локальные состояния для поиска и фильтров
   const [searchValue, setSearchValue] = useState('')
   const [selectedRoleFilter, setSelectedRoleFilter] = useState('Без фильтров')
   const [selectedTimeFilter, setSelectedTimeFilter] = useState('Без фильтров')
 
-  // Состояния для создания пользователя
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [createLoading, setCreateLoading] = useState(false)
   const [createData, setCreateData] = useState<CreateUserData>({
@@ -131,20 +168,29 @@ const AdminUsersPage: FC = () => {
     email: '',
     password: '',
     phoneNumber: '',
-    region: '',
+    region: 'Russia',
     role: 'User',
     inn: '',
-    countries: [],
+    countries: ['Russia'],
     productCategories: []
   })
   const [activeImages, setActiveImages] = useState<string[]>([])
   const [categories, setCategories] = useState<Category[]>([])
-  const [selectedCountries, setSelectedCountries] = useState<string[]>([])
+  const [selectedCountries, setSelectedCountries] = useState<string[]>(['Russia'])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [timeFilter, setTimeFilter] = useState<'asc' | 'desc' | undefined>(undefined)
 
-  // Загрузка категорий при открытии модалки для вендора
+  // Построение опций для MultiDropSelect
+  const options = useMemo(() => buildOptionsFromCategories(categories), [categories])
+  const flatOptions = useMemo(() => flattenOptions(options), [options])
+
+  // Выбранные опции для MultiDropSelect
+  const selectedOptions: MultiSelectOption[] = useMemo(() => {
+    return selectedCategories
+      .map((name) => flatOptions.find((o) => o.label === name || o.value === name))
+      .filter((o): o is MultiSelectOption => o !== undefined)
+  }, [selectedCategories, flatOptions])
+
   useEffect(() => {
     const fetchCategories = async () => {
       if (createData.role === 'Vendor' && categories.length === 0) {
@@ -160,7 +206,6 @@ const AdminUsersPage: FC = () => {
     fetchCategories()
   }, [createData.role, categories.length])
 
-  // Обработка поиска
   const handleSearch = (value: string) => {
     setSearchValue(value)
     if (value.trim()) {
@@ -170,7 +215,6 @@ const AdminUsersPage: FC = () => {
     }
   }
 
-  // Обработка фильтра по роли
   const handleRoleFilter = (filterValue: string) => {
     setSelectedRoleFilter(filterValue)
 
@@ -190,25 +234,21 @@ const AdminUsersPage: FC = () => {
     }
   }
 
-  // Обработка фильтра по времени
   const handleTimeFilter = (filterValue: string) => {
     setSelectedTimeFilter(filterValue)
 
     const selectedOption = TIME_FILTER_OPTIONS.find((option) => option.label === filterValue)
     const direction = selectedOption?.value
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setTimeFilter(direction as any)
 
     if (direction) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setSort('registrationDate', direction as any)
     } else {
       setSort('registrationDate', undefined)
     }
   }
 
-  // Обработка обновления пользователя
   const handleUpdateUser = async (userId: number, updates: User) => {
     try {
       console.log(`Обновление пользователя ${userId}:`, updates)
@@ -235,7 +275,6 @@ const AdminUsersPage: FC = () => {
     }
   }
 
-  // Обработка дозагрузки пользователей
   const handleLoadMore = async () => {
     try {
       loadMoreUsers()
@@ -244,7 +283,6 @@ const AdminUsersPage: FC = () => {
     }
   }
 
-  // Обработка создания пользователя
   const handleCreateUser = async () => {
     if (!createData.login.trim() || !createData.email.trim() || !createData.password.trim()) {
       alert('Заполните обязательные поля')
@@ -255,18 +293,16 @@ const AdminUsersPage: FC = () => {
       setCreateLoading(true)
 
       if (createData.role === 'Vendor') {
-        // Создание вендора
         await instance.post('/auth/force-register-vendor', {
           email: createData.email,
           login: createData.login,
           password: createData.password,
           phoneNumber: createData.phoneNumber,
           inn: createData.inn,
-          countries: selectedCountries,
+          countries: selectedCountries || 'Russia',
           productCategories: selectedCategories
         })
       } else {
-        // Создание обычного пользователя
         await instance.post('/auth/force-register', {
           email: createData.email,
           login: createData.login,
@@ -276,7 +312,6 @@ const AdminUsersPage: FC = () => {
         })
       }
 
-      // Сброс формы
       setCreateData({
         login: '',
         email: '',
@@ -285,15 +320,14 @@ const AdminUsersPage: FC = () => {
         region: '',
         role: 'User',
         inn: '',
-        countries: [],
+        countries: ['Russia'],
         productCategories: []
       })
-      setSelectedCountries([])
+      setSelectedCountries(['Russia'])
       setSelectedCategories([])
       setActiveImages([])
       setIsCreateModalOpen(false)
 
-      // Обновляем список пользователей
       await refreshUsers()
     } catch (error) {
       console.error('Ошибка создания пользователя:', error)
@@ -303,35 +337,23 @@ const AdminUsersPage: FC = () => {
     }
   }
 
-  // Сброс данных формы при изменении роли
   useEffect(() => {
     if (createData.role !== 'Vendor') {
-      setSelectedCountries([])
+      setSelectedCountries(['Russia'])
       setSelectedCategories([])
       setCreateData((prev) => ({
         ...prev,
         inn: '',
-        countries: [],
+        countries: ['Russia'],
         productCategories: []
       }))
     }
   }, [createData.role])
 
-  const toggleCountrySelection = (country: string) => {
-    setSelectedCountries((prev) => (prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]))
-  }
-
-  const toggleCategorySelection = (categoryId: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(categoryId) ? prev.filter((c) => c !== categoryId) : [...prev, categoryId]
-    )
-  }
-
   return (
     <div className={styles.admin__users__page}>
       <p className={styles.users__title}>Пользователи</p>
 
-      {/* Модальное окно создания пользователя */}
       <ModalWindowDefault
         extraClass={styles.create__modal}
         isOpen={isCreateModalOpen}
@@ -384,7 +406,6 @@ const AdminUsersPage: FC = () => {
             extraClass={styles.form__input}
           />
 
-          {/* Выбор роли */}
           <div className={styles.modal__dropdowns}>
             <DropList
               direction='right'
@@ -416,28 +437,6 @@ const AdminUsersPage: FC = () => {
             />
           </div>
 
-          {/* Поля для обычных пользователей */}
-          {createData.role !== 'Vendor' && (
-            <DropList
-              direction='right'
-              extraStyle={{
-                maxWidth: 'fit-content'
-              }}
-              trigger='click'
-              safeAreaEnabled
-              positionIsAbsolute={false}
-              extraListClass={styles.modal__dropdown__list__extra}
-              title={createData.region || 'Выберите регион'}
-              extraClass={styles.modal__dropdown}
-              items={REGION_OPTIONS.map((region) => (
-                <p onClick={() => setCreateData((prev) => ({...prev, region}))} key={region}>
-                  {region}
-                </p>
-              ))}
-            />
-          )}
-
-          {/* Дополнительные поля для вендора */}
           {createData.role === 'Vendor' && (
             <>
               <TextInputUI
@@ -448,39 +447,24 @@ const AdminUsersPage: FC = () => {
                 extraClass={styles.form__input}
               />
 
-              {/* Выбор стран */}
-              <div className={styles.multi__select__section}>
-                <h4>Страны работы:</h4>
-                <div className={styles.multi__select__grid}>
-                  {REGION_OPTIONS.map((country) => (
-                    <label key={country} className={styles.checkbox__item}>
-                      <input
-                        type='checkbox'
-                        checked={selectedCountries.includes(country)}
-                        onChange={() => toggleCountrySelection(country)}
-                      />
-                      <span>{country}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Выбор категорий */}
               {categories.length > 0 && (
-                <div className={styles.multi__select__section}>
+                <div style={{zIndex: '100000'}} className={styles.multi__select__section}>
                   <h4>Категории товаров:</h4>
-                  <div className={styles.multi__select__grid}>
-                    {categories.map((category) => (
-                      <label key={category.id} className={styles.checkbox__item}>
-                        <input
-                          type='checkbox'
-                          checked={selectedCategories.includes(category.id.toString())}
-                          onChange={() => toggleCategorySelection(category.id.toString())}
-                        />
-                        <span>{category.name}</span>
-                      </label>
-                    ))}
-                  </div>
+                  <MultiDropSelect
+                    extraDropListClass={styles.extra_extraDropListClass}
+                    showSearchInput
+                    isOnlyShow={false}
+                    extraClass={styles.profile__region__dropdown__extra}
+                    options={options as any}
+                    isCategories={true}
+                    selectedValues={selectedOptions as any}
+                    onChange={(values: MultiSelectOption[]) => {
+                      const names = dedupe(values.map((v) => v.label || v.value).filter(Boolean))
+                      setSelectedCategories(names)
+                    }}
+                    placeholder={'Выберите категории товаров'}
+                    direction={'bottom'}
+                  />
                 </div>
               )}
             </>
@@ -508,7 +492,6 @@ const AdminUsersPage: FC = () => {
         </div>
       </ModalWindowDefault>
 
-      {/* Показываем ошибку если есть */}
       {error && (
         <div className={styles.error__message}>
           Ошибка: {error}
@@ -539,7 +522,6 @@ const AdminUsersPage: FC = () => {
           ))}
         />
 
-        {/* Новый дроплист для фильтра по времени */}
         <DropList
           direction='bottom'
           extraListClass={styles.extra__list__style}
@@ -555,7 +537,6 @@ const AdminUsersPage: FC = () => {
         <div className={styles.users__actions__create} onClick={() => setIsCreateModalOpen(true)}>
           Создать
         </div>
-        {/* Информация о количестве пользователей */}
         <div className={styles.users__count}>Найдено: {totalElements} пользователей</div>
       </div>
 
@@ -593,7 +574,6 @@ const AdminUsersPage: FC = () => {
               return <Skeleton className={styles.user__row__skeleton} key={i} width={'100%'} height={80} />
             })}
 
-          {/* Intersection Observer триггер */}
           {!loading && users.length > 0 && <LoadMoreTrigger onLoadMore={handleLoadMore} hasMore={hasNextPage} />}
         </div>
       </div>
