@@ -449,9 +449,9 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
                 </button>
               </div>
 
-              <div className={styles.type_selection__info}>
+              {/* <div className={styles.type_selection__info}>
                 <p className={styles.type_selection__info_text}>{t('canChangeType')}</p>
-              </div>
+              </div> */}
             </form>
             <LoginSlider />
           </div>

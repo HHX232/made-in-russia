@@ -1055,5 +1055,10 @@
     "register": "Registration",
     "profile": "Profile",
      "create": "Create product"
+  },
+  "mdEditor": {
+    "preview": "Preview", 
+    "previewPlaceholder": "Preview will appear here...",
+     "dontHaveDescr": "Description not added"
   }
 }

@@ -113,12 +113,11 @@
   width: 100%;
 
   // max-width: 350px;
-  padding: 8px 0;
-  border: 3px solid #0047ba;
+  padding: 11px 0;
 
   // border-radius: 10px;
   // margin: auto auto 0;
-  background-color: #0047ba;
+  background: linear-gradient(#0047ba, #1869ef);
   color: #fff;
   cursor: pointer;
   font-size: 24px;
@@ -126,7 +125,6 @@
   transition: all 0.2s;
 
   &:hover {
-    border: 3px solid #006bff;
     background-color: #006bff;
   }
 }
@@ -323,7 +321,7 @@
 
   // border-radius: 10px;
   // margin: auto auto 0;
-  background-color: #ac2525;
+  background: linear-gradient(#e1251b, #eb5a53);
   color: #fff;
   cursor: pointer;
   font-size: 20px;

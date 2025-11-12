@@ -50,7 +50,7 @@
   display: inline-flex;
   align-items: center;
   padding: 12px 24px;
-  background-color: #0047ba;
+  background: linear-gradient(#0047ba, #1869ef);
   color: var(--white, #fff);
   font-weight: 500;
   text-decoration: none;
@@ -172,7 +172,7 @@
     .popularcatsMorelink {
       min-height: 2.875rem;
       padding-top: 3px;
-      background-color: var(--red, #e74c3c);
+      background: linear-gradient(#e1251b, #eb5a53);
       font-size: 18px;
       padding-inline: 38px;
 

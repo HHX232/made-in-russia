@@ -458,8 +458,8 @@
 
     &_active {
       border: 1px solid #0047ba;
+      background: linear-gradient(#0047ba, #1869ef);
       background-color: transparent;
-      background-color: #0047ba;
       color: #fff;
       cursor: default;
       pointer-events: none;
@@ -589,7 +589,7 @@
   border: none;
   margin-left: 5px;
   aspect-ratio: 1/1;
-  background-color: #0047ba;
+  background: linear-gradient(#0047ba, #1869ef);
   color: #fff;
   cursor: pointer;
   font-size: 23px;
@@ -626,7 +626,7 @@
   border-radius: 0;
   margin-top: 15px;
   margin-left: 0;
-  background-color: #0047ba;
+  background: linear-gradient(#0047ba, #1869ef);
   color: #fff;
   cursor: pointer;
   font-size: 15px;

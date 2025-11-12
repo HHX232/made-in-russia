@@ -1069,5 +1069,10 @@
     "register":"Регистрация",
     "profile":"Профиль",
     "create":"Создать товар"
+  },
+  "mdEditor":{
+    "preview":"Предпросмотр",
+    "previewPlaceholder":"Здесь появится предпросмотр...",
+    "dontHaveDescr":"Описание не добавлено"
   }
 }

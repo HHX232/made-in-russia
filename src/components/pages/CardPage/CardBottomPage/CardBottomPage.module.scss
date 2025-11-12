@@ -215,7 +215,7 @@
   width: 100%;
   padding: 15px;
   margin-top: 5px;
-  background-color: #0047ba;
+  background: linear-gradient(#0047ba, #1869ef);
   color: #fff;
   cursor: pointer;
   font-size: 18px;
@@ -292,7 +292,7 @@
   transition: all 0.2s ease;
 
   &:hover:not(:disabled) {
-    background-color: #0047ba;
+    background: linear-gradient(#0047ba, #1869ef);
     color: #fff;
   }
 

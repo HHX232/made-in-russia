@@ -33,6 +33,7 @@ import {useUserQuery, useLogout} from '@/hooks/useUserApi'
 import DeleteAccountButton from '@/components/UI-kit/buttons/DeleteAccountButton/DeleteAccountButton'
 import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
 import Catalog from '@/components/screens/Catalog/Catalog'
+import MarkdownEditor from '@/components/UI-kit/MDEditor/MarkdownEditor'
 
 type TCurrentTab = 'personalData' | 'contacts' | 'sessions' | 'reviews' | 'faq'
 
@@ -1285,7 +1286,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                   <div className={styles.vendor__description__section}>
                     <div className={styles.vendor__description__label}>{t('description')}</div>
 
-                    <TextAreaUI
+                    {/* <TextAreaUI
                       autoResize
                       minRows={10}
                       maxRows={25}
@@ -1297,8 +1298,15 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                       }}
                       theme='newWhite'
                       placeholder={t('descriptionPlaceholder')}
+                    /> */}
+                    <MarkdownEditor
+                      initialValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
+                      onValueChange={(val) => {
+                        updateVendorDetails({...user?.vendorDetails, description: val})
+                        canUpdateVendorMedia.current = true
+                      }}
+                      readOnly={!isPageForVendor}
                     />
-
                     <div className={styles.vendor__description__photos}>
                       <div
                         style={{marginTop: '30px'}}

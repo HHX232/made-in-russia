@@ -1055,5 +1055,10 @@
       "register": "注册",
       "profile": "个人资料",
       "create": "创建商品"
+    },
+    "mdEditor": {
+      "preview": "预览",
+      "previewPlaceholder": "预览将显示在这里...",
+       "dontHaveDescr": "未添加描述"
     }
 }
