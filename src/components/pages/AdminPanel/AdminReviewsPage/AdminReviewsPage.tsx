@@ -73,6 +73,13 @@ const TIME_FILTER_OPTIONS = [
   {label: 'Сначала старые', value: 'asc'}
 ]
 
+const APPROVE_STATUS_OPTIONS = [
+  {label: 'Все статусы', value: 'Все статусы'},
+  {label: 'Одобрено', value: 'APPROVED'},
+  {label: 'На модерации', value: 'PENDING'},
+  {label: 'Отклонено', value: 'REJECTED'}
+]
+
 // Главный компонент страницы управления отзывами
 const AdminReviewsPage: FC = () => {
   const [reviews, setReviews] = useState<Review[]>([])
@@ -300,9 +307,15 @@ const AdminReviewsPage: FC = () => {
     }
   }
 
-  const handleApproveStatusFilter = (status: string) => {
-    setApproveStatusFilter(status)
+  const handleApproveStatusFilter = (statusValue: string) => {
+    setApproveStatusFilter(statusValue)
     setApproveStatusDropdownOpen(false)
+  }
+
+  // Получить отображаемое название статуса
+  const getApproveStatusLabel = (value: string) => {
+    const option = APPROVE_STATUS_OPTIONS.find((opt) => opt.value === value)
+    return option ? option.label : value
   }
 
   useEffect(() => {
@@ -447,24 +460,24 @@ const AdminReviewsPage: FC = () => {
                 if (e.key === 'Enter' || e.key === ' ') setApproveStatusDropdownOpen((v) => !v)
               }}
             >
-              {approveStatusFilter}
+              {getApproveStatusLabel(approveStatusFilter)}
               <span aria-hidden='true'>▼</span>
             </div>
             {approveStatusDropdownOpen && (
               <div className={styles['dropdown-content']} role='listbox' tabIndex={-1}>
-                {['Все статусы', 'APPROVED', 'PENDING', 'REJECTED'].map((item) => (
+                {APPROVE_STATUS_OPTIONS.map((option) => (
                   <div
-                    key={item}
+                    key={option.value}
                     role='option'
-                    aria-selected={approveStatusFilter === item}
+                    aria-selected={approveStatusFilter === option.value}
                     tabIndex={0}
-                    className={`${styles['dropdown-item']} ${approveStatusFilter === item ? styles.active : ''}`}
-                    onClick={() => handleApproveStatusFilter(item)}
+                    className={`${styles['dropdown-item']} ${approveStatusFilter === option.value ? styles.active : ''}`}
+                    onClick={() => handleApproveStatusFilter(option.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') handleApproveStatusFilter(item)
+                      if (e.key === 'Enter' || e.key === ' ') handleApproveStatusFilter(option.value)
                     }}
                   >
-                    {item}
+                    {option.label}
                   </div>
                 ))}
               </div>

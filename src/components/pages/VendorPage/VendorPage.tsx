@@ -1178,6 +1178,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                           onClick={() => {
                             setCurrentTab('reviews')
                           }}
+                          style={{cursor: 'pointer'}}
                           className={styles.account_stat_card}
                         >
                           <div className={styles.account_stat_card__header}>
@@ -1649,7 +1650,8 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
               padding: '10px 20px',
               fontSize: '16px',
               fontWeight: '500',
-              backgroundColor: '#0047BA',
+              // backgroundColor: '#0047BA',
+              background: ' linear-gradient(#0047ba, #1869ef)',
               color: '#fff'
             }}
             onClick={() => setWantQuite(false)}
@@ -1661,7 +1663,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
               padding: '10px 35px',
               fontSize: '16px',
               fontWeight: '500',
-              backgroundColor: '#E1251B',
+              background: 'linear-gradient(#e1251b, #eb5a53)',
               color: '#fff'
             }}
             onClick={handleLogout}

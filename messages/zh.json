@@ -354,6 +354,7 @@
     },
     "CardTopPage": {
       "from": "来自",
+      "errorUpdatingFavorites": "更新收藏时出错。请注册或登录您的账户",
       "daysBeforeDiscountExpires": "天促销结束",
       "successCallback": "申请提交成功！",
       "errorCallback": "提交申请时出错！需要注册",
@@ -419,6 +420,7 @@
     "mainText": "页面未找到或已删除。请检查URL或返回首页。"
   },
   "CardTopPage": {
+    "errorUpdatingFavorites": "更新收藏时出错。请注册或登录您的账户",
     "from": "来自",
     "daysBeforeDiscountExpires": "天促销结束",
     "successCallback": "申请提交成功！",
@@ -460,7 +462,6 @@
   },
   "CardBottomPage": {
     "send": "发送",
-     "errorUpdatingFavorites": "更新收藏时出错。请注册或登录您的账户",
     "success": "成功！",
     "newDayerror": "您必须经过授权且账户注册时间需超过7天",
     "successPublished": "评论已提交审核",

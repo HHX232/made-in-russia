@@ -1,5 +1,5 @@
 'use client'
-import {CSSProperties, memo, ReactNode, useCallback, useId, useState} from 'react'
+import {CSSProperties, memo, ReactNode, useCallback, useId, useState, useEffect, useRef} from 'react'
 import styles from './TextInputUI.module.scss'
 import Image, {StaticImageData} from 'next/image'
 import cn from 'clsx'
@@ -72,7 +72,20 @@ const TextInputUI = memo<ITextInputProps>(
     maxLength
   }) => {
     const [textIsShow, setTextIsShow] = useState(false)
+    const [internalType, setInternalType] = useState<string>(() => {
+      if (isSecret) return 'password'
+      if (inputType === 'numbersWithSpec') return 'text'
+      return inputType || 'text'
+    })
+    const inputRef = useRef<HTMLInputElement>(null)
     const id = useId()
+
+    // Синхронизация внутреннего и внешнего ref
+    useEffect(() => {
+      if (refProps && inputRef.current) {
+        refProps.current = inputRef.current
+      }
+    }, [refProps])
 
     const isValidNumberInput = useCallback((value: string): boolean => {
       return /^-?[\d.,]*$/.test(value)
@@ -118,19 +131,28 @@ const TextInputUI = memo<ITextInputProps>(
     )
 
     const toggleTextVisibility = useCallback(() => {
-      setTextIsShow((prev) => !prev)
-    }, [])
+      setTextIsShow((prev) => {
+        const newState = !prev
 
-    // Определяем тип input в зависимости от isSecret и textIsShow
-    const getInputType = () => {
-      if (isSecret) {
-        return textIsShow ? 'text' : 'password'
-      }
-      if (inputType === 'numbersWithSpec') {
-        return 'text'
-      }
-      return inputType || 'text'
-    }
+        // Сохраняем текущую позицию курсора
+        const input = inputRef.current
+        const selectionStart = input?.selectionStart ?? null
+        const selectionEnd = input?.selectionEnd ?? null
+
+        // Меняем тип поля
+        setInternalType(newState ? 'text' : 'password')
+
+        // Восстанавливаем позицию курсора после смены типа
+        setTimeout(() => {
+          if (input && selectionStart !== null && selectionEnd !== null) {
+            input.setSelectionRange(selectionStart, selectionEnd)
+            input.focus()
+          }
+        }, 0)
+
+        return newState
+      })
+    }, [])
 
     return (
       <label
@@ -155,9 +177,9 @@ const TextInputUI = memo<ITextInputProps>(
         </div>
         <div className={`${styles.input__inner__box} ${errorValue && styles.error__input__inner__box}`}>
           <input
-            ref={refProps}
+            ref={inputRef}
             placeholder={placeholder}
-            type={getInputType()}
+            type={internalType}
             value={currentValue}
             onChange={handleChange}
             onBlur={onBlur}

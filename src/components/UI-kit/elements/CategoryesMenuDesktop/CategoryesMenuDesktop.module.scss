@@ -94,7 +94,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
 
     @media (min-width: 992px) {
       &:hover {
-        background-color: #e1251b;
+        background: linear-gradient(#e1251b, #eb5a53);
 
         .exp_catalog__cat_link {
           color: #fff;
@@ -110,7 +110,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
       }
 
       &.active {
-        background-color: #e1251b;
+        background: linear-gradient(#e1251b, #eb5a53);
 
         .exp_catalog__cat_link {
           color: #fff;
@@ -137,6 +137,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     width: 100%;
     min-height: rem(47);
     align-items: center;
+    padding-left: 8px;
     color: #000;
     font-size: rem(16);
     font-weight: 500;
@@ -275,6 +276,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   }
 
   &_title {
+    padding-left: 8px;
     color: #000;
     font-size: 22px;
     font-weight: 600;
@@ -315,9 +317,10 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
       transition: background-color 0.2s ease-in-out;
 
       &:hover {
-        background-color: #e1251b;
+        background: linear-gradient(#e1251b, #eb5a53);
 
         .exp_catalog__subcats_link {
+          padding-left: 8px;
           color: #fff;
         }
 
@@ -343,6 +346,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   &_link {
     display: block;
     width: 100%;
+    padding-left: 8px;
     color: #000;
     font-size: rem(16);
     font-weight: 500;

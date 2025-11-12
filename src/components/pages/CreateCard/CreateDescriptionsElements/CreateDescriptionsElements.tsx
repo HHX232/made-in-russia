@@ -9,7 +9,8 @@ import {HELP_IMAGES} from '../CreateCard'
 import {useTranslations} from 'next-intl'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
+// import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
+import MarkdownEditor from '@/components/UI-kit/MDEditor/MarkdownEditor'
 
 const vopros = '/vopros.svg'
 
@@ -136,13 +137,18 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
             />
           </div>
           <div className={styles.editor__wrapper} onFocus={handleDescriptionFocus} onBlur={handleDescriptionBlur}>
-            <TextAreaUI
+            {/* <TextAreaUI
               extraClass={`${styles.editor__extra__text}`}
               rows={18}
               onSetValue={(val) => setDescriptionOne({language: currentDynamicLang, description: val})}
               currentValue={descriptions[currentDynamicLang].description}
               placeholder={t('writeDescription')}
               theme='newWhite'
+            /> */}
+            <MarkdownEditor
+              onValueChange={(val) => setDescriptionOne({language: currentDynamicLang, description: val})}
+              placeholder={t('writeDescription')}
+              initialValue={descriptions[currentDynamicLang].description}
             />
           </div>
           {showDescriptionError && <p className={styles.error__message}>{descriptionError}</p>}

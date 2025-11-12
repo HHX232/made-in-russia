@@ -1,5 +1,5 @@
 'use client'
-import {FC, useEffect} from 'react'
+import {FC} from 'react'
 import styles from './CardMiddlePage.module.scss'
 // import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
 // import Image from 'next/image'
@@ -9,11 +9,9 @@ import {useTranslations} from 'next-intl'
 import ShowMarkdown from '@/components/UI-kit/Texts/ShowMarkdown/ShowMarkdown'
 import Image from 'next/image'
 import Link from 'next/link'
+import MarkdownEditor from '@/components/UI-kit/MDEditor/MarkdownEditor'
 
 const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoading, cardData}) => {
-  useEffect(() => {
-    // console.log('cardData in middle', cardData)
-  }, [cardData])
   const t = useTranslations('CardMiddlePage')
   return (
     <div className={`${styles.card__middle__box}`}>
@@ -34,7 +32,14 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
             <></>
           )} */}
           {!isLoading ? (
-            <ShowMarkdown extraClass={styles.margin__bottom__mark} markValue={cardData.mainDescription} />
+            <>
+              <MarkdownEditor
+                extraPreviewClass={styles.extra__prev__md}
+                readOnly
+                initialValue={cardData.mainDescription}
+                extraClass={styles.margin__bottom__mark}
+              />
+            </>
           ) : (
             <>
               {' '}

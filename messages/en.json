@@ -354,6 +354,7 @@
     },
     "CardTopPage": {
       "from": "from",
+      "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account",
       "daysBeforeDiscountExpires": "days until promotion ends",
       "successCallback": "Request sent successfully!",
       "errorCallback": "Error sending request! You must be registered",
@@ -420,6 +421,7 @@
   },
   "CardTopPage": {
     "from": "from",
+    "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account",
     "daysBeforeDiscountExpires": "days until promotion ends",
     "successCallback": "Request sent successfully!",
     "errorCallback": "Error sending request! You must be registered",
@@ -617,7 +619,6 @@
     }
   },
   "CardComponent": {
-    "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account",
     "defaultTitle": "Great deal",
     "cardImageAlt": "Product image",
     "saw": "View",

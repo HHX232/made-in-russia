@@ -30,6 +30,7 @@
 .login__form__box {
   display: flex;
   width: 54%;
+  min-height: 575px;
 
   // min-height: 680px;
   max-height: fit-content;
@@ -148,7 +149,7 @@
   transition: all 0.2s;
 
   &:hover {
-    background-color: #e1251b;
+    background: linear-gradient(#e1251b, #eb5a53);
     color: #fff;
   }
 }
