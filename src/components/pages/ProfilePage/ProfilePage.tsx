@@ -550,7 +550,10 @@ export const ProfileActions: FC<ProfileActionsProps> = ({
         const res = instance.patch(
           '/me',
           {
-            phoneNumber: numberStartWith + phoneNumber,
+            phoneNumber: (() => {
+              const fullNumber = numberStartWith + phoneNumber
+              return !['+7', '+375', '+86', '7', '375', '86'].includes(fullNumber.trim()) ? fullNumber : ''
+            })(),
             region,
             login: login || userData?.login
           },

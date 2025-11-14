@@ -53,8 +53,8 @@
   "RegisterUserPage": {
      "chooseAccountType": "Choose account type",
       "selectRoleDescription": "Select the appropriate role for registration",
-      "buyerDescription": "Looking for products and services to buy",
-      "vendorDescription": "Offering products and services for sale",
+      "buyerDescription": "Looking for products to buy",
+      "vendorDescription": "Offering products for sale",
       "canChangeType": "You can change your account type later in settings",
     "iSuccessWith": "I agree with the user agreement and ",
 "policy": "privacy policy",
@@ -353,6 +353,7 @@
       }
     },
     "CardTopPage": {
+      "error":"Error!",
       "from": "from",
       "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account",
       "daysBeforeDiscountExpires": "days until promotion ends",
@@ -420,6 +421,7 @@
     "mainText": "Page not found or deleted. Check the URL or return to home."
   },
   "CardTopPage": {
+    "error":"Error!",
     "from": "from",
     "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account",
     "daysBeforeDiscountExpires": "days until promotion ends",
@@ -632,7 +634,8 @@
     "errorUpdateStatus": "Error changing status",
     "PENDING": "Moderation",
     "APPROVED": "Approved",
-    "REJECTED": "Rejected"
+    "REJECTED": "Rejected",
+    "errorUpdatingFavorites":"Error updating favorites. Please register or log in to your account"
   },
   "Privacy": {
     "back": "Go back",
@@ -1055,11 +1058,18 @@
     "login": "Login",
     "register": "Registration",
     "profile": "Profile",
-     "create": "Create product"
+     "create": "Create product",
+      "about": "About us",
+    "help": "Support"
   },
   "mdEditor": {
     "preview": "Preview", 
     "previewPlaceholder": "Preview will appear here...",
      "dontHaveDescr": "Description not added"
+  },
+  "comment": {
+    "approved": "Approved",
+    "pending": "Moderation",
+    "rejected": "Rejected"
   }
 }

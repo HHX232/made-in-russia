@@ -21,6 +21,63 @@ const TIME_FILTER_OPTIONS = [
   {label: 'Сначала старые', value: 'asc'}
 ]
 
+type PhoneCheckResult = {
+  country: 'Russia' | 'Belarus' | 'Kazakhstan' | 'China' | 'Unknown'
+  phone: string
+  valid: boolean
+}
+
+export function normalizePhone(input: string): PhoneCheckResult {
+  // 1. Удаляем всё кроме цифр
+  let digits = input.replace(/\D/g, '')
+
+  // Возможные страны
+  const countries = [
+    {code: '375', country: 'Belarus', length: 12}, // +375 XXX XXX XXX (12 символов + включая код)
+    {code: '7', country: 'Russia', length: 11}, // +7 XXX XXX XX XX
+    {code: '76', country: 'Kazakhstan', length: 11}, // +76…
+    {code: '77', country: 'Kazakhstan', length: 11}, // +77…
+    {code: '86', country: 'China', length: 13} // +86 XXX XXXX XXXX
+  ]
+
+  // 2. Если начинается с 8 и длина 11 — Россия
+  if (digits.startsWith('8') && digits.length === 11) {
+    digits = '7' + digits.substring(1)
+  }
+
+  // 3. Определяем страну по коду (включая дубль)
+  let detected = countries.find((c) => digits.startsWith(c.code))
+
+  // 4. Удаление дублей кода страны (ТВОЙ СЛУЧАЙ!)
+  if (detected) {
+    const code = detected.code
+    while (digits.startsWith(code + code)) {
+      digits = digits.replace(code, '')
+    }
+  }
+
+  // 5. Повторная идентификация после удаления дублей
+  detected = countries.find((c) => digits.startsWith(c.code))
+
+  if (!detected) {
+    return {
+      country: 'Unknown',
+      phone: '+' + digits,
+      valid: false
+    }
+  }
+
+  // 6. Приведение к правильной длине
+  const correctLength = detected.length
+  const full = digits.substring(0, correctLength)
+
+  return {
+    country: detected.country as PhoneCheckResult['country'],
+    phone: '+' + full,
+    valid: full.length === correctLength
+  }
+}
+
 type CreateUserData = {
   login: string
   email: string
@@ -256,7 +313,7 @@ const AdminUsersPage: FC = () => {
         email: updates.email,
         region: updates.region,
         login: updates.login,
-        phoneNumber: updates.phoneNumber
+        phoneNumber: normalizePhone(updates.phoneNumber).phone
       })
       await refreshUsers()
     } catch (err) {
@@ -297,7 +354,7 @@ const AdminUsersPage: FC = () => {
           email: createData.email,
           login: createData.login,
           password: createData.password,
-          phoneNumber: createData.phoneNumber,
+          phoneNumber: normalizePhone(createData.phoneNumber).phone,
           inn: createData.inn,
           countries: selectedCountries || 'Russia',
           productCategories: selectedCategories
@@ -308,7 +365,7 @@ const AdminUsersPage: FC = () => {
           login: createData.login,
           password: createData.password,
           region: createData.region,
-          phoneNumber: createData.phoneNumber
+          phoneNumber: normalizePhone(createData.phoneNumber).phone
         })
       }
 
@@ -343,6 +400,7 @@ const AdminUsersPage: FC = () => {
       setSelectedCategories([])
       setCreateData((prev) => ({
         ...prev,
+        phoneNumber: prev.phoneNumber,
         inn: '',
         countries: ['Russia'],
         productCategories: []
@@ -400,7 +458,7 @@ const AdminUsersPage: FC = () => {
 
           <TextInputUI
             placeholder='Номер телефона'
-            currentValue={createData.phoneNumber}
+            currentValue={normalizePhone(createData.phoneNumber).phone}
             onSetValue={(value) => setCreateData((prev) => ({...prev, phoneNumber: value}))}
             theme='superWhite'
             extraClass={styles.form__input}

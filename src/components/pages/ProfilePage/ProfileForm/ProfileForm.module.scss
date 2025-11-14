@@ -29,6 +29,15 @@
   padding: 12px 25px !important;
 }
 
+.address__span {
+  width: 100%;
+  padding: 10px 20px;
+  border: 1px solid rgb(47 47 47 / 20%);
+  background-color: #fff;
+  font-size: 15px;
+  line-height: 21px;
+}
+
 .form_row_grid {
   display: flex;
   flex-direction: column;

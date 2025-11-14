@@ -12,7 +12,7 @@ const ProfilePageBottomDelivery: FC = () => {
   const [reviews, setReviews] = useState<Review[]>([])
   const [isClient, setIsClient] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 3
+  const itemsPerPage = 5
   const currentLang = useCurrentLanguage()
 
   useEffect(() => {

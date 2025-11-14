@@ -265,7 +265,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
     if (!userInteracted) return
 
     const baseData: UpdatedUserData = {
-      phoneNumber: telText,
+      phoneNumber: telText && !['+7', '+375', '+86', '7', '375', '86'].includes(telText.trim()) ? telText : '',
       region: selectedRegion.altName,
       ...(password && {password})
     }
@@ -697,22 +697,29 @@ const ProfileForm: FC<ProfileFormProps> = ({
             <div className={styles.editable}>
               <span className={styles.editable_text}>{t('address')}</span>
               <div className={styles.editable_wrap}>
-                <TextInputUI
-                  disabled={!isShowForOwner}
-                  extraClass={styles.editable_input}
-                  theme='newWhite'
-                  readOnly={!!onlyShowAddress}
-                  currentValue={!isShowForOwner ? onlyShowAddress || '' : vendorDetails?.address || ''}
-                  onSetValue={(value) => {
-                    updateVendorAddress(value)
-                    updateVendorDetailsAction({...vendorDetails, address: value})
-                    console.log('value on set adress', value, 'vendorDetails after setter', vendorDetails)
-                    if (value.length > 0) {
-                      setUserInteracted(true)
-                    }
-                  }}
-                  placeholder={t('addressPlaceholder')}
-                />
+                {isShowForOwner && (
+                  <TextInputUI
+                    disabled={!isShowForOwner}
+                    extraClass={styles.editable_input}
+                    theme='newWhite'
+                    readOnly={!!onlyShowAddress}
+                    currentValue={!isShowForOwner ? onlyShowAddress || '' : vendorDetails?.address || ''}
+                    onSetValue={(value) => {
+                      updateVendorAddress(value)
+                      updateVendorDetailsAction({...vendorDetails, address: value})
+                      console.log('value on set adress', value, 'vendorDetails after setter', vendorDetails)
+                      if (value.length > 0) {
+                        setUserInteracted(true)
+                      }
+                    }}
+                    placeholder={t('addressPlaceholder')}
+                  />
+                )}
+                {!isShowForOwner && (
+                  <div className={styles.address__span}>
+                    {!isShowForOwner ? onlyShowAddress || '' : vendorDetails?.address || ''}
+                  </div>
+                )}
               </div>
             </div>
           </div>

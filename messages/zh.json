@@ -53,8 +53,8 @@
   "RegisterUserPage": {
       "chooseAccountType": "选择账户类型",
       "selectRoleDescription": "选择适合的注册角色",
-      "buyerDescription": "寻找商品和服务进行购买",
-      "vendorDescription": "提供商品和服务进行销售",
+      "buyerDescription": "寻找商品进行购买",
+      "vendorDescription": "提供商品进行销售",
       "canChangeType": "您可以稍后在设置中更改账户类型",
     "iSuccessWith": "我同意用户协议和 ",
 "policy": "隐私政策",
@@ -353,6 +353,7 @@
       }
     },
     "CardTopPage": {
+      "error":"错误！",
       "from": "来自",
       "errorUpdatingFavorites": "更新收藏时出错。请注册或登录您的账户",
       "daysBeforeDiscountExpires": "天促销结束",
@@ -420,6 +421,7 @@
     "mainText": "页面未找到或已删除。请检查URL或返回首页。"
   },
   "CardTopPage": {
+    "error":"错误！",
     "errorUpdatingFavorites": "更新收藏时出错。请注册或登录您的账户",
     "from": "来自",
     "daysBeforeDiscountExpires": "天促销结束",
@@ -632,7 +634,8 @@
     "errorUpdateStatus": "更改状态时出错",
     "PENDING": "审核中",
     "APPROVED": "已批准",
-    "REJECTED": "已拒绝"
+    "REJECTED": "已拒绝",
+    "errorUpdatingFavorites":"更新收藏时出错。请注册或登录您的账户"
   },
   "Privacy": {
     "back": "返回",
@@ -1055,11 +1058,18 @@
       "login": "登录",
       "register": "注册",
       "profile": "个人资料",
-      "create": "创建商品"
+      "create": "创建商品",
+       "about": "关于我们",
+    "help": "支持"
     },
     "mdEditor": {
       "preview": "预览",
       "previewPlaceholder": "预览将显示在这里...",
        "dontHaveDescr": "未添加描述"
+    },
+    "comment": {
+      "approved": "已确认",
+      "pending": "审核中",
+      "rejected": "已拒绝"
     }
 }

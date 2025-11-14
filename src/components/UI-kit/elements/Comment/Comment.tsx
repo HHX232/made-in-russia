@@ -5,7 +5,7 @@ import ModalWindowDefault from '../../modals/ModalWindowDefault/ModalWindowDefau
 import SlickCardSlider from '../CardSlider/CardSlider'
 import formatDateToDayMonth from '@/utils/formatedDateToMonth'
 import {Review} from '@/services/card/card.types'
-import {useLocale} from 'next-intl'
+import {useLocale, useTranslations} from 'next-intl'
 import instance from '@/api/api.interceptor'
 import {toast} from 'sonner'
 
@@ -39,7 +39,7 @@ const Comment: FC<CommentProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const currentLang: any = useLocale()
   const [approveStatusState, setApproveStatusState] = useState(approveStatus)
-
+  const t = useTranslations('comment')
   const handleDeleteComm = ({id}: {id: string}) => {
     const innerF = async () => {
       try {
@@ -249,7 +249,7 @@ const Comment: FC<CommentProps> = ({
                     : styles.rejected
               }`}
             >
-              {approveStatusState}
+              {t(approveStatusState?.toLocaleLowerCase() || '')}
               <div className={styles.status__buttons__box}>
                 <button onClick={handleApprove} className={styles.status__buttons__box__button__approve}>
                   <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>

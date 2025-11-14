@@ -1,12 +1,15 @@
 import AboutUs from '@/components/pages/AboutUs/AboutUs'
+import {getTranslations} from 'next-intl/server'
 
 export default function AboutUsPage() {
   return <AboutUs />
 }
 
 export async function generateMetadata() {
+  const t = await getTranslations('metaTitles')
   try {
     return {
+      title: t('about'),
       icons: {
         icon: '/mstile-c-144x144.png',
         shortcut: '/favicon-c-32x32.png',

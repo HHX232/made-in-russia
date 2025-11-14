@@ -118,8 +118,8 @@
     "categoriesSubtext": "Выберите основные категории товаров, с которыми работает ваша компания",
     "chooseAccountType": "Выберите тип аккаунта",
       "selectRoleDescription": "Выберите подходящую роль для регистрации",
-      "buyerDescription": "Ищу товары и услуги для покупки",
-      "vendorDescription": "Предлагаю товары и услуги для продажи",
+      "buyerDescription": "Ищу товары  для покупки",
+      "vendorDescription": "Предлагаю товары для продажи",
       "canChangeType": "Вы сможете изменить тип аккаунта позже в настройках"
   },
   "MinimalHeader": {
@@ -365,6 +365,7 @@
       }
     },
     "CardTopPage": {
+      "error":"Ошибка!",
       "from": "от",
       "errorUpdatingFavorites": "Ошибка при обновлении избранного. Зарегистрируйтесь или войдите в свой аккаунт",
       "daysBeforeDiscountExpires": "дней до завершения акции",
@@ -429,6 +430,7 @@
     }
   },
   "CardTopPage": {
+    "error":"Ошибка!",
     "from": "от",
     "errorUpdatingFavorites": "Ошибка при обновлении избранного. Зарегистрируйтесь или войдите в свой аккаунт",
     "daysBeforeDiscountExpires": "дней до завершения акции",
@@ -647,7 +649,8 @@
     "errorUpdateStatus": "Ошибка при изменении статуса",
     "PENDING": "Модерация",
     "APPROVED": "Одобрено",
-    "REJECTED": "Отклонено"
+    "REJECTED": "Отклонено",
+    "errorUpdatingFavorites":"Ошибка при обновлении избранного. Зарегистрируйтесь или войдите в свой аккаунт"
   },
   "Privacy": {
     "back": " Вернуться назад",
@@ -1069,11 +1072,18 @@
     "login":"Вход",
     "register":"Регистрация",
     "profile":"Профиль",
-    "create":"Создать товар"
+    "create":"Создать товар",
+    "about":"О нас",
+    "help":"Поддержка"
   },
   "mdEditor":{
     "preview":"Предпросмотр",
     "previewPlaceholder":"Здесь появится предпросмотр...",
     "dontHaveDescr":"Описание не добавлено"
+  },
+  "comment":{
+    "approved":"Подтверждено",
+    "pending":"Модерация",
+    "rejected":"Отклонено"
   }
 }

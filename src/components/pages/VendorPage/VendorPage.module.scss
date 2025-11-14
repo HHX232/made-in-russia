@@ -416,7 +416,10 @@
     color: #000;
     font-size: 20px;
     font-weight: 600;
+    hyphens: auto;
     line-height: 24px;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   &__email {

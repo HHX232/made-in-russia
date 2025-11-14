@@ -5,22 +5,40 @@ import {getAccessToken} from '@/services/auth/auth.helper'
 import {toast} from 'sonner'
 import {useTranslations} from 'next-intl'
 import {useUserCache, useUserQuery} from '@/hooks/useUserApi'
+import ImageCropEditor from '../ImageCropEditor/ImageCropEditor'
 
 interface AvatarProps {
   avatarUrl?: string
   isOnlyShow?: boolean
   onAvatarChange?: (newAvatarUrl: string | null) => void
+  useRedactor?: boolean
+  redactorShape?: 'circle' | 'square'
+  redactorSize?: number
 }
 
-const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange, isOnlyShow = false}) => {
+const Avatar: React.FC<AvatarProps> = ({
+  avatarUrl,
+  onAvatarChange,
+  isOnlyShow = false,
+  useRedactor = true,
+  redactorShape = 'circle',
+  redactorSize = 400
+}) => {
   const [isHovered, setIsHovered] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [localAvatar, setLocalAvatar] = useState<string | null>(null)
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const [editorImageUrl, setEditorImageUrl] = useState<string>('')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const t = useTranslations('ProfilePage')
   const defaultAvatar = '/avatars/avatar-v-2.svg'
   const displayAvatar = localAvatar || avatarUrl || defaultAvatar
   const hasAvatar = Boolean(localAvatar || avatarUrl)
+
+  const {invalidateUser} = useUserCache()
+  const {refetch} = useUserQuery()
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -28,25 +46,81 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange, isOnlyShow = 
 
     // Валидация типа файла
     if (!file.type.match(/^image\/(jpeg|jpg|png)$/)) {
-      alert('Поддерживаются только JPEG и PNG файлы')
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>Ошибка</strong>
+          <span>Поддерживаются только JPEG и PNG файлы</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return
     }
 
     // Валидация размера файла (максимум 2MB)
     if (file.size > 2 * 1024 * 1024) {
-      alert('Размер файла не должен превышать 2MB')
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>Ошибка</strong>
+          <span>Размер файла не должен превышать 2MB</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return
     }
 
-    // Создаем локальный URL для предварительного просмотра
-    const localUrl = URL.createObjectURL(file)
-    setLocalAvatar(localUrl)
-
-    uploadAvatar(file)
+    // Если редактор включен, открываем его
+    if (useRedactor) {
+      const localUrl = URL.createObjectURL(file)
+      setEditorImageUrl(localUrl)
+      setPendingFile(file)
+      setIsEditorOpen(true)
+    } else {
+      // Без редактора загружаем напрямую
+      const localUrl = URL.createObjectURL(file)
+      setLocalAvatar(localUrl)
+      uploadAvatar(file)
+    }
   }
 
-  const {invalidateUser} = useUserCache()
-  const {refetch} = useUserQuery()
+  const handleEditorSave = async (croppedFile: File) => {
+    // Создаем локальный URL для предварительного просмотра
+    const localUrl = URL.createObjectURL(croppedFile)
+    setLocalAvatar(localUrl)
+
+    // Закрываем редактор
+    setIsEditorOpen(false)
+    if (editorImageUrl) {
+      URL.revokeObjectURL(editorImageUrl)
+    }
+    setEditorImageUrl('')
+    setPendingFile(null)
+
+    // Загружаем обрезанное изображение
+    await uploadAvatar(croppedFile)
+  }
+
+  const handleEditorClose = () => {
+    setIsEditorOpen(false)
+    if (editorImageUrl) {
+      URL.revokeObjectURL(editorImageUrl)
+    }
+    setEditorImageUrl('')
+    setPendingFile(null)
+
+    // Очищаем input для возможности повторной загрузки
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
   const uploadAvatar = async (file: File) => {
     setIsLoading(true)
 
@@ -63,10 +137,6 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange, isOnlyShow = 
       })
 
       if (response.ok) {
-        // Сервер возвращает только 200, поэтому оставляем локальный аватар
-        // Локальный URL остается в localAvatar для отображения
-        // При перезагрузке страницы аватар будет загружен с сервера через avatarUrl prop
-
         toast.success(
           <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
             <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('congratulations')}</strong>
@@ -79,8 +149,6 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange, isOnlyShow = 
           }
         )
 
-        // Уведомляем родительский компонент, что аватар был загружен
-        // Передаем специальный флаг или текущий localAvatar
         onAvatarChange?.(localAvatar)
         await invalidateUser()
         await refetch()
@@ -168,7 +236,7 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange, isOnlyShow = 
   }
 
   const handleClick = () => {
-    if (isLoading) return
+    if (isLoading || isOnlyShow) return
 
     if (hasAvatar) {
       deleteAvatar()
@@ -183,45 +251,61 @@ const Avatar: React.FC<AvatarProps> = ({avatarUrl, onAvatarChange, isOnlyShow = 
       if (localAvatar) {
         URL.revokeObjectURL(localAvatar)
       }
+      if (editorImageUrl) {
+        URL.revokeObjectURL(editorImageUrl)
+      }
     }
-  }, [localAvatar])
+  }, [localAvatar, editorImageUrl])
 
   return (
-    <div
-      className={styles.avatar}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClick}
-      style={{pointerEvents: isOnlyShow ? 'none' : 'auto'}}
-    >
-      <Image
-        width={60}
-        height={60}
-        src={displayAvatar}
-        alt='avatar'
-        className={styles.avatar__image}
-        // Добавляем key для принудительного обновления изображения
-        key={displayAvatar}
-      />
+    <>
+      <div
+        className={styles.avatar}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleClick}
+        style={{pointerEvents: isOnlyShow ? 'none' : 'auto'}}
+      >
+        <Image
+          width={60}
+          height={60}
+          src={displayAvatar}
+          alt='avatar'
+          className={styles.avatar__image}
+          key={displayAvatar}
+        />
 
-      {(isHovered || isLoading) && (
-        <div className={styles.avatar__overlay}>
-          {isLoading ? (
-            <div className={styles.avatar__spinner} />
-          ) : (
-            <div className={styles.avatar__icon}>{hasAvatar ? '−' : '+'}</div>
-          )}
-        </div>
+        {(isHovered || isLoading) && !isOnlyShow && (
+          <div className={styles.avatar__overlay}>
+            {isLoading ? (
+              <div className={styles.avatar__spinner} />
+            ) : (
+              <div className={styles.avatar__icon}>{hasAvatar ? '−' : '+'}</div>
+            )}
+          </div>
+        )}
+
+        <input
+          ref={fileInputRef}
+          type='file'
+          accept='image/jpeg,image/jpg,image/png'
+          onChange={handleFileSelect}
+          className={styles.avatar__input}
+        />
+      </div>
+
+      {useRedactor && isEditorOpen && editorImageUrl && (
+        <ImageCropEditor
+          imageUrl={editorImageUrl}
+          isOpen={isEditorOpen}
+          onClose={handleEditorClose}
+          onSave={handleEditorSave}
+          cropShape={redactorShape}
+          cropSize={redactorSize}
+          aspectRatio={1}
+        />
       )}
-
-      <input
-        ref={fileInputRef}
-        type='file'
-        accept='image/jpeg,image/jpg,image/png'
-        onChange={handleFileSelect}
-        className={styles.avatar__input}
-      />
-    </div>
+    </>
   )
 }
 
