@@ -18,10 +18,10 @@ const nextConfig: NextConfig = {
   assetPrefix: isProduction ? `${CDN_URL}/${CDN_FOLDER}` : '',
 
   images: {
-    ...(isProduction && {
-      loader: 'custom',
-      loaderFile: './image-loader.js'
-    }),
+    // ...(isProduction && {
+    //   loader: 'custom',
+    //   loaderFile: './image-loader.js'
+    // }),
     unoptimized: isProduction,
     domains: [
       'loremflickr.com',
