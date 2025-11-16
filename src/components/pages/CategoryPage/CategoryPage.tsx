@@ -33,7 +33,7 @@ const CategoryPage = ({
   idOfFilter?: number
   breadcrumbs?: {title: string; link: string}[]
   companyes?: {name: string; inn: string; ageInYears: string}[]
-  language?: 'ru' | 'en' | 'zh'
+  language?: 'ru' | 'en' | 'zh' | 'hi'
   initialLastFilterSlug?: string
 }) => {
   const isServer = typeof window === 'undefined'

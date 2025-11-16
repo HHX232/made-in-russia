@@ -40,7 +40,7 @@ const ASSETS_COUNTRIES = {
   ]
 }
 
-type TCurrentLang = 'ru' | 'en' | 'zh'
+type TCurrentLang = 'ru' | 'en' | 'zh' | 'hi'
 
 function formatDateLocalized(dateString: string, currentLang: TCurrentLang = 'ru'): string {
   const date = new Date(dateString)
@@ -91,15 +91,21 @@ function formatDateLocalized(dateString: string, currentLang: TCurrentLang = 'ru
       'November',
       'December'
     ],
-    zh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+    zh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+    hi: ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर']
   }
 
   // Форматирование в зависимости от языка
   switch (currentLang) {
     case 'en':
       return `${months.en[month]} ${day}, ${year}` // "May 15, 2024"
+
     case 'zh':
       return `${year}年 ${months.zh[month]} ${day}日` // "2024年 五月 15日"
+
+    case 'hi':
+      return `${day} ${months.hi[month]} ${year}` // "15 मई 2024"
+
     default:
       return `${day} ${months.ru[month]} ${year} года` // "15 мая 2024 года"
   }

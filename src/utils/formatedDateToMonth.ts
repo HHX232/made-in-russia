@@ -1,4 +1,4 @@
-function formatDateToDayMonth(inputDate: string, lang: 'ru' | 'en' | 'zh' = 'en'): string {
+function formatDateToDayMonth(inputDate: string, lang: 'ru' | 'en' | 'zh' | 'hi' = 'en'): string {
   const date = new Date(inputDate)
 
   if (isNaN(date.getTime())) {
@@ -38,7 +38,8 @@ function formatDateToDayMonth(inputDate: string, lang: 'ru' | 'en' | 'zh' = 'en'
       'ноября',
       'декабря'
     ],
-    zh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+    zh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+    hi: ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर']
   }
 
   if (!monthNames[lang]) {
@@ -51,12 +52,17 @@ function formatDateToDayMonth(inputDate: string, lang: 'ru' | 'en' | 'zh' = 'en'
     return `${year}年${monthName}${day}日`
   }
 
+  if (lang === 'hi') {
+    return `${day} ${monthName} ${year}`
+  }
+
   return `${day} ${monthName} ${year}`
 }
 // Example usage:
 // const inputDate = '2023-05-16T14:45:00Z';
-// const formattedDateEn = formatDateToDayMonth(inputDate, 'en'); // "16 May."
-// const formattedDateRu = formatDateToDayMonth(inputDate, 'ru'); // "16 мая."
-// const formattedDateZh = formatDateToDayMonth(inputDate, 'zh'); // "16 五月."
+// const formattedDateEn = formatDateToDayMonth(inputDate, 'en'); // "16 May 2023"
+// const formattedDateRu = formatDateToDayMonth(inputDate, 'ru'); // "16 мая 2023"
+// const formattedDateZh = formatDateToDayMonth(inputDate, 'zh'); // "2023年五月16日"
+// const formattedDateHi = formatDateToDayMonth(inputDate, 'hi'); // "16 मई 2023"
 
 export default formatDateToDayMonth

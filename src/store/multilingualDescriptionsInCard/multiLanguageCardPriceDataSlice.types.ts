@@ -1,5 +1,5 @@
 // Типы для поддержки мультиязычности
-export type Language = 'ru' | 'en' | 'zh'
+export type Language = 'ru' | 'en' | 'zh' | 'hi'
 
 // Интерфейс для описания и характеристик
 export interface CharacteristicItem {
@@ -38,6 +38,7 @@ export interface CardPriceElementsState {
   ru: CardPriceElementsData
   en: CardPriceElementsData
   zh: CardPriceElementsData
+  hi: CardPriceElementsData
   currentLanguage: Language
   errors: {
     ru: {
@@ -55,6 +56,13 @@ export interface CardPriceElementsState {
       minVolumeError: string
     }
     zh: {
+      characteristicsError: string
+      deliveryError: string
+      packagingError: string
+      saleDateError: string
+      minVolumeError: string
+    }
+    hi: {
       characteristicsError: string
       deliveryError: string
       packagingError: string

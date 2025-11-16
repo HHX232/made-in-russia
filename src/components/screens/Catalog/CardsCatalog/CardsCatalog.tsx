@@ -89,7 +89,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   const activeSlideRef = useRef<HTMLDivElement | null>(null)
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
-  // НОВОЕ: Ref для хранения последнего измеренного значения
   const lastMeasuredWidth = useRef<number | null>(null)
   const lastMeasuredHeight = useRef<number | null>(null)
 
@@ -181,6 +180,10 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     return isLoading && products.length === 0
   }, [isLoading, products.length])
 
+  const showEmptyMessage = useMemo(() => {
+    return !isLoading && products.length === 0
+  }, [isLoading, products.length])
+
   const pages = useMemo(() => {
     const result: Product[][] = []
     let pageIndex = 0
@@ -201,14 +204,12 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     return `slider-${products.length}-${pages.length}-${sliderPageSize}`
   }, [products.length, pages.length, sliderPageSize])
 
-  // ОПТИМИЗИРОВАННОЕ измерение высоты карточки - только при значительных изменениях
   useEffect(() => {
     const measureCardHeight = () => {
       const firstCard = cardRefs.current.values().next().value
       if (firstCard) {
         const height = firstCard.offsetHeight
 
-        // Проверяем, изменилась ли высота значительно (больше 5px)
         if (height > 0 && (!lastMeasuredHeight.current || Math.abs(height - lastMeasuredHeight.current) > 5)) {
           setCardHeight(height)
           lastMeasuredHeight.current = height
@@ -217,7 +218,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
       }
     }
 
-    // Проверяем, изменилась ли ширина значительно (больше 50px)
     if (!width || (lastMeasuredWidth.current && Math.abs(width - lastMeasuredWidth.current) < 50)) {
       return
     }
@@ -250,7 +250,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     }
   }
 
-  // СТАБИЛЬНЫЙ расчет высоты - только при изменении ключевых параметров
   const calculatedHeight = useMemo(() => {
     if (!mathMinHeight || !cardHeight) return null
 
@@ -283,22 +282,18 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     return totalHeight
   }, [mathMinHeight, cardHeight, pages.length, currentSlide, width])
 
-  // СТАБИЛЬНЫЙ расчет max-width карточки - мемоизируем результат
   const cardMaxWidth = useMemo(() => {
-    // Если mathMinHeight отключен, не ограничиваем ширину
     if (!mathMinHeight) return undefined
 
-    // Если высота еще не измерена, возвращаем дефолтное значение вместо undefined
-    // чтобы предотвратить растягивание на 100% ширины
     if (!cardHeight) {
       const currentWidth = width || 1920
       let defaultMaxWidth: number
       if (currentWidth > 1270) {
-        defaultMaxWidth = 400 // примерная ширина для desktop
+        defaultMaxWidth = 400
       } else if (currentWidth > 768) {
-        defaultMaxWidth = 288 // для tablet
+        defaultMaxWidth = 288
       } else {
-        defaultMaxWidth = 240 // для mobile
+        defaultMaxWidth = 240
       }
       console.log('📦 Card max-width (default):', defaultMaxWidth)
       return defaultMaxWidth
@@ -445,6 +440,29 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     return <div style={{marginBottom: '50px'}}>{t('notFound')}</div>
   }
 
+  if (showEmptyMessage) {
+    return (
+      <section className={`section ${styled.popularprod}`}>
+        <div>
+          <div className={`${styled.section_flexheader}`}>
+            <div className={`${styled.section_flexheader__title}`}>{t('popularProducts')}</div>
+          </div>
+          <div
+            style={{
+              padding: '60px 20px',
+              textAlign: 'center',
+              fontSize: '18px',
+              color: '#666',
+              marginBottom: '50px'
+            }}
+          >
+            {t('nohavecards')}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className={`section ${styled.popularprod}`}>
       <div>
@@ -536,7 +554,6 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
                             onClickFunction={() => {
                               addToLatestViews(product)
                             }}
-                            // onImageLoad={onImageLoad}
                           />
                         </div>
                       )

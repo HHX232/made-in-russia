@@ -187,7 +187,7 @@ const AdminCategoriesPage: FC = () => {
     if (!editingCategory) return
 
     try {
-      const nameTranslations = {en: '', ru: '', zh: ''}
+      const nameTranslations = {en: '', ru: '', zh: '', hi: ''}
       nameTranslations[activeLanguage] = editingCategory.name
 
       const okvedCodes = (editingCategory.okvedString || '')

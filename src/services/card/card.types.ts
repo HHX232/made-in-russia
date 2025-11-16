@@ -28,9 +28,9 @@ interface Media {
 interface Characteristic {
   id: number
   name: string
-  nameTranslations: {en: string; ru: string; zh: string}
+  nameTranslations: {en: string; ru: string; zh: string; hi: string}
   value: string
-  valueTranslations: {en: string; ru: string; zh: string}
+  valueTranslations: {en: string; ru: string; zh: string; hi: string}
   creationDate: string
   lastModificationDate: string
 }
@@ -38,39 +38,39 @@ interface Characteristic {
 interface Faq {
   id: number
   question: string
-  questionTranslations: {en: string; ru: string; zh: string}
+  questionTranslations: {en: string; ru: string; zh: string; hi: string}
   answer: string
-  answerTranslations: {en: string; ru: string; zh: string}
+  answerTranslations: {en: string; ru: string; zh: string; hi: string}
   creationDate: string
   lastModificationDate: string
 }
+
 interface DiscountPriceRange {
-  creationDate: string // ISO-8601 дата и время
-  currency: string // Валюта (в данном случае только RUB)
-  discount: number // Размер скидки (в процентах или фиксированной сумме)
-  discountedPrice: number // Цена со скидкой
-  // expiryDate: string // ISO-8601 дата и время окончания действия
-  from: number // Минимальное количество для применения скидки
-  id: number // Уникальный идентификатор
-  lastModificationDate: string // ISO-8601 дата и время последнего изменения
-  // minimumOrderQuantity: number // Минимальный заказ
-  originalPrice: number // Исходная цена
-  to: number // Максимальное количество для применения скидки
-  unit: string // Единица измерения (в данном случае кубометры)
+  creationDate: string
+  currency: string
+  discount: number
+  discountedPrice: number
+  from: number
+  id: number
+  lastModificationDate: string
+  originalPrice: number
+  to: number
+  unit: string
 }
+
 interface ICardFull {
   approveStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
   packagingOptions?: {
     name: string
     price: number | string
     priceUnit: string
-    nameTranslations: {en: string; ru: string; zh: string}
+    nameTranslations: {en: string; ru: string; zh: string; hi: string}
   }[]
   deliveryMethodsDetails?: {
     name: string
     value: string
-    nameTranslations: {en: string; ru: string; zh: string}
-    valueTranslations: {en: string; ru: string; zh: string}
+    nameTranslations: {en: string; ru: string; zh: string; hi: string}
+    valueTranslations: {en: string; ru: string; zh: string; hi: string}
   }[]
   minimumOrderQuantity?: number
   user: Author
@@ -94,28 +94,26 @@ interface ICardFull {
   ordersCount: number
   aboutVendor?: {
     mainDescription: string
-    mainDescriptionTranslations: {en: string; ru: string; zh: string}
+    mainDescriptionTranslations: {en: string; ru: string; zh: string; hi: string}
     furtherDescription: string
-    furtherDescriptionTranslations: {en: string; ru: string; zh: string}
+    furtherDescriptionTranslations: {en: string; ru: string; zh: string; hi: string}
     media: {altText: string; url: string; id: number}[]
   }
   title: string
-  titleTranslations: {en: string; ru: string; zh: string}
+  titleTranslations: {en: string; ru: string; zh: string; hi: string}
   mainDescription: string
-  mainDescriptionTranslations: {en: string; ru: string; zh: string}
+  mainDescriptionTranslations: {en: string; ru: string; zh: string; hi: string}
   furtherDescription: string
-  furtherDescriptionTranslations: {en: string; ru: string; zh: string}
-  // NOT FOUND =========
-  summaryDescription: string // required, max 5000 characters
-  primaryDescription: string // required, max 5000 characters
-  originalPrice: number // required, decimal
-  discount: number // required, range [0, 100], decimal
-  discountedPrice: number // read-only, decimal
-  priceUnit: string // required (например "USD / kg")
-  // NOT FOUND =========
-  previewImageUrl: string // required, URI
-  creationDate: string // read-only, ISO date-time
-  lastModificationDate: string // read-only, ISO date-time
+  furtherDescriptionTranslations: {en: string; ru: string; zh: string; hi: string}
+  summaryDescription: string
+  primaryDescription: string
+  originalPrice: number
+  discount: number
+  discountedPrice: number
+  priceUnit: string
+  previewImageUrl: string
+  creationDate: string
+  lastModificationDate: string
   reviewsCount: number
 }
 
@@ -139,7 +137,6 @@ interface Author {
     inn?: string
     lastModificationDate?: string
     phoneNumbers?: string[]
-
     productCategories?: {id: string; name: string}[]
     sites?: string[]
     viewsCount?: number
@@ -183,46 +180,15 @@ interface PaginatedResponse<T> {
   content: T[]
   page: Pageable
   last: boolean
-  // totalElements: number
-  // totalPages: number
-  // size: number
-  // number: number
-  // sort: Sort
-  // numberOfElements: number
-  // first: boolean
-  // empty: boolean
 }
+
 interface GetProductReviewsParams {
-  /**
-   * ID of the product to be retrieved
-   * @example 20
-   */
-  productId: number // required (path parameter)
-
-  /**
-   * Zero-based page index (0..N)
-   * @default 0
-   */
-  page?: number // optional (query parameter)
-
-  /**
-   * Number of product reviews per page
-   * @default 10
-   */
-  size?: number // optional (query parameter)
-
-  /**
-   * Minimum product review rating filter (inclusive)
-   * @minimum 1
-   */
-  minRating: number // required (query parameter)
-
-  /**
-   * Maximum product review rating filter (inclusive)
-   * @maximum 10000
-   */
-  maxRating: number // required (query parameter)
+  productId: number
+  page?: number
+  size?: number
+  minRating: number
+  maxRating: number
 }
-// Правильный экспорт типов для isolatedModules
+
 export type {Author, Review, Sort, Pageable, PaginatedResponse, GetProductReviewsParams}
 export default ICardFull

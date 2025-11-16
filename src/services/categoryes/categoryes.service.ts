@@ -38,6 +38,7 @@ export interface CreateCategoryPayload {
     en: string
     ru: string
     zh: string
+    hi: string
   }
   okvedCategories?: string[]
   image?: File | string
@@ -51,7 +52,7 @@ export interface UpdateCategoryPayload extends CreateCategoryPayload {
 }
 
 export type CategoriesResponse = Category[]
-export type SupportedLanguage = 'ru' | 'en' | 'zh'
+export type SupportedLanguage = 'ru' | 'en' | 'zh' | 'hi'
 
 // Query Keys
 export const categoriesKeys = {
@@ -290,14 +291,16 @@ export const useAllCategoriesLanguages = () => {
   const ruQuery = useCategories('ru')
   const enQuery = useCategories('en')
   const zhQuery = useCategories('zh')
+  const hiQuery = useCategories('hi')
 
   return {
     ru: ruQuery,
     en: enQuery,
     zh: zhQuery,
-    isLoading: ruQuery.isLoading || enQuery.isLoading || zhQuery.isLoading,
-    isError: ruQuery.isError || enQuery.isError || zhQuery.isError,
-    error: ruQuery.error || enQuery.error || zhQuery.error
+    hi: hiQuery,
+    isLoading: ruQuery.isLoading || enQuery.isLoading || zhQuery.isLoading || hiQuery.isLoading,
+    isError: ruQuery.isError || enQuery.isError || zhQuery.isError || hiQuery.isError,
+    error: ruQuery.error || enQuery.error || zhQuery.error || hiQuery.error
   }
 }
 

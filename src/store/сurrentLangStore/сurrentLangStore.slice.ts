@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 
-export type LangValue = 'en' | 'ru' | 'zh'
+export type LangValue = 'en' | 'ru' | 'zh' | 'hi'
 
 interface ICurrentLangState {
   currentLangValue: LangValue
@@ -10,7 +10,8 @@ interface ICurrentLangState {
 const labels: Record<LangValue, string> = {
   en: 'English',
   ru: 'Русский',
-  zh: '中文'
+  zh: '中文',
+  hi: 'हिन्दी'
 }
 
 const initialState: ICurrentLangState = {

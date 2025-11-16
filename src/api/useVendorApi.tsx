@@ -50,6 +50,13 @@ export const useUpdateVendorDetails = () => {
       successBody: '供应商数据更新成功',
       errorTitle: '更新供应商数据失败',
       errorPrefix: '错误 – '
+    },
+    hi: {
+      loading: 'विक्रेता डेटा अपडेट किया जा रहा है...',
+      successTitle: 'सफलता!',
+      successBody: 'विक्रेता डेटा सफलतापूर्वक अपडेट हो गया',
+      errorTitle: 'डेटा अपडेट करते समय त्रुटि हुई',
+      errorPrefix: 'त्रुटि – '
     }
   } as const
 

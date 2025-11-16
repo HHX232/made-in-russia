@@ -263,6 +263,7 @@
     "addRow": "Добавить строку"
   },
   "VendorPage": {
+    "mediaSavedSuccessfully":"Медиа успешно сохранен",
     "noWriten":"Не заполнено",
     "deletedSuccess":"Успешно удалено!",
     "myAccount": "Мой профиль",
@@ -1017,11 +1018,13 @@
     "reset": "Сбросить"
   },
   "CardsCatalogNew": {
+    "nohavecards":"товары не добавлены",
     "notFound": "Не найдено",
     "popularProducts": "Популярные товары",
     "viewAll": "Смотреть все"
   },
   "CardsCatalogWithPagination": {
+    "noHaveVendorCards":"Товары продавца еще не добавлены",
     "notFound": "Товары не найдены",
     "prevPage": "Предыдущая страница",
     "nextPage": "Следующая страница",

@@ -12,20 +12,31 @@ const getLocaleFromSubdomain = (hostname: string): string | null => {
   // Если есть поддомен
   if (parts.length > 2) {
     const subdomain = parts[0]
+
     switch (subdomain) {
       case 'cn':
         console.log('в миддлваре обнаружили поддомен cn')
         return 'zh'
+
       case 'en':
         console.log('в миддлваре обнаружили поддомен en')
         return 'en'
+
+      case 'in': // индийский поддомен → хинди
+        console.log('в миддлваре обнаружили поддомен in')
+        return 'hi'
+
+      case 'hi': // второй вариант индийского поддомена → хинди
+        console.log('в миддлваре обнаружили поддомен hi')
+        return 'hi'
+
       default:
         console.log('в миддлваре обнаружили поддомен по умолчанию')
         return null
     }
   }
 
-  // Если это основной домен exporteru.com без поддомена - русский
+  // Если это основной домен exporteru.com без поддомена — русский
   if (parts.length === 2 && parts[0] === 'exporteru') {
     console.log('в миддлваре обнаружили основной домен exporteru.com')
     return 'ru'

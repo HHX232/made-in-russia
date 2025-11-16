@@ -82,6 +82,7 @@ export interface IVendorPageProps {
   onlyShowWebsites?: string[]
   onlyShowEmail?: string[]
 }
+
 const formatDateLocalized = (dateString: string, currentLang: string = 'ru'): string => {
   const date = new Date(dateString)
   if (isNaN(date.getTime())) return 'Invalid date'
@@ -119,15 +120,22 @@ const formatDateLocalized = (dateString: string, currentLang: string = 'ru'): st
       'November',
       'December'
     ],
-    zh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+    zh: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+    hi: ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर']
   }
 
   switch (currentLang) {
     case 'en':
       return `${months.en[month]} ${day}, ${year}`
+
     case 'zh':
-      // В китайском обычно используют формат: YYYY年M月D日
+      // Китайский формат: YYYY年M月D日
       return `${year}年${month + 1}月${day}日`
+
+    case 'hi':
+      // Индийский формат: 15 मई 2024
+      return `${day} ${months.hi[month]} ${year}`
+
     default:
       return `${day} ${months.ru[month]} ${year} года`
   }

@@ -253,6 +253,7 @@
     "addRow": "添加行"
   },
   "VendorPage": {
+    "mediaSavedSuccessfully": "媒体保存成功",
     "noWriten": "未填写",
     "deletedSuccess":"删除成功！",
     "myAccount": "我的账户",
@@ -1000,11 +1001,13 @@
     "reset": "重置"
   },
   "CardsCatalogNew": {
+    "nohavecards": "商品未添加",
     "notFound": "未找到",
     "popularProducts": "热门产品",
     "viewAll": "查看全部"
   },
   "CardsCatalogWithPagination": {
+    "noHaveVendorCards": "卖家商品尚未添加",
     "notFound": "未找到产品",
     "prevPage": "上一页",
     "nextPage": "下一页",

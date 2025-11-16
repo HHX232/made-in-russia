@@ -11,12 +11,13 @@ import {getAccessToken} from '@/services/auth/auth.helper'
 import Calendar from '@/components/UI-kit/inputs/Calendar/Calendar'
 
 // Define possible languages
-type Language = 'ru' | 'en' | 'zh'
+type Language = 'ru' | 'en' | 'zh' | 'hi'
 
 interface AdTranslations {
   ru?: string
   en?: string
   zh?: string
+  hi?: string
 }
 // Вынеси куда-нибудь в начало файла
 const extractErrorMessage = (error: any): string => {
@@ -86,11 +87,11 @@ const AdminAds = () => {
   const [showOnlyImportant, setShowOnlyImportant] = useState(false)
   const [formData, setFormData] = useState<AdFormData>({
     title: '', // This will be dynamically set by translations
-    titleTranslations: {ru: '', en: '', zh: ''}, // Initialize all translation fields
+    titleTranslations: {ru: '', en: '', zh: '', hi: ''}, // Initialize all translation fields
     subtitle: '', // This will be dynamically set by translations
-    subtitleTranslations: {ru: '', en: '', zh: ''}, // Initialize all translation fields
+    subtitleTranslations: {ru: '', en: '', zh: '', hi: ''}, // Initialize all translation fields
     thirdText: '', // This will be dynamically set by translations
-    thirdTextTranslations: {ru: '', en: '', zh: ''}, // New field for translations
+    thirdTextTranslations: {ru: '', en: '', zh: '', hi: ''}, // New field for translations
     link: '', // New field for link
     expiresAt: '', // New field
     isBig: false, // New field for important ads
@@ -109,7 +110,7 @@ const AdminAds = () => {
   const getCurrentLanguage = (): Language => {
     const pathSegments = pathname.split('/')
     const langFromPath = pathSegments[1] as Language
-    return ['ru', 'en', 'zh'].includes(langFromPath) ? langFromPath : 'ru'
+    return ['ru', 'en', 'zh', 'hi'].includes(langFromPath) ? langFromPath : 'ru'
   }
 
   const currentLanguage = getCurrentLanguage()
@@ -423,19 +424,22 @@ const AdminAds = () => {
       titleTranslations: {
         ru: ad.titleTranslations?.ru || (currentLanguage === 'ru' ? ad.title : ''),
         en: ad.titleTranslations?.en || (currentLanguage === 'en' ? ad.title : ''),
-        zh: ad.titleTranslations?.zh || (currentLanguage === 'zh' ? ad.title : '')
+        zh: ad.titleTranslations?.zh || (currentLanguage === 'zh' ? ad.title : ''),
+        hi: ad.titleTranslations?.hi || (currentLanguage === 'hi' ? ad.title : '')
       },
       subtitle: ad.subtitle,
       subtitleTranslations: {
         ru: ad.subtitleTranslations?.ru || (currentLanguage === 'ru' ? ad.subtitle : ''),
         en: ad.subtitleTranslations?.en || (currentLanguage === 'en' ? ad.subtitle : ''),
-        zh: ad.subtitleTranslations?.zh || (currentLanguage === 'zh' ? ad.subtitle : '')
+        zh: ad.subtitleTranslations?.zh || (currentLanguage === 'zh' ? ad.subtitle : ''),
+        hi: ad.subtitleTranslations?.hi || (currentLanguage === 'hi' ? ad.subtitle : '')
       },
       thirdText: ad.thirdText || '', // Populate new field
       thirdTextTranslations: {
         ru: ad.thirdTextTranslations?.ru || (currentLanguage === 'ru' ? ad.thirdText || '' : ''),
         en: ad.thirdTextTranslations?.en || (currentLanguage === 'en' ? ad.thirdText || '' : ''),
-        zh: ad.thirdTextTranslations?.zh || (currentLanguage === 'zh' ? ad.thirdText || '' : '')
+        zh: ad.thirdTextTranslations?.zh || (currentLanguage === 'zh' ? ad.thirdText || '' : ''),
+        hi: ad.thirdTextTranslations?.hi || (currentLanguage === 'hi' ? ad.thirdText || '' : '')
       }, // Populate new translations
       link: ad.link || '', // Populate link field
       expiresAt: expiresAtFormatted, // Populate formatted date

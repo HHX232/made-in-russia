@@ -25,17 +25,22 @@ export const setCookieLocale = (locale: string) => {
 enum Languages {
   RUSSIAN = 'Русский',
   ENGLISH = 'English',
-  CHINA = '中文'
+  CHINA = '中文',
+  HINDI = 'हिन्दी'
 }
+
 const languageToLocale = {
   [Languages.RUSSIAN]: 'ru',
   [Languages.ENGLISH]: 'en',
-  [Languages.CHINA]: 'zh'
+  [Languages.CHINA]: 'zh',
+  [Languages.HINDI]: 'hi'
 }
+
 const localeToLanguage = {
   ru: Languages.RUSSIAN,
   en: Languages.ENGLISH,
-  zh: Languages.CHINA
+  zh: Languages.CHINA,
+  hi: Languages.HINDI
 }
 
 const logoFavBig = '/logos/logoWithoutText.svg'
@@ -127,7 +132,8 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
   const [allFlags, setAllFlags] = useState({
     zh: '/countries/china.svg',
     ru: '/countries/russia.svg',
-    en: '/countries/english.svg'
+    en: '/countries/english.svg',
+    hi: '/countries/india.svg'
   })
   const [activeLanguage, setActiveLanguage] = useState<Languages>(
     localeToLanguage[currentLangValue as keyof typeof localeToLanguage]
@@ -247,6 +253,17 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
       key={3}
     >
       {Languages.CHINA} {isPending && activeLanguage === Languages.CHINA}
+    </p>,
+    <p
+      style={{
+        width: '100%',
+        opacity: isPending ? 0.5 : 1,
+        cursor: isPending ? 'wait' : 'pointer'
+      }}
+      onClick={() => !isPending && handleLanguageChange(Languages.HINDI)}
+      key={4}
+    >
+      {Languages.HINDI} {isPending && activeLanguage === Languages.HINDI}
     </p>
   ]
 
@@ -260,7 +277,7 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
       '@type': 'ContactPoint',
       telephone: process.env.NEXT_PUBLIC_TELEPHONE ? `${process.env.NEXT_PUBLIC_TELEPHONE}` : '+74959233888',
       contactType: 'customer service',
-      availableLanguage: ['Russian', 'English', 'Chinese']
+      availableLanguage: ['Russian', 'English', 'Chinese', 'Hindi']
     }
   }
 

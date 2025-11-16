@@ -17,8 +17,8 @@ export interface UpdateFAQRequest {
   id: string
   question: string
   answer: string
-  questionTranslations?: {ru: string; en: string; zh: string}
-  answerTranslations?: {ru: string; en: string; zh: string}
+  questionTranslations?: {ru: string; en: string; zh: string; hi: string}
+  answerTranslations?: {ru: string; en: string; zh: string; hi: string}
 }
 
 const ServiceDefaultFAQ = {
@@ -50,12 +50,14 @@ const ServiceDefaultFAQ = {
         questionTranslations: data?.questionTranslations || {
           ru: currentLang === 'ru' ? data.question : '',
           en: currentLang === 'en' ? data.question : '',
-          zh: currentLang === 'zh' ? data.question : ''
+          zh: currentLang === 'zh' ? data.question : '',
+          hi: currentLang === 'hi' ? data.question : ''
         },
         answerTranslations: data?.answerTranslations || {
           ru: currentLang === 'ru' ? data.answer : '',
           en: currentLang === 'en' ? data.answer : '',
-          zh: currentLang === 'zh' ? data.answer : ''
+          zh: currentLang === 'zh' ? data.answer : '',
+          hi: currentLang === 'hi' ? data.answer : ''
         }
       },
       {

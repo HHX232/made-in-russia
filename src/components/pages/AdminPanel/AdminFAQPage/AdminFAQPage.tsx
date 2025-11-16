@@ -17,6 +17,7 @@ interface FAQTranslations {
   ru: string
   en: string
   zh: string
+  hi: string
 }
 
 interface EditingFAQ {
@@ -51,7 +52,8 @@ const AdminFAQPage: FC = () => {
   const [faqRu, setFaqRu] = useState<ExtendedFAQ[]>([])
   const [faqEn, setFaqEn] = useState<ExtendedFAQ[]>([])
   const [faqZh, setFaqZh] = useState<ExtendedFAQ[]>([])
-  const [activeLanguage, setActiveLanguage] = useState<'ru' | 'en' | 'zh'>('ru')
+  const [faqHi, setFaqHi] = useState<ExtendedFAQ[]>([])
+  const [activeLanguage, setActiveLanguage] = useState<'ru' | 'en' | 'zh' | 'hi'>('ru')
   const [loading, setLoading] = useState(true)
   const [editingFAQ, setEditingFAQ] = useState<EditingFAQ | null>(null)
   const [isCreating, setIsCreating] = useState(false)
@@ -63,10 +65,12 @@ const AdminFAQPage: FC = () => {
         const faqRussian = await ServiceDefaultFAQ.getFAQ('ru', {hasTranslations: true})
         const faqEnglish = await ServiceDefaultFAQ.getFAQ('en', {hasTranslations: true})
         const faqChinese = await ServiceDefaultFAQ.getFAQ('zh', {hasTranslations: true})
+        const faqHindi = await ServiceDefaultFAQ.getFAQ('hi', {hasTranslations: true})
 
         setFaqRu(faqRussian)
         setFaqEn(faqEnglish)
         setFaqZh(faqChinese)
+        setFaqHi(faqHindi)
       } catch (error) {
         console.error('Error fetching FAQ:', error)
       } finally {
@@ -84,6 +88,8 @@ const AdminFAQPage: FC = () => {
         return faqEn
       case 'zh':
         return faqZh
+      case 'hi':
+        return faqHi
       default:
         return faqRu
     }
@@ -99,6 +105,9 @@ const AdminFAQPage: FC = () => {
         break
       case 'zh':
         setFaqZh(faq)
+        break
+      case 'hi':
+        setFaqHi(faq)
         break
     }
   }
@@ -137,54 +146,56 @@ const AdminFAQPage: FC = () => {
       questionTranslations: {
         ru: '',
         en: '',
-        zh: ''
+        zh: '',
+        hi: ''
       },
       answerTranslations: {
         ru: '',
         en: '',
-        zh: ''
+        zh: '',
+        hi: ''
       }
     })
     setIsCreating(true)
     setIsModalOpen(true)
   }
 
-  // Исправленная функция handleEditFAQ для корректной инициализации переводов
   const handleEditFAQ = (faq: ExtendedFAQ) => {
-    // Получаем существующие переводы или создаем пустые
     const questionTranslations = faq.questionTranslations || {
       ru: activeLanguage === 'ru' ? faq.question : '',
       en: activeLanguage === 'en' ? faq.question : '',
-      zh: activeLanguage === 'zh' ? faq.question : ''
+      zh: activeLanguage === 'zh' ? faq.question : '',
+      hi: activeLanguage === 'hi' ? faq.question : ''
     }
 
     const answerTranslations = faq.answerTranslations || {
       ru: activeLanguage === 'ru' ? faq.answer : '',
       en: activeLanguage === 'en' ? faq.answer : '',
-      zh: activeLanguage === 'zh' ? faq.answer : ''
+      zh: activeLanguage === 'zh' ? faq.answer : '',
+      hi: activeLanguage === 'hi' ? faq.answer : ''
     }
 
-    // Убеждаемся, что все языки представлены (заполняем пустыми строками если отсутствуют)
     const completeQuestionTranslations: FAQTranslations = {
       ru: questionTranslations.ru || '',
       en: questionTranslations.en || '',
-      zh: questionTranslations.zh || ''
+      zh: questionTranslations.zh || '',
+      hi: questionTranslations.hi || ''
     }
 
     const completeAnswerTranslations: FAQTranslations = {
       ru: answerTranslations.ru || '',
       en: answerTranslations.en || '',
-      zh: answerTranslations.zh || ''
+      zh: answerTranslations.zh || '',
+      hi: answerTranslations.hi || ''
     }
 
     setEditingFAQ({
       id: faq.id,
       question: faq.question,
       answer: faq.answer,
-      questionTranslations: completeQuestionTranslations || {ru: '', en: '', zh: ''},
-      answerTranslations: completeAnswerTranslations || {ru: '', en: '', zh: ''}
+      questionTranslations: completeQuestionTranslations,
+      answerTranslations: completeAnswerTranslations
     })
-    console.log('new faq ', editingFAQ)
     setIsCreating(false)
     setIsModalOpen(true)
   }
@@ -192,7 +203,6 @@ const AdminFAQPage: FC = () => {
   const handleSaveFAQ = async () => {
     if (!editingFAQ) return
 
-    // Валидация: обязательными являются только поля для текущего языка
     const currentQuestionTranslation = editingFAQ.questionTranslations?.[activeLanguage] || ''
     const currentAnswerTranslation = editingFAQ.answerTranslations?.[activeLanguage] || ''
 
@@ -204,13 +214,15 @@ const AdminFAQPage: FC = () => {
     const completeQuestionTranslations: FAQTranslations = {
       ru: editingFAQ.questionTranslations?.ru || '',
       en: editingFAQ.questionTranslations?.en || '',
-      zh: editingFAQ.questionTranslations?.zh || ''
+      zh: editingFAQ.questionTranslations?.zh || '',
+      hi: editingFAQ.questionTranslations?.hi || ''
     }
 
     const completeAnswerTranslations: FAQTranslations = {
       ru: editingFAQ.answerTranslations?.ru || '',
       en: editingFAQ.answerTranslations?.en || '',
-      zh: editingFAQ.answerTranslations?.zh || ''
+      zh: editingFAQ.answerTranslations?.zh || '',
+      hi: editingFAQ.answerTranslations?.hi || ''
     }
 
     try {
@@ -234,7 +246,6 @@ const AdminFAQPage: FC = () => {
           answer: currentAnswerTranslation,
           answerTranslations: completeAnswerTranslations
         }
-        console.log('updateData', updateData)
         const updatedFAQ = await ServiceDefaultFAQ.updateFAQ(updateData, activeLanguage)
         const updatedList = getCurrentFAQ().map((faq) => (faq.id === editingFAQ.id ? updatedFAQ : faq))
         setCurrentFAQ(updatedList)
@@ -256,7 +267,7 @@ const AdminFAQPage: FC = () => {
     setIsModalOpen(false)
   }
 
-  const updateQuestionTranslation = (lang: 'ru' | 'en' | 'zh', value: string) => {
+  const updateQuestionTranslation = (lang: 'ru' | 'en' | 'zh' | 'hi', value: string) => {
     if (!editingFAQ) return
     setEditingFAQ({
       ...editingFAQ,
@@ -267,7 +278,7 @@ const AdminFAQPage: FC = () => {
     })
   }
 
-  const updateAnswerTranslation = (lang: 'ru' | 'en' | 'zh', value: string) => {
+  const updateAnswerTranslation = (lang: 'ru' | 'en' | 'zh' | 'hi', value: string) => {
     if (!editingFAQ) return
     setEditingFAQ({
       ...editingFAQ,
@@ -278,7 +289,7 @@ const AdminFAQPage: FC = () => {
     })
   }
 
-  const getLanguageName = (lang: 'ru' | 'en' | 'zh') => {
+  const getLanguageName = (lang: 'ru' | 'en' | 'zh' | 'hi') => {
     switch (lang) {
       case 'ru':
         return 'Русский'
@@ -286,6 +297,8 @@ const AdminFAQPage: FC = () => {
         return 'English'
       case 'zh':
         return '中文'
+      case 'hi':
+        return 'हिन्दी'
       default:
         return lang
     }
@@ -294,7 +307,7 @@ const AdminFAQPage: FC = () => {
   const renderModalContent = () => {
     if (!editingFAQ) return null
 
-    const languages: ('ru' | 'en' | 'zh')[] = ['ru', 'en', 'zh']
+    const languages: ('ru' | 'en' | 'zh' | 'hi')[] = ['ru', 'en', 'zh', 'hi']
 
     return (
       <div className={styles.edit__form}>
@@ -386,6 +399,12 @@ const AdminFAQPage: FC = () => {
           >
             中文
           </button>
+          <button
+            className={`${styles.language__button} ${activeLanguage === 'hi' ? styles.active : ''}`}
+            onClick={() => setActiveLanguage('hi')}
+          >
+            हिन्दी
+          </button>
         </div>
 
         <button className={styles.add__main__button} onClick={handleCreateFAQ}>
@@ -397,7 +416,13 @@ const AdminFAQPage: FC = () => {
         <div className={styles.current__language}>
           Редактирование FAQ:{' '}
           <span className={styles.language__name}>
-            {activeLanguage === 'ru' ? 'Русский' : activeLanguage === 'en' ? 'English' : '中文'}
+            {activeLanguage === 'ru'
+              ? 'Русский'
+              : activeLanguage === 'en'
+                ? 'English'
+                : activeLanguage === 'zh'
+                  ? '中文'
+                  : 'हिन्दी'}
           </span>
         </div>
 
@@ -408,9 +433,7 @@ const AdminFAQPage: FC = () => {
                 needDeleteButton={true}
                 onDelete={handleFaqDelete}
                 onUpdate={(item) => {
-                  console.log('start update')
                   const faq = getCurrentFAQ().find((f) => f.id === item.id)
-                  console.log('faq', faq)
                   if (faq) handleEditFAQ(faq)
                 }}
                 items={faqItems}

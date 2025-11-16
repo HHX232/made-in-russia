@@ -47,54 +47,26 @@ export const validateField = (
   switch (fieldName) {
     case 'cardTitle':
       const titleError = !cardTitle || cardTitle?.trim().length === 0 ? translations('titleError') : ''
-      // console.log(
-      //   `Title validation - input: "${cardTitle}", trimmed length: ${cardTitle??.trim()?.length || 0}, error: "${titleError}"`
-      // )
       return titleError
 
     case 'uploadedFiles':
       const totalImages = (uploadedFiles?.length || 0) + (remainingInitialImages?.length || 0)
       const filesError =
         totalImages < 1 ? translations('minimumImages') + `, ${translations('now')} ${totalImages}/1` : ''
-      // console.log(`Files validation result: "${filesError}", total: ${totalImages}`)
       return filesError
 
     case 'pricesArray':
       const pricesError = !pricesArray || pricesArray.length === 0 ? translations('onePriceError') : ''
-      // console.log(`Prices validation result: "${pricesError}"`)
       return pricesError
 
     case 'description':
       const descError = !description || description?.trim().length === 0 ? translations('descriptionError') : ''
-      // console.log(`Description validation result: "${descError}" with description "${description}"`)
       return descError
 
     case 'descriptionMatrix':
       const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell?.trim()))
       const matrixError = filledRows.length === 0 ? translations('characteristicError') : ''
-      // console.log(
-      //   `Description matrix validation result: "${matrixError}" with description matrix "${descriptionMatrix}"`
-      // )
       return matrixError
-
-    // case 'companyData':
-    //   if (!companyData.topDescription?.trim()) return translations('topDescrError')
-    //   if (!companyData.bottomDescription?.trim()) return translations('bottomError')
-    //   const companyImagesWithContent = companyData.images.filter((img) => img.image !== null)
-    //   if (companyImagesWithContent.length === 0) return translations('companyImagesError')
-    //   const imagesWithoutDescription = companyImagesWithContent.filter((img) => !img.description?.trim())
-    //   if (imagesWithoutDescription.length > 0) return translations('altTextImagesError')
-    //   return ''
-
-    // case 'faqMatrix':
-    //   // console.log('faqMatrix in valid', faqMatrix)
-    //   const filledFaqRows = faqMatrix.filter((row) => row[0]?.trim() || row[1]?.trim())
-    //   if (filledFaqRows.length === 0) return translations('oneFaqError')
-    //   const incompleteRows = filledFaqRows.filter(
-    //     (row) => (row[0]?.trim() && !row[1]?.trim()) || (!row[0]?.trim() && row[1]?.trim())
-    //   )
-    //   if (incompleteRows.length > 0) return translations('fullFaqError')
-    //   return ''
 
     default:
       return ''
@@ -251,6 +223,7 @@ export const submitFormCardData = async ({
     ru: {description: string; additionalDescription: string | null; furtherDescription: string}
     en: {description: string; additionalDescription: string | null; furtherDescription: string}
     zh: {description: string; additionalDescription: string | null; furtherDescription: string}
+    hi: {description: string; additionalDescription: string | null; furtherDescription: string}
   }
   multyLangObjectForPrices: Record<string, CardPriceElementsData>
   uploadedFiles: File[]
@@ -299,25 +272,27 @@ export const submitFormCardData = async ({
   const allTitles = {
     ru: cardObjectForOthers.ru?.title || (langFromPathname === 'ru' ? cardTitle : ''),
     en: cardObjectForOthers.en?.title || (langFromPathname === 'en' ? cardTitle : ''),
-    zh: cardObjectForOthers.zh?.title || (langFromPathname === 'zh' ? cardTitle : '')
+    zh: cardObjectForOthers.zh?.title || (langFromPathname === 'zh' ? cardTitle : ''),
+    hi: cardObjectForOthers.hi?.title || (langFromPathname === 'hi' ? cardTitle : '')
   }
 
   // Prepare main descriptions for all languages
   const mainDescriptionTranslations = {
     ru: descriptions.ru?.description || (langFromPathname === 'ru' ? descriptions.ru?.description : null),
     en: descriptions.en?.description || (langFromPathname === 'en' ? descriptions.en?.description : null),
-    zh: descriptions.zh?.description || (langFromPathname === 'zh' ? descriptions.zh?.description : null)
+    zh: descriptions.zh?.description || (langFromPathname === 'zh' ? descriptions.zh?.description : null),
+    hi: descriptions.hi?.description || (langFromPathname === 'hi' ? descriptions.hi?.description : null)
   }
 
   // Prepare further descriptions for all languages
   const furtherDescriptionTranslations = {
     ru: descriptions.ru?.furtherDescription || descriptions.ru?.additionalDescription || null,
     en: descriptions.en?.furtherDescription || descriptions.en?.additionalDescription || null,
-    zh: descriptions.zh?.furtherDescription || descriptions.zh?.additionalDescription || null
+    zh: descriptions.zh?.furtherDescription || descriptions.zh?.additionalDescription || null,
+    hi: descriptions.hi?.furtherDescription || descriptions.hi?.additionalDescription || null
   }
 
   // Prepare prices data
-
   const prices = pricesArrayForSubmit.map((price) => ({
     quantityFrom: typeof price.quantity === 'object' ? price.quantity.from.toString() : price.quantity,
     quantityTo: typeof price.quantity === 'object' ? price?.quantity?.to?.toString() : price.quantity,
@@ -335,6 +310,7 @@ export const submitFormCardData = async ({
         : 0
   }))
   console.log('цена от и до:', prices)
+
   // Prepare similar products array
   const similarProductsArray = Array.from(similarProducts).map((product) => product.id)
 
@@ -344,13 +320,15 @@ export const submitFormCardData = async ({
       nameTranslations: {
         ru: multyLangObjectForPrices?.ru?.characteristics?.[i]?.title,
         en: multyLangObjectForPrices?.en?.characteristics?.[i]?.title,
-        zh: multyLangObjectForPrices?.zh?.characteristics?.[i]?.title
+        zh: multyLangObjectForPrices?.zh?.characteristics?.[i]?.title,
+        hi: multyLangObjectForPrices?.hi?.characteristics?.[i]?.title
       },
       value: char.characteristic,
       valueTranslations: {
         ru: multyLangObjectForPrices?.ru?.characteristics?.[i]?.characteristic,
         en: multyLangObjectForPrices?.en?.characteristics?.[i]?.characteristic,
-        zh: multyLangObjectForPrices?.zh?.characteristics?.[i]?.characteristic
+        zh: multyLangObjectForPrices?.zh?.characteristics?.[i]?.characteristic,
+        hi: multyLangObjectForPrices?.hi?.characteristics?.[i]?.characteristic
       }
     })) || []
 
@@ -361,13 +339,15 @@ export const submitFormCardData = async ({
       questionTranslations: {
         ru: faqMatrixForOthers?.ru?.[i]?.[0] || '',
         en: faqMatrixForOthers?.en?.[i]?.[0] || '',
-        zh: faqMatrixForOthers?.zh?.[i]?.[0] || ''
+        zh: faqMatrixForOthers?.zh?.[i]?.[0] || '',
+        hi: faqMatrixForOthers?.hi?.[i]?.[0] || ''
       },
       answer: faqItem?.[1] || '',
       answerTranslations: {
         ru: faqMatrixForOthers?.ru?.[i]?.[1] || '',
         en: faqMatrixForOthers?.en?.[i]?.[1] || '',
-        zh: faqMatrixForOthers?.zh?.[i]?.[1] || ''
+        zh: faqMatrixForOthers?.zh?.[i]?.[1] || '',
+        hi: faqMatrixForOthers?.hi?.[i]?.[1] || ''
       }
     })) || []
   ).filter((item) => item.question && item.answer)
@@ -379,22 +359,24 @@ export const submitFormCardData = async ({
         nameTranslations: {
           ru: multyLangObjectForPrices?.ru?.delivery?.[i]?.title || '',
           en: multyLangObjectForPrices?.en?.delivery?.[i]?.title || '',
-          zh: multyLangObjectForPrices?.zh?.delivery?.[i]?.title || ''
+          zh: multyLangObjectForPrices?.zh?.delivery?.[i]?.title || '',
+          hi: multyLangObjectForPrices?.hi?.delivery?.[i]?.title || ''
         },
         value: delivery.daysDelivery,
         valueTranslations: {
           ru: multyLangObjectForPrices?.ru?.delivery?.[i]?.daysDelivery || '',
           en: multyLangObjectForPrices?.en?.delivery?.[i]?.daysDelivery || '',
-          zh: multyLangObjectForPrices?.zh?.delivery?.[i]?.daysDelivery || ''
+          zh: multyLangObjectForPrices?.zh?.delivery?.[i]?.daysDelivery || '',
+          hi: multyLangObjectForPrices?.hi?.delivery?.[i]?.daysDelivery || ''
         }
       }))
       .filter((item) => {
-        // Проверяем что name не пустое и хотя бы один перевод не пустой
         const hasName = item.name && item.name?.trim() !== ''
         const hasAtLeastOneTranslation =
           (item.nameTranslations.ru && item.nameTranslations.ru?.trim() !== '') ||
           (item.nameTranslations.en && item.nameTranslations.en?.trim() !== '') ||
-          (item.nameTranslations.zh && item.nameTranslations.zh?.trim() !== '')
+          (item.nameTranslations.zh && item.nameTranslations.zh?.trim() !== '') ||
+          (item.nameTranslations.hi && item.nameTranslations.hi?.trim() !== '')
         return hasName && hasAtLeastOneTranslation
       }) || []
 
@@ -406,18 +388,19 @@ export const submitFormCardData = async ({
         nameTranslations: {
           ru: multyLangObjectForPrices?.ru?.packaging?.[i]?.title || '',
           en: multyLangObjectForPrices?.en?.packaging?.[i]?.title || '',
-          zh: multyLangObjectForPrices?.zh?.packaging?.[i]?.title || ''
+          zh: multyLangObjectForPrices?.zh?.packaging?.[i]?.title || '',
+          hi: multyLangObjectForPrices?.hi?.packaging?.[i]?.title || ''
         },
         price: parseFloat(packaging.price?.toString() || '0'),
         priceUnit: pricesArrayForSubmit[0].currency || 'RUB'
       }))
       .filter((item) => {
-        // Проверяем что name не пустое и хотя бы один перевод не пустой
         const hasName = item.name && item.name?.trim() !== ''
         const hasAtLeastOneTranslation =
           (item.nameTranslations.ru && item.nameTranslations.ru?.trim() !== '') ||
           (item.nameTranslations.en && item.nameTranslations.en?.trim() !== '') ||
-          (item.nameTranslations.zh && item.nameTranslations.zh?.trim() !== '')
+          (item.nameTranslations.zh && item.nameTranslations.zh?.trim() !== '') ||
+          (item.nameTranslations.hi && item.nameTranslations.hi?.trim() !== '')
         return hasName && hasAtLeastOneTranslation
       }) || []
 
@@ -436,8 +419,6 @@ export const submitFormCardData = async ({
       }
     }
   })
-
-  // Prepare about vendor data
 
   // Prepare the main data object
   const data = {
@@ -470,11 +451,10 @@ export const submitFormCardData = async ({
   // Prepare FormData
   const formData = new FormData()
 
-  // ИСПРАВЛЕНИЕ: Создаем Blob для JSON данных с правильным типом содержимого
   const jsonBlob = new Blob([JSON.stringify(data)], {type: 'application/json'})
   formData.append('data', jsonBlob)
 
-  // Add product media files (только новые файлы)
+  // Add product media files
   uploadedFiles.forEach((file) => {
     if (file instanceof File) {
       formData.append('productMedia', file)
@@ -498,17 +478,14 @@ export const submitFormCardData = async ({
       method,
       headers: {
         Authorization: `Bearer ${token}`
-        // Don't set Content-Type for FormData, let the browser set it
       },
       body: formData
     })
 
     if (!response.ok) {
-      // Правильно парсим JSON ответ
       const errorData = await response.json()
       console.log('full res', response, 'response.body', response.body)
 
-      // Извлекаем сообщение об ошибке из правильной структуры
       const errorMessage = errorData?.errors?.message || errorData?.message || `HTTP error! status: ${response.status}`
 
       toast.error(errorMessage)
@@ -530,174 +507,3 @@ export const submitFormCardData = async ({
     throw error
   }
 }
-
-// Data to be sent: {
-//    "title": "утутуутут",
-//    "titleTranslations": {
-//      "ru": "deliveryMethodIds",
-//      "en": "утутуутут",
-//      "zh": "утутуутут"
-//    },
-//    "mainDescription": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
-//    "mainDescriptionTranslations": {
-//      "ru": "deliveryMethodIdsdeliveryMethodIdsdeliveryMethodIdsdeliveryMethodIds",
-//      "en": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
-//      "zh": ""
-//    },
-//    "furtherDescription": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
-//    "furtherDescriptionTranslations": {
-//      "ru": "deliveryMethodIdsdeliveryMethodIdsdeliveryMethodIdsdeliveryMethodIdsdeliveryMethodIds",
-//      "en": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
-//      "zh": ""
-//    },
-//    "categoryId": 8,
-//    "deliveryMethodIds": [
-//      1
-//    ],
-//    "prices": [
-//      {
-//        "quantityFrom": "123",
-//        "currency": "123",
-//        "unit": "123",
-//        "price": 123,
-//        "discount": 0
-//      }
-//    ],
-//    "similarProducts": [
-//      25,
-//      24,
-//      23,
-//      22,
-//      21,
-//      20
-//    ],
-//    "characteristics": [
-//      {
-//        "name": "утутуутут",
-//        "nameTranslations": {
-//          "ru": "утутуутут",
-//          "en": "утутуутут",
-//          "zh": "утутуутут"
-//        },
-//        "value": "утутуутут",
-//        "valueTranslations": {
-//          "ru": "утутуутут",
-//          "en": "утутуутут",
-//          "zh": "утутуутут"
-//        }
-//      },
-//      {
-//        "name": "утутуутут",
-//        "nameTranslations": {
-//          "ru": "утутуутут",
-//          "en": "утутуутут",
-//          "zh": "утутуутут"
-//        },
-//        "value": "утутуутут",
-//        "valueTranslations": {
-//          "ru": "утутуутут",
-//          "en": "утутуутут",
-//          "zh": "утутуутут"
-//        }
-//      },
-//      {
-//        "name": "утутуутут",
-//        "nameTranslations": {
-//          "ru": "утутуутут",
-//          "en": "утутуутут",
-//          "zh": "утутуутут"
-//        },
-//        "value": "утутуутут",
-//        "valueTranslations": {
-//          "ru": "утутуутут",
-//          "en": "утутуутут",
-//          "zh": "утутуутут"
-//        }
-//      }
-//    ],
-//    "faq": [
-//      {
-//        "question": "утутуутутутутуутутутутуутутутутуутутутутуутут",
-//        "questionTranslations": {
-//          "ru": "утутуутутутутуутутутутуутутутутуутутутутуутут",
-//          "en": "утутуутутутутуутутутутуутутутутуутутутутуутут",
-//          "zh": "утутуутутутутуутутутутуутутутутуутутутутуутут"
-//        },
-//        "answer": "утутуутутутутуутутутутуутутутутуутутутутуутут",
-//        "answerTranslations": {
-//          "ru": "утутуутутутутуутутутутуутутутутуутутутутуутут",
-//          "en": "утутуутутутутуутутутутуутутутутуутутутутуутут",
-//          "zh": "утутуутутутутуутутутутуутутутутуутутутутуутут"
-//        }
-//      }
-//    ],
-//    "deliveryMethodDetails": [
-//      {
-//        "name": "123",
-//        "nameTranslations": {
-//          "ru": "123",
-//          "en": "123",
-//          "zh": "123"
-//        },
-//        "value": "123",
-//        "valueTranslations": {
-//          "ru": "123",
-//          "en": "123",
-//          "zh": "123"
-//        }
-//      },
-//      {
-//        "name": "123",
-//        "nameTranslations": {
-//          "ru": "123",
-//          "en": "123",
-//          "zh": "123"
-//        },
-//        "value": "123",
-//        "valueTranslations": {
-//          "ru": "123",
-//          "en": "123",
-//          "zh": "123"
-//        }
-//      }
-//    ],
-//    "packageOptions": [
-//      {
-//        "name": "утутуутут",
-//        "nameTranslations": {
-//          "ru": "утутуутут",
-//          "en": "утутуутут",
-//          "zh": "утутуутут"
-//        },
-//        "price": 123,
-//        "priceUnit": "123"
-//      },
-//      {
-//        "name": "утутуутут",
-//        "nameTranslations": {
-//          "ru": "утутуутут",
-//          "en": "утутуутут",
-//          "zh": "утутуутут"
-//        },
-//        "price": 123,
-//        "priceUnit": "123"
-//      }
-//    ],
-//    "aboutVendor": {
-//      "mainDescription": "утутуутутутутуутутутутуутутутутуутутутутуутут",
-//      "mainDescriptionTranslations": {
-//        "ru": "deliveryMethodIdsdeliveryMethodIdsdeliveryMethodIdsdeliveryMethodIds",
-//        "en": "утутуутутутутуутутутутуутутутутуутутутутуутут",
-//        "zh": "утутуутутутутуутутутутуутутутутуутутутутуутут"
-//      },
-//      "furtherDescription": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
-//      "furtherDescriptionTranslations": {
-//        "ru": "deliveryMethodIdsdeliveryMethodIdsdeliveryMethodIdsdeliveryMethodIds",
-//        "en": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут",
-//        "zh": "утутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутутутутуутут"
-//      },
-//      "mediaAltTexts": []
-//    },
-//    "minimumOrderQuantity": 123,
-//    "discountExpirationDate": 123
-//  }

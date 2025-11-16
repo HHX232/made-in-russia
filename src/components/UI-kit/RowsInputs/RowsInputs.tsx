@@ -143,13 +143,15 @@ const Dropdown = ({
   const miniTranslates = {
     ru: 'Создать',
     en: 'Create',
-    zh: '创建'
+    zh: '创建',
+    hi: 'बनाएँ'
   }
 
   const clearTranslates = {
     ru: 'Очистить',
     en: 'Clear',
-    zh: '清除'
+    zh: '清除',
+    hi: 'साफ़ करें'
   }
 
   // Функция проверки видимости dropdown меню

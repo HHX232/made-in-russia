@@ -15,12 +15,17 @@ export default getRequestConfig(async ({requestLocale}) => {
   if (!hasLocale(routing.locales, locale)) {
     locale = routing.defaultLocale
   }
-  // console.log('locale in request.ts', locale)
-  const localMessages = (await import(`../../messages/${locale === 'en' ? 'en' : locale === 'ru' ? 'ru' : 'zh'}.json`))
-    .default
+
+  // Добавляем поддержку hi
+  const localMessages = (
+    await import(
+      `../../messages/${
+        locale === 'en' ? 'en' : locale === 'ru' ? 'ru' : locale === 'zh' ? 'zh' : locale === 'hi' ? 'hi' : 'en' //
+      }.json`
+    )
+  ).default
 
   try {
-    // ВАЖНО: Добавляем локаль в заголовки запроса
     const response = await axiosClassic.get(`localization/${locale}`, {
       headers: {
         'Accept-Language': locale,

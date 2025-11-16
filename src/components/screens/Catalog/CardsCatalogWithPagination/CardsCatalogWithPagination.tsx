@@ -371,157 +371,169 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     return <div style={{marginBottom: '50px'}}>{t('notFound')}</div>
   }
 
+  // Проверка на пустой каталог (нет товаров и загрузка завершена)
+  const isEmpty = !isLoading && !isFetching && products.length === 0
+
   return (
     <section className={`section ${styled.catalog}`} ref={catalogRef}>
       <div>
-        {/* Сетка товаров */}
-        <div className={`${styled.catalog__vitrine}`}>
-          <div ref={gridContainerRef} className={styled.vitrine__grid}>
-            {(showTableFilters && !!specialFilters && specialFilters?.length !== 0) || showAdminStatusFilters ? (
-              <div className={`${styled.section_flexheader} ${isForAdmin && styled.noOverflow}`}>
-                <div ref={filtersContainerRef} className={styled.filters_scroll_container}>
-                  <ul className={styled.absolute__list}>
-                    {/* Фильтры статусов для админки */}
-                    {showAdminStatusFilters && (
-                      <li className={styled.status_filter_wrapper}>
-                        <div ref={statusDropdownRef} className={styled.status_dropdown}>
-                          <button
-                            className={styled.status_dropdown_button}
-                            onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
-                          >
-                            <span>{getStatusText(localApproveStatus)}</span>
-                            <svg
-                              width='16'
-                              height='16'
-                              viewBox='0 0 16 16'
-                              fill='none'
-                              style={{
-                                transform: isStatusDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                                transition: 'transform 0.2s'
-                              }}
-                            >
-                              <path
-                                d='M4 6L8 10L12 6'
-                                stroke='currentColor'
-                                strokeWidth='1.5'
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                              />
-                            </svg>
-                          </button>
-                          {isStatusDropdownOpen && (
-                            <div className={styled.status_dropdown_menu}>
-                              <button
-                                className={`${styled.status_dropdown_item} ${localApproveStatus === 'ALL' ? styled.active : ''}`}
-                                onClick={() => handleStatusChange('ALL')}
-                              >
-                                {getStatusText('ALL')}
-                              </button>
-                              <button
-                                className={`${styled.status_dropdown_item} ${localApproveStatus === 'APPROVED' ? styled.active : ''}`}
-                                onClick={() => handleStatusChange('APPROVED')}
-                              >
-                                {getStatusText('APPROVED')}
-                              </button>
-                              <button
-                                className={`${styled.status_dropdown_item} ${localApproveStatus === 'PENDING' ? styled.active : ''}`}
-                                onClick={() => handleStatusChange('PENDING')}
-                              >
-                                {getStatusText('PENDING')}
-                              </button>
-                              <button
-                                className={`${styled.status_dropdown_item} ${localApproveStatus === 'REJECTED' ? styled.active : ''}`}
-                                onClick={() => handleStatusChange('REJECTED')}
-                              >
-                                {getStatusText('REJECTED')}
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </li>
-                    )}
-
-                    {/* Обычные фильтры */}
-                    {showTableFilters &&
-                      specialFilters?.map((filter) => {
-                        const isActive = Object.keys(selectedFilters).includes(filter.id)
-                        return (
-                          <li
-                            style={{cursor: 'pointer'}}
-                            onClick={() => {
-                              setFilter({filterName: filter.id, checked: !isActive})
-                            }}
-                            key={filter.id}
-                            className={`${styled.section_flexheader__title} ${
-                              isActive ? styled.section_flexheader__title__active : ''
-                            }`}
-                          >
-                            {filter.name}
-                          </li>
-                        )
-                      })}
-
-                    {((showTableFilters && !!specialFilters && specialFilters?.length !== 0) ||
-                      showAdminStatusFilters) && (
-                      <div
-                        style={{backgroundColor: 'transparent', minWidth: '65px', height: '10px'}}
-                        className=''
-                      ></div>
-                    )}
-                  </ul>
-                </div>
-              </div>
-            ) : null}
-
-            {showSkeleton
-              ? Array.from({length: dynamicPageSize}).map((_, index) => (
-                  <div key={`skeleton-${index}`} className={styled.card_wrapper}>
-                    <Card
-                      isForAdmin={isForAdmin}
-                      approveStatus={'PENDING'}
-                      extraButtonsBoxClass={extraButtonsBoxClass}
-                      onPreventCardClick={onPreventCardClick}
-                      canUpdateProduct={canCreateNewProduct}
-                      isLoading={true}
-                      id={-1}
-                      title={''}
-                      price={-1}
-                      discount={-1}
-                      previewImageUrl={''}
-                      discountedPrice={-1}
-                      deliveryMethod={{} as any}
-                      fullProduct={null as any}
-                    />
-                  </div>
-                ))
-              : products.map((product) => (
-                  <div className={styled.card_wrapper} key={product.id}>
-                    <Card
-                      isForAdmin={isForAdmin}
-                      approveStatus={product?.approveStatus}
-                      extraButtonsBoxClass={extraButtonsBoxClass}
-                      onPreventCardClick={onPreventCardClick}
-                      canUpdateProduct={canCreateNewProduct}
-                      isLoading={false}
-                      id={product.id}
-                      title={product.title}
-                      price={product.originalPrice}
-                      discount={product.discount}
-                      previewImageUrl={product.previewImageUrl}
-                      discountedPrice={product.discountedPrice}
-                      deliveryMethod={product.deliveryMethod}
-                      fullProduct={product}
-                      onClickFunction={() => {
-                        addToLatestViews(product)
-                      }}
-                    />
-                  </div>
-                ))}
+        {/* Сообщение о пустом каталоге */}
+        {isEmpty && (
+          <div style={{marginBottom: '50px', textAlign: 'center', padding: '40px 20px'}}>
+            <p style={{fontSize: '18px', color: '#666'}}>{t('noHaveVendorCards')}</p>
           </div>
-        </div>
+        )}
+
+        {/* Сетка товаров */}
+        {!isEmpty && (
+          <div className={`${styled.catalog__vitrine}`}>
+            <div ref={gridContainerRef} className={styled.vitrine__grid}>
+              {(showTableFilters && !!specialFilters && specialFilters?.length !== 0) || showAdminStatusFilters ? (
+                <div className={`${styled.section_flexheader} ${isForAdmin && styled.noOverflow}`}>
+                  <div ref={filtersContainerRef} className={styled.filters_scroll_container}>
+                    <ul className={styled.absolute__list}>
+                      {/* Фильтры статусов для админки */}
+                      {showAdminStatusFilters && (
+                        <li className={styled.status_filter_wrapper}>
+                          <div ref={statusDropdownRef} className={styled.status_dropdown}>
+                            <button
+                              className={styled.status_dropdown_button}
+                              onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
+                            >
+                              <span>{getStatusText(localApproveStatus)}</span>
+                              <svg
+                                width='16'
+                                height='16'
+                                viewBox='0 0 16 16'
+                                fill='none'
+                                style={{
+                                  transform: isStatusDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                  transition: 'transform 0.2s'
+                                }}
+                              >
+                                <path
+                                  d='M4 6L8 10L12 6'
+                                  stroke='currentColor'
+                                  strokeWidth='1.5'
+                                  strokeLinecap='round'
+                                  strokeLinejoin='round'
+                                />
+                              </svg>
+                            </button>
+                            {isStatusDropdownOpen && (
+                              <div className={styled.status_dropdown_menu}>
+                                <button
+                                  className={`${styled.status_dropdown_item} ${localApproveStatus === 'ALL' ? styled.active : ''}`}
+                                  onClick={() => handleStatusChange('ALL')}
+                                >
+                                  {getStatusText('ALL')}
+                                </button>
+                                <button
+                                  className={`${styled.status_dropdown_item} ${localApproveStatus === 'APPROVED' ? styled.active : ''}`}
+                                  onClick={() => handleStatusChange('APPROVED')}
+                                >
+                                  {getStatusText('APPROVED')}
+                                </button>
+                                <button
+                                  className={`${styled.status_dropdown_item} ${localApproveStatus === 'PENDING' ? styled.active : ''}`}
+                                  onClick={() => handleStatusChange('PENDING')}
+                                >
+                                  {getStatusText('PENDING')}
+                                </button>
+                                <button
+                                  className={`${styled.status_dropdown_item} ${localApproveStatus === 'REJECTED' ? styled.active : ''}`}
+                                  onClick={() => handleStatusChange('REJECTED')}
+                                >
+                                  {getStatusText('REJECTED')}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </li>
+                      )}
+
+                      {/* Обычные фильтры */}
+                      {showTableFilters &&
+                        specialFilters?.map((filter) => {
+                          const isActive = Object.keys(selectedFilters).includes(filter.id)
+                          return (
+                            <li
+                              style={{cursor: 'pointer'}}
+                              onClick={() => {
+                                setFilter({filterName: filter.id, checked: !isActive})
+                              }}
+                              key={filter.id}
+                              className={`${styled.section_flexheader__title} ${
+                                isActive ? styled.section_flexheader__title__active : ''
+                              }`}
+                            >
+                              {filter.name}
+                            </li>
+                          )
+                        })}
+
+                      {((showTableFilters && !!specialFilters && specialFilters?.length !== 0) ||
+                        showAdminStatusFilters) && (
+                        <div
+                          style={{backgroundColor: 'transparent', minWidth: '65px', height: '10px'}}
+                          className=''
+                        ></div>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              ) : null}
+
+              {showSkeleton
+                ? Array.from({length: dynamicPageSize}).map((_, index) => (
+                    <div key={`skeleton-${index}`} className={styled.card_wrapper}>
+                      <Card
+                        isForAdmin={isForAdmin}
+                        approveStatus={'PENDING'}
+                        extraButtonsBoxClass={extraButtonsBoxClass}
+                        onPreventCardClick={onPreventCardClick}
+                        canUpdateProduct={canCreateNewProduct}
+                        isLoading={true}
+                        id={-1}
+                        title={''}
+                        price={-1}
+                        discount={-1}
+                        previewImageUrl={''}
+                        discountedPrice={-1}
+                        deliveryMethod={{} as any}
+                        fullProduct={null as any}
+                      />
+                    </div>
+                  ))
+                : products.map((product) => (
+                    <div className={styled.card_wrapper} key={product.id}>
+                      <Card
+                        isForAdmin={isForAdmin}
+                        approveStatus={product?.approveStatus}
+                        extraButtonsBoxClass={extraButtonsBoxClass}
+                        onPreventCardClick={onPreventCardClick}
+                        canUpdateProduct={canCreateNewProduct}
+                        isLoading={false}
+                        id={product.id}
+                        title={product.title}
+                        price={product.originalPrice}
+                        discount={product.discount}
+                        previewImageUrl={product.previewImageUrl}
+                        discountedPrice={product.discountedPrice}
+                        deliveryMethod={product.deliveryMethod}
+                        fullProduct={product}
+                        onClickFunction={() => {
+                          addToLatestViews(product)
+                        }}
+                      />
+                    </div>
+                  ))}
+            </div>
+          </div>
+        )}
 
         {/* Пагинация */}
-        {!showSkeleton && totalPages > 1 && (
+        {!showSkeleton && !isEmpty && totalPages > 1 && (
           <div className={styled.catalog__pagination}>
             <div className={styled.exp_pagination}>
               <button

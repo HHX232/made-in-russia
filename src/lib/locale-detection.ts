@@ -1,7 +1,7 @@
 // lib/locale-detection.ts
 // Универсальная функция для определения локали, работающая и на сервере, и на клиенте
 
-export const SUPPORTED_LOCALES = ['en', 'ru', 'zh'] as const
+export const SUPPORTED_LOCALES = ['en', 'ru', 'zh', 'hi'] as const
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
 export const DEFAULT_LOCALE: SupportedLocale = 'en'
 
@@ -9,8 +9,8 @@ export const DEFAULT_LOCALE: SupportedLocale = 'en'
 const SUBDOMAIN_LOCALE_MAP: Record<string, SupportedLocale> = {
   en: 'en',
   ru: 'ru',
-  cn: 'zh' // китайский поддомен cn -> локаль zh
-  //   in: 'hi' // индийский поддомен in -> локаль hi
+  cn: 'zh', // китайский поддомен cn -> локаль zh
+  in: 'hi' // индийский поддомен in -> локаль hi
 }
 
 // Маппинг языковых кодов из Accept-Language на наши локали
@@ -22,9 +22,9 @@ const ACCEPT_LANGUAGE_MAP: Record<string, SupportedLocale> = {
   'ru-RU': 'ru',
   zh: 'zh',
   'zh-CN': 'zh',
-  'zh-TW': 'zh'
-  //   hi: 'hi',
-  //   'hi-IN': 'hi'
+  'zh-TW': 'zh',
+  hi: 'hi',
+  'hi-IN': 'hi'
 }
 
 /**

@@ -77,6 +77,27 @@ const initialState: CardPriceElementsState = {
       minimalVolume: ''
     }
   },
+  hi: {
+    characteristics: [
+      {title: '', characteristic: ''},
+      {title: '', characteristic: ''},
+      {title: '', characteristic: ''},
+      {title: '', characteristic: ''},
+      {title: '', characteristic: ''}
+    ],
+    delivery: [
+      {title: '', daysDelivery: ''},
+      {title: '', daysDelivery: ''}
+    ],
+    packaging: [
+      {title: '', price: ''},
+      {title: '', price: ''}
+    ],
+    priceInfo: {
+      daysBeforeSale: '',
+      minimalVolume: ''
+    }
+  },
   currentLanguage: 'ru',
   errors: {
     ru: {
@@ -94,6 +115,13 @@ const initialState: CardPriceElementsState = {
       minVolumeError: ''
     },
     zh: {
+      characteristicsError: '',
+      deliveryError: '',
+      packagingError: '',
+      saleDateError: '',
+      minVolumeError: ''
+    },
+    hi: {
       characteristicsError: '',
       deliveryError: '',
       packagingError: '',

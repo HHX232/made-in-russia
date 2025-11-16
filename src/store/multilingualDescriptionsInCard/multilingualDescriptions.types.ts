@@ -1,4 +1,4 @@
-export type SupportedLanguage = 'ru' | 'en' | 'zh'
+export type SupportedLanguage = 'ru' | 'en' | 'zh' | 'hi'
 
 export interface IDescription {
   description: string

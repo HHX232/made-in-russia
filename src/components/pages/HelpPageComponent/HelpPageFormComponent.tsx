@@ -11,7 +11,8 @@ const COUNTRY_CODES = {
   RU: '+7',
   BY: '+375',
   KZ: '+7',
-  CN: '+86'
+  CN: '+86',
+  IN: '+91'
 }
 
 const HelpPageFormComponent: FC = () => {

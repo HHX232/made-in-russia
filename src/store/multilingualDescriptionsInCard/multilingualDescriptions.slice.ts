@@ -10,10 +10,11 @@ const initialState: IMultilingualDescriptionsState = {
   descriptions: {
     ru: {description: '## Основное описание', additionalDescription: '', furtherDescription: ''},
     en: {description: '## Main description', additionalDescription: '', furtherDescription: ''},
-    zh: {description: '## 主要描述', additionalDescription: '', furtherDescription: ''}
+    zh: {description: '## 主要描述', additionalDescription: '', furtherDescription: ''},
+    hi: {description: '## मुख्य विवरण', additionalDescription: '', furtherDescription: ''}
   },
   currentLanguage: 'ru',
-  availableLanguages: ['ru', 'en', 'zh']
+  availableLanguages: ['ru', 'en', 'zh', 'hi']
 }
 
 export const multilingualDescriptionsSlice = createSlice({
@@ -56,7 +57,8 @@ export const multilingualDescriptionsSlice = createSlice({
       if (
         description === state.descriptions['ru'].description ||
         description === state.descriptions['en'].description ||
-        description === state.descriptions['zh'].description
+        description === state.descriptions['zh'].description ||
+        description === state.descriptions['hi'].description
       )
         return
       if (!state.descriptions[language]) {
@@ -79,7 +81,8 @@ export const multilingualDescriptionsSlice = createSlice({
       if (
         additionalDescription === state.descriptions['ru'].additionalDescription ||
         additionalDescription === state.descriptions['en'].additionalDescription ||
-        additionalDescription === state.descriptions['zh'].additionalDescription
+        additionalDescription === state.descriptions['zh'].additionalDescription ||
+        additionalDescription === state.descriptions['hi'].additionalDescription
       )
         return
       if (!state.descriptions[language]) {

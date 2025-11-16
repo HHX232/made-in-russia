@@ -253,6 +253,7 @@
     "addRow": "Add row"
   },
   "VendorPage": {
+     "mediaSavedSuccessfully": "Media saved successfully",
     "noWriten": "Not filled",
     "deletedSuccess":"Successfully deleted!",
     "myAccount": "My Profile",
@@ -1000,11 +1001,13 @@
     "reset": "Reset"
   },
   "CardsCatalogNew": {
+    "nohavecards": "products not added",
     "notFound": "Not found",
     "popularProducts": "Popular products",
     "viewAll": "View all"
   },
   "CardsCatalogWithPagination": {
+    "noHaveVendorCards": "Seller's products have not been added yet",
     "notFound": "Products not found",
     "prevPage": "Previous page",
     "nextPage": "Next page",
