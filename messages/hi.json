@@ -1055,5 +1055,11 @@
     "approved": "स्वीकृत",
     "pending": "मॉडरेशन",
     "rejected": "अस्वीकृत"
-  }
+  },
+  "cropEditor": {
+  "sbros": "रीसेट",
+  "cancel": "रद्द करें",
+  "submit": "लागू करें"
+}
+
 }

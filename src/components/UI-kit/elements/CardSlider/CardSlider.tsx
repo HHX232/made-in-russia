@@ -575,18 +575,6 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
     setIsModalOpen(false)
   }, [])
 
-  const handleModalNavigation = useCallback(
-    (direction: 'prev' | 'next') => {
-      setModalImageIndex((prev) => {
-        if (direction === 'prev') {
-          return (prev - 1 + images.length) % images.length
-        }
-        return (prev + 1) % images.length
-      })
-    },
-    [images.length]
-  )
-
   const handleModalThumbnailClick = useCallback((index: number) => {
     setModalImageIndex(index)
   }, [])
@@ -652,11 +640,9 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
         images={images}
         currentIndex={modalImageIndex}
         productName={productName}
-        onNavigate={handleModalNavigation}
         onThumbnailClick={handleModalThumbnailClick}
         isSingleImage={isSingleImage}
       />
-
       <ImageGallery
         images={images}
         activeIndex={activeIndex}
@@ -702,10 +688,25 @@ const ModalGallery: React.FC<{
   images: string[]
   currentIndex: number
   productName: string
-  onNavigate: (direction: 'prev' | 'next') => void
   onThumbnailClick: (index: number) => void
   isSingleImage: boolean
-}> = ({isOpen, onClose, images, currentIndex, productName, onNavigate, onThumbnailClick, isSingleImage}) => {
+}> = ({isOpen, onClose, images, currentIndex, productName, onThumbnailClick, isSingleImage}) => {
+  const [localIndex, setLocalIndex] = useState(currentIndex)
+
+  const [modalMainSliderRef, modalMainInstanceRef] = useKeenSlider<HTMLDivElement>({
+    initial: currentIndex,
+    loop: true,
+    slides: {
+      perView: 1,
+      spacing: 0
+    },
+    slideChanged: (slider: any) => {
+      const newIndex = slider.track.details.rel
+      setLocalIndex(newIndex)
+      onThumbnailClick(newIndex)
+    }
+  })
+
   const [modalThumbnailSliderRef, modalThumbnailInstanceRef] = useKeenSlider<HTMLDivElement>({
     initial: currentIndex,
     loop: false,
@@ -717,15 +718,42 @@ const ModalGallery: React.FC<{
     rubberband: false
   })
 
+  // Синхронизация при клике на thumbnail
+  useEffect(() => {
+    if (!modalMainInstanceRef.current) return
+
+    const currentSlide = modalMainInstanceRef.current.track.details.rel
+    if (currentIndex !== localIndex && currentIndex !== currentSlide) {
+      modalMainInstanceRef.current.moveToIdx(currentIndex, true)
+      setLocalIndex(currentIndex)
+    }
+  }, [currentIndex, localIndex, modalMainInstanceRef])
+
+  // Синхронизация thumbnail слайдера БЕЗ анимации
   useEffect(() => {
     if (!modalThumbnailInstanceRef.current) return
 
     try {
-      modalThumbnailInstanceRef.current.moveToIdx(currentIndex)
+      modalThumbnailInstanceRef.current.moveToIdx(localIndex, true)
     } catch (error) {
       console.warn('Modal thumbnail sync failed:', error)
     }
-  }, [currentIndex, modalThumbnailInstanceRef])
+  }, [localIndex, modalThumbnailInstanceRef])
+
+  const handleArrowClick = useCallback(
+    (direction: 'prev' | 'next') => {
+      if (!modalMainInstanceRef.current) return
+
+      const slider = modalMainInstanceRef.current
+      const currentIdx = slider.track.details.rel
+      const nextIdx =
+        direction === 'prev' ? (currentIdx - 1 + images.length) % images.length : (currentIdx + 1) % images.length
+
+      // Переключаем без анимации
+      slider.moveToIdx(nextIdx, true)
+    },
+    [images.length, modalMainInstanceRef]
+  )
 
   useEffect(() => {
     if (isOpen) {
@@ -740,9 +768,6 @@ const ModalGallery: React.FC<{
   }, [isOpen])
 
   if (!isOpen) return null
-
-  const currentMedia = images[currentIndex]
-  const currentType = getMediaType(currentMedia)
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -765,20 +790,41 @@ const ModalGallery: React.FC<{
               direction='left'
               extraClass={styles.modalArrowLeft}
               disabled={false}
-              onClick={() => onNavigate('prev')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleArrowClick('prev')
+              }}
             />
           )}
 
           <div className={styles.modalImageContainer}>
-            {currentType === 'video' ? (
-              <video src={currentMedia} autoPlay muted loop playsInline controls className={styles.modalVideo} />
-            ) : (
-              <ZoomImage
-                src={currentMedia}
-                alt={`${productName} - изображение ${currentIndex + 1}`}
-                className={styles.modalImageWrapper}
-              />
-            )}
+            <div ref={modalMainSliderRef} className='keen-slider' style={{height: '100%'}}>
+              {images.map((media, index) => {
+                const type = getMediaType(media)
+                return (
+                  <div
+                    key={index}
+                    className='keen-slider__slide'
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%'
+                    }}
+                  >
+                    {type === 'video' ? (
+                      <video src={media} autoPlay muted loop playsInline controls className={styles.modalVideo} />
+                    ) : (
+                      <ZoomImage
+                        src={media}
+                        alt={`${productName} - изображение ${index + 1}`}
+                        className={styles.modalImageWrapper}
+                      />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
 
           {!isSingleImage && (
@@ -786,7 +832,10 @@ const ModalGallery: React.FC<{
               direction='right'
               extraClass={styles.modalArrowRight}
               disabled={false}
-              onClick={() => onNavigate('next')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleArrowClick('next')
+              }}
             />
           )}
         </div>
@@ -800,7 +849,7 @@ const ModalGallery: React.FC<{
                   <div
                     key={index}
                     className={`keen-slider__slide ${styles.modalThumbnail} ${
-                      index === currentIndex ? styles.modalThumbnailActive : ''
+                      index === localIndex ? styles.modalThumbnailActive : ''
                     }`}
                     onClick={() => onThumbnailClick(index)}
                   >
@@ -1002,6 +1051,7 @@ const MediaItem: React.FC<{
 
 MediaItem.displayName = 'MediaItem'
 
+// Полный компонент ThumbnailSlider
 const ThumbnailSlider: React.FC<{
   images: string[]
   activeIndex: number
@@ -1010,42 +1060,174 @@ const ThumbnailSlider: React.FC<{
   thumbnailLoaded: boolean
   onThumbnailClick: (index: number) => void
   onDoubleClick: (index: number) => void
-}> = ({images, activeIndex, productName, thumbnailSliderRef, onThumbnailClick, onDoubleClick}) => (
-  <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
-    <div ref={thumbnailSliderRef} className='keen-slider'>
-      {images.map((image, index) => {
-        const type = getMediaType(image)
+}> = ({images, activeIndex, productName, thumbnailSliderRef, onThumbnailClick, onDoubleClick}) => {
+  const prevActiveIndex = useRef(activeIndex)
 
-        return (
-          <div
-            key={index}
-            className={`keen-slider__slide ${styles.imageSlider__thumbnail} ${
-              index === activeIndex ? styles.imageSlider__thumbnailActive : ''
-            }`}
-            onClick={() => onThumbnailClick(index)}
-            onDoubleClick={() => onDoubleClick(index)}
-            role='button'
-            tabIndex={0}
-            aria-label={`${type === 'video' ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                onThumbnailClick(index)
+  const [localRef, instanceRef] = useKeenSlider<HTMLDivElement>(
+    {
+      initial: 0,
+      loop: false,
+      mode: 'free' as const,
+      slides: {
+        perView: 'auto',
+        spacing: 16
+      },
+      rubberband: false,
+      drag: true
+    },
+    [
+      (slider) => {
+        let timeout2: ReturnType<typeof setTimeout> | undefined
+
+        function clearNextTimeout() {
+          if (timeout2) {
+            clearTimeout(timeout2)
+          }
+        }
+
+        slider.on('created', () => {
+          const container = slider.container
+          if (container) {
+            const style = document.createElement('style')
+            style.textContent = `
+              .keen-slider.thumbnails-linear {
+                transition-timing-function: linear !important;
               }
-            }}
-            style={{cursor: 'pointer'}}
-          >
-            <MediaRenderer
-              media={image}
-              alt={`${type === 'video' ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
-              type={type}
-              isThumbnail={true}
-            />
-          </div>
-        )
-      })}
+              .keen-slider.thumbnails-linear .keen-slider__slide {
+                transition-timing-function: linear !important;
+              }
+            `
+            document.head.appendChild(style)
+            container.classList.add('thumbnails-linear')
+          }
+        })
+
+        slider.on('dragStarted', clearNextTimeout)
+        slider.on('animationEnded', () => {
+          clearNextTimeout()
+        })
+
+        return () => {
+          clearNextTimeout()
+        }
+      }
+    ]
+  )
+
+  const combinedRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      localRef(node)
+      thumbnailSliderRef(node)
+    },
+    [localRef, thumbnailSliderRef]
+  )
+
+  // Синхронизация с активным слайдом
+  useEffect(() => {
+    if (!instanceRef.current || activeIndex === undefined) return
+
+    const animate = () => {
+      try {
+        const slider = instanceRef.current
+        if (!slider) return
+
+        const details = slider.track.details
+        if (!details) return
+
+        const slidesToShow = Math.floor(slider.size / (140 + 16))
+        const firstVisibleIndex = Math.floor(details.abs)
+        const lastVisibleIndex = firstVisibleIndex + slidesToShow - 1
+
+        const isVisible = activeIndex >= firstVisibleIndex && activeIndex <= lastVisibleIndex
+
+        if (!isVisible) {
+          let targetPosition: number
+          if (activeIndex < firstVisibleIndex) {
+            targetPosition = Math.max(0, activeIndex)
+          } else {
+            targetPosition = Math.max(0, Math.min(activeIndex - slidesToShow + 1, images.length - slidesToShow))
+          }
+
+          // Проверяем, был ли это быстрый переход (клик на стрелку)
+          const indexDiff = Math.abs(activeIndex - prevActiveIndex.current)
+          const isFastTransition = indexDiff === 1 // Переход на 1 слайд = клик на стрелку
+
+          if (isFastTransition) {
+            // Мгновенное переключение без анимации
+            slider.moveToIdx(targetPosition, true)
+          } else {
+            // Плавная анимация для других случаев
+            const currentPos = details.abs
+            const distance = Math.abs(targetPosition - currentPos)
+            const duration = Math.min(300 + distance * 50, 800)
+
+            const startTime = performance.now()
+            const startPos = currentPos
+
+            const animate = (currentTime: number) => {
+              const elapsed = currentTime - startTime
+              const progress = Math.min(elapsed / duration, 1)
+
+              const newPos = startPos + (targetPosition - startPos) * progress
+
+              slider.moveToIdx(newPos, false)
+
+              if (progress < 1) {
+                requestAnimationFrame(animate)
+              }
+            }
+
+            requestAnimationFrame(animate)
+          }
+        }
+
+        prevActiveIndex.current = activeIndex
+      } catch (error) {
+        console.warn('Thumbnail sync failed:', error)
+      }
+    }
+
+    const timer = setTimeout(animate, 10)
+    return () => clearTimeout(timer)
+  }, [activeIndex, images.length, instanceRef])
+
+  return (
+    <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
+      <div ref={combinedRef} className='keen-slider'>
+        {images.map((image, index) => {
+          const type = getMediaType(image)
+
+          return (
+            <div
+              key={index}
+              className={`keen-slider__slide ${styles.imageSlider__thumbnail} ${
+                index === activeIndex ? styles.imageSlider__thumbnailActive : ''
+              }`}
+              onClick={() => onThumbnailClick(index)}
+              onDoubleClick={() => onDoubleClick(index)}
+              role='button'
+              tabIndex={0}
+              aria-label={`${type === 'video' ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  onThumbnailClick(index)
+                }
+              }}
+              style={{cursor: 'pointer'}}
+            >
+              <MediaRenderer
+                media={image}
+                alt={`${type === 'video' ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
+                type={type}
+                isThumbnail={true}
+              />
+            </div>
+          )
+        })}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const ProductStructuredData: React.FC<{
   productName: string

@@ -1,5 +1,6 @@
 import {FC, useState, useRef, useEffect, useCallback} from 'react'
 import styles from './ImageCropEditor.module.scss'
+import {useTranslations} from 'next-intl'
 
 interface ImageCropEditorProps {
   imageUrl: string
@@ -20,6 +21,7 @@ const ImageCropEditor: FC<ImageCropEditorProps> = ({
   cropSize = 300,
   aspectRatio = 1
 }) => {
+  const t = useTranslations('cropEditor')
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [image, setImage] = useState<HTMLImageElement | null>(null)
@@ -28,6 +30,29 @@ const ImageCropEditor: FC<ImageCropEditorProps> = ({
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({x: 0, y: 0})
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [canvasSize, setCanvasSize] = useState({width: 600, height: 600})
+
+  // Динамический расчет размера canvas на основе viewport
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      const vh = window.innerHeight
+      const vw = window.innerWidth
+
+      // Отнимаем высоту header (~64px), controls (~64px), footer (~64px) и отступы (~100px)
+      const availableHeight = vh - 292
+      const availableWidth = vw * 0.9 - 48 // 90% ширины минус padding
+
+      // Ограничиваем максимальный размер
+      const maxSize = Math.min(availableHeight, availableWidth, 600)
+      const size = Math.max(300, maxSize) // Минимум 300px
+
+      setCanvasSize({width: size, height: size})
+    }
+
+    updateCanvasSize()
+    window.addEventListener('resize', updateCanvasSize)
+    return () => window.removeEventListener('resize', updateCanvasSize)
+  }, [])
 
   useEffect(() => {
     if (isOpen && imageUrl) {
@@ -39,8 +64,8 @@ const ImageCropEditor: FC<ImageCropEditorProps> = ({
 
         // Центрируем изображение при загрузке
         if (containerRef.current) {
-          const containerWidth = containerRef.current.clientWidth
-          const containerHeight = containerRef.current.clientHeight
+          const containerWidth = canvasSize.width
+          const containerHeight = canvasSize.height
 
           const scale = Math.max(cropSize / img.width, cropSize / img.height)
 
@@ -53,7 +78,7 @@ const ImageCropEditor: FC<ImageCropEditorProps> = ({
       }
       img.src = imageUrl
     }
-  }, [isOpen, imageUrl, cropSize])
+  }, [isOpen, imageUrl, cropSize, canvasSize])
 
   const drawCanvas = useCallback(() => {
     if (!canvasRef.current || !image || !imageLoaded) return
@@ -236,8 +261,8 @@ const ImageCropEditor: FC<ImageCropEditorProps> = ({
 
   const handleReset = () => {
     if (image && containerRef.current) {
-      const containerWidth = containerRef.current.clientWidth
-      const containerHeight = containerRef.current.clientHeight
+      const containerWidth = canvasSize.width
+      const containerHeight = canvasSize.height
 
       const initialScale = Math.max(cropSize / image.width, cropSize / image.height)
 
@@ -266,8 +291,8 @@ const ImageCropEditor: FC<ImageCropEditorProps> = ({
         <div className={styles.content} ref={containerRef}>
           <canvas
             ref={canvasRef}
-            width={600}
-            height={600}
+            width={canvasSize.width}
+            height={canvasSize.height}
             className={styles.canvas}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
@@ -293,16 +318,16 @@ const ImageCropEditor: FC<ImageCropEditorProps> = ({
           </div>
 
           <button className={styles.resetButton} onClick={handleReset}>
-            Сбросить
+            {t('sbros')}
           </button>
         </div>
 
         <div className={styles.footer}>
           <button className={styles.cancelButton} onClick={onClose}>
-            Отмена
+            {t('cancel')}
           </button>
           <button className={styles.saveButton} onClick={handleSave}>
-            Применить
+            {t('submit')}
           </button>
         </div>
       </div>

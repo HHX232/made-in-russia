@@ -1074,5 +1074,11 @@
     "approved": "Approved",
     "pending": "Moderation",
     "rejected": "Rejected"
-  }
+  },
+  "cropEditor": {
+  "sbros": "Reset",
+  "cancel": "Cancel",
+  "submit": "Apply"
+}
+
 }

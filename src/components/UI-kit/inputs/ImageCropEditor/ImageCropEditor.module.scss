@@ -1,18 +1,21 @@
 .overlay {
   position: fixed;
-  z-index: 9999;
-  inset: 0;
+  z-index: 1010000100;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
   backdrop-filter: blur(4px);
   background: rgb(255 255 255 / 95%);
+  inset: 0;
+  overflow-y: auto;
 }
 
 .modal {
   display: flex;
   width: 90%;
   max-width: 700px;
+  max-height: calc(100vh - 40px);
   flex-direction: column;
   border: 2px solid #000;
   background: #fff;
@@ -21,6 +24,7 @@
 
 .header {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
@@ -59,6 +63,8 @@
   position: relative;
   display: flex;
   overflow: hidden;
+  min-height: 300px;
+  flex: 1;
   align-items: center;
   justify-content: center;
   padding: 24px;
@@ -78,6 +84,7 @@
 
 .controls {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
@@ -145,6 +152,7 @@
 
 .footer {
   display: flex;
+  flex-shrink: 0;
   justify-content: flex-end;
   padding: 20px 24px;
   gap: 12px;
@@ -190,9 +198,14 @@
 }
 
 @media (max-width: 768px) {
+  .overlay {
+    padding: 10px;
+  }
+
   .modal {
-    width: 95%;
+    width: 100%;
     max-width: none;
+    max-height: calc(100vh - 20px);
   }
 
   .header {
@@ -204,6 +217,7 @@
   }
 
   .content {
+    min-height: 250px;
     padding: 16px;
   }
 
@@ -211,7 +225,7 @@
     width: auto !important;
     max-width: 100%;
     height: auto !important;
-    max-height: 400px;
+    max-height: 100%;
   }
 
   .controls {
@@ -227,5 +241,34 @@
   .saveButton {
     min-width: 120px;
     flex: 1;
+  }
+}
+
+@media (max-height: 700px) {
+  .header {
+    padding: 12px 20px;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+
+  .content {
+    min-height: 200px;
+    padding: 16px;
+  }
+
+  .controls {
+    padding: 10px 20px;
+  }
+
+  .footer {
+    padding: 12px 20px;
+  }
+
+  .cancelButton,
+  .saveButton {
+    padding: 8px 20px;
+    font-size: 14px;
   }
 }

@@ -1074,5 +1074,11 @@
       "approved": "已确认",
       "pending": "审核中",
       "rejected": "已拒绝"
-    }
+    },
+    "cropEditor": {
+  "sbros": "重置",
+  "cancel": "取消",
+  "submit": "应用"
+}
+
 }
