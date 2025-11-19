@@ -54,23 +54,52 @@ export default async function ProfilePageMain() {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const trimPhonePrefix = (phoneNumber: string | undefined): string | undefined => {
     if (!phoneNumber) return phoneNumber
 
-    const prefixesToTrim = ['+375', '+7', '+86']
+    // Убираем все нецифровые символы
+    const digitsOnly = phoneNumber.replace(/\D/g, '')
 
-    for (const prefix of prefixesToTrim) {
-      if (phoneNumber.startsWith(prefix)) {
-        return phoneNumber.substring(prefix.length)
+    if (!digitsOnly) return phoneNumber
+
+    const prefixMap = [
+      {prefix: '+375', code: '375', length: 12},
+      {prefix: '+7', code: '7', length: 11},
+      {prefix: '+86', code: '86', length: 13}
+    ]
+
+    // Проверяем каждый префикс
+    for (const {prefix, code, length} of prefixMap) {
+      if (phoneNumber.startsWith(prefix) || digitsOnly.startsWith(code)) {
+        // Если длина номера правильная - просто убираем префикс
+        if (digitsOnly.length === length) {
+          return digitsOnly.substring(code.length)
+        }
+
+        // Проверяем на дубликат кода (например: 375375...)
+        const doubleCode = code + code
+        if (digitsOnly.startsWith(doubleCode)) {
+          const lengthWithoutOneCode = digitsOnly.length - code.length
+
+          // Если после удаления одного кода длина правильная - убираем дубликат и префикс
+          if (lengthWithoutOneCode === length) {
+            return digitsOnly.substring(code.length * 2) // Убираем оба дубликата
+          }
+        }
+
+        // В остальных случаях просто убираем префикс
+        return digitsOnly.substring(code.length)
       }
     }
 
-    return phoneNumber
+    // Если префикс не найден - возвращаем только цифры
+    return digitsOnly
   }
 
   const initialUserData = {
     ...userData?.data,
-    phoneNumber: trimPhonePrefix(userData?.data.phoneNumber) || '',
+    phoneNumber: userData?.data.phoneNumber || '',
     id: userData?.data.id || 0,
     role: userData?.data.role || '',
     email: userData?.data.email || '',

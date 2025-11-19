@@ -174,11 +174,9 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
       let fullPhoneNumber = trueTelephoneNumber
 
       if (isUser) {
-        const countryCode = getCountryCode(selectedRegion.altName)
-        fullPhoneNumber = countryCode + trueTelephoneNumber
+        fullPhoneNumber = trueTelephoneNumber
       } else if (selectedCountries.length > 0) {
-        const countryCode = getCountryCode(selectedCountries[0].value)
-        fullPhoneNumber = countryCode + trueTelephoneNumber
+        fullPhoneNumber = trueTelephoneNumber
       }
 
       const registrationData = isUser
@@ -556,18 +554,18 @@ const validatePhoneLength = (phone: string, country: TNumberStart): boolean => {
   return true
 }
 
-const getCountryCode = (country: string): string => {
-  switch (country) {
-    case 'Belarus':
-      return '+375'
-    case 'China':
-      return '+86'
-    case 'Russia':
-    case 'Kazakhstan':
-      return '+7'
-    default:
-      return '+'
-  }
-}
+// const getCountryCode = (country: string): string => {
+//   switch (country) {
+//     case 'Belarus':
+//       return '+375'
+//     case 'China':
+//       return '+86'
+//     case 'Russia':
+//     case 'Kazakhstan':
+//       return '+7'
+//     default:
+//       return '+'
+//   }
+// }
 
 export default RegisterPage

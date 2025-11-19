@@ -146,7 +146,11 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
               theme='newWhite'
             /> */}
             <MarkdownEditor
-              onValueChange={(val) => setDescriptionOne({language: currentDynamicLang, description: val})}
+              onValueChange={(val) => {
+                console.log('value in mdEditor', val)
+                setDescriptionOne({language: 'ru', description: val})
+                console.log('descriptions after set', descriptions)
+              }}
               placeholder={t('writeDescription')}
               initialValue={descriptions[currentDynamicLang].description}
             />

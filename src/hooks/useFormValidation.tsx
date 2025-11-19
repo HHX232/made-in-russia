@@ -106,6 +106,7 @@ export const useFormValidation = (
         return fieldValidationCache.current[fieldName] || ''
       }
 
+      console.log('currentMainDescription', currentMainDescription)
       // Выполняем валидацию только для конкретного поля
       const validationResult = validateField(
         fieldName as any,

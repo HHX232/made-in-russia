@@ -25,9 +25,60 @@ const detectCountryByCode = (value: string): TNumberStart | null => {
   return null
 }
 
+// Получаем ожидаемую длину номера для страны
+const getExpectedLength = (country: TNumberStart | null): number => {
+  switch (country) {
+    case 'Belarus':
+      return 12 // 375 + 9 цифр
+    case 'Russia':
+    case 'Kazakhstan':
+      return 11 // 7 + 10 цифр
+    case 'China':
+      return 13 // 86 + 11 цифр
+    default:
+      return 0
+  }
+}
+
+// Убираем дубликат кода страны если он есть
+const removeDuplicateCountryCode = (digitsOnly: string): string => {
+  if (!digitsOnly) return digitsOnly
+
+  const country = detectCountryByCode(digitsOnly)
+  if (!country) return digitsOnly
+
+  const expectedLength = getExpectedLength(country)
+  if (!expectedLength) return digitsOnly
+
+  // Если текущая длина уже правильная - ничего не делаем
+  if (digitsOnly.length === expectedLength) return digitsOnly
+
+  // Определяем код страны
+  let countryCode = ''
+  if (country === 'Belarus') countryCode = '375'
+  if (country === 'Russia' || country === 'Kazakhstan') countryCode = '7'
+  if (country === 'China') countryCode = '86'
+
+  if (!countryCode) return digitsOnly
+
+  // Проверяем есть ли ТОЧНЫЙ дубликат кода в начале (код повторяется сразу после себя)
+  const doubleCode = countryCode + countryCode
+  if (digitsOnly.startsWith(doubleCode)) {
+    // Вычисляем длину номера без одного кода
+    const lengthWithoutOneCode = digitsOnly.length - countryCode.length
+
+    // Если после удаления одного кода получается правильная длина - убираем дубликат
+    if (lengthWithoutOneCode === expectedLength) {
+      return digitsOnly.substring(countryCode.length)
+    }
+  }
+
+  return digitsOnly
+}
+
 // Функция форматирования номера с маской вида +X-XXX-XXX-XX-XX
 const formatPhoneNumber = (value: string, country: TNumberStart | null): string => {
-  const digitsOnly = value.replace(/\D/g, '')
+  const digitsOnly = removeDuplicateCountryCode(value.replace(/\D/g, ''))
 
   if (digitsOnly.length === 0) return ''
 
@@ -88,15 +139,15 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
 
   // Синхронизация с внешним значением
   useEffect(() => {
-    const digitsOnly = currentValue.replace(/\D/g, '')
+    const cleanedCurrent = removeDuplicateCountryCode(currentValue.replace(/\D/g, ''))
     const currentDigits = value.replace(/\D/g, '')
 
-    if (digitsOnly !== currentDigits) {
-      if (!digitsOnly) {
+    if (cleanedCurrent !== currentDigits) {
+      if (!cleanedCurrent) {
         setValue('')
       } else {
-        const country = detectCountryByCode(digitsOnly)
-        setValue(formatPhoneNumber(digitsOnly, country))
+        const country = detectCountryByCode(cleanedCurrent)
+        setValue(formatPhoneNumber(cleanedCurrent, country))
       }
     }
   }, [currentValue])
@@ -143,8 +194,10 @@ export const TelephoneInputUI: FC<ITelephoneProps> = ({
     const country = detectCountryByCode(digitsOnly)
     const formatted = formatPhoneNumber(digitsOnly, country)
 
+    // Отправляем очищенное значение без дубликатов
+    const cleanedDigits = removeDuplicateCountryCode(digitsOnly)
     setValue(formatted)
-    onSetValue(digitsOnly)
+    onSetValue(cleanedDigits)
   }
 
   return (

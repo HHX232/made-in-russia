@@ -73,6 +73,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const {descriptions}: {descriptions: any} = useTypedSelector((state) => state.multilingualDescriptions)
+
   const {ru, en, zh} = useTypedSelector((state) => state.multiLanguageCardPriceData)
   const multyLangObjectForPrices = useMemo(() => ({ru, en, zh}), [ru, en, zh])
   const {setDescriptions, setCharacteristics, setDelivery, setPackaging, updatePriceInfo} = useActions()
@@ -284,6 +285,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     async (e: React.FormEvent) => {
       e.preventDefault()
 
+      console.log('descriptions,', descriptions)
+
       // Выполняем полную валидацию при сабмите
       const {validationErrors, isFormValid: isValid} = validateAllFields()
       setErrors(validationErrors)
@@ -309,7 +312,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       }
 
       const loadingToast = toast.loading(t('savingLoad'))
-
+      console.log('cardObjectForOthers', cardObjectForOthers)
       try {
         await submitFormCardData({
           cardObjectForOthers,

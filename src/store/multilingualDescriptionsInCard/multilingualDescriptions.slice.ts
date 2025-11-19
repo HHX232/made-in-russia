@@ -47,23 +47,31 @@ export const multilingualDescriptionsSlice = createSlice({
     },
 
     // Установить основное описание для языка
+    // Установить основное описание для языка
     setDescriptionOne: (state, action: PayloadAction<{language: SupportedLanguage; description: string}>) => {
       const {language, description} = action.payload
+
+      // Сначала инициализируем описание для языка, если его нет
+      if (!state.descriptions[language]) {
+        state.descriptions[language] = {description: '', additionalDescription: '', furtherDescription: ''}
+      }
+
+      // Теперь безопасно проверяем длину
       if (description.length === 0 && state.descriptions[language].description.length !== 1) return
       if (description.length === 0 && state.descriptions[language].description.length === 1) {
         state.descriptions[language].description = ''
         return
       }
+
+      // Проверка на дубликаты
       if (
-        description === state.descriptions['ru'].description ||
-        description === state.descriptions['en'].description ||
-        description === state.descriptions['zh'].description ||
-        description === state.descriptions['hi'].description
+        description === state.descriptions['ru']?.description ||
+        description === state.descriptions['en']?.description ||
+        description === state.descriptions['zh']?.description ||
+        description === state.descriptions['hi']?.description
       )
         return
-      if (!state.descriptions[language]) {
-        state.descriptions[language] = {description: '', additionalDescription: '', furtherDescription: ''}
-      }
+
       state.descriptions[language].description = description
     },
 

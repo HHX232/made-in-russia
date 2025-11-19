@@ -203,6 +203,9 @@ const ProfileForm: FC<ProfileFormProps> = ({
     )
   }
 
+  useEffect(() => {
+    console.log('userData', userData)
+  }, [userData])
   const [selectedRegion, setSelectedRegion] = useState<RegionType>(() => {
     if (isVendor && userData?.vendorDetails?.countries) {
       const countries = userData.vendorDetails.countries
@@ -354,6 +357,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
         originalRegion = detectRegionFromPhone(userData.phoneNumber || '')
       }
 
+      console.log('userDDAATTAA', userData)
       console.log(
         'userData.vendorDetails?.address',
         (userData as any)?.vendorDetails?.address,
