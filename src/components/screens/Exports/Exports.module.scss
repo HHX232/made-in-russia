@@ -26,6 +26,7 @@ EXPERTS SECTION
       inset: 0;
       background: linear-gradient(180deg, #eaeaea 0%, #fff 50%, rgb(234 234 234 / 40%) 100%);
       content: '';
+       border-radius: 10px;
     }
 
     @include xl {
