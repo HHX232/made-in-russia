@@ -136,6 +136,7 @@
   background: #f6f6f6;
   color: #2f2f2f;
   transition: all 0.3s ease-in-out;
+  border-radius:10px;
 
   @include sm {
     aspect-ratio: 320/210;
