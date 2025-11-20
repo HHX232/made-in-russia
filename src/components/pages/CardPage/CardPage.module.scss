@@ -432,6 +432,7 @@
   font-size: 16px;
   font-weight: 600;
   transition: background-color 0.3s ease;
+  border-radius:5px;
 
   &:hover {
     background: linear-gradient(#0047ba, #1869ef);
@@ -452,6 +453,7 @@
   background: linear-gradient(#0047ba, #1869ef);
   cursor: pointer;
   transition: all 0.3s ease;
+  border-radius:5px;
 
   svg {
     path {
