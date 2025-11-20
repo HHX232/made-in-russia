@@ -47,6 +47,7 @@
   align-items: center;
   padding: 20px 75px;
   background-color: #f6f6f6;
+  border-radius: 10px;
 
   @media (max-width: 1200px) {
     padding: 40px 40px 20px;
@@ -147,7 +148,7 @@
   cursor: pointer;
   text-align: left;
   transition: all 0.3s ease;
-
+  border-radius: 10px;
   &:hover {
     box-shadow: 0 6px 20px rgb(0 0 0 / 10%);
     transform: translateY(-2px);
