@@ -85,6 +85,7 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     border-radius: rem(0);
     padding-inline: 1rem;
     transition: background-color 0.2s ease-in-out;
+    border-radius:10px;
 
     @include lg {
       border: 1px solid rgb(0 0 0 / 0%);
