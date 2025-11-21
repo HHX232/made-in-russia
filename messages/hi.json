@@ -16,7 +16,8 @@
     "searchLoading": "खोज रहे हैं...",
     "noResultsCatalog": "आपकी क्वेरी के लिए कुछ नहीं मिला",
     "showAllResults": "सभी दिखाएं",
-    "hideAllResults": "छुपाएं"
+    "hideAllResults": "छुपाएं",
+     "searchError": "खोज त्रुटि"
   },
   "Footer": {
     "ugreement": "उपयोगकर्ता समझौता",
@@ -253,6 +254,7 @@
     "addRow": "पंक्ति जोड़ें"
   },
   "VendorPage": {
+    "saving": "सेव करें",
     "mediaSavedSuccessfully": "मीडिया सफलतापूर्वक सहेजा गया",
     "noWriten": "नहीं भरा गया",
     "deletedSuccess": "सफलतापूर्वक हटाया गया!",

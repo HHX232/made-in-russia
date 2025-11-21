@@ -16,7 +16,8 @@
     "searchLoading": "搜索中...",
     "noResultsCatalog": "未找到符合您查询的内容",
     "showAllResults": "显示全部",
-    "hideAllResults": "收起"
+    "hideAllResults": "收起",
+    "searchError": "搜索错误"
   },
   "Footer": {
     "ugreement": "用户协议",
@@ -253,6 +254,7 @@
     "addRow": "添加行"
   },
   "VendorPage": {
+    "saving": "保存",
     "mediaSavedSuccessfully": "媒体保存成功",
     "noWriten": "未填写",
     "deletedSuccess":"删除成功！",

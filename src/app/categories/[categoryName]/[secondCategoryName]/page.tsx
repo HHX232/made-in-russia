@@ -1,3 +1,4 @@
+// page.tsx (второй уровень)
 import {getCurrentLocale} from '@/lib/locale-detection'
 import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
@@ -77,8 +78,9 @@ export default async function CategoryPageSpecialSecond({
       idOfFilter={categories.id}
       categories={categories.children || []}
       categoryName={secondCategoryName}
-      categoryTitleName={categories.name}
+      categoryTitleName={categories.name} // name для заголовка страницы
       level={2}
+      categoryDescription={categories.description}
       language={locale}
     />
   )
@@ -98,7 +100,7 @@ export async function generateMetadata({
     const foundCategory = findCategoryByPath(allCategories, fullPath)
 
     return {
-      title: foundCategory?.name || secondCategoryName || 'category'
+      title: foundCategory?.title || foundCategory?.name || secondCategoryName || 'category' // title для meta
     }
   } catch {
     const {secondCategoryName} = await params

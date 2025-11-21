@@ -7,8 +7,10 @@ import {getAccessToken} from '@/services/auth/auth.helper'
 export interface Category {
   id: number
   slug: string
-
   name: string
+  title?: string
+  label?: string
+  description?: string
   imageUrl?: string
   iconUrl?: string | null
   children: Category[]
@@ -21,6 +23,9 @@ export interface EditingCategory {
   id?: number
   slug: string
   name: string
+  title?: string
+  label?: string
+  description?: string
   imageUrl?: string
   iconUrl?: string | null
   children: Category[]
@@ -32,9 +37,30 @@ export interface EditingCategory {
 
 export interface CreateCategoryPayload {
   name: string
+  title?: string
+  label?: string
+  description?: string
   slug: string
   parentId?: number | null
   nameTranslations: {
+    en: string
+    ru: string
+    zh: string
+    hi: string
+  }
+  titleTranslations?: {
+    en: string
+    ru: string
+    zh: string
+    hi: string
+  }
+  labelTranslations?: {
+    en: string
+    ru: string
+    zh: string
+    hi: string
+  }
+  descriptionTranslations?: {
     en: string
     ru: string
     zh: string
@@ -73,6 +99,9 @@ const cleanCategorySlug = (category: Category): Category => {
     ...category,
     slug: cleanSlug(category.slug),
     iconUrl: category.iconUrl || null,
+    title: category.title || '',
+    label: category.label || '',
+    description: category.description || '',
     children: category.children.map(cleanCategorySlug)
   }
 }
@@ -110,9 +139,15 @@ const CategoriesAPI = {
 
     const dataPayload = {
       name: payload.name,
+      title: payload.title || '',
+      label: payload.label || '',
+      description: payload.description || '',
       slug: payload.slug.replace(/^(l[1-5]_)+/, ''),
       parentId: payload.parentId || null,
       nameTranslations: payload.nameTranslations,
+      titleTranslations: payload.titleTranslations || {en: '', ru: '', zh: '', hi: ''},
+      labelTranslations: payload.labelTranslations || {en: '', ru: '', zh: '', hi: ''},
+      descriptionTranslations: payload.descriptionTranslations || {en: '', ru: '', zh: '', hi: ''},
       okvedCategories: payload.okvedCategories || []
     }
 
@@ -164,9 +199,15 @@ const CategoriesAPI = {
 
     const dataPayload = {
       name: payload.name,
+      title: payload.title || '',
+      label: payload.label || '',
+      description: payload.description || '',
       slug: payload.slug.replace(/^(l[1-5]_)+/, ''),
       parentId: payload.parentId || null,
       nameTranslations: payload.nameTranslations,
+      titleTranslations: payload.titleTranslations || {en: '', ru: '', zh: '', hi: ''},
+      labelTranslations: payload.labelTranslations || {en: '', ru: '', zh: '', hi: ''},
+      descriptionTranslations: payload.descriptionTranslations || {en: '', ru: '', zh: '', hi: ''},
       okvedCategories: payload.okvedCategories || []
     }
 
@@ -222,8 +263,8 @@ export const useCategories = (lang: SupportedLanguage) => {
   return useQuery({
     queryKey: categoriesKeys.list(lang),
     queryFn: () => CategoriesAPI.getAll(lang),
-    staleTime: 25 * 60 * 1000, // 5 minutes
-    gcTime: 35 * 60 * 1000 // 10 minutes
+    staleTime: 25 * 60 * 1000, // 25 minutes
+    gcTime: 35 * 60 * 1000 // 35 minutes
   })
 }
 

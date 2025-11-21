@@ -110,6 +110,7 @@ export default async function CategoryPageSpecialThirdAlt({
       categoryTitleName={categories.name}
       level={3}
       language={locale}
+      categoryDescription={categories.description}
       initialLastFilterSlug={lastFilterName}
     />
   )
@@ -135,7 +136,7 @@ export async function generateMetadata({
     const foundCategory = findCategoryByPath(allCategories, fullPath)
 
     return {
-      title: foundCategory?.name || actualThirdSlug || 'category'
+      title: foundCategory?.title || foundCategory?.name || actualThirdSlug || 'category' // title для meta
     }
   } catch {
     const {thirdCategoryName, thirdCAtegoryName} = await params

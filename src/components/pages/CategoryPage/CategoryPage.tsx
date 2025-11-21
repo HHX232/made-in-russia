@@ -23,7 +23,8 @@ const CategoryPage = ({
   companyes,
   breadcrumbs,
   language,
-  initialLastFilterSlug
+  initialLastFilterSlug,
+  categoryDescription
 }: {
   categoryName: string
   categoryTitleName?: string
@@ -35,6 +36,7 @@ const CategoryPage = ({
   companyes?: {name: string; inn: string; ageInYears: string}[]
   language?: 'ru' | 'en' | 'zh' | 'hi'
   initialLastFilterSlug?: string
+  categoryDescription?: string
 }) => {
   const isServer = typeof window === 'undefined'
   const t = useTranslations('CategoryPage')
@@ -377,6 +379,7 @@ const CategoryPage = ({
                 categoryTitleName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')
               : categoryName.charAt(0).toUpperCase() + categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
           </h1>
+          <p className={styles.categoryDescription}>{categoryDescription}</p>
 
           {!isLastCategoryLevel && categoriesToDisplay.length > 0 && shouldShowDesktop && (
             <div className={`row ${styles.category__cards__grid}`}>
@@ -397,7 +400,7 @@ const CategoryPage = ({
                       </Link>
                       {category.children && category.children.length > 0 && (
                         <ul className={styles.category_in_card__list}>
-                          {category.children.slice(0, 8).map((child) => (
+                          {category.children.map((child) => (
                             <li key={child.id || child.slug}>
                               {level === 2 ? (
                                 <Link href={`${buildHref(category)}?lastFilterName=${child.slug.toLowerCase()}`}>
@@ -433,7 +436,7 @@ const CategoryPage = ({
                       </Link>
                       {category.children && category.children.length > 0 && (
                         <ul className={styles.category_in_card__list}>
-                          {category.children.slice(0, 8).map((child) => (
+                          {category.children.map((child) => (
                             <li key={child.id || child.slug}>
                               {level === 2 ? (
                                 <Link href={`${buildHref(category)}?lastFilterName=${child.slug.toLowerCase()}`}>

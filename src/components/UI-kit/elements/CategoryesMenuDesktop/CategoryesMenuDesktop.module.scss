@@ -83,9 +83,9 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     align-items: center;
     justify-content: space-between;
     border-radius: rem(0);
+    border-radius: 10px;
     padding-inline: 1rem;
     transition: background-color 0.2s ease-in-out;
-    border-radius:10px;
 
     @include lg {
       border: 1px solid rgb(0 0 0 / 0%);
@@ -300,23 +300,21 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
   }
 
   &_list {
-    column-count: 3;
-    column-gap: 35px;
+    display: grid;
+    gap: 0 35px;
+    grid-template-columns: repeat(3, 1fr);
 
     @include lg {
       display: flex;
       flex-direction: column;
-      column-count: 1;
       gap: rem(10);
       padding-block-end: rem(80);
     }
 
     li {
       padding: 7px 10px;
-      break-inside: avoid;
-      page-break-inside: avoid;
-      transition: background-color 0.2s ease-in-out;
       border-radius: 5px;
+      transition: background-color 0.2s ease-in-out;
 
       &:hover {
         background: linear-gradient(#e1251b, #eb5a53);

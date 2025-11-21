@@ -11,12 +11,15 @@ interface TranslateData {
   [key: string]: string | TranslateData
 }
 
+type SupportedLanguage = 'ru' | 'en' | 'zh' | 'hi'
+
 const AdminTranslatesPage = () => {
   const [translateRuJSON, setTranslateRuJSON] = useState<TranslateData>({})
   const [translateEnJSON, setTranslateEnJSON] = useState<TranslateData>({})
   const [translateZhJSON, setTranslateZhJSON] = useState<TranslateData>({})
+  const [translateHiJSON, setTranslateHiJSON] = useState<TranslateData>({})
   const [loading, setLoading] = useState(true)
-  const [activeLanguage, setActiveLanguage] = useState<'ru' | 'en' | 'zh'>('ru')
+  const [activeLanguage, setActiveLanguage] = useState<SupportedLanguage>('ru')
   const [searchTerm, setSearchTerm] = useState('')
   const [newKeyValue, setNewKeyValue] = useState('')
   const [newStringValue, setNewStringValue] = useState('')
@@ -30,9 +33,11 @@ const AdminTranslatesPage = () => {
         const response = await axiosClassic.get('localization/ru')
         const resEn = await axiosClassic.get('localization/en')
         const resZh = await axiosClassic.get('localization/zh')
+        const resHi = await axiosClassic.get('localization/hi')
         setTranslateRuJSON(response.data as TranslateData)
         setTranslateEnJSON(resEn.data as TranslateData)
         setTranslateZhJSON(resZh.data as TranslateData)
+        setTranslateHiJSON(resHi.data as TranslateData)
         console.log(response.data)
       } catch (error) {
         console.error('Error fetching translations:', error)
@@ -51,6 +56,8 @@ const AdminTranslatesPage = () => {
         return translateEnJSON
       case 'zh':
         return translateZhJSON
+      case 'hi':
+        return translateHiJSON
       default:
         return translateRuJSON
     }
@@ -67,6 +74,24 @@ const AdminTranslatesPage = () => {
       case 'zh':
         setTranslateZhJSON(data)
         break
+      case 'hi':
+        setTranslateHiJSON(data)
+        break
+    }
+  }
+
+  const getLanguageName = (lang: SupportedLanguage): string => {
+    switch (lang) {
+      case 'ru':
+        return 'Русский'
+      case 'en':
+        return 'English'
+      case 'zh':
+        return '中文'
+      case 'hi':
+        return 'हिन्दी'
+      default:
+        return lang
     }
   }
 
@@ -395,6 +420,12 @@ const AdminTranslatesPage = () => {
             >
               中文
             </button>
+            <button
+              className={`${styles.language__button} ${activeLanguage === 'hi' ? styles.active : ''}`}
+              onClick={() => setActiveLanguage('hi')}
+            >
+              हिन्दी
+            </button>
           </div>
 
           <button className={styles.save__button} onClick={saveTranslations} disabled={loading}>
@@ -406,10 +437,7 @@ const AdminTranslatesPage = () => {
       <div className={styles.translate__content}>
         <div className={styles.content__header}>
           <div className={styles.current__language}>
-            Редактирование:{' '}
-            <span className={styles.language__name}>
-              {activeLanguage === 'ru' ? 'Русский' : activeLanguage === 'en' ? 'English' : '中文'}
-            </span>
+            Редактирование: <span className={styles.language__name}>{getLanguageName(activeLanguage)}</span>
           </div>
 
           <div className={styles.root__actions}>

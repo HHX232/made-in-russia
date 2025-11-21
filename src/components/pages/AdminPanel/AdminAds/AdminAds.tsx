@@ -19,6 +19,7 @@ interface AdTranslations {
   zh?: string
   hi?: string
 }
+
 // Вынеси куда-нибудь в начало файла
 const extractErrorMessage = (error: any): string => {
   if (!error) return ''
@@ -53,25 +54,25 @@ interface AdData {
   imageUrl: string
   creationDate: string
   lastModificationDate: string
-  thirdText?: string // New field
-  link?: string // New field for link
-  expiresAt?: string // New field for time to live (date string)
-  isBig?: boolean // New field for important ads
+  thirdText?: string
+  link?: string
+  expiresAt?: string
+  isBig?: boolean
   titleTranslations?: AdTranslations
   subtitleTranslations?: AdTranslations
-  thirdTextTranslations?: AdTranslations // New field for translations
+  thirdTextTranslations?: AdTranslations
 }
 
 interface AdFormData {
-  title: string // Main title for display/default
+  title: string
   titleTranslations: AdTranslations
-  subtitle: string // Main subtitle for display/default
+  subtitle: string
   subtitleTranslations: AdTranslations
-  thirdText: string // Main third text for display/default
-  thirdTextTranslations: AdTranslations // New field for translations
-  link: string // New field for link
-  expiresAt?: string // New field for time to live (date string)
-  isBig: boolean // New field for important ads
+  thirdText: string
+  thirdTextTranslations: AdTranslations
+  link: string
+  expiresAt?: string
+  isBig: boolean
   uploadedFiles?: File[]
   activeImages?: string[]
 }
@@ -80,25 +81,26 @@ const AdminAds = () => {
   const pathname = usePathname()
   const [ads, setAds] = useState<AdData[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeLanguage, setActiveLanguage] = useState<Language>('ru') // Controls which translation is shown/edited in the main form inputs
+  const [activeLanguage, setActiveLanguage] = useState<Language>('ru')
   const [searchTerm, setSearchTerm] = useState('')
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [editingAd, setEditingAd] = useState<number | null>(null)
   const [showOnlyImportant, setShowOnlyImportant] = useState(false)
   const [formData, setFormData] = useState<AdFormData>({
-    title: '', // This will be dynamically set by translations
-    titleTranslations: {ru: '', en: '', zh: '', hi: ''}, // Initialize all translation fields
-    subtitle: '', // This will be dynamically set by translations
-    subtitleTranslations: {ru: '', en: '', zh: '', hi: ''}, // Initialize all translation fields
-    thirdText: '', // This will be dynamically set by translations
-    thirdTextTranslations: {ru: '', en: '', zh: '', hi: ''}, // New field for translations
-    link: '', // New field for link
-    expiresAt: '', // New field
-    isBig: false, // New field for important ads
+    title: '',
+    titleTranslations: {ru: '', en: '', zh: '', hi: ''},
+    subtitle: '',
+    subtitleTranslations: {ru: '', en: '', zh: '', hi: ''},
+    thirdText: '',
+    thirdTextTranslations: {ru: '', en: '', zh: '', hi: ''},
+    link: '',
+    expiresAt: '',
+    isBig: false,
     uploadedFiles: [],
     activeImages: []
   })
   const [errors, setErrors] = useState<{[key: string]: string}>({})
+
   const addDays = (date: Date, days: number) => {
     const result = new Date(date)
     result.setDate(result.getDate() + days)
@@ -128,14 +130,6 @@ const AdminAds = () => {
           'Accept-Language': currentLanguage
         }
       })
-      //   {
-      //     "status": 400,
-      //     "error": "Bad Request",
-      //     "errors": {
-      //         "message": "Дата истечения рекламы не может быть пустой"
-      //     },
-      //     "message": "Validation failed"
-      // }
       if (response.status === 400) {
         throw new Error((response?.data as any)?.errors?.message)
       }
@@ -143,7 +137,6 @@ const AdminAds = () => {
     } catch (error) {
       console.error('Error fetching ads:', error)
       const msg = extractErrorMessage(error)
-
       toast.error('Ошибка при загрузке объявлений' + '\n ' + msg)
     } finally {
       setLoading(false)
@@ -153,12 +146,12 @@ const AdminAds = () => {
   const resetForm = () => {
     setFormData({
       title: '',
-      titleTranslations: {ru: '', en: '', zh: ''},
+      titleTranslations: {ru: '', en: '', zh: '', hi: ''},
       subtitle: '',
-      subtitleTranslations: {ru: '', en: '', zh: ''},
+      subtitleTranslations: {ru: '', en: '', zh: '', hi: ''},
       thirdText: '',
-      thirdTextTranslations: {ru: '', en: '', zh: ''},
-      link: '', // Reset link field
+      thirdTextTranslations: {ru: '', en: '', zh: '', hi: ''},
+      link: '',
       expiresAt: '',
       isBig: false,
       uploadedFiles: [],
@@ -194,7 +187,7 @@ const AdminAds = () => {
     if (formData.expiresAt) {
       const expirationDate = new Date(formData.expiresAt)
       const today = new Date()
-      today.setHours(0, 0, 0, 0) // Reset time to start of day for comparison
+      today.setHours(0, 0, 0, 0)
 
       if (isNaN(expirationDate.getTime())) {
         newErrors.expiresAt = 'Некорректный формат даты'
@@ -202,8 +195,6 @@ const AdminAds = () => {
         newErrors.expiresAt = 'Дата истечения не может быть в прошлом'
       }
     }
-
-    // thirdText is optional, so no direct validation for its presence unless required
 
     if (!editingAd && (!formData.uploadedFiles || formData.uploadedFiles.length === 0)) {
       newErrors.uploadedFiles = 'Необходимо загрузить изображение'
@@ -215,7 +206,6 @@ const AdminAds = () => {
 
   const formatDateForAPI = (dateString: string): string => {
     if (!dateString) return ''
-    // Convert YYYY-MM-DD to ISO format with time
     const date = new Date(dateString + 'T12:00:00.000Z')
     return date.toISOString()
   }
@@ -225,48 +215,38 @@ const AdminAds = () => {
 
     const loadingToast = toast.loading('Создание объявления...')
     try {
-      // Get access token
       const token = await getAccessToken()
-
       const formDataToSend = new FormData()
 
-      // Prepare the data object - use current language as main, others can be empty
       const dataPayload = {
-        title: formData.titleTranslations[currentLanguage] || '', // Use current language as main
-        subtitle: formData.subtitleTranslations[currentLanguage] || '', // Use current language as main
-        thirdText: formData.thirdTextTranslations[currentLanguage] || '', // Use current language as main
-        expirationDate: formData.expiresAt ? formatDateForAPI(formData.expiresAt) : null, // Format date for API
-        isBig: formData.isBig, // Include isBig field
+        title: formData.titleTranslations[currentLanguage] || '',
+        subtitle: formData.subtitleTranslations[currentLanguage] || '',
+        thirdText: formData.thirdTextTranslations[currentLanguage] || '',
+        expirationDate: formData.expiresAt ? formatDateForAPI(formData.expiresAt) : null,
+        isBig: formData.isBig,
         titleTranslations: formData.titleTranslations,
         subtitleTranslations: formData.subtitleTranslations,
         thirdTextTranslations: formData.thirdTextTranslations,
         link: formData.link || 'linknew'
       }
 
-      // ИСПРАВЛЕНИЕ: Создаем Blob для JSON данных с правильным типом содержимого
       const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
       formDataToSend.append('data', jsonBlob)
 
-      // Append image file(s) - отправляем как бинарный файл
       if (formData.uploadedFiles && formData.uploadedFiles.length > 0) {
-        // Отправляем файл как бинарный тип, не как строку
         formDataToSend.append('image', formData.uploadedFiles[0])
       } else {
-        // Handle case where no image is uploaded but is required
         if (!editingAd) {
-          // If creating, image is required
           toast.error('Изображение обязательно для создания объявления')
           toast.dismiss(loadingToast)
           return
         }
       }
 
-      // Отправка через обычный fetch с токеном авторизации
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/advertisements`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`
-          // НЕ устанавливаем Content-Type, браузер сам установит правильный тип для FormData
         },
         body: formDataToSend
       })
@@ -298,9 +278,7 @@ const AdminAds = () => {
 
     const loadingToast = toast.loading('Обновление объявления...')
     try {
-      // Get access token
       const token = await getAccessToken()
-
       const formDataToSend = new FormData()
       const today = new Date()
       const rawExpiresAt = formData.expiresAt || ads.find((value) => value.id === editingAd)?.expiresAt || ''
@@ -308,28 +286,25 @@ const AdminAds = () => {
       let finalExpirationDate: string
       if (rawExpiresAt) {
         const expires = new Date(rawExpiresAt)
-        const todayStart = new Date(formatYYYYMMDD(today)) // сегодня с 00:00
+        const todayStart = new Date(formatYYYYMMDD(today))
 
         if (expires.getTime() <= todayStart.getTime()) {
-          // просрочена или сегодня
           const plus30 = addDays(today, 30)
           finalExpirationDate = formatDateForAPI(formatYYYYMMDD(plus30))
         } else {
-          // ещё действительна
           finalExpirationDate = formatDateForAPI(formatYYYYMMDD(expires))
         }
       } else {
-        // нет даты вообще → ставим сегодня +30
         const plus30 = addDays(today, 30)
         finalExpirationDate = formatDateForAPI(formatYYYYMMDD(plus30))
       }
 
       const dataPayload = {
-        title: formData.titleTranslations[currentLanguage] || '', // Use current language as main
+        title: formData.titleTranslations[currentLanguage] || '',
         titleTranslations: formData.titleTranslations,
-        subtitle: formData.subtitleTranslations[currentLanguage] || '', // Use current language as main
+        subtitle: formData.subtitleTranslations[currentLanguage] || '',
         subtitleTranslations: formData.subtitleTranslations,
-        thirdText: formData.thirdTextTranslations[currentLanguage] || '', // Use current language as main
+        thirdText: formData.thirdTextTranslations[currentLanguage] || '',
         thirdTextTranslations: formData.thirdTextTranslations,
         expirationDate: finalExpirationDate,
         isBig: formData.isBig,
@@ -348,22 +323,17 @@ const AdminAds = () => {
         editingAd
       )
 
-      // ИСПРАВЛЕНИЕ: Создаем Blob для JSON данных с правильным типом содержимого
       const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
       formDataToSend.append('data', jsonBlob)
 
-      // Append image file if new image is uploaded
       if (formData.uploadedFiles && formData.uploadedFiles.length > 0) {
-        // Отправляем файл как бинарный тип
         formDataToSend.append('image', formData.uploadedFiles[0])
       }
 
-      // Отправка через обычный fetch с токеном авторизации
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/advertisements/${editingAd}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`
-          // НЕ устанавливаем Content-Type, браузер сам установит правильный тип для FormData
         },
         body: formDataToSend
       })
@@ -409,18 +379,16 @@ const AdminAds = () => {
   const handleEditAd = (ad: AdData) => {
     setEditingAd(ad.id)
 
-    // Convert ISO date back to YYYY-MM-DD format for the input
     let expiresAtFormatted = ''
     if (ad.expiresAt) {
       const date = new Date(ad.expiresAt)
       if (!isNaN(date.getTime())) {
-        expiresAtFormatted = date.toISOString().split('T')[0] // Get YYYY-MM-DD part
+        expiresAtFormatted = date.toISOString().split('T')[0]
       }
     }
 
-    // Fill form with current ad data, including all translations
     setFormData({
-      title: ad.title, // These are placeholder, actual values from translations
+      title: ad.title,
       titleTranslations: {
         ru: ad.titleTranslations?.ru || (currentLanguage === 'ru' ? ad.title : ''),
         en: ad.titleTranslations?.en || (currentLanguage === 'en' ? ad.title : ''),
@@ -434,18 +402,18 @@ const AdminAds = () => {
         zh: ad.subtitleTranslations?.zh || (currentLanguage === 'zh' ? ad.subtitle : ''),
         hi: ad.subtitleTranslations?.hi || (currentLanguage === 'hi' ? ad.subtitle : '')
       },
-      thirdText: ad.thirdText || '', // Populate new field
+      thirdText: ad.thirdText || '',
       thirdTextTranslations: {
         ru: ad.thirdTextTranslations?.ru || (currentLanguage === 'ru' ? ad.thirdText || '' : ''),
         en: ad.thirdTextTranslations?.en || (currentLanguage === 'en' ? ad.thirdText || '' : ''),
         zh: ad.thirdTextTranslations?.zh || (currentLanguage === 'zh' ? ad.thirdText || '' : ''),
         hi: ad.thirdTextTranslations?.hi || (currentLanguage === 'hi' ? ad.thirdText || '' : '')
-      }, // Populate new translations
-      link: ad.link || '', // Populate link field
-      expiresAt: expiresAtFormatted, // Populate formatted date
-      isBig: ad.isBig || false, // Populate isBig field
+      },
+      link: ad.link || '',
+      expiresAt: expiresAtFormatted,
+      isBig: ad.isBig || false,
       activeImages: ad.imageUrl ? [ad.imageUrl] : [],
-      uploadedFiles: [] // Clear uploaded files on edit, user must re-upload if needed
+      uploadedFiles: []
     })
     setShowCreateForm(true)
   }
@@ -461,14 +429,12 @@ const AdminAds = () => {
     setFormData((prev) => ({...prev, activeImages: images}))
   }
 
-  // Helper functions to get translated texts based on activeLanguage
   const getTranslatedText = (ad: AdData, field: 'title' | 'subtitle' | 'thirdText'): string => {
     const translations = (ad as any)[`${field}Translations`] || {}
     return translations[activeLanguage] || (ad as any)[field] || ''
   }
 
   const filteredAds = ads.filter((ad) => {
-    // Filter by search term
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase()
       const title = getTranslatedText(ad, 'title').toLowerCase()
@@ -480,7 +446,6 @@ const AdminAds = () => {
       if (!matchesSearch) return false
     }
 
-    // Filter by important status
     if (showOnlyImportant && !ad.isBig) {
       return false
     }
@@ -488,7 +453,6 @@ const AdminAds = () => {
     return true
   })
 
-  // Function to update a specific translation field for a given language
   const updateTranslationField = (
     field: 'titleTranslations' | 'subtitleTranslations' | 'thirdTextTranslations',
     lang: Language,
@@ -519,6 +483,8 @@ const AdminAds = () => {
         return 'English'
       case 'zh':
         return '中文'
+      case 'hi':
+        return 'हिन्दी'
       default:
         return ''
     }
@@ -528,7 +494,6 @@ const AdminAds = () => {
     return lang === currentLanguage
   }
 
-  // Check if ad is expired
   const isAdExpired = (expiresAt?: string): boolean => {
     if (!expiresAt) return false
     const expirationDate = new Date(expiresAt)
@@ -553,7 +518,7 @@ const AdminAds = () => {
               currentValue={searchTerm}
               placeholder='Поиск по объявлениям...'
               onSetValue={setSearchTerm}
-              theme='superWhite' // Keep this theme if it suits your general light design
+              theme='superWhite'
             />
           </div>
 
@@ -568,7 +533,7 @@ const AdminAds = () => {
           </div>
 
           <div className={styles.language__switcher}>
-            {(['ru', 'en', 'zh'] as Language[]).map((lang) => (
+            {(['ru', 'en', 'zh', 'hi'] as Language[]).map((lang) => (
               <button
                 key={lang}
                 className={`${styles.language__button} ${activeLanguage === lang ? styles.active : ''}`}
@@ -596,63 +561,61 @@ const AdminAds = () => {
           </div>
 
           <div className={styles.form__content}>
-            {/* Show current language first, then others */}
-            {[currentLanguage, ...(['ru', 'en', 'zh'] as Language[]).filter((lang) => lang !== currentLanguage)].map(
-              (lang) => (
-                <div key={`translation-section-${lang}`} className={styles.form__section}>
-                  <h3 className={styles.section__title}>
-                    Переводы ({getLanguageName(lang)})
-                    {lang === currentLanguage && <span className={styles.required__indicator}> (Обязательно)</span>}
-                    {lang !== currentLanguage && <span className={styles.optional__indicator}> (Необязательно)</span>}
-                  </h3>
+            {[
+              currentLanguage,
+              ...(['ru', 'en', 'zh', 'hi'] as Language[]).filter((lang) => lang !== currentLanguage)
+            ].map((lang) => (
+              <div key={`translation-section-${lang}`} className={styles.form__section}>
+                <h3 className={styles.section__title}>
+                  Переводы ({getLanguageName(lang)})
+                  {lang === currentLanguage && <span className={styles.required__indicator}> (Обязательно)</span>}
+                  {lang !== currentLanguage && <span className={styles.optional__indicator}> (Необязательно)</span>}
+                </h3>
 
-                  <div className={styles.input__group}>
-                    <label className={styles.input__label}>
-                      Заголовок на {getLanguageName(lang)}
-                      {isFieldRequired(lang) && <span className={styles.required__asterisk}>*</span>}
-                    </label>
-                    <TextInputUI
-                      currentValue={formData.titleTranslations[lang] || ''}
-                      placeholder={`Введите заголовок на ${getLanguageName(lang)}${isFieldRequired(lang) ? ' (обязательно)' : ''}`}
-                      onSetValue={(value) => updateTranslationField('titleTranslations', lang, value)}
-                      theme='superWhite'
-                    />
-                    {lang === currentLanguage && errors.title && (
-                      <span className={styles.error__text}>{errors.title}</span>
-                    )}
-                  </div>
-
-                  <div className={styles.input__group}>
-                    <label className={styles.input__label}>
-                      Подзаголовок на {getLanguageName(lang)}
-                      {isFieldRequired(lang) && <span className={styles.required__asterisk}>*</span>}
-                    </label>
-                    <TextInputUI
-                      currentValue={formData.subtitleTranslations[lang] || ''}
-                      placeholder={`Введите подзаголовок на ${getLanguageName(lang)}${isFieldRequired(lang) ? ' (обязательно)' : ''}`}
-                      onSetValue={(value) => updateTranslationField('subtitleTranslations', lang, value)}
-                      theme='superWhite'
-                    />
-                    {lang === currentLanguage && errors.subtitle && (
-                      <span className={styles.error__text}>{errors.subtitle}</span>
-                    )}
-                  </div>
-
-                  {/* New thirdText input for each language */}
-                  <div className={styles.input__group}>
-                    <label className={styles.input__label}>Дополнительный текст на {getLanguageName(lang)}</label>
-                    <TextInputUI
-                      currentValue={formData.thirdTextTranslations[lang] || ''}
-                      placeholder={`Введите дополнительный текст на ${getLanguageName(lang)}`}
-                      onSetValue={(value) => updateTranslationField('thirdTextTranslations', lang, value)}
-                      theme='superWhite'
-                    />
-                  </div>
+                <div className={styles.input__group}>
+                  <label className={styles.input__label}>
+                    Заголовок на {getLanguageName(lang)}
+                    {isFieldRequired(lang) && <span className={styles.required__asterisk}>*</span>}
+                  </label>
+                  <TextInputUI
+                    currentValue={formData.titleTranslations[lang] || ''}
+                    placeholder={`Введите заголовок на ${getLanguageName(lang)}${isFieldRequired(lang) ? ' (обязательно)' : ''}`}
+                    onSetValue={(value) => updateTranslationField('titleTranslations', lang, value)}
+                    theme='superWhite'
+                  />
+                  {lang === currentLanguage && errors.title && (
+                    <span className={styles.error__text}>{errors.title}</span>
+                  )}
                 </div>
-              )
-            )}
 
-            {/* Link field (single input for all languages) */}
+                <div className={styles.input__group}>
+                  <label className={styles.input__label}>
+                    Подзаголовок на {getLanguageName(lang)}
+                    {isFieldRequired(lang) && <span className={styles.required__asterisk}>*</span>}
+                  </label>
+                  <TextInputUI
+                    currentValue={formData.subtitleTranslations[lang] || ''}
+                    placeholder={`Введите подзаголовок на ${getLanguageName(lang)}${isFieldRequired(lang) ? ' (обязательно)' : ''}`}
+                    onSetValue={(value) => updateTranslationField('subtitleTranslations', lang, value)}
+                    theme='superWhite'
+                  />
+                  {lang === currentLanguage && errors.subtitle && (
+                    <span className={styles.error__text}>{errors.subtitle}</span>
+                  )}
+                </div>
+
+                <div className={styles.input__group}>
+                  <label className={styles.input__label}>Дополнительный текст на {getLanguageName(lang)}</label>
+                  <TextInputUI
+                    currentValue={formData.thirdTextTranslations[lang] || ''}
+                    placeholder={`Введите дополнительный текст на ${getLanguageName(lang)}`}
+                    onSetValue={(value) => updateTranslationField('thirdTextTranslations', lang, value)}
+                    theme='superWhite'
+                  />
+                </div>
+              </div>
+            ))}
+
             <div className={styles.form__section}>
               <h3 className={styles.section__title}>Ссылка</h3>
               <div className={styles.input__group}>
@@ -665,7 +628,6 @@ const AdminAds = () => {
                   placeholder='Введите ссылку (https://example.com)'
                   onSetValue={(value) => {
                     setFormData((prev) => ({...prev, link: value}))
-                    // Clear error when link is entered
                     if (errors.link) {
                       setErrors((prev) => ({...prev, link: ''}))
                     }
@@ -676,11 +638,9 @@ const AdminAds = () => {
               </div>
             </div>
 
-            {/* Other fields */}
             <div className={styles.form__section}>
               <h3 className={styles.section__title}>Дополнительная информация</h3>
 
-              {/* isBig checkbox */}
               <div className={styles.input__group}>
                 <label className={styles.checkbox__label}>
                   <input
@@ -694,10 +654,8 @@ const AdminAds = () => {
                 </label>
               </div>
 
-              {/* Date Input for "Time to Live" */}
               <div className={styles.input__group}>
                 <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                  {' '}
                   <label className={styles.input__label}>Дата истечения</label>
                   <span className={styles.required__asterisk}>*</span>
                 </div>
@@ -705,25 +663,22 @@ const AdminAds = () => {
                   selectedDate={formData.expiresAt}
                   onDateSelect={(date) => {
                     setFormData((prev) => ({...prev, expiresAt: date}))
-                    // Clear error when date is selected
                     if (errors.expiresAt) {
                       setErrors((prev) => ({...prev, expiresAt: ''}))
                     }
                   }}
-                  minDate={new Date().toISOString().split('T')[0]} // Не раньше сегодня
+                  minDate={new Date().toISOString().split('T')[0]}
                   placeholder='Выберите дату истечения'
                 />
                 {errors.expiresAt && <span className={styles.error__text}>{errors.expiresAt}</span>}
               </div>
             </div>
 
-            {/* Image section - показываем всегда, но с разными текстами */}
             <div className={styles.form__section}>
               <h3 className={styles.section__title}>
                 {editingAd ? 'Изображение (добавьте изображение, если хотите заменить старое)' : 'Изображение'}
               </h3>
 
-              {/* Показываем текущее изображение при редактировании */}
               {editingAd && formData.activeImages && formData.activeImages.length > 0 && (
                 <div className={styles.current__image}>
                   <p className={styles.current__image__label}>Текущее изображение:</p>
@@ -745,9 +700,9 @@ const AdminAds = () => {
               <CreateImagesInput
                 onFilesChange={handleUploadedFilesChange}
                 onActiveImagesChange={handleActiveImagesChange}
-                activeImages={editingAd ? [] : formData.activeImages || []} // При редактировании не показываем активные изображения в компоненте
+                activeImages={editingAd ? [] : formData.activeImages || []}
                 maxFiles={1}
-                minFiles={editingAd ? 0 : 1} // При редактировании изображение не обязательно
+                minFiles={editingAd ? 0 : 1}
                 allowMultipleFiles={false}
                 errorValue={errors.uploadedFiles}
                 setErrorValue={(value: string) => setErrors((prev) => ({...prev, uploadedFiles: value}))}
@@ -790,15 +745,13 @@ const AdminAds = () => {
                 {ad.isBig && <div className={styles.important__badge}>⭐ Важное</div>}
                 {isAdExpired(ad.expiresAt) && <div className={styles.expired__badge}>⏰ Истекло</div>}
               </div>
-
               <div className={styles.ad__content}>
                 <h3 className={styles.ad__title}>
                   {getTranslatedText(ad, 'title')}
                   {ad.isBig && <span className={styles.important__indicator}> ⭐</span>}
                 </h3>
                 <p className={styles.ad__subtitle}>{getTranslatedText(ad, 'subtitle')}</p>
-                {ad.thirdText && <p className={styles.ad__thirdText}>{getTranslatedText(ad, 'thirdText')}</p>}{' '}
-                {/* Render thirdText */}
+                {ad.thirdText && <p className={styles.ad__thirdText}>{getTranslatedText(ad, 'thirdText')}</p>}
                 <div className={styles.ad__meta}>
                   <div className={styles.ad__dates}>
                     <span>Создано: {new Date(ad.creationDate).toLocaleDateString('ru-RU')}</span>

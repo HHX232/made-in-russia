@@ -17,7 +17,8 @@
     "searchLoading": "Поиск...",
     "noResultsCatalog": "По вашему запросу ничего не найдено",
     "showAllResults":"Показать все",
-    "hideAllResults":"Свернуть"
+    "hideAllResults":"Свернуть",
+    "searchError":"Ошибка при поиске"
   },
   "dropdown":{
     "enterValue":"Значение..."
@@ -263,6 +264,7 @@
     "addRow": "Добавить строку"
   },
   "VendorPage": {
+    "saving":"Сохранить",
     "mediaSavedSuccessfully":"Медиа успешно сохранен",
     "noWriten":"Не заполнено",
     "deletedSuccess":"Успешно удалено!",

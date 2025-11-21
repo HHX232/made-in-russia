@@ -76,7 +76,7 @@ export function buildBreadcrumbs(allCategories: any[], slug: string) {
     ...path.map((cat) => {
       accumulatedPath += `/${cat.slug}`
       return {
-        title: cat.name,
+        title: cat.label || cat.name, // Используем label, если есть, иначе name
         link: accumulatedPath
       }
     })
@@ -106,7 +106,7 @@ export function buildBreadcrumbsByPath(allCategories: any[], slugPath: string[])
 
     accumulatedPath += `/${slug}`
     breadcrumbs.push({
-      title: category.name,
+      title: category.label || category.name, // label для breadcrumbs, fallback на name
       link: accumulatedPath
     })
 

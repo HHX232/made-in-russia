@@ -1,3 +1,4 @@
+// page.tsx
 import {getCurrentLocale} from '@/lib/locale-detection'
 import {axiosClassic} from '@/api/api.interceptor'
 import CategoryPage from '@/components/pages/CategoryPage/CategoryPage'
@@ -51,9 +52,10 @@ export default async function CategoryPageSpecial({params}: {params: Promise<{ca
       breadcrumbs={breadcrumbs}
       categories={categories.children}
       categoryName={categoryName}
-      categoryTitleName={categories.name}
+      categoryTitleName={categories.name} // name для заголовка страницы
       level={1}
       language={locale}
+      categoryDescription={categories.description}
     />
   )
 }
@@ -67,7 +69,7 @@ export async function generateMetadata({params}: {params: Promise<{categoryName:
     const foundCategory = findCategoryBySlug(allCategories, slugToFind)
 
     return {
-      title: foundCategory?.name || categoryName || 'category'
+      title: foundCategory?.title || foundCategory?.name || categoryName || 'category' // title для meta, если нет - fallback на name
     }
   } catch {
     const {categoryName} = await params

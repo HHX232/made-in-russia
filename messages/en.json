@@ -16,7 +16,8 @@
     "searchLoading": "Searching...",
     "noResultsCatalog": "Nothing found for your query",
      "showAllResults": "Show all", 
-    "hideAllResults": "Collapse"
+    "hideAllResults": "Collapse",
+     "searchError": "Search error"
   },
   "Footer": {
     "ugreement": "User Agreement",
@@ -253,6 +254,7 @@
     "addRow": "Add row"
   },
   "VendorPage": {
+    "saving": "Save",
      "mediaSavedSuccessfully": "Media saved successfully",
     "noWriten": "Not filled",
     "deletedSuccess":"Successfully deleted!",
