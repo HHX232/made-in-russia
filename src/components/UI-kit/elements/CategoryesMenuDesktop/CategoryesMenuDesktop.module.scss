@@ -312,10 +312,11 @@ CATALOG OVERLAY (Меню каталога в стиле новой верстк
     }
 
     li {
-      padding-bottom: 17px;
+      padding: 7px 10px;
       break-inside: avoid;
       page-break-inside: avoid;
       transition: background-color 0.2s ease-in-out;
+      border-radius: 5px;
 
       &:hover {
         background: linear-gradient(#e1251b, #eb5a53);
