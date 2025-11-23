@@ -6,6 +6,7 @@ CONTACT PAGE FORM
 .contacts_form {
   padding-left: 63px;
   color: #2f2f2f;
+  
 
   @include md {
     padding-left: 0;
@@ -62,13 +63,14 @@ CONTACT PAGE FORM
     min-height: 46px;
     padding: 10px 15px;
     border: 1px solid rgb(47 47 47 / 20%);
-    border-radius: 0;
+    border-radius: 10px;
     background-color: transparent;
     color: var(--text);
     font-size: rem(13);
     font-weight: 500;
     outline: none;
     transition: border-color 0.3s ease;
+    
 
     @include sm {
       font-size: rem(12);
@@ -88,7 +90,7 @@ CONTACT PAGE FORM
     min-height: rem(134);
     padding: 15px;
     border: 1px solid rgb(47 47 47 / 20%);
-    border-radius: 0;
+    border-radius: 10px;
     background-color: transparent;
     color: var(--text);
     font-family: inherit;
@@ -205,6 +207,7 @@ CONTACT PAGE FORM
   line-height: 1.2233;
   padding-inline: rem(46);
   transition: var(--transition);
+  border-radius:10px;
 
   &__max493 {
     display: flex;
