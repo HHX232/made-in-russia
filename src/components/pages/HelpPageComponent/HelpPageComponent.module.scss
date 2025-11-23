@@ -24,6 +24,7 @@ HELP PAGE COMPONENT
 .contacts_layout {
   padding: 50px 60px 40px 40px;
   background: #f6f6f6;
+  border-radius:10px;
 
   @include sm {
     padding: 28px 20px 20px;
