@@ -364,7 +364,11 @@ const MediaRenderer: React.FC<{
 MediaRenderer.displayName = 'MediaRenderer'
 
 const useContainerWidth = (isClient: boolean) => {
-  const [containerWidth, setContainerWidth] = useState<number | null>(null)
+  // ИЗМЕНИ эту строку:
+  const [containerWidth, setContainerWidth] = useState<number | null>(() => {
+    if (typeof window === 'undefined' || !isClient) return null
+    return window.innerWidth // Используем ширину окна как начальное значение
+  })
 
   const measureContainer = useCallback(() => {
     if (typeof window === 'undefined') return
@@ -378,12 +382,21 @@ const useContainerWidth = (isClient: boolean) => {
     }
   }, [])
 
+  // УБЕРИ useEffect который я добавил выше
+
   useLayoutEffect(() => {
     if (!isClient) return
 
-    const timer = setTimeout(() => {
+    // Добавь несколько замеров подряд
+    measureContainer()
+
+    const timer1 = requestAnimationFrame(() => {
       measureContainer()
-    }, 10)
+    })
+
+    const timer2 = setTimeout(() => {
+      measureContainer()
+    }, 0)
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -403,7 +416,8 @@ const useContainerWidth = (isClient: boolean) => {
     window.addEventListener('resize', handleResize)
 
     return () => {
-      clearTimeout(timer)
+      cancelAnimationFrame(timer1)
+      clearTimeout(timer2)
       resizeObserver.disconnect()
       window.removeEventListener('resize', handleResize)
     }
@@ -695,7 +709,7 @@ const ModalGallery: React.FC<{
 
   const [modalMainSliderRef, modalMainInstanceRef] = useKeenSlider<HTMLDivElement>({
     initial: currentIndex,
-    loop: true,
+    loop: !isSingleImage,
     slides: {
       perView: 1,
       spacing: 0
@@ -718,7 +732,6 @@ const ModalGallery: React.FC<{
     rubberband: false
   })
 
-  // Синхронизация при клике на thumbnail
   useEffect(() => {
     if (!modalMainInstanceRef.current) return
 
@@ -729,7 +742,6 @@ const ModalGallery: React.FC<{
     }
   }, [currentIndex, localIndex, modalMainInstanceRef])
 
-  // Синхронизация thumbnail слайдера БЕЗ анимации
   useEffect(() => {
     if (!modalThumbnailInstanceRef.current) return
 
@@ -749,11 +761,13 @@ const ModalGallery: React.FC<{
       const nextIdx =
         direction === 'prev' ? (currentIdx - 1 + images.length) % images.length : (currentIdx + 1) % images.length
 
-      // Переключаем без анимации
       slider.moveToIdx(nextIdx, true)
     },
     [images.length, modalMainInstanceRef]
   )
+
+  const isAtStart = localIndex === 0
+  const isAtEnd = localIndex === images.length - 1
 
   useEffect(() => {
     if (isOpen) {
@@ -789,10 +803,12 @@ const ModalGallery: React.FC<{
             <ArrowButton
               direction='left'
               extraClass={styles.modalArrowLeft}
-              disabled={false}
+              disabled={!isSingleImage && isAtStart}
               onClick={(e) => {
                 e.stopPropagation()
-                handleArrowClick('prev')
+                if (!isAtStart) {
+                  handleArrowClick('prev')
+                }
               }}
             />
           )}
@@ -831,10 +847,12 @@ const ModalGallery: React.FC<{
             <ArrowButton
               direction='right'
               extraClass={styles.modalArrowRight}
-              disabled={false}
+              disabled={!isSingleImage && isAtEnd}
               onClick={(e) => {
                 e.stopPropagation()
-                handleArrowClick('next')
+                if (!isAtEnd) {
+                  handleArrowClick('next')
+                }
               }}
             />
           )}
@@ -900,63 +918,72 @@ const ImageGallery: React.FC<{
   onThumbnailClick,
   onDoubleClick,
   imageDimensions
-}) => (
-  <div
-    className={`spec__slider ${styles.imageSlider} ${extraClass}`}
-    itemScope
-    itemType='https://schema.org/ImageGallery'
-  >
-    <meta itemProp='name' content={`Галерея изображений ${productName}`} />
-    <meta itemProp='description' content={`Фотографии и видео товара ${productName}`} />
+}) => {
+  const isAtStart = activeIndex === 0
+  const isAtEnd = activeIndex === images.length - 1
 
-    <MainSlider
-      images={images}
-      activeIndex={activeIndex}
-      productName={productName}
-      mainSliderRef={mainSliderRef}
-      mainLoaded={mainLoaded}
-      mainInstanceRef={mainInstanceRef}
-      isSingleImage={isSingleImage}
-      onDoubleClick={onDoubleClick}
-      imageDimensions={imageDimensions}
-    />
+  return (
+    <div
+      className={`spec__slider ${styles.imageSlider} ${extraClass}`}
+      itemScope
+      itemType='https://schema.org/ImageGallery'
+    >
+      <meta itemProp='name' content={`Галерея изображений ${productName}`} />
+      <meta itemProp='description' content={`Фотографии и видео товара ${productName}`} />
 
-    {!isSingleImage && (
-      <ThumbnailSlider
+      <MainSlider
         images={images}
         activeIndex={activeIndex}
         productName={productName}
-        thumbnailSliderRef={thumbnailSliderRef}
-        thumbnailLoaded={thumbnailLoaded}
-        onThumbnailClick={onThumbnailClick}
+        mainSliderRef={mainSliderRef}
+        mainLoaded={mainLoaded}
+        mainInstanceRef={mainInstanceRef}
+        isSingleImage={isSingleImage}
         onDoubleClick={onDoubleClick}
+        imageDimensions={imageDimensions}
       />
-    )}
 
-    {!isSingleImage && mainLoaded && mainInstanceRef.current && (
-      <div className={styles.imageSlider__navigation}>
-        <ArrowButton
-          direction='left'
-          onClick={(e: React.MouseEvent) => {
-            e.stopPropagation()
-            mainInstanceRef.current?.prev()
-          }}
-          disabled={false}
+      {!isSingleImage && (
+        <ThumbnailSlider
+          images={images}
+          activeIndex={activeIndex}
+          productName={productName}
+          thumbnailSliderRef={thumbnailSliderRef}
+          thumbnailLoaded={thumbnailLoaded}
+          onThumbnailClick={onThumbnailClick}
+          onDoubleClick={onDoubleClick}
         />
-        <ArrowButton
-          direction='right'
-          onClick={(e: React.MouseEvent) => {
-            e.stopPropagation()
-            mainInstanceRef.current?.next()
-          }}
-          disabled={false}
-        />
-      </div>
-    )}
+      )}
 
-    <ProductStructuredData productName={productName} productId={productId} />
-  </div>
-)
+      {!isSingleImage && mainLoaded && mainInstanceRef.current && (
+        <div className={styles.imageSlider__navigation}>
+          <ArrowButton
+            direction='left'
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation()
+              if (!isAtStart) {
+                mainInstanceRef.current?.prev()
+              }
+            }}
+            disabled={isAtStart}
+          />
+          <ArrowButton
+            direction='right'
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation()
+              if (!isAtEnd) {
+                mainInstanceRef.current?.next()
+              }
+            }}
+            disabled={isAtEnd}
+          />
+        </div>
+      )}
+
+      <ProductStructuredData productName={productName} productId={productId} />
+    </div>
+  )
+}
 
 const MainSlider: React.FC<{
   images: string[]
@@ -1051,7 +1078,6 @@ const MediaItem: React.FC<{
 
 MediaItem.displayName = 'MediaItem'
 
-// Полный компонент ThumbnailSlider
 const ThumbnailSlider: React.FC<{
   images: string[]
   activeIndex: number
@@ -1122,7 +1148,6 @@ const ThumbnailSlider: React.FC<{
     [localRef, thumbnailSliderRef]
   )
 
-  // Синхронизация с активным слайдом
   useEffect(() => {
     if (!instanceRef.current || activeIndex === undefined) return
 
@@ -1148,15 +1173,12 @@ const ThumbnailSlider: React.FC<{
             targetPosition = Math.max(0, Math.min(activeIndex - slidesToShow + 1, images.length - slidesToShow))
           }
 
-          // Проверяем, был ли это быстрый переход (клик на стрелку)
           const indexDiff = Math.abs(activeIndex - prevActiveIndex.current)
-          const isFastTransition = indexDiff === 1 // Переход на 1 слайд = клик на стрелку
+          const isFastTransition = indexDiff === 1
 
           if (isFastTransition) {
-            // Мгновенное переключение без анимации
             slider.moveToIdx(targetPosition, true)
           } else {
-            // Плавная анимация для других случаев
             const currentPos = details.abs
             const distance = Math.abs(targetPosition - currentPos)
             const duration = Math.min(300 + distance * 50, 800)

@@ -133,7 +133,7 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
     zh: '/countries/china.svg',
     ru: '/countries/russia.svg',
     en: '/countries/english.svg',
-    hi: '/countries/india.svg'
+    hi: '/countries/hindy.svg'
   })
   const [activeLanguage, setActiveLanguage] = useState<Languages>(
     localeToLanguage[currentLangValue as keyof typeof localeToLanguage]
@@ -511,7 +511,11 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
                       <Image
                         src={(allFlags as any)[languageToLocale?.[activeLanguage]]}
                         alt={languageToLocale?.[activeLanguage]}
-                        style={{minWidth: '30px', minHeight: '20px'}}
+                        style={{
+                          minWidth: '30px',
+                          minHeight: '20px',
+                          marginBottom: activeLanguage === 'हिन्दी' ? '5px' : ''
+                        }}
                         width={34}
                         height={24}
                         className={styles.lang__button__img}
