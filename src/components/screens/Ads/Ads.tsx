@@ -278,6 +278,36 @@ interface PromoProps {
   siteTitle?: string
 }
 
+const extractOrderNumber = (text: string): {order: number; cleanText: string} => {
+  const match = text.match(/^(\d+)\s+(.*)/)
+  if (match) {
+    return {
+      order: parseInt(match[1], 10),
+      cleanText: match[2]
+    }
+  }
+  return {
+    order: Infinity,
+    cleanText: text
+  }
+}
+
+const sortAndCleanAds = (ads: IPromoFromServer[]): IPromoFromServer[] => {
+  return ads
+    .map((ad) => {
+      const titleData = extractOrderNumber(ad.title)
+      const subtitleData = extractOrderNumber(ad.subtitle)
+
+      return {
+        ...ad,
+        title: titleData.cleanText,
+        subtitle: subtitleData.cleanText,
+        order: titleData.order
+      }
+    })
+    .sort((a, b) => a.order - b.order)
+}
+
 const Promo: FC<PromoProps> = ({
   ads,
   organizationName = 'Exporteru',
@@ -286,6 +316,8 @@ const Promo: FC<PromoProps> = ({
 }) => {
   const [isPageLoaded, setIsPageLoaded] = useState(false)
   const t = useTranslations('PromoItem')
+
+  const sortedAds = useMemo(() => sortAndCleanAds(ads), [ads])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -296,15 +328,15 @@ const Promo: FC<PromoProps> = ({
   }, [])
 
   const schemas = useMemo(() => {
-    const mainPromoSchema = generateMainPromoSchema(ads, organizationName, baseUrl)
-    const itemListSchema = generateItemListSchema(ads, baseUrl)
+    const mainPromoSchema = generateMainPromoSchema(sortedAds, organizationName, baseUrl)
+    const itemListSchema = generateItemListSchema(sortedAds, baseUrl)
     const organizationSchema = generateOrganizationSchema(organizationName, baseUrl)
 
     return {
       '@context': 'https://schema.org',
       '@graph': [organizationSchema, mainPromoSchema, itemListSchema]
     }
-  }, [ads, organizationName, baseUrl, siteTitle])
+  }, [sortedAds, organizationName, baseUrl, siteTitle])
 
   return (
     <>
@@ -320,7 +352,7 @@ const Promo: FC<PromoProps> = ({
       <section style={{overflow: 'hidden'}} className={styles.marketing}>
         <h2 className={styles.visually_hidden}>{t('title')}</h2>
         <div className={`${styles.container_full} container`}>
-          <DynamicSlider ads={ads} isLoading={!isPageLoaded} />
+          <DynamicSlider ads={sortedAds} isLoading={!isPageLoaded} />
         </div>
       </section>
     </>

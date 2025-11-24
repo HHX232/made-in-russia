@@ -1,4 +1,4 @@
-import React, {MouseEvent} from 'react'
+import React, {MouseEvent, useState} from 'react'
 import Image from 'next/image'
 import styles from '../RegisterPage.module.scss'
 import DropList from '@/components/UI-kit/Texts/DropList/DropList'
@@ -81,6 +81,7 @@ const RegisterUserUnified: React.FC<RegisterUserUnifiedProps> = ({
 }) => {
   const t = useTranslations('RegisterUserPage')
   const {executeRecaptcha} = useGoogleReCaptcha()
+  const [isLoading, setIsLoading] = useState(false)
 
   const regions = [
     {imageSrc: belarusSvg, title: t('Belarus'), altName: 'Belarus'},
@@ -100,20 +101,29 @@ const RegisterUserUnified: React.FC<RegisterUserUnifiedProps> = ({
 
   const handleSubmitForm = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    if (!executeRecaptcha) return
-    const gRecaptchaToken = await executeRecaptcha('inquirySubmit')
+    if (!executeRecaptcha || isLoading) return
 
-    const responseRec = await axios({
-      method: 'post',
-      url: '/backend/recaptchaSubmit',
-      data: {gRecaptchaToken},
-      headers: {Accept: 'application/json, text/plain, */*', 'Content-Type': 'application/json'}
-    })
+    setIsLoading(true)
 
-    if (responseRec.data?.success) {
-      onSubmit(e)
-    } else {
-      console.log('error in recaptcha response')
+    try {
+      const gRecaptchaToken = await executeRecaptcha('inquirySubmit')
+
+      const responseRec = await axios({
+        method: 'post',
+        url: '/backend/recaptchaSubmit',
+        data: {gRecaptchaToken},
+        headers: {Accept: 'application/json, text/plain, */*', 'Content-Type': 'application/json'}
+      })
+
+      if (responseRec.data?.success) {
+        onSubmit(e)
+      } else {
+        console.log('error in recaptcha response')
+        setIsLoading(false)
+      }
+    } catch (error) {
+      console.error('Submit error:', error)
+      setIsLoading(false)
     }
   }
 
@@ -187,12 +197,7 @@ const RegisterUserUnified: React.FC<RegisterUserUnifiedProps> = ({
 
       <div className={`${styles.some__drop__box}`}>
         <p className={`${styles.input__title} ${styles.input__title__tel}`}>{t('phoneNumber')}</p>
-        <TelephoneInputUI
-          currentValue={telText}
-          error={!isValidNumber ? 'error' : ''}
-          onSetValue={onChangeTelNumber}
-          // numberStartWith={selectedRegion.altName as TNumberStart}
-        />
+        <TelephoneInputUI currentValue={telText} error={!isValidNumber ? 'error' : ''} onSetValue={onChangeTelNumber} />
       </div>
 
       <div className={`${styles.policy__checkbox}`}>
@@ -223,13 +228,21 @@ const RegisterUserUnified: React.FC<RegisterUserUnifiedProps> = ({
           }
           handleSubmitForm(e)
         }}
-        className={`${styles.form__button}`}
+        className={`${styles.form__button} ${isLoading ? styles.form__button_loading : ''}`}
+        disabled={!canSubmit || isLoading}
         style={{
-          opacity: canSubmit ? 1 : 0.7,
-          pointerEvents: canSubmit ? 'auto' : 'none'
+          opacity: canSubmit && !isLoading ? 1 : 0.7,
+          pointerEvents: canSubmit && !isLoading ? 'auto' : 'none'
         }}
       >
-        {t('register') || t('next')}
+        {isLoading ? (
+          <span className={styles.button__loader}>
+            <span className={styles.spinner}></span>
+            {t('loading') || 'Загрузка...'}
+          </span>
+        ) : (
+          t('register') || t('next')
+        )}
       </button>
     </>
   )

@@ -12,11 +12,6 @@ import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import axios from 'axios'
 import Link from 'next/link'
 
-// const belarusSvg = '/countries/belarus.svg'
-// const kazakhstanSvg = '/countries/kazakhstan.svg'
-// const chinaSvg = '/countries/china.svg'
-// const russiaSvg = '/countries/russia.svg'
-
 interface RegisterVendorUnifiedProps {
   inn: string
   name: string
@@ -66,6 +61,7 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
   onSubmit
 }) => {
   const [isClient, setIsClient] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const windowWidth = useWindowWidth()
   const t = useTranslations('RegisterUserPage')
   const {executeRecaptcha} = useGoogleReCaptcha()
@@ -76,14 +72,6 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
   useEffect(() => {
     setIsClient(true)
   }, [])
-
-  // Опции стран для мультивыбора
-  // const countryOptions: MultiSelectOption[] = [
-  //   {id: 'belarus', label: t('Belarus'), value: 'Belarus', icon: belarusSvg},
-  //   {id: 'kazakhstan', label: t('Kazakhstan'), value: 'Kazakhstan', icon: kazakhstanSvg},
-  //   {id: 'china', label: t('China'), value: 'China', icon: chinaSvg},
-  //   {id: 'russia', label: t('Russia'), value: 'Russia', icon: russiaSvg}
-  // ]
 
   const validateInn = (value: string) => {
     return /^\d*$/.test(value)
@@ -107,20 +95,29 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
 
   const handleSubmitForm = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    if (!executeRecaptcha) return
-    const gRecaptchaToken = await executeRecaptcha('inquirySubmit')
+    if (!executeRecaptcha || isLoading) return
 
-    const responseRec = await axios({
-      method: 'post',
-      url: '/backend/recaptchaSubmit',
-      data: {gRecaptchaToken},
-      headers: {Accept: 'application/json, text/plain, */*', 'Content-Type': 'application/json'}
-    })
+    setIsLoading(true)
 
-    if (responseRec.data?.success) {
-      onSubmit(e)
-    } else {
-      console.log('error in recaptcha response')
+    try {
+      const gRecaptchaToken = await executeRecaptcha('inquirySubmit')
+
+      const responseRec = await axios({
+        method: 'post',
+        url: '/backend/recaptchaSubmit',
+        data: {gRecaptchaToken},
+        headers: {Accept: 'application/json, text/plain, */*', 'Content-Type': 'application/json'}
+      })
+
+      if (responseRec.data?.success) {
+        onSubmit(e)
+      } else {
+        console.log('error in recaptcha response')
+        setIsLoading(false)
+      }
+    } catch (error) {
+      console.error('Submit error:', error)
+      setIsLoading(false)
     }
   }
 
@@ -180,27 +177,9 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
         title={<p className={`${styles.input__title} ${styles.input__title__without}`}>{t('adress')}</p>}
       />
 
-      {/* <div style={{zIndex: 1000000}} className={`${styles.some__drop__box}`}>
-        <p className={`${styles.input__title}`}>{t('companyCountryes')}</p>
-        <MultiDropSelect
-          options={countryOptions}
-          extraClass={styles.extraDropClass}
-          selectedValues={selectedCountries}
-          extraDropListClass={styles.extra_extraDropListClassSecond}
-          onChange={setSelectedCountries}
-          placeholder={t('companyCountryesPlaceholder')}
-          direction={isClient && windowWidth !== undefined && windowWidth < 1050 ? 'bottom' : 'right'}
-        />
-      </div> */}
-
       <div className={`${styles.some__drop__box}`}>
         <p className={`${styles.input__title} ${styles.input__title__tel}`}>{t('companyTel')}</p>
-        <TelephoneInputUI
-          currentValue={telText}
-          error={!isValidNumber ? 'error' : ''}
-          onSetValue={onChangeTelNumber}
-          // numberStartWith={phoneCountry}
-        />
+        <TelephoneInputUI currentValue={telText} error={!isValidNumber ? 'error' : ''} onSetValue={onChangeTelNumber} />
       </div>
 
       <div className={`${styles.some__drop__box}`}>
@@ -275,13 +254,21 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
           }
           handleSubmitForm(e)
         }}
-        className={`${styles.form__button}`}
+        className={`${styles.form__button} ${isLoading ? styles.form__button_loading : ''}`}
+        disabled={!canSubmit || isLoading}
         style={{
-          opacity: canSubmit ? 1 : 0.7,
-          pointerEvents: canSubmit ? 'auto' : 'none'
+          opacity: canSubmit && !isLoading ? 1 : 0.7,
+          pointerEvents: canSubmit && !isLoading ? 'auto' : 'none'
         }}
       >
-        {t('register') || t('next')}
+        {isLoading ? (
+          <span className={styles.button__loader}>
+            <span className={styles.spinner}></span>
+            {t('loading') || 'Загрузка...'}
+          </span>
+        ) : (
+          t('register') || t('next')
+        )}
       </button>
     </>
   )

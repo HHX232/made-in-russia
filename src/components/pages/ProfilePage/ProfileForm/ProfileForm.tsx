@@ -287,6 +287,10 @@ const ProfileForm: FC<ProfileFormProps> = ({
   }, [telText, selectedRegion.altName, password, isVendor, selectedCountries, inn, categories, userInteracted])
 
   useEffect(() => {
+    setNeedToSave(true)
+  }, [categories])
+
+  useEffect(() => {
     if (userData?.vendorDetails?.inn) {
       setInn(userData?.vendorDetails?.inn)
     }

@@ -1068,9 +1068,17 @@
     "help": "Support"
   },
   "mdEditor": {
-    "preview": "Preview", 
+    "hidePrev": "Hide preview",
+    "showPrev": "Preview",
+    "horizontalLine": "Horizontal line",
+    "numerickList": "Numbered list",
+    "markList": "Bulleted list",
+    "underline": "Underlined",
+    "curs": "Italic",
+    "bold": "Bold",
+    "preview": "Preview",
     "previewPlaceholder": "Preview will appear here...",
-     "dontHaveDescr": "Description not added"
+    "dontHaveDescr": "Description not added"
   },
   "comment": {
     "approved": "Approved",

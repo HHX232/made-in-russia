@@ -7,6 +7,7 @@ export function GET() {
 Allow: /card/*
 Allow: /data-vendor/*
 Allow: /categories/*
+Allow: /categories
 Allow: /about-us
 Allow: /help
 Allow: /privacy

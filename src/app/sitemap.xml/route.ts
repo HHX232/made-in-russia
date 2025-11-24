@@ -88,7 +88,7 @@ export async function GET() {
       url: `${baseUrl}/data-vendor/${vendor.id}`,
       lastModified: new Date(vendor.updatedAt || vendor.registeredAt).toISOString(),
       changeFrequency: 'monthly',
-      priority: 0.7
+      priority: 0.5
     }))
 
     const allUrls = [...staticUrls, ...productUrls, ...vendorUrls]

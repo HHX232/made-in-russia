@@ -20,7 +20,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   onValueChange,
   readOnly = false,
   placeholder = 'Начните вводить текст...',
-  initialHidePreview = false,
+  initialHidePreview = true,
   extraClass,
   extraPreviewClass
 }) => {
@@ -235,13 +235,13 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
           <div className={styles.editorCard}>
             {!readOnly && (
               <div className={styles.toolbar}>
-                <button type='button' onClick={handleBold} className={styles.toolbarButton} title='Жирный (Ctrl+B)'>
+                <button type='button' onClick={handleBold} className={styles.toolbarButton} title={t('bold')}>
                   <Bold size={18} />
                 </button>
-                <button type='button' onClick={handleItalic} className={styles.toolbarButton} title='Курсив (Ctrl+I)'>
+                <button type='button' onClick={handleItalic} className={styles.toolbarButton} title={t('curs')}>
                   <Italic size={18} />
                 </button>
-                <button type='button' onClick={handleUnderline} className={styles.toolbarButton} title='Подчеркнутый'>
+                <button type='button' onClick={handleUnderline} className={styles.toolbarButton} title={t('underline')}>
                   <Underline size={18} />
                 </button>
                 <div className={styles.divider} />
@@ -249,7 +249,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                   type='button'
                   onClick={handleUnorderedList}
                   className={styles.toolbarButton}
-                  title='Маркированный список'
+                  title={t('markList')}
                 >
                   <List size={18} />
                 </button>
@@ -257,7 +257,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                   type='button'
                   onClick={handleOrderedList}
                   className={styles.toolbarButton}
-                  title='Нумерованный список'
+                  title={t('numerickList')}
                 >
                   <ListOrdered size={18} />
                 </button>
@@ -266,7 +266,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                   type='button'
                   onClick={handleHorizontalLine}
                   className={styles.toolbarButton}
-                  title='Горизонтальная линия'
+                  title={t('horizontalLine')}
                 >
                   <Minus size={18} />
                 </button>
@@ -275,7 +275,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                   type='button'
                   onClick={() => setShowPreview(!showPreview)}
                   className={styles.toolbarButton}
-                  title={showPreview ? 'Скрыть превью' : 'Показать превью'}
+                  title={showPreview ? t('hidePrev') : t('showPrev')}
                 >
                   {showPreview ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>

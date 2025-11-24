@@ -1068,9 +1068,17 @@
     "help": "支持"
     },
     "mdEditor": {
+      "hidePrev": "隐藏预览",
+      "showPrev": "预览",
+      "horizontalLine": "水平线",
+      "numerickList": "编号列表",
+      "markList": "项目符号列表",
+      "underline": "下划线",
+      "curs": "斜体",
+      "bold": "粗体",
       "preview": "预览",
       "previewPlaceholder": "预览将显示在这里...",
-       "dontHaveDescr": "未添加描述"
+      "dontHaveDescr": "未添加描述"
     },
     "comment": {
       "approved": "已确认",

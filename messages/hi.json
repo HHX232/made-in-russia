@@ -1049,9 +1049,17 @@
     "help": "समर्थन"
   },
   "mdEditor": {
+    "hidePrev": "पूर्वावलोकन छिपाएं",
+    "showPrev": "पूर्वावलोकन",
+    "horizontalLine": "क्षैतिज रेखा",
+    "numerickList": "क्रमांकित सूची",
+    "markList": "बुलेट सूची",
+    "underline": "रेखांकित",
+    "curs": "तिरछा",
+    "bold": "मोटा",
     "preview": "पूर्वावलोकन",
     "previewPlaceholder": "पूर्वावलोकन यहां दिखाई देगा...",
-    "dontHaveDescr": "विवरण नहीं जोड़ा गया"
+    "dontHaveDescr": "विवरण जोड़ा नहीं गया"
   },
   "comment": {
     "approved": "स्वीकृत",
