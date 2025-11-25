@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Skeleton from 'react-loading-skeleton'
 import CardSlider from '@/components/UI-kit/elements/CardSlider/CardSlider'
-import StarsCount from '@/components/UI-kit/Texts/StarsCount/StarsCount'
 import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
 
 import Link from 'next/link'
@@ -14,15 +12,13 @@ import {ReactNode, useEffect, useMemo, useRef, useState} from 'react'
 import useWindowWidth from '@/hooks/useWindoWidth'
 import ICardFull from '@/services/card/card.types'
 import {useLocale, useTranslations} from 'next-intl'
-
 import PurchaseModal from './PurchaseModal/PurchaseModal'
-import instance, {axiosClassic} from '@/api/api.interceptor'
+import {axiosClassic} from '@/api/api.interceptor'
 import {toast} from 'sonner'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import ServiceFavorites from '@/services/favorite/favorite.service'
 
-const ava = '/avatars/avatar-v.svg'
 interface IPriceItem {
   title: string | ReactNode
   currentPrice?: string | null
@@ -378,6 +374,35 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
       {/* Первая секция */}
       <span className={`${styles.card__row__info} ${styles.card__col__info__first}`}>
         <NewFullTopInfo />
+        <Link href={`/data-vendor/${cardData?.user?.id}`} className={styles.about__vendor}>
+          <h3 className={styles.vendor__title}>{t('companyDescription')}</h3>
+          <div className={styles.vendor__box__info}>
+            <div className={styles.vendor__avatar}>
+              {!!cardData?.user.avatarUrl ? (
+                <Image
+                  className={styles.avatar__image}
+                  width={80}
+                  height={80}
+                  src={cardData.user.avatarUrl}
+                  alt='avatar'
+                />
+              ) : (
+                <div className={styles.char__box}>
+                  {' '}
+                  <p className={styles.avatar__char}>
+                    {!!cardData?.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                      ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                      : cardData?.user.login.charAt(0).toUpperCase()}
+                  </p>
+                </div>
+              )}
+              <p className={styles.vendor__name}>{cardData?.user.login}</p>
+            </div>
+            <p className={styles.vendor__inn}>
+              {t('INN')}: {cardData?.user.vendorDetails?.inn}
+            </p>
+          </div>
+        </Link>
       </span>
 
       <PurchaseModal

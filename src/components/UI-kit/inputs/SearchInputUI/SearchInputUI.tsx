@@ -351,7 +351,13 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId, useNe
               {/* Категории с товарами */}
               {categoriesWithProducts.map((categoryMap, categoryIndex) => (
                 <div key={`${locale}-${categoryMap.category.id}-${categoryIndex}`} className={styles.category__group}>
-                  <div className={styles.category__title}>{categoryMap.category.name}</div>
+                  <Link
+                    href={`/categories/${categoryMap.category.fullSlug}`}
+                    className={styles.category__title}
+                    onClick={handleCloseList}
+                  >
+                    <span>{categoryMap.category.name}</span>
+                  </Link>
                   {categoryMap.products.map((product) => (
                     <Link
                       key={`${locale}-${product.id}`}

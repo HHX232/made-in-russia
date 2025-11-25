@@ -17,6 +17,7 @@ import {useRouter} from 'next/navigation'
 import Link from 'next/link'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import MobileNavigation from '../MobileNavigation/MobileNavigation'
 
 export const setCookieLocale = (locale: string) => {
   document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
@@ -496,7 +497,7 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
                 </div>
               </div>
               <div className={`${styles.main__middle_content}`}>
-                <ProfileButtonUI />
+                <ProfileButtonUI extraClass={styles.hyde_profile} />
 
                 <DropList
                   closeOnMouseLeave={true}
@@ -566,6 +567,7 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
           )}
         </header>
       </div>
+      <MobileNavigation />
     </>
   )
 }

@@ -34,6 +34,7 @@ export interface CatalogProps {
   showSearchFilters?: boolean
   searchParams?: {[key: string]: string | string[] | undefined}
   showAdminStatusFilters?: boolean
+  isShowPopulaTitle?: boolean
   initialApproveStatus?: 'APPROVED' | 'PENDING' | 'ALL' | 'REJECTED'
 }
 
@@ -59,7 +60,8 @@ const Catalog: FC<CatalogProps> = ({
   showSearchFilters = true,
   showAdminStatusFilters = false,
   initialApproveStatus = 'ALL',
-  isForAdmin = false
+  isForAdmin = false,
+  isShowPopulaTitle = true
 }) => {
   const [activeFilterName, setActiveFilterName] = useState<'originPrice' | 'creationDate'>('creationDate')
   const [activeFilterDirect, setActiveFilterDirect] = useState<'asc' | 'desc'>('desc')
@@ -425,6 +427,7 @@ const Catalog: FC<CatalogProps> = ({
             specialRoute={specialRoute}
             initialProducts={initialProducts}
             initialHasMore={initialHasMore}
+            isShowPopulaTitle={isShowPopulaTitle}
           />
         )}
         {!usePagesCatalog && useNewvendorCaralog && (

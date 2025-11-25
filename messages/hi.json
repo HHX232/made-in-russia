@@ -385,7 +385,13 @@
       "minimumOrderQuantity": "न्यूनतम ऑर्डर मात्रा",
       "byNow": "अभी खरीदें",
       "deliveryMethodsInfo": "डिलीवरी जानकारी",
-      "packagingOptions": "पैकेजिंग विकल्प"
+      "packagingOptions": "पैकेजिंग विकल्प",
+      "technicalCharacteristics": "तकनीकी विशिष्टताएं:",
+      "companyDescription": "आपूर्तिकर्ता जानकारी",
+      "locationInfo": "स्थान जानकारी",
+      "deliveryDescription": "डिलीवरी विधि जानकारी",
+      "emptyAddress": "पता निर्दिष्ट नहीं",
+      "INN": "TIN"
     },
     "CardMiddlePage": {
       "description": "विवरण",

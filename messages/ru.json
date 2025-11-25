@@ -397,7 +397,14 @@
       "minimumOrderQuantity": "Минимальный объем заказа",
       "byNow": "Купить сейчас",
       "deliveryMethodsInfo": "Информация о доставке",
-      "packagingOptions": "Варианты упаковки"
+      "packagingOptions": "Варианты упаковки",
+
+      "technicalCharacteristics": "Технические характеристики:",
+      "companyDescription": "Информация о поставщике",
+      "locationInfo": "Информация о местонахождении",
+      "deliveryDescription": "Информация о способах доставки",
+      "emptyAddress": "адрес не указан",
+      "INN": "ИНН"
     },
     "CardMiddlePage": {
       "description": "Описание",

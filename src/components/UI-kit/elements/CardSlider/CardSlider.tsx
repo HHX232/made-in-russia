@@ -1087,165 +1087,259 @@ const ThumbnailSlider: React.FC<{
   onThumbnailClick: (index: number) => void
   onDoubleClick: (index: number) => void
 }> = ({images, activeIndex, productName, thumbnailSliderRef, onThumbnailClick, onDoubleClick}) => {
-  const prevActiveIndex = useRef(activeIndex)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [scrollPosition, setScrollPosition] = useState(0)
+  const [containerWidth, setContainerWidth] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const [startX, setStartX] = useState(0)
+  const [scrollLeft, setScrollLeft] = useState(0)
+  const animationFrameRef = useRef<number | null>(null)
 
-  const [localRef, instanceRef] = useKeenSlider<HTMLDivElement>(
-    {
-      initial: 0,
-      loop: false,
-      mode: 'free' as const,
-      slides: {
-        perView: 'auto',
-        spacing: 16
-      },
-      rubberband: false,
-      drag: true
-    },
-    [
-      (slider) => {
-        let timeout2: ReturnType<typeof setTimeout> | undefined
+  const THUMBNAIL_WIDTH = 140
+  const GAP = 16
+  const SLIDE_WITH_GAP = THUMBNAIL_WIDTH + GAP
 
-        function clearNextTimeout() {
-          if (timeout2) {
-            clearTimeout(timeout2)
-          }
-        }
+  // Обновление размеров контейнера
+  useLayoutEffect(() => {
+    if (!containerRef.current) return
 
-        slider.on('created', () => {
-          const container = slider.container
-          if (container) {
-            const style = document.createElement('style')
-            style.textContent = `
-              .keen-slider.thumbnails-linear {
-                transition-timing-function: linear !important;
-              }
-              .keen-slider.thumbnails-linear .keen-slider__slide {
-                transition-timing-function: linear !important;
-              }
-            `
-            document.head.appendChild(style)
-            container.classList.add('thumbnails-linear')
-          }
-        })
-
-        slider.on('dragStarted', clearNextTimeout)
-        slider.on('animationEnded', () => {
-          clearNextTimeout()
-        })
-
-        return () => {
-          clearNextTimeout()
-        }
-      }
-    ]
-  )
-
-  const combinedRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      localRef(node)
-      thumbnailSliderRef(node)
-    },
-    [localRef, thumbnailSliderRef]
-  )
-
-  useEffect(() => {
-    if (!instanceRef.current || activeIndex === undefined) return
-
-    const animate = () => {
-      try {
-        const slider = instanceRef.current
-        if (!slider) return
-
-        const details = slider.track.details
-        if (!details) return
-
-        const slidesToShow = Math.floor(slider.size / (140 + 16))
-        const firstVisibleIndex = Math.floor(details.abs)
-        const lastVisibleIndex = firstVisibleIndex + slidesToShow - 1
-
-        const isVisible = activeIndex >= firstVisibleIndex && activeIndex <= lastVisibleIndex
-
-        if (!isVisible) {
-          let targetPosition: number
-          if (activeIndex < firstVisibleIndex) {
-            targetPosition = Math.max(0, activeIndex)
-          } else {
-            targetPosition = Math.max(0, Math.min(activeIndex - slidesToShow + 1, images.length - slidesToShow))
-          }
-
-          const indexDiff = Math.abs(activeIndex - prevActiveIndex.current)
-          const isFastTransition = indexDiff === 1
-
-          if (isFastTransition) {
-            slider.moveToIdx(targetPosition, true)
-          } else {
-            const currentPos = details.abs
-            const distance = Math.abs(targetPosition - currentPos)
-            const duration = Math.min(300 + distance * 50, 800)
-
-            const startTime = performance.now()
-            const startPos = currentPos
-
-            const animate = (currentTime: number) => {
-              const elapsed = currentTime - startTime
-              const progress = Math.min(elapsed / duration, 1)
-
-              const newPos = startPos + (targetPosition - startPos) * progress
-
-              slider.moveToIdx(newPos, false)
-
-              if (progress < 1) {
-                requestAnimationFrame(animate)
-              }
-            }
-
-            requestAnimationFrame(animate)
-          }
-        }
-
-        prevActiveIndex.current = activeIndex
-      } catch (error) {
-        console.warn('Thumbnail sync failed:', error)
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth)
       }
     }
 
-    const timer = setTimeout(animate, 10)
-    return () => clearTimeout(timer)
-  }, [activeIndex, images.length, instanceRef])
+    updateSize()
+
+    const resizeObserver = new ResizeObserver(updateSize)
+    resizeObserver.observe(containerRef.current)
+
+    window.addEventListener('resize', updateSize)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', updateSize)
+    }
+  }, [])
+
+  // Комбинированный ref
+  const combinedRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      containerRef.current = node
+      thumbnailSliderRef(node)
+    },
+    [thumbnailSliderRef]
+  )
+
+  // Автоматический скролл при изменении активного индекса
+  useEffect(() => {
+    if (!containerRef.current || containerWidth === 0) return
+
+    const slidesToShow = Math.floor(containerWidth / SLIDE_WITH_GAP)
+
+    // Максимальный скролл
+    const totalWidth = images.length * THUMBNAIL_WIDTH + (images.length - 1) * GAP
+    const maxScroll = Math.max(0, totalWidth - containerWidth)
+
+    // Текущие видимые индексы
+    const firstVisibleIndex = Math.round(scrollPosition / SLIDE_WITH_GAP)
+    const lastFullyVisibleIndex = Math.min(firstVisibleIndex + slidesToShow - 1, images.length - 1)
+
+    let targetScroll: number | null = null
+    let reason = ''
+
+    // ТОЛЬКО если выходим за пределы видимой области
+    if (activeIndex < firstVisibleIndex) {
+      // Активный индекс левее - показываем его первым
+      targetScroll = activeIndex * SLIDE_WITH_GAP
+      reason = 'scroll left: activeIndex out of view'
+    } else if (activeIndex > lastFullyVisibleIndex) {
+      // Активный индекс правее - показываем его последним
+      targetScroll = (activeIndex - slidesToShow + 1) * SLIDE_WITH_GAP
+      reason = 'scroll right: activeIndex out of view'
+    }
+
+    if (targetScroll !== null) {
+      const finalScroll = Math.max(0, Math.min(targetScroll, maxScroll))
+
+      // Если уже на нужной позиции - ничего не делаем
+      if (Math.abs(finalScroll - scrollPosition) < 1) {
+        return
+      }
+
+      console.log('Auto scroll:', {
+        activeIndex,
+        firstVisibleIndex,
+        lastFullyVisibleIndex,
+        slidesToShow,
+        currentScroll: scrollPosition.toFixed(2),
+        targetScroll: finalScroll.toFixed(2),
+        reason
+      })
+
+      // Отменяем предыдущую анимацию если есть
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+
+      // Плавная анимация
+      const startScroll = scrollPosition
+      const distance = finalScroll - startScroll
+      const duration = 300
+      const startTime = performance.now()
+
+      const animateScroll = (currentTime: number) => {
+        const elapsed = currentTime - startTime
+        const progress = Math.min(elapsed / duration, 1)
+
+        // Easing function (ease-out)
+        const easeProgress = 1 - Math.pow(1 - progress, 3)
+
+        const newScroll = startScroll + distance * easeProgress
+        setScrollPosition(newScroll)
+
+        if (progress < 1) {
+          animationFrameRef.current = requestAnimationFrame(animateScroll)
+        } else {
+          animationFrameRef.current = null
+        }
+      }
+
+      animationFrameRef.current = requestAnimationFrame(animateScroll)
+    }
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+    }
+  }, [activeIndex, containerWidth, images.length, scrollPosition])
+
+  // Drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!containerRef.current) return
+
+    // Останавливаем анимацию при начале драга
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current)
+      animationFrameRef.current = null
+    }
+
+    setIsDragging(true)
+    setStartX(e.pageX - containerRef.current.offsetLeft)
+    setScrollLeft(scrollPosition)
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !containerRef.current) return
+    e.preventDefault()
+    const x = e.pageX - containerRef.current.offsetLeft
+    const walk = (startX - x) * 1.5
+
+    const totalWidth = images.length * THUMBNAIL_WIDTH + (images.length - 1) * GAP
+    const maxScroll = Math.max(0, totalWidth - containerWidth)
+
+    const newScroll = Math.max(0, Math.min(scrollLeft + walk, maxScroll))
+    setScrollPosition(newScroll)
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+  }
+
+  const handleMouseLeave = () => {
+    setIsDragging(false)
+  }
+
+  // Touch handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!containerRef.current) return
+
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current)
+      animationFrameRef.current = null
+    }
+
+    setIsDragging(true)
+    setStartX(e.touches[0].pageX - containerRef.current.offsetLeft)
+    setScrollLeft(scrollPosition)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !containerRef.current) return
+    const x = e.touches[0].pageX - containerRef.current.offsetLeft
+    const walk = (startX - x) * 1.5
+
+    const totalWidth = images.length * THUMBNAIL_WIDTH + (images.length - 1) * GAP
+    const maxScroll = Math.max(0, totalWidth - containerWidth)
+
+    const newScroll = Math.max(0, Math.min(scrollLeft + walk, maxScroll))
+    setScrollPosition(newScroll)
+  }
+
+  const handleTouchEnd = () => {
+    setIsDragging(false)
+  }
 
   return (
     <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
-      <div ref={combinedRef} className='keen-slider'>
-        {images.map((image, index) => {
-          const type = getMediaType(image)
+      <div
+        ref={combinedRef}
+        className={styles.customThumbnailSlider}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          cursor: isDragging ? 'grabbing' : 'grab',
+          userSelect: 'none'
+        }}
+      >
+        <div
+          ref={trackRef}
+          className={styles.customThumbnailTrack}
+          style={{
+            transform: `translateX(-${scrollPosition}px)`,
+            transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+          }}
+        >
+          {images.map((image, index) => {
+            const type = getMediaType(image)
 
-          return (
-            <div
-              key={index}
-              className={`keen-slider__slide ${styles.imageSlider__thumbnail} ${
-                index === activeIndex ? styles.imageSlider__thumbnailActive : ''
-              }`}
-              onClick={() => onThumbnailClick(index)}
-              onDoubleClick={() => onDoubleClick(index)}
-              role='button'
-              tabIndex={0}
-              aria-label={`${type === 'video' ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  onThumbnailClick(index)
-                }
-              }}
-              style={{cursor: 'pointer'}}
-            >
-              <MediaRenderer
-                media={image}
-                alt={`${type === 'video' ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
-                type={type}
-                isThumbnail={true}
-              />
-            </div>
-          )
-        })}
+            return (
+              <div
+                key={index}
+                className={`${styles.customThumbnailSlide} ${
+                  index === activeIndex ? styles.customThumbnailSlideActive : ''
+                }`}
+                onClick={() => onThumbnailClick(index)}
+                onDoubleClick={() => onDoubleClick(index)}
+                role='button'
+                tabIndex={0}
+                aria-label={`${type === 'video' ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    onThumbnailClick(index)
+                  }
+                }}
+                style={{
+                  pointerEvents: isDragging ? 'none' : 'auto'
+                }}
+              >
+                <MediaRenderer
+                  media={image}
+                  alt={`${type === 'video' ? 'Видео' : 'Изображение'} товара ${productName} - ${index + 1}`}
+                  type={type}
+                  isThumbnail={true}
+                />
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

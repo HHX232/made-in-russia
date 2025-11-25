@@ -29,6 +29,22 @@
   gap: 20px;
 }
 
+.vendor__avatar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 24px;
+}
+
+.avatar__image {
+  border-radius: 50%;
+  aspect-ratio: 1/1;
+
+  @media (max-width: 960px) {
+    max-width: 55px !important;
+  }
+}
+
 .left_arrow,
 .right_arrow {
   cursor: pointer;

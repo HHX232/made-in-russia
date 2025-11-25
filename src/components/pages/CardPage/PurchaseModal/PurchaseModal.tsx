@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useMemo} from 'react'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
-import {createPriceWithDot} from '@/utils/createPriceWithDot'
 import styles from './PurchaseModal.module.scss'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
@@ -333,12 +332,10 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
                 <div className={styles.priceValue}>
                   {priceCalculation.hasDiscount && (
                     <span className={styles.originalPrice}>
-                      {createPriceWithDot(priceCalculation.selectedPrice.originalPrice.toString())}
+                      {priceCalculation.selectedPrice.originalPrice.toString()}
                     </span>
                   )}
-                  <span className={styles.currentPrice}>
-                    {createPriceWithDot(priceCalculation.unitPrice.toString())}
-                  </span>
+                  <span className={styles.currentPrice}>{priceCalculation.unitPrice.toString()}</span>
                   <span className={styles.currency}>
                     {priceCalculation.selectedPrice.currency}/{priceCalculation.selectedPrice.unit}
                   </span>
@@ -348,7 +345,7 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               <div className={styles.totalPrice}>
                 <span className={styles.totalLabel}>{t('priceInfo.totalPrice')}:</span>
                 <span className={styles.totalValue}>
-                  {createPriceWithDot(priceCalculation.totalPrice.toString())} {priceCalculation.selectedPrice.currency}
+                  {priceCalculation.totalPrice.toString()} {priceCalculation.selectedPrice.currency}
                 </span>
               </div>
             </div>

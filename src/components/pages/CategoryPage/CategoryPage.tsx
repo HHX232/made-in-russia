@@ -24,7 +24,8 @@ const CategoryPage = ({
   breadcrumbs,
   language,
   initialLastFilterSlug,
-  categoryDescription
+  categoryDescription,
+  isShowPopulaTitle = true
 }: {
   categoryName: string
   categoryTitleName?: string
@@ -37,6 +38,7 @@ const CategoryPage = ({
   language?: 'ru' | 'en' | 'zh' | 'hi'
   initialLastFilterSlug?: string
   categoryDescription?: string
+  isShowPopulaTitle?: boolean
 }) => {
   const isServer = typeof window === 'undefined'
   const t = useTranslations('CategoryPage')
@@ -550,6 +552,7 @@ const CategoryPage = ({
             useContainer={false}
             isShowFilters={false}
             initialProducts={[]}
+            isShowPopulaTitle={isShowPopulaTitle}
             initialHasMore={false}
           />
 

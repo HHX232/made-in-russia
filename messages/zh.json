@@ -385,7 +385,13 @@
       "minimumOrderQuantity": "最小订购量",
       "byNow": "立即购买",
       "deliveryMethodsInfo": "配送信息",
-      "packagingOptions": "包装选项"
+      "packagingOptions": "包装选项",
+      "technicalCharacteristics": "技术规格：",
+      "companyDescription": "供应商信息",
+      "locationInfo": "位置信息",
+      "deliveryDescription": "配送方式信息",
+      "emptyAddress": "未指定地址",
+      "INN": "税号"
     },
     "CardMiddlePage": {
       "description": "描述",

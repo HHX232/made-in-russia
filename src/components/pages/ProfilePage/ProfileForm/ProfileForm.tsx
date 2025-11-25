@@ -287,10 +287,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
   }, [telText, selectedRegion.altName, password, isVendor, selectedCountries, inn, categories, userInteracted])
 
   useEffect(() => {
-    setNeedToSave(true)
-  }, [categories])
-
-  useEffect(() => {
     if (userData?.vendorDetails?.inn) {
       setInn(userData?.vendorDetails?.inn)
     }
@@ -848,6 +844,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
                 onChange={(values) => {
                   setCategories(values)
                   setUserInteracted(true)
+                  setNeedToSave(true)
                   updateVendorDetailsAction({
                     ...vendorDetails,
                     productCategories: values.map((el) => {

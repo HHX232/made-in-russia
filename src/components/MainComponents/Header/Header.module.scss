@@ -889,3 +889,9 @@
     min-width: 150px;
   }
 }
+
+@media (max-width: 640px) {
+  .hyde_profile {
+    display: none !important;
+  }
+}

@@ -109,6 +109,7 @@ export default async function CategoryPageSpecialThirdAlt({
       categoryName={actualThirdSlug}
       categoryTitleName={categories.name}
       level={3}
+      isShowPopulaTitle={false}
       language={locale}
       categoryDescription={categories.description}
       initialLastFilterSlug={lastFilterName}

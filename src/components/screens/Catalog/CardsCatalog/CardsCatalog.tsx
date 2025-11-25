@@ -31,6 +31,7 @@ interface CardsCatalogProps {
   customMinHeight?: string
   extraSwiperClass?: string
   mathMinHeight?: boolean
+  isShowPopulaTitle?: boolean
 }
 
 const SLIDES_COUNT = 5
@@ -48,11 +49,11 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
   approveStatuses = 'ALL',
   customMinHeight,
   extraSwiperClass,
-  mathMinHeight = false
+  mathMinHeight = false,
+  isShowPopulaTitle = true
 }) => {
   const t = useTranslations('CardsCatalogNew')
   const {setCurrentSlide: setCurrentSlideRedux} = useActions()
-  const {currentSlide: currentSlideRedux} = useTypedSelector((state) => state.sliderHomeSlice)
 
   const priceRange = useSelector((state: TypeRootState) => selectRangeFilter(state, 'priceRange'))
   const {selectedFilters, delivery, searchTitle} = useTypedSelector((state) => state.filters)
@@ -444,9 +445,11 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     return (
       <section className={`section ${styled.popularprod}`}>
         <div>
-          <div className={`${styled.section_flexheader}`}>
-            <div className={`${styled.section_flexheader__title}`}>{t('popularProducts')}</div>
-          </div>
+          {isShowPopulaTitle && (
+            <div className={`${styled.section_flexheader}`}>
+              <div className={`${styled.section_flexheader__title}`}>{t('popularProducts')}</div>
+            </div>
+          )}
           <div
             style={{
               padding: '60px 20px',
@@ -467,7 +470,7 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
     <section className={`section ${styled.popularprod}`}>
       <div>
         <div className={`${styled.section_flexheader}`}>
-          <div className={`${styled.section_flexheader__title}`}>{t('popularProducts')}</div>
+          {isShowPopulaTitle && <div className={`${styled.section_flexheader__title}`}>{t('popularProducts')}</div>}
 
           <div
             className={`${styled.popularprod__header_group} ${styled.popularprod__header_group__for_vis}`}
