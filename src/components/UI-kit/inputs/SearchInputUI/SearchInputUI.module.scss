@@ -200,7 +200,7 @@
 
 .list__item_title {
   position: relative;
-  padding: 11px 14px;
+  padding: 11px 0;
   margin-bottom: 5px;
   margin-left: 6px;
   text-align: left;
@@ -224,6 +224,14 @@
     // добавьте
     color: #2a2e46;
   }
+}
+
+.card__item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding-left: 11px;
+  gap: 10px;
 }
 
 // Стили для состояний загрузки и ошибок

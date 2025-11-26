@@ -26,28 +26,28 @@ const PopularCategories: React.FC<PopularCategoriesProps> = ({categories, viewAl
       title: t('cat1'),
       // title: 'Металлургическая продукция',
       image: '/imagesNew/main/main-2-1.webp',
-      link: '/categories/metallurgy'
+      link: '/categories/metals'
     },
     {
       id: 2,
       title: t('cat2'),
       // title: 'Древесина',
       image: '/imagesNew/main/main-2-2.webp',
-      link: '/categories/wood-and-wood-products'
+      link: '/categories/wood'
     },
     {
       id: 3,
       title: t('cat3'),
       // title: 'Минеральная продукция',
       image: '/imagesNew/main/main-2-3.webp',
-      link: '/categories/other-non-metallic-mineral-products'
+      link: '/categories/polymers'
     },
     {
       id: 4,
       title: t('cat4'),
       // title: 'Полезные ископаемые',
       image: '/imagesNew/main/main-2-4.webp',
-      link: '/categories/poleznye-iskopaemye'
+      link: '/categories/minerals'
     }
   ]
   const [cat1, cat2, cat3, cat4] = categories || defaultCategories

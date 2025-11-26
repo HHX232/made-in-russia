@@ -365,7 +365,10 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId, useNe
                       className={styles.list__item}
                       onClick={handleCloseList}
                     >
-                      <div className={styles.list__item_title}>{product.title}</div>
+                      <span className={styles.card__item}>
+                        <Image src={product.image} alt={product.title} width={25} height={25}></Image>
+                        <div className={styles.list__item_title}>{product.title}</div>
+                      </span>
                     </Link>
                   ))}
                 </div>
