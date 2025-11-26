@@ -294,7 +294,7 @@
   width: 100px;
   height: 70px;
   border: 2px solid transparent;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
   opacity: 0.6;
   transition: all 0.3s;
@@ -352,6 +352,7 @@
     overflow: hidden;
     width: 100%;
     margin-bottom: 16px;
+    border-radius: 15px;
 
     .keen-slider {
       position: relative;
@@ -431,6 +432,7 @@
     background-size: cover;
     object-fit: cover;
     transition: transform 0.3s;
+    border-radius: 10px;
   }
 
   &__thumbnail {
