@@ -31,6 +31,7 @@
   width: 100%;
   gap: 40px;
   grid-template-columns: 1.5fr 1fr;
+  border-radius: 10px;
 
   @media (max-width: 1150px) {
     grid-template-columns: 1fr;
@@ -101,7 +102,7 @@
   flex-direction: column;
   flex-shrink: 0;
   padding: 30px;
-  border-radius: 0;
+  border-radius: 10px;
   margin-left: auto;
   background-color: #f6f6f6;
 }
@@ -192,7 +193,7 @@
   }
 
   &::-webkit-scrollbar-track {
-    border-radius: 3px;
+    border-radius: 5px;
     background: #f3f4f6;
   }
 
