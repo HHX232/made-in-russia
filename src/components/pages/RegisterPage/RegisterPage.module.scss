@@ -343,7 +343,7 @@
   left: -15px !important;
   width: calc(100% + 30px) !important;
   border: 1px solid #fff !important;
-  border-radius: 0 !important;
+  border-radius: 15px !important;
   transform: translateX(0) !important;
 }
 
@@ -430,7 +430,7 @@
   align-items: center;
   justify-content: center;
   padding: 10px 20px;
-  border-radius: 0;
+  border-radius: 15px;
   background: linear-gradient(#0047ba, #1869ef);
   color: #fff;
   cursor: pointer;
@@ -475,7 +475,7 @@
   height: 100%;
   align-items: center;
   justify-content: center;
-  border-radius: 0;
+  border-radius: 15px;
   aspect-ratio: 1/1;
   background: linear-gradient(#e1251b, #eb5a53);
   cursor: pointer;
@@ -565,13 +565,13 @@
 }
 
 .extraDropClass {
-  border-radius: 0 !important;
+  border-radius: 15px !important;
   background-color: #f6f6f6 !important;
 }
 
 .extra_extraDropListClassSecond {
   border: 1px solid rgb(47 47 47 / 20%) !important;
-  border-radius: 0 !important;
+  border-radius: 15px !important;
   background-color: #f6f6f6 !important;
 }
 
