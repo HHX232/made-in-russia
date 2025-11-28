@@ -49,6 +49,7 @@
   width: 100%;
   padding: 12px 15px;
   border: 1px solid rgb(47 47 47 / 20%);
+  border-radius: 15px;
 }
 
 // !EXTRA
@@ -68,7 +69,7 @@
     & > div {
       padding: 12px 15px;
 
-      // border-radius: 8px;
+      border-radius: 8px;
 
       border-top: 0 solid rgb(47 47 47 / 20%);
       border-right: 1px solid rgb(47 47 47 / 20%);
@@ -127,8 +128,7 @@
   padding: 12px 15px;
   border: 1px solid rgb(47 47 47 / 20%);
   background-color: #fff;
-
-  // border-radius: 10px;
+   border-radius: 15px;
 }
 
 .modal__text {
