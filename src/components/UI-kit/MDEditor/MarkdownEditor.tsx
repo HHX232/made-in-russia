@@ -28,6 +28,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   const [showPreview, setShowPreview] = useState(!initialHidePreview)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const t = useTranslations('mdEditor')
+
   const handleContentChange = (value: string) => {
     setContent(value)
     onValueChange?.(value)
@@ -112,10 +113,59 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   }
 
   const handleBold = () => insertMarkdown('**', '**')
-  const handleItalic = () => insertMarkdown('*', '*')
+  const handleItalic = () => insertMarkdown('<i>', '</i>')
   const handleUnderline = () => insertMarkdown('<u>', '</u>')
-  const handleUnorderedList = () => insertAtLineStart('- ')
-  const handleOrderedList = () => insertAtLineStart('1. ')
+
+  const handleUnorderedList = () => {
+    const textarea = textareaRef.current
+    if (!textarea || readOnly) return
+
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const selectedText = content.substring(start, end)
+
+    // Если есть выделение и оно содержит несколько строк
+    if (start !== end && selectedText.includes('\n')) {
+      const lines = selectedText.split('\n')
+      const newLines = lines.map((line) => (line.trim() ? '- ' + line : line))
+      const newText = content.substring(0, start) + newLines.join('\n') + content.substring(end)
+
+      handleContentChange(newText)
+
+      setTimeout(() => {
+        textarea.focus()
+        textarea.setSelectionRange(start, start + newLines.join('\n').length)
+      }, 0)
+    } else {
+      insertAtLineStart('- ')
+    }
+  }
+
+  const handleOrderedList = () => {
+    const textarea = textareaRef.current
+    if (!textarea || readOnly) return
+
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const selectedText = content.substring(start, end)
+
+    // Если есть выделение и оно содержит несколько строк
+    if (start !== end && selectedText.includes('\n')) {
+      const lines = selectedText.split('\n')
+      const newLines = lines.map((line, index) => (line.trim() ? `${index + 1}. ${line}` : line))
+      const newText = content.substring(0, start) + newLines.join('\n') + content.substring(end)
+
+      handleContentChange(newText)
+
+      setTimeout(() => {
+        textarea.focus()
+        textarea.setSelectionRange(start, start + newLines.join('\n').length)
+      }, 0)
+    } else {
+      insertAtLineStart('1. ')
+    }
+  }
+
   const handleHorizontalLine = () => {
     const textarea = textareaRef.current
     if (!textarea || readOnly) return
@@ -163,7 +213,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
       const parsed = line
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/<i>(.+?)<\/i>/g, '<em>$1</em>')
         .replace(/<u>(.+?)<\/u>/g, '<u>$1</u>')
 
       if (line.match(/^\d+\.\s/)) {

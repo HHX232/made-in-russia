@@ -193,22 +193,22 @@ const RegisterVendorUnified: React.FC<RegisterVendorUnifiedProps> = ({
             id: category.id,
             label: category.name,
             value: category.name,
-            imageUrl: category?.imageUrl,
+            imageUrl: '',
             children: category.children?.map((child) => ({
               id: child.id,
               label: child.name,
               value: child.name,
-              imageUrl: child?.imageUrl,
+              imageUrl: '',
               children: child.children?.map((grandChild) => ({
                 id: grandChild?.id,
                 label: grandChild?.name,
                 value: grandChild?.name,
-                imageUrl: grandChild?.imageUrl,
+                imageUrl: '',
                 children: grandChild?.children?.map((greatGrandChild) => ({
                   id: greatGrandChild?.id,
                   label: greatGrandChild?.name,
                   value: greatGrandChild?.name,
-                  imageUrl: greatGrandChild?.imageUrl
+                  imageUrl: ''
                 }))
               }))
             }))

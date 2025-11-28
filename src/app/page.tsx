@@ -36,13 +36,11 @@ async function getInitialData(locale: string) {
     }
   })
 
-  // console.log('general data', data)
   return data
 }
 
 export default async function Home() {
   const locale = await getCurrentLocale()
-  // console.log('locale в доме', locale)
   const {products, categories, advertisements} = await getInitialData(locale)
 
   return (

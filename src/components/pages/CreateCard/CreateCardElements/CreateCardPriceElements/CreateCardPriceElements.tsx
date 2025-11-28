@@ -230,13 +230,13 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       })
     }
 
-    // Обработчики для доставки
+    // Обработчики для доставки - теперь только title
     const handleDeliverySetValue = (rowIndex: number, inputIndex: number, value: string) => {
-      const field = inputIndex === 0 ? 'title' : 'daysDelivery'
+      // Всегда обновляем только title (единственное поле)
       updateDelivery({
         language: currentLanguage,
         index: rowIndex,
-        field: field as 'title' | 'daysDelivery',
+        field: 'title',
         value
       })
     }
@@ -244,7 +244,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     const handleDeliveryRowsChange = (newRows: string[][]) => {
       const delivery = newRows.map((row) => ({
         title: row[0] || '',
-        daysDelivery: row[1] || ''
+        daysDelivery: '100' // Фиксированное значение для сохранения формата данных
       }))
       setDelivery({
         language: currentLanguage,
@@ -349,7 +349,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
 
     // Преобразование данных из store в формат для RowsInputs
     const characteristicsMatrix = currentData.characteristics.map((item) => [item.title, item.characteristic])
-    const deliveryMatrix = currentData.delivery.map((item) => [item.title, item.daysDelivery])
+    // Для delivery теперь только одна колонка с title
+    const deliveryMatrix = currentData.delivery.map((item) => [item.title])
     const packagingMatrix = currentData.packaging.map((item) => [item.title, item.price])
 
     const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
@@ -475,25 +476,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
           <div className={`${styles.rows__inputs__box__inner} ${styles.rows__inputs__box__inner__description}`}>
             <div className={`${styles.create__label__title__box}`}>
               <p className={`${styles.create__label__title}`}>{t('characteristickTable')}</p>
-              {/* <DropList
-                direction={windowWidth && windowWidth < 768 ? 'left' : 'right'}
-                safeAreaEnabled
-                positionIsAbsolute={false}
-                trigger='hover'
-                useNewTheme
-                arrowClassName={`${styles.arrow__none}`}
-                title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                items={[
-                  <Image
-                    onClick={() => openModal(HELP_IMAGES.charactersTable)}
-                    src={HELP_IMAGES.charactersTable}
-                    alt='question'
-                    width={300}
-                    height={300}
-                    key={1}
-                  />
-                ]}
-              /> */}
             </div>
             <RowsInputs
               key={`characteristics-${characteristicsKey}`}
@@ -580,15 +562,16 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 ]}
                 initialRowsCount={1}
                 maxRows={5}
+                inputsInRowCount={1}
                 canCreateNewOption={[true]}
                 showClearButton={[true]}
-                inputType={['dropdown', 'numbersWithSpec']}
+                inputType={['dropdown']}
                 dropdownOptions={[[t('rail'), t('auto'), t('sea'), t('air')]]}
-                idNames={['title-delivery', 'daysDelivery-delivery']}
+                idNames={['title-delivery']}
                 rowsInitialValues={deliveryMatrix}
                 onSetValue={handleDeliverySetValue}
                 onRowsChange={handleDeliveryRowsChange}
-                titles={[t('title'), t('daysDelivery')]}
+                titles={[t('title')]}
                 errorMessage={currentErrors.deliveryError}
                 minFilledRows={1}
               />

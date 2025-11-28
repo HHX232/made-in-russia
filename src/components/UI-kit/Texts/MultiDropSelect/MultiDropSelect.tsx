@@ -3,6 +3,7 @@ import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import RadioButton from '@/components/UI-kit/buttons/RadioButtonUI/RadioButtonUI'
 import styles from './MultiDropSelect.module.scss'
 import {useTranslations} from 'next-intl'
+import Image from 'next/image'
 
 export interface MultiSelectOption {
   id: string | number
@@ -262,7 +263,13 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
               )}
 
               {(category.imageUrl || category.icon) && (
-                <img src={category.imageUrl || category.icon} alt={category.label} className={styles.categoryImage} />
+                <Image
+                  width={35}
+                  height={35}
+                  src={category.imageUrl || category.icon || ''}
+                  alt={category.label || ''}
+                  className={styles.categoryImage}
+                />
               )}
 
               <span className={styles.categoryLabel}>{category.label}</span>
@@ -322,7 +329,13 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
             `}
             >
               {(item.icon || item.imageUrl) && (
-                <img src={item.imageUrl || item.icon} alt={item.label} className={styles.itemIcon} />
+                <Image
+                  width={35}
+                  height={35}
+                  src={item.imageUrl || item.icon || ''}
+                  alt={item.label}
+                  className={styles.itemIcon}
+                />
               )}
               <span className={styles.itemLabel}>{item.label}</span>
               {!isOnlyShow && (
@@ -435,7 +448,13 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
                   style={isOnlyShow ? {cursor: 'default'} : undefined}
                 >
                   {(option.icon || option.imageUrl) && (
-                    <img src={option.imageUrl || option.icon} alt='' className={styles.optionIcon} />
+                    <Image
+                      width={35}
+                      height={35}
+                      src={option.imageUrl || option.icon || ''}
+                      alt=''
+                      className={styles.optionIcon}
+                    />
                   )}
                   <span className={styles.optionLabel}>{option.label}</span>
                 </div>

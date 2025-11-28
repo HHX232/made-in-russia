@@ -210,7 +210,8 @@ export const submitFormCardData = async ({
   objectRemainingInitialImages,
   pricesArray,
   pathname,
-  initialData
+  initialData,
+  selectedDeliveryIds
 }: {
   cardObjectForOthers: Record<string, Partial<ICardFull>>
   faqMatrixForOthers: Record<string, string[][]>
@@ -218,6 +219,7 @@ export const submitFormCardData = async ({
   selectedCategory: ICategory | null
   langFromPathname: string
   currentLangState: string
+  selectedDeliveryIds?: string[]
   cardTitle: string
   descriptions: {
     ru: {description: string; additionalDescription: string | null; furtherDescription: string}
@@ -423,6 +425,7 @@ export const submitFormCardData = async ({
   // Prepare the main data object
   const data = {
     title: allTitles[(langFromPathname || 'en') as keyof typeof allTitles] || cardTitle,
+    deliveryTermIds: selectedDeliveryIds,
     titleTranslations: allTitles,
     mainDescription:
       mainDescriptionTranslations[(langFromPathname || 'en') as keyof typeof mainDescriptionTranslations],

@@ -4,6 +4,7 @@ import {ICategory} from '@/services/card/card.types'
 import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import Image from 'next/image'
 
 interface CreateCardProductCategoryProps {
   initialProductCategory?: ICategory
@@ -197,7 +198,13 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
               )}
 
               {category.imageUrl && (
-                <img src={category.imageUrl} alt={category.name} className={styles.cat__dropdownImage} />
+                <Image
+                  width={35}
+                  height={35}
+                  src={category.imageUrl}
+                  alt={category.name}
+                  className={styles.cat__dropdownImage}
+                />
               )}
 
               <span className={styles.cat__dropdownName}>{category.name}</span>
@@ -247,7 +254,13 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
         ) : (
           <div className={styles.cat__selectedItem}>
             {selectedCategory.imageUrl && (
-              <img src={selectedCategory.imageUrl} alt={selectedCategory.name} className={styles.cat__image} />
+              <Image
+                width={35}
+                height={35}
+                src={selectedCategory.imageUrl}
+                alt={selectedCategory.name}
+                className={styles.cat__image}
+              />
             )}
             <span className={styles.cat__name}>{selectedCategory.name}</span>
             <button

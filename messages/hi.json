@@ -563,14 +563,14 @@
     "unit": "माप की इकाई",
     "characteristickTable": "विवरण और विशेषताएं",
     "characteristicPlaceholder": "विशिष्टता, TU, GOST",
-    "title": "परिवहन का तरीका",
+    "title": "उपलब्ध डिलीवरी विधियाँ",
     "characteristic": "विशेषता",
     "infoAboutPrices": "मूल्य जानकारी",
     "daysCountBeforeSale": "प्रचार समाप्त होने तक",
     "daysCountBeforeSalePlaceholder": "दिन...",
     "minimalVolumeTitle": "न्यूनतम वॉल्यूम",
     "minimalVolumePlaceholder": "न्यूनतम ऑर्डर...",
-    "deliveryInfo": "डिलीवरी शर्तें",
+    "deliveryInfo": "डिलीवरी प्रकार",
     "daysDelivery": "दिनों में डिलीवरी",
     "packagingOptions": "पैकेजिंग विकल्प",
     "price": "मूल्य",
@@ -911,7 +911,7 @@
   "MetaTags": {
     "MainPage": {
       "title": "निर्यात के लिए रूस से थोक सामान",
-      "firstText": "Exporteru रूस से थोक सामान खोजने के लिए विश्वसनीय B2B प्लेटफ़ॉर्म है।",
+      "firstText": "Exporteru रूस से थोक सामान और आपूर्तिकर्ताओं को खोजने के लिए एक विश्वसनीय B2B प्लेटफॉर्म है। हमारे कैटलॉग को ब्राउज़ करें और निर्यात के लिए सीधे निर्माताओं से संपर्क करें।",
       "secondText": "रूस से माल निर्यात करने के लिए सेवा।"
     }
   },

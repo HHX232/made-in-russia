@@ -18,9 +18,10 @@ interface IFooterProps {
   extraStyle?: CSSProperties
   useFixedFooter?: boolean
   minMediaHeight?: number
+  minWidth?: number
 }
 
-const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMediaHeight}) => {
+const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMediaHeight, minWidth = 1000}) => {
   const t = useTranslations('FooterNew')
 
   const [isFixedByHeight, setIsFixedByHeight] = useState(false)
@@ -32,7 +33,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
 
   useEffect(() => {
     const checkHeight = () => {
-      if (minMediaHeight && window.innerHeight > minMediaHeight && window.innerWidth > 1000) {
+      if (minMediaHeight && window.innerHeight > minMediaHeight && window.innerWidth > (minWidth || 0)) {
         setIsFixedByHeight(true)
       } else {
         setIsFixedByHeight(false)

@@ -1129,12 +1129,43 @@ const ThumbnailSlider: React.FC<{
     return calculateSlidesToShow(containerWidth, images.length)
   }, [containerWidth, images.length])
 
-  // Синхронизация активного индекса
+  // Синхронизация активного индекса с умной прокруткой
   useEffect(() => {
-    if (thumbsSwiper && !thumbsSwiper.destroyed) {
-      thumbsSwiper.slideTo(activeIndex)
+    if (!thumbsSwiper || thumbsSwiper.destroyed) return
+
+    const totalSlides = images.length
+    const visibleSlides = Math.floor(slidesPerView)
+
+    // Если слайдов меньше или равно видимым, не скролим
+    if (totalSlides <= visibleSlides) {
+      return
     }
-  }, [activeIndex, thumbsSwiper])
+
+    // Получаем текущую позицию первого видимого слайда
+    const currentFirstVisible = thumbsSwiper.activeIndex
+    const currentLastVisible = currentFirstVisible + visibleSlides - 1
+
+    // Если активный слайд уже видим и не на краях, ничего не делаем
+    if (activeIndex > currentFirstVisible && activeIndex < currentLastVisible) {
+      return
+    }
+
+    // Определяем новую позицию прокрутки
+    let targetIndex: number
+
+    if (activeIndex <= 1) {
+      // Если в начале списка - показываем с начала
+      targetIndex = 0
+    } else if (activeIndex >= totalSlides - 2) {
+      // Если в конце списка - показываем последние слайды
+      targetIndex = Math.max(0, totalSlides - visibleSlides)
+    } else {
+      // В середине - показываем активный слайд вторым
+      targetIndex = activeIndex - 1
+    }
+
+    thumbsSwiper.slideTo(targetIndex, 300)
+  }, [activeIndex, thumbsSwiper, slidesPerView, images.length])
 
   return (
     <div ref={containerRef} className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
@@ -1146,6 +1177,7 @@ const ThumbnailSlider: React.FC<{
         watchSlidesProgress={true}
         modules={[FreeMode, Navigation, Thumbs]}
         className={styles.thumbnailSwiper}
+        resistanceRatio={0}
       >
         {images.map((image, index) => {
           const type = getMediaType(image)

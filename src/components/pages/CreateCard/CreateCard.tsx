@@ -31,6 +31,7 @@ import {setInitialStorageValue} from '@/hooks/createCardHelpers'
 import {submitFormCardData} from '@/utils/createCardHelpers'
 import {toast} from 'sonner'
 import {useRouter} from 'next/navigation'
+import DeliveryTermsSelector from '@/components/UI-kit/DeliveryTermsSelector/DeliveryTermsSelector'
 
 // import {useQueryClient} from '@tanstack/react-query'
 // import {invalidateProductsCache} from '@/hooks/useProducts'
@@ -60,14 +61,13 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(initialData?.category || null)
 
   const t = useTranslations('createCard')
-  // Language start ===========
+  const [selectedDeliveryIds, setSelectedDeliveryIds] = useState<string[]>([])
+
   const pathname = usePathname()
-  // const langFromPathname = pathname.split('/')[1]
   const currentLangFromHook = useCurrentLanguage()
   const currentLang = currentLangFromHook
 
   const [currentLangState, setCurrentLangState] = useState<ICurrentLanguage>('ru')
-  // Language end ===========
 
   const [cardTitle, setCardTitle] = useState(initialData?.title || '')
 
@@ -329,7 +329,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
           objectRemainingInitialImages,
           pricesArray,
           pathname,
-          initialData
+          initialData,
+          selectedDeliveryIds
         })
         toast.dismiss(loadingToast)
         toast.success(
@@ -599,6 +600,15 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               pricesError={errors.pricesArray}
             />
 
+            <DeliveryTermsSelector
+              selectedTermIds={selectedDeliveryIds}
+              onChange={(ids) => {
+                const filledIds = ids.filter((id) => id !== '')
+                setSelectedDeliveryIds(filledIds)
+              }}
+              maxSelections={11}
+              useNewTheme={true}
+            />
             <CreateDescriptionsElements descriptionError={errors.description} currentDynamicLang={currentLangState} />
 
             {/* CreateFaqCard */}

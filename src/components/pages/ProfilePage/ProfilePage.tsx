@@ -1183,7 +1183,7 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
         </div>
       </ModalWindowDefault>
 
-      <Footer useFixedFooter />
+      <Footer useFixedFooter minMediaHeight={1000} minWidth={1} />
     </div>
   )
 }
