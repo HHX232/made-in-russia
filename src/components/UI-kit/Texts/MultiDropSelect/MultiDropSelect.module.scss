@@ -185,12 +185,12 @@
   transition: background-color 0.2s;
 
   &:hover {
-    // border-radius: 10px;
+     border-radius: 10px;
     background-color: #dedede;
   }
 
   &.optionSelected {
-    // border-radius: 10px;
+     border-radius: 10px;
     background-color: #f0f7ff;
 
     &:hover {
@@ -466,7 +466,7 @@
 /* Новый дизайн для заголовка */
 .newThemeTitle {
   border: 1px solid #ccc !important;
-  border-radius: 0 !important;
+  border-radius: 10px !important;
   background-color: #fff !important;
 }
 
@@ -501,7 +501,7 @@
 
 /* Оформление каждого выбранного элемента */
 .newThemeSelectedItem {
-  border-radius: 0 !important;
+  border-radius: 10px !important;
   background-color: #0047ba !important;
   color: #fff !important;
 }
@@ -516,7 +516,7 @@
 .categoryItem,
 .actionButton,
 .radioWrapper {
-  border-radius: 0 !important;
+  border-radius: 10px !important;
 }
 
 /* Отключаем усечение текста */
