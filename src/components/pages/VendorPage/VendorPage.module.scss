@@ -330,6 +330,8 @@
       display: flex;
       flex-shrink: 0;
       align-items: center;
+      border-radius: 10px;
+      
 
       &.warn a {
         color: var(--red, #ac2525) !important;
