@@ -18,7 +18,7 @@ import {Toaster} from 'sonner'
 import NProgressProvider from '@/components/UI-kit/loaders/nprogress-provider'
 import {NextIntlClientProvider} from 'next-intl'
 import ClientStyleLoader from '@/components/ClientStyleLoader'
-import {getMessages, getTranslations} from 'next-intl/server'
+import {getMessages} from 'next-intl/server'
 import {getCurrentLocale} from '@/lib/locale-detection'
 import FavoritesProvider from '@/providers/FavoritesProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
@@ -55,17 +55,14 @@ export default async function RootLayout({children}: {children: React.ReactNode}
 }
 
 export async function generateMetadata() {
-  const t = await getTranslations('MetaTags.MainPage')
   return {
     title: {
       absolute: 'Exporteru',
       template: `%s | Exporteru`
     },
-    description: `${t('firstText')}`,
 
     openGraph: {
-      title: 'Exporteru',
-      description: `${t('secondText')}`
+      title: 'Exporteru'
     },
     icons: {
       icon: '/mstile-c-144x144.png',

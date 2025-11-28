@@ -366,7 +366,7 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId, useNe
                       onClick={handleCloseList}
                     >
                       <span className={styles.card__item}>
-                        <Image src={product.image} alt={product.title} width={25} height={25}></Image>
+                        <Image src={product.image} alt={product.title} width={35} height={35}></Image>
                         <div className={styles.list__item_title}>{product.title}</div>
                       </span>
                     </Link>
@@ -376,7 +376,6 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId, useNe
             </>
           )}
 
-          {/* Нет результатов */}
           {!isLoading && !error && !hasHints && debouncedSearchText.trim().length > 0 && (
             <div className={styles.no__results}>
               <span>{t('noResults')}</span>

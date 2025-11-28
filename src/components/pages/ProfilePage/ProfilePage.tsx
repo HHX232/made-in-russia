@@ -21,6 +21,7 @@ import DeleteAccountButton from '@/components/UI-kit/buttons/DeleteAccountButton
 import {useActions} from '@/hooks/useActions'
 import Image from 'next/image'
 import FavoritesForProfile from '../FavoritesPage/FavoritesForProfile/FavoritesForProfile'
+import {useSearchParams} from 'next/navigation'
 
 // Константы
 export const ASSETS_COUNTRIES = {
@@ -923,6 +924,15 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
     'profile'
   )
   const currentLang = useCurrentLanguage()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const activeTab = searchParams.get('activeTab')
+    if (activeTab && ['profile', 'recentlyView', 'favorites', 'comments', 'sessions'].includes(activeTab)) {
+      setCurrentTab(activeTab as 'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions')
+    }
+  }, [searchParams])
+
   const handleLogout = () => {
     if (isLogoutPending) return
     logout()

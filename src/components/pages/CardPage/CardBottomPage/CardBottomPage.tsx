@@ -314,7 +314,7 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: IC
   return (
     <div id='cardCommentsSection' className={`${styles.card__bottom__box}`}>
       <div className={`${styles.section__title}`}>
-        <h2 className={`fontInstrument`}>
+        <h2 className={`fontInstrument ${styles.font_title}`}>
           {t('revues')}
           {/* <span className={`${styles.count__badge}`}>{cardData?.reviewsCount ? cardData?.reviewsCount : '0'}</span> */}
         </h2>

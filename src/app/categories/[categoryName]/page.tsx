@@ -67,14 +67,16 @@ export async function generateMetadata({params}: {params: Promise<{categoryName:
     const {categoryName} = await params
     const slugToFind = categoryName
     const foundCategory = findCategoryBySlug(allCategories, slugToFind)
-
+    console.log('foundCategory.metaDescription', foundCategory.metaDescription)
     return {
-      title: foundCategory?.title || foundCategory?.name || categoryName || 'category' // title для meta, если нет - fallback на name
+      title: foundCategory?.title || foundCategory?.name || categoryName || 'category', // title для meta, если нет - fallback на name
+      description: foundCategory.metaDescription || ''
     }
   } catch {
     const {categoryName} = await params
     return {
-      title: categoryName || 'category'
+      title: categoryName || 'category',
+      description: ''
     }
   }
 }

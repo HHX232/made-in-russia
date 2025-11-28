@@ -324,6 +324,31 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
             >
               cn.exporteru.com
             </a>
+            <a
+              href='https://in.exporteru.com'
+              className={`${styles.footer__bottom__link}`}
+              onClick={(e) => {
+                e.preventDefault()
+                setCookieLocale('zh')
+                setCurrentLang('zh')
+
+                // invalidateProductsCache(queryClient)
+                // forceRefetch()
+                if (typeof window !== 'undefined') {
+                  const haveLangStart = getHaveLangStartFromCookie()
+                  console.log('haveLangStart', haveLangStart)
+                  if (!haveLangStart) {
+                    window.location.href = 'https://in.exporteru.com'
+                  }
+                }
+                // window.location.reload()
+                startTransition(() => {
+                  router.refresh()
+                })
+              }}
+            >
+              in.exporteru.com
+            </a>
           </div>
           <p className={`${styles.footer__copyright}`}>© 2021-2025 Exporteru</p>
         </div>

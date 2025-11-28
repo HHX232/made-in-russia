@@ -35,6 +35,7 @@ import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
 import Catalog from '@/components/screens/Catalog/Catalog'
 import MarkdownEditor from '@/components/UI-kit/MDEditor/MarkdownEditor'
 import FavoritesForProfile from '../FavoritesPage/FavoritesForProfile/FavoritesForProfile'
+import {useSearchParams} from 'next/navigation'
 
 type TCurrentTab = 'personalData' | 'contacts' | 'sessions' | 'reviews' | 'faq' | 'favorites'
 
@@ -640,6 +641,19 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const {mutate: logout, isPending: isLogoutPending} = useLogout()
   const currentLang = useCurrentLanguage()
   const [vendorData, setVendorData] = useState(initialVendorData)
+
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const activeTab = searchParams.get('activeTab')
+    const validTabs: TCurrentTab[] = ['personalData', 'contacts', 'sessions', 'reviews', 'faq', 'favorites']
+
+    if (activeTab && validTabs.includes(activeTab as TCurrentTab)) {
+      setCurrentTab(activeTab as TCurrentTab)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     const fetchVendorData = async () => {

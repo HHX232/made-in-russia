@@ -621,7 +621,7 @@
     "noElements": "无项目"
   },
   "PromoItem": {
-    "goToCategory": "前往类别",
+    "goToCategory": "进入目录",
     "title": "热门类别"
   },
   "Admin": {
@@ -926,7 +926,7 @@
   },
   "MetaTags": {
     "MainPage": {
-      "title": "Wholesale goods and suppliers from Russia for export",
+      "title": "俄罗斯出口批发商品和供应商",
       "firstText": "Exporteru 是一个可靠的B2B平台，用于寻找来自俄罗斯的批发商品和供应商。浏览我们的目录并直接联系制造商进行出口",
       "secondText": "俄罗斯商品出口服务。我们在所有阶段提供支持：选择合作伙伴、谈判、达成交易。我们直接与供应商和国际买家合作"
     }

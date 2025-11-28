@@ -98,14 +98,17 @@ export async function generateMetadata({
 
     const fullPath = [categoryName, secondCategoryName]
     const foundCategory = findCategoryByPath(allCategories, fullPath)
-
+    console.log('foundCategory.metaDescription', foundCategory.metaDescription)
     return {
-      title: foundCategory?.title || foundCategory?.name || secondCategoryName || 'category' // title для meta
+      title: foundCategory?.title || foundCategory?.name || secondCategoryName || 'category',
+      description: foundCategory.metaDescription || ''
+      // title для meta
     }
   } catch {
     const {secondCategoryName} = await params
     return {
-      title: secondCategoryName || 'category'
+      title: secondCategoryName || 'category',
+      description: ''
     }
   }
 }

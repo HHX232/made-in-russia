@@ -5,12 +5,14 @@ import Link from 'next/link'
 import {Heart, MessageCircle} from 'lucide-react'
 import styles from './MobileNavigation.module.scss'
 import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
 
 const MobileNavigation = () => {
   const [isVisible, setIsVisible] = useState(true)
   const [startY, setStartY] = useState(0)
   const [currentY, setCurrentY] = useState(0)
   const navRef = useRef<HTMLDivElement>(null)
+  const {user} = useTypedSelector((state) => state.user)
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setStartY(e.touches[0].clientY)
@@ -58,7 +60,10 @@ const MobileNavigation = () => {
       >
         <div className={styles.navContent}>
           {/* Избранное */}
-          <Link href='/profile' className={styles.navItem}>
+          <Link
+            href={user?.role === 'user' ? '/profile?activeTab=favorites' : '/vendor?activeTab=favorites'}
+            className={styles.navItem}
+          >
             <Heart className={styles.navIcon} />
             {/* <span className={styles.navLabel}>Избранное</span> */}
           </Link>

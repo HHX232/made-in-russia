@@ -384,12 +384,15 @@ const ProfileForm: FC<ProfileFormProps> = ({
 
     const isRegionChanged = selectedRegion.altName !== originalData.region
     const isPhoneChanged = currentNational !== originalNational
-
     const currentAddress = vendorDetails?.address || ''
     const isAddressChanged = currentAddress !== originalData.address
     const isInnChange = vendorDetails?.inn !== originalData.inn
 
-    safeSetNeedToSave(isRegionChanged || isPhoneChanged || isAddressChanged || isInnChange)
+    // ← Добавьте проверку категорий
+    const isCategoriesChanged =
+      isVendor && categories.length !== (userData?.vendorDetails?.productCategories?.length || 0)
+
+    safeSetNeedToSave(isRegionChanged || isPhoneChanged || isAddressChanged || isInnChange || isCategoriesChanged)
   }, [
     telText,
     selectedRegion,
@@ -399,7 +402,9 @@ const ProfileForm: FC<ProfileFormProps> = ({
     originalData,
     safeSetNeedToSave,
     vendorDetails?.address,
-    inn
+    inn,
+    categories, // ← Добавьте в зависимости
+    isVendor
   ])
 
   useEffect(() => {

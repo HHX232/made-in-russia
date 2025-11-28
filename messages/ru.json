@@ -637,7 +637,7 @@
     "noElements": "Элементы отсутствуют"
   },
   "PromoItem": {
-    "goToCategory": "Перейти в категорию",
+    "goToCategory": "Перейти в каталог",
     "title": "Популярные категории"
   },
   "Admin": {
@@ -1090,7 +1090,7 @@
   },
   "mdEditor":{
     "hidePrev":"Скрыть предпросмотр",
-    "showPrev":"Превью",
+    "showPrev":"Предпросмотр",
     "horizontalLine":"Горизонтальная линия",
     "numerickList":"Нумерованный список",
     "markList":"Маркированный список",

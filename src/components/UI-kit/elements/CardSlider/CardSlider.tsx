@@ -4,6 +4,13 @@ import {useKeenSlider} from 'keen-slider/react'
 import styles from './CardSlider.module.scss'
 import Skeleton from 'react-loading-skeleton'
 
+import {Swiper, SwiperSlide} from 'swiper/react'
+import {FreeMode, Navigation, Thumbs} from 'swiper/modules'
+import type {Swiper as SwiperType} from 'swiper'
+import 'swiper/css'
+import 'swiper/css/free-mode'
+import 'swiper/css/navigation'
+import 'swiper/css/thumbs'
 // Типы
 interface ZoomImageProps {
   src: string
@@ -1086,19 +1093,12 @@ const ThumbnailSlider: React.FC<{
   thumbnailLoaded: boolean
   onThumbnailClick: (index: number) => void
   onDoubleClick: (index: number) => void
-}> = ({images, activeIndex, productName, thumbnailSliderRef, onThumbnailClick, onDoubleClick}) => {
+}> = ({images, activeIndex, productName, onThumbnailClick, onDoubleClick}) => {
+  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
-  const [scrollPosition, setScrollPosition] = useState(0)
   const [containerWidth, setContainerWidth] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-  const [startX, setStartX] = useState(0)
-  const [scrollLeft, setScrollLeft] = useState(0)
-  const animationFrameRef = useRef<number | null>(null)
 
-  const THUMBNAIL_WIDTH = 140
   const GAP = 16
-  const SLIDE_WITH_GAP = THUMBNAIL_WIDTH + GAP
 
   // Обновление размеров контейнера
   useLayoutEffect(() => {
@@ -1123,196 +1123,36 @@ const ThumbnailSlider: React.FC<{
     }
   }, [])
 
-  // Комбинированный ref
-  const combinedRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      containerRef.current = node
-      thumbnailSliderRef(node)
-    },
-    [thumbnailSliderRef]
-  )
+  // Рассчитываем количество видимых слайдов
+  const slidesPerView = useMemo(() => {
+    if (containerWidth === 0) return 4
+    return calculateSlidesToShow(containerWidth, images.length)
+  }, [containerWidth, images.length])
 
-  // Автоматический скролл при изменении активного индекса
+  // Синхронизация активного индекса
   useEffect(() => {
-    if (!containerRef.current || containerWidth === 0) return
-
-    const slidesToShow = Math.floor(containerWidth / SLIDE_WITH_GAP)
-
-    // Максимальный скролл
-    const totalWidth = images.length * THUMBNAIL_WIDTH + (images.length - 1) * GAP
-    const maxScroll = Math.max(0, totalWidth - containerWidth)
-
-    // Текущие видимые индексы
-    const firstVisibleIndex = Math.round(scrollPosition / SLIDE_WITH_GAP)
-    const lastFullyVisibleIndex = Math.min(firstVisibleIndex + slidesToShow - 1, images.length - 1)
-
-    let targetScroll: number | null = null
-    let reason = ''
-
-    // ТОЛЬКО если выходим за пределы видимой области
-    if (activeIndex < firstVisibleIndex) {
-      // Активный индекс левее - показываем его первым
-      targetScroll = activeIndex * SLIDE_WITH_GAP
-      reason = 'scroll left: activeIndex out of view'
-    } else if (activeIndex > lastFullyVisibleIndex) {
-      // Активный индекс правее - показываем его последним
-      targetScroll = (activeIndex - slidesToShow + 1) * SLIDE_WITH_GAP
-      reason = 'scroll right: activeIndex out of view'
+    if (thumbsSwiper && !thumbsSwiper.destroyed) {
+      thumbsSwiper.slideTo(activeIndex)
     }
-
-    if (targetScroll !== null) {
-      const finalScroll = Math.max(0, Math.min(targetScroll, maxScroll))
-
-      // Если уже на нужной позиции - ничего не делаем
-      if (Math.abs(finalScroll - scrollPosition) < 1) {
-        return
-      }
-
-      console.log('Auto scroll:', {
-        activeIndex,
-        firstVisibleIndex,
-        lastFullyVisibleIndex,
-        slidesToShow,
-        currentScroll: scrollPosition.toFixed(2),
-        targetScroll: finalScroll.toFixed(2),
-        reason
-      })
-
-      // Отменяем предыдущую анимацию если есть
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-
-      // Плавная анимация
-      const startScroll = scrollPosition
-      const distance = finalScroll - startScroll
-      const duration = 300
-      const startTime = performance.now()
-
-      const animateScroll = (currentTime: number) => {
-        const elapsed = currentTime - startTime
-        const progress = Math.min(elapsed / duration, 1)
-
-        // Easing function (ease-out)
-        const easeProgress = 1 - Math.pow(1 - progress, 3)
-
-        const newScroll = startScroll + distance * easeProgress
-        setScrollPosition(newScroll)
-
-        if (progress < 1) {
-          animationFrameRef.current = requestAnimationFrame(animateScroll)
-        } else {
-          animationFrameRef.current = null
-        }
-      }
-
-      animationFrameRef.current = requestAnimationFrame(animateScroll)
-    }
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-    }
-  }, [activeIndex, containerWidth, images.length, scrollPosition])
-
-  // Drag handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!containerRef.current) return
-
-    // Останавливаем анимацию при начале драга
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current)
-      animationFrameRef.current = null
-    }
-
-    setIsDragging(true)
-    setStartX(e.pageX - containerRef.current.offsetLeft)
-    setScrollLeft(scrollPosition)
-  }
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !containerRef.current) return
-    e.preventDefault()
-    const x = e.pageX - containerRef.current.offsetLeft
-    const walk = (startX - x) * 1.5
-
-    const totalWidth = images.length * THUMBNAIL_WIDTH + (images.length - 1) * GAP
-    const maxScroll = Math.max(0, totalWidth - containerWidth)
-
-    const newScroll = Math.max(0, Math.min(scrollLeft + walk, maxScroll))
-    setScrollPosition(newScroll)
-  }
-
-  const handleMouseUp = () => {
-    setIsDragging(false)
-  }
-
-  const handleMouseLeave = () => {
-    setIsDragging(false)
-  }
-
-  // Touch handlers
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!containerRef.current) return
-
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current)
-      animationFrameRef.current = null
-    }
-
-    setIsDragging(true)
-    setStartX(e.touches[0].pageX - containerRef.current.offsetLeft)
-    setScrollLeft(scrollPosition)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || !containerRef.current) return
-    const x = e.touches[0].pageX - containerRef.current.offsetLeft
-    const walk = (startX - x) * 1.5
-
-    const totalWidth = images.length * THUMBNAIL_WIDTH + (images.length - 1) * GAP
-    const maxScroll = Math.max(0, totalWidth - containerWidth)
-
-    const newScroll = Math.max(0, Math.min(scrollLeft + walk, maxScroll))
-    setScrollPosition(newScroll)
-  }
-
-  const handleTouchEnd = () => {
-    setIsDragging(false)
-  }
+  }, [activeIndex, thumbsSwiper])
 
   return (
-    <div className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
-      <div
-        ref={combinedRef}
-        className={styles.customThumbnailSlider}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        style={{
-          cursor: isDragging ? 'grabbing' : 'grab',
-          userSelect: 'none'
-        }}
+    <div ref={containerRef} className={`spec__slider spec__slider_2 ${styles.imageSlider__thumbnails}`}>
+      <Swiper
+        onSwiper={setThumbsSwiper}
+        spaceBetween={GAP}
+        slidesPerView={slidesPerView}
+        freeMode={true}
+        watchSlidesProgress={true}
+        modules={[FreeMode, Navigation, Thumbs]}
+        className={styles.thumbnailSwiper}
       >
-        <div
-          ref={trackRef}
-          className={styles.customThumbnailTrack}
-          style={{
-            transform: `translateX(-${scrollPosition}px)`,
-            transition: isDragging ? 'none' : 'transform 0.3s ease-out'
-          }}
-        >
-          {images.map((image, index) => {
-            const type = getMediaType(image)
+        {images.map((image, index) => {
+          const type = getMediaType(image)
 
-            return (
+          return (
+            <SwiperSlide key={index}>
               <div
-                key={index}
                 className={`${styles.customThumbnailSlide} ${
                   index === activeIndex ? styles.customThumbnailSlideActive : ''
                 }`}
@@ -1326,9 +1166,6 @@ const ThumbnailSlider: React.FC<{
                     onThumbnailClick(index)
                   }
                 }}
-                style={{
-                  pointerEvents: isDragging ? 'none' : 'auto'
-                }}
               >
                 <MediaRenderer
                   media={image}
@@ -1337,10 +1174,10 @@ const ThumbnailSlider: React.FC<{
                   isThumbnail={true}
                 />
               </div>
-            )
-          })}
-        </div>
-      </div>
+            </SwiperSlide>
+          )
+        })}
+      </Swiper>
     </div>
   )
 }

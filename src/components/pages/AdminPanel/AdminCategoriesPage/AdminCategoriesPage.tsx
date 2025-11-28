@@ -20,6 +20,7 @@ export interface Category {
   title?: string
   label?: string
   description?: string
+  metaDescription?: string
   imageUrl?: string
   iconUrl?: string | null
   okved: string[] | null
@@ -165,6 +166,7 @@ const AdminCategoriesPage: FC = () => {
       title: category.title || '',
       label: category.label || '',
       description: category.description || '',
+      metaDescription: category.metaDescription || '',
       imageUrl: category.imageUrl,
       iconUrl: category.iconUrl || null,
       children: category.children as any,
@@ -184,6 +186,7 @@ const AdminCategoriesPage: FC = () => {
       title: '',
       label: '',
       description: '',
+      metaDescription: '',
       children: [],
       parentId: parentId ?? null,
       okvedString: '',
@@ -209,6 +212,9 @@ const AdminCategoriesPage: FC = () => {
       const descriptionTranslations = {en: '', ru: '', zh: '', hi: ''}
       descriptionTranslations[activeLanguage] = editingCategory.description || ''
 
+      const metaDescriptionTranslations = {en: '', ru: '', zh: '', hi: ''}
+      metaDescriptionTranslations[activeLanguage] = editingCategory.metaDescription || ''
+
       const okvedCodes = (editingCategory.okvedString || '')
         .split(',')
         .map((code: any) => code.trim())
@@ -232,12 +238,14 @@ const AdminCategoriesPage: FC = () => {
         title: editingCategory.title || '',
         label: editingCategory.label || '',
         description: editingCategory.description || '',
+        metaDescription: editingCategory.metaDescription || '',
         slug: editingCategory.slug.replace(/^(l[1-5]_)+/, ''),
         parentId: editingCategory.parentId || null,
         nameTranslations,
         titleTranslations,
         labelTranslations,
         descriptionTranslations,
+        metaDescriptionTranslations,
         okvedCategories: okvedCodes,
         image: editingCategory.image || '',
         icon: editingCategory.icon || '',
@@ -339,6 +347,14 @@ const AdminCategoriesPage: FC = () => {
                 {category.description.length > 100
                   ? `${category.description.substring(0, 100)}...`
                   : category.description}
+              </div>
+            )}
+            {category.metaDescription && (
+              <div className={styles.category__meta__description}>
+                Meta:{' '}
+                {category.metaDescription.length > 100
+                  ? `${category.metaDescription.substring(0, 100)}...`
+                  : category.metaDescription}
               </div>
             )}
             {category.okved && category.okved.length > 0 && (
@@ -451,6 +467,19 @@ const AdminCategoriesPage: FC = () => {
               rows={4}
               disabled={isLoading}
             />
+          </div>
+
+          <div className={styles.form__field}>
+            <label className={styles.form__label}>Мета-описание (metaDescription)</label>
+            <textarea
+              value={editingCategory.metaDescription}
+              placeholder='Введите мета-описание для SEO'
+              onChange={(e) => setEditingCategory({...editingCategory, metaDescription: e.target.value})}
+              className={styles.form__textarea}
+              rows={3}
+              disabled={isLoading}
+            />
+            {/* <span className={styles.form__hint}>{editingCategory.metaDescription?.length || 0} </span> */}
           </div>
 
           <div className={styles.form__field}>

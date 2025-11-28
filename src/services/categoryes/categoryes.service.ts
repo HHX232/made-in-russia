@@ -11,6 +11,7 @@ export interface Category {
   title?: string
   label?: string
   description?: string
+  metaDescription?: string
   imageUrl?: string
   iconUrl?: string | null
   children: Category[]
@@ -26,6 +27,7 @@ export interface EditingCategory {
   title?: string
   label?: string
   description?: string
+  metaDescription?: string
   imageUrl?: string
   iconUrl?: string | null
   children: Category[]
@@ -40,6 +42,7 @@ export interface CreateCategoryPayload {
   title?: string
   label?: string
   description?: string
+  metaDescription?: string
   slug: string
   parentId?: number | null
   nameTranslations: {
@@ -61,6 +64,12 @@ export interface CreateCategoryPayload {
     hi: string
   }
   descriptionTranslations?: {
+    en: string
+    ru: string
+    zh: string
+    hi: string
+  }
+  metaDescriptionTranslations?: {
     en: string
     ru: string
     zh: string
@@ -102,6 +111,7 @@ const cleanCategorySlug = (category: Category): Category => {
     title: category.title || '',
     label: category.label || '',
     description: category.description || '',
+    metaDescription: category.metaDescription || '',
     children: category.children.map(cleanCategorySlug)
   }
 }
@@ -142,12 +152,14 @@ const CategoriesAPI = {
       title: payload.title || '',
       label: payload.label || '',
       description: payload.description || '',
+      metaDescription: payload.metaDescription || '',
       slug: payload.slug.replace(/^(l[1-5]_)+/, ''),
       parentId: payload.parentId || null,
       nameTranslations: payload.nameTranslations,
       titleTranslations: payload.titleTranslations || {en: '', ru: '', zh: '', hi: ''},
       labelTranslations: payload.labelTranslations || {en: '', ru: '', zh: '', hi: ''},
       descriptionTranslations: payload.descriptionTranslations || {en: '', ru: '', zh: '', hi: ''},
+      metaDescriptionTranslations: payload.metaDescriptionTranslations || {en: '', ru: '', zh: '', hi: ''},
       okvedCategories: payload.okvedCategories || []
     }
 
@@ -202,12 +214,14 @@ const CategoriesAPI = {
       title: payload.title || '',
       label: payload.label || '',
       description: payload.description || '',
+      metaDescription: payload.metaDescription || '',
       slug: payload.slug.replace(/^(l[1-5]_)+/, ''),
       parentId: payload.parentId || null,
       nameTranslations: payload.nameTranslations,
       titleTranslations: payload.titleTranslations || {en: '', ru: '', zh: '', hi: ''},
       labelTranslations: payload.labelTranslations || {en: '', ru: '', zh: '', hi: ''},
       descriptionTranslations: payload.descriptionTranslations || {en: '', ru: '', zh: '', hi: ''},
+      metaDescriptionTranslations: payload.metaDescriptionTranslations || {en: '', ru: '', zh: '', hi: ''},
       okvedCategories: payload.okvedCategories || []
     }
 
