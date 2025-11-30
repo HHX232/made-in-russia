@@ -13,8 +13,9 @@ import AdminAds from './AdminAds/AdminAds'
 import AdminFAQPage from './AdminFAQPage/AdminFAQPage'
 import AdminReviewsPage from './AdminReviewsPage/AdminReviewsPage'
 import {Product} from '@/services/products/product.types'
+import AdminTermsPage from '../AdminTermsPage/AdminTermsPage'
 
-export type TAdminTab = 'users' | 'categories' | 'cards' | 'ads' | 'FAQ' | 'translates'
+export type TAdminTab = 'users' | 'categories' | 'cards' | 'ads' | 'FAQ' | 'translates' | 'terms'
 
 const AdminPanel: FC<{initialProducts?: Product[]; hasMore?: boolean}> = ({initialProducts, hasMore = true}) => {
   const [activeAdminTab, setActiveAdminTab] = useState<TAdminTab>()
@@ -46,6 +47,8 @@ const AdminPanel: FC<{initialProducts?: Product[]; hasMore?: boolean}> = ({initi
         return <AdminReviewsPage />
       case 'faq':
         return <AdminFAQPage />
+      case 'terms':
+        return <AdminTermsPage />
       default:
         return <p>Страница не найдена</p>
     }

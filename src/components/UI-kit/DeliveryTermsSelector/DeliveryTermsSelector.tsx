@@ -24,10 +24,9 @@ interface DeliveryTermsSelectorProps {
   placeholder?: string
   errorMessage?: string
   useNewTheme?: boolean
-  helpImageSrc?: string // Путь к картинке с описанием методов
+  helpImageSrc?: string
 }
 
-// Моковые данные по умолчанию
 const DEFAULT_DELIVERY_TERMS: DeliveryTerm[] = [
   {
     id: 'exw',
@@ -119,15 +118,21 @@ const DeliveryTermsSelector = ({
   useNewTheme = true,
   helpImageSrc = deliveryTermsImage
 }: DeliveryTermsSelectorProps) => {
-  const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedTermIds)
-  const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null)
+  // Инициализируем с одним пустым элементом, если selectedTermIds пустой
+  const initialSelectedIds = selectedTermIds.length > 0 ? selectedTermIds : ['']
+  const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(initialSelectedIds)
+  // Первый dropdown открыт по умолчанию, только если первый элемент пустой
+  const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(initialSelectedIds[0] === '' ? 0 : null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([])
   const [activeTerms, setActiveTerms] = useState<DeliveryTerm[]>(availableTerms)
+  const [isFirstRender, setIsFirstRender] = useState(true)
 
   useEffect(() => {
-    setLocalSelectedIds(selectedTermIds)
-  }, [selectedTermIds])
+    if (!isFirstRender) {
+      setLocalSelectedIds(selectedTermIds.length > 0 ? selectedTermIds : [''])
+    }
+  }, [selectedTermIds, isFirstRender])
 
   useEffect(() => {
     const fetchTerms = async () => {
@@ -136,9 +141,9 @@ const DeliveryTermsSelector = ({
       setActiveTerms(temsFromServer.data as DeliveryTerm[])
     }
     fetchTerms()
+    setIsFirstRender(false)
   }, [])
 
-  // Блокировка скролла при открытом модальном окне
   useEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = 'hidden'
@@ -173,7 +178,6 @@ const DeliveryTermsSelector = ({
     setOpenDropdownIndex(null)
 
     if (onChange) {
-      // Отправляем весь массив, родитель может фильтровать пустые при необходимости
       onChange(newSelectedIds)
     }
   }
@@ -183,9 +187,6 @@ const DeliveryTermsSelector = ({
 
     const newSelectedIds = [...localSelectedIds, '']
     setLocalSelectedIds(newSelectedIds)
-
-    // Не вызываем onChange сразу, чтобы новая строка не исчезла
-    // onChange вызовется когда пользователь выберет значение в handleSelect
   }
 
   const handleRemoveRow = (rowIndex: number) => {
@@ -195,7 +196,6 @@ const DeliveryTermsSelector = ({
     setLocalSelectedIds(newSelectedIds)
 
     if (onChange) {
-      // Отправляем все ID, включая пустые строки, чтобы родитель знал о количестве строк
       onChange(newSelectedIds)
     }
   }

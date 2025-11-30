@@ -39,6 +39,7 @@ const AdminTranslatesPage = () => {
         setTranslateZhJSON(resZh.data as TranslateData)
         setTranslateHiJSON(resHi.data as TranslateData)
         console.log(response.data)
+        instance.get('/delivery-terms')
       } catch (error) {
         console.error('Error fetching translations:', error)
       } finally {

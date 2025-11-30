@@ -101,6 +101,7 @@ const AdminTabBar = () => {
             <p>Переводы</p>
           </div>
         </Link>
+        <Link href={'/admin/terms'}>Доставка</Link>
       </div>
     </div>
   )

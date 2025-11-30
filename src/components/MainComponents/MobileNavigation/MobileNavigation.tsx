@@ -25,12 +25,12 @@ const MobileNavigation = () => {
   const handleTouchEnd = () => {
     const diff = startY - currentY
 
-    // Если свайп вверх (больше 50px) - показываем меню
-    if (diff > 50) {
+    // Уменьшенный порог - если свайп вверх (больше 20px) - показываем меню
+    if (diff > 20) {
       setIsVisible(true)
     }
-    // Если свайп вниз (больше 50px) - скрываем меню
-    else if (diff < -50) {
+    // Если свайп вниз (больше 20px) - скрываем меню
+    else if (diff < -20) {
       setIsVisible(false)
     }
 
