@@ -13,6 +13,12 @@
   // border-radius: 10px;
 }
 
+@media (max-width: 860px) {
+  .about__vendor_none {
+    display: none !important;
+  }
+}
+
 .vendor__box__info {
   padding: 20px;
   border: 1px solid rgb(47 47 47 / 10%);

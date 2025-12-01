@@ -134,7 +134,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
   const handleTelegramAuth = async (user: any) => {
     try {
       console.log('user try tg', user)
-      const {first_name, last_name, username, photo_url, ...userWithoutNames} = user
+      const {first_name, last_name, username, photo_url, auth_date, ...userWithoutNames} = user
       const updatedUser = {
         ...userWithoutNames,
         firstName: user.first_name,

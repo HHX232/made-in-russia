@@ -1,3 +1,4 @@
+/* stylelint-disable no-duplicate-selectors */
 // Accordion.module.scss
 .accordion {
   display: flex;
@@ -10,19 +11,30 @@
   }
 }
 
+.accordion__chevron {
+  transition: all 0.3s;
+
+  & > svg {
+    transition: all 0.3s;
+  }
+}
+
 .accordion__item {
   padding: 11px 20px;
+  border-radius: 10px;
   background-color: #fff;
   transition: all 0.3s ease-in-out;
-  border-radius: 10px;
 
   @media (max-width: 768px) {
     padding: 10px 13px;
   }
 
   &_open {
-    .accordion__toggle {
-      background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTkiIHZpZXdCb3g9IjAgMCAxOCAxOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNC41IDkuNUgxMy41IiBzdHJva2U9IndoaXRlIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PC9zdmc+');
+    .accordion__chevron {
+      & > svg {
+        transform: rotate(-180deg);
+        transition: all 0.3s;
+      }
     }
 
     .accordion__content {
@@ -48,7 +60,7 @@
   transition: background 0.3s ease-in-out;
 
   &:hover {
-    .accordion__toggle {
+    .accordion__chevron {
       filter: brightness(0.9);
     }
   }
@@ -79,10 +91,11 @@
   border: none;
   background: transparent;
   cursor: pointer;
+  opacity: 0;
   transition: all 0.2s ease;
 
   &:hover {
-    opacity: 0.7;
+    opacity: 0.7 !important;
   }
 
   @media (max-width: 768px) {
@@ -95,23 +108,36 @@
   }
 }
 
-.accordion__toggle {
+.accordion__header:hover .accordion__delete_button {
+  opacity: 0.7;
+}
+
+.accordion__chevron {
   display: inline-flex;
   width: 44px;
   height: 44px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
   background: linear-gradient(#0047ba, #1869ef);
-  background-image: url('data:image/svg+xml;base64,Cjxzdmcgd2lkdGg9IjE4IiBoZWlnaHQ9IjE5IiB2aWV3Qm94PSIwIDAgMTggMTkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTQuNSA5LjVIMTMuNSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiAvPjxwYXRoIGQ9Ik05IDE0VjUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz48L3N2Zz4=');
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: 50%;
+  transform: rotate(0deg);
   transition: all 0.3s ease-in-out;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s ease-in-out;
+  }
 
   @media (max-width: 768px) {
     width: 24px;
     height: 24px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
   }
 }
 

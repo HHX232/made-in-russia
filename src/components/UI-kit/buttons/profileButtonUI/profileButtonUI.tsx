@@ -27,9 +27,10 @@ const avatarsArray = [ava, ava1, ava2, ava3, ava4, ava5, ava6, ava7, ava8, ava9]
 interface IProfileProps {
   extraClass?: string
   extraStyles?: CSSProperties
+  specialUnloginLabel?: string
 }
 
-const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
+const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnloginLabel}) => {
   const {user} = useTypedSelector((state) => state.user)
   const {clearUser} = useActions()
   const {removeUserFromCache} = useUserCache()
@@ -152,7 +153,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
             width={28}
             height={28}
           />
-          <p dangerouslySetInnerHTML={{__html: t('login')}} className={styles.profile_text}></p>
+          <p dangerouslySetInnerHTML={{__html: specialUnloginLabel || t('login')}} className={styles.profile_text}></p>
         </>
       )}
     </div>

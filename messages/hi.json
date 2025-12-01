@@ -254,6 +254,7 @@
     "addRow": "पंक्ति जोड़ें"
   },
   "VendorPage": {
+    "errorCreatingQuestion": "प्रश्न बनाते समय त्रुटि",
     "saving": "सेव करें",
     "mediaSavedSuccessfully": "मीडिया सफलतापूर्वक सहेजा गया",
     "noWriten": "नहीं भरा गया",
@@ -356,6 +357,9 @@
       }
     },
     "CardTopPage": {
+      "reviews": {
+    "count": "{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}"
+  },
       "error": "त्रुटि!",
       "from": "से",
       "errorUpdatingFavorites": "पसंदीदा अपडेट करने में त्रुटि",
@@ -389,7 +393,8 @@
       "technicalCharacteristics": "तकनीकी विशिष्टताएं:",
       "companyDescription": "आपूर्तिकर्ता जानकारी",
       "locationInfo": "स्थान जानकारी",
-      "deliveryDescription": "डिलीवरी विधि जानकारी",
+      "deliveryDescription": "डिलीवरी प्रकार",
+      "deliveryTerms": "इंकोटर्म्स डिलीवरी शर्तें",
       "emptyAddress": "पता निर्दिष्ट नहीं",
       "INN": "TIN"
     },
@@ -398,7 +403,8 @@
       "technicalCharacteristics": "तकनीकी विशिष्टताएं:",
       "companyDescription": "आपूर्तिकर्ता जानकारी",
       "locationInfo": "स्थान जानकारी",
-      "deliveryDescription": "डिलीवरी विधि जानकारी",
+      "deliveryDescription": "डिलीवरी प्रकार",
+      "deliveryTerms": "इंकोटर्म्स डिलीवरी शर्तें",
       "emptyAddress": "पता निर्दिष्ट नहीं",
       "INN": "TIN",
       "days": "{count, plural, one {दिन} other {दिन}}"
@@ -430,6 +436,9 @@
     "mainText": "पृष्ठ नहीं मिला या हटा दिया गया।"
   },
   "CardTopPage": {
+    "reviews": {
+    "count": "{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}"
+  },
     "error": "त्रुटि!",
     "from": "से",
     "errorUpdatingFavorites": "पसंदीदा अपडेट करने में त्रुटि",
@@ -466,7 +475,8 @@
     "technicalCharacteristics": "तकनीकी विशिष्टताएं:",
     "companyDescription": "आपूर्तिकर्ता जानकारी",
     "locationInfo": "स्थान जानकारी",
-    "deliveryDescription": "डिलीवरी विधि जानकारी",
+    "deliveryDescription": "डिलीवरी प्रकार",
+    "deliveryTerms": "इंकोटर्म्स डिलीवरी शर्तें",
     "emptyAddress": "पता निर्दिष्ट नहीं",
     "INN": "TIN",
     "days": "{count, plural, one {दिन} other {दिन}}"
@@ -993,7 +1003,7 @@
     "reset": "रीसेट करें"
   },
   "CardsCatalogNew": {
-    "nohavecards": "उत्पाद नहीं जोड़े गए",
+    "nohavecards": "इस श्रेणी में उत्पाद अभी तक नहीं जोड़े गए हैं",
     "notFound": "नहीं मिला",
     "popularProducts": "लोकप्रिय उत्पाद",
     "viewAll": "सभी देखें"
@@ -1076,6 +1086,9 @@
   "sbros": "रीसेट",
   "cancel": "रद्द करें",
   "submit": "लागू करें"
-}
+},
+"MobileNavigation": {
+      "login": "लॉगिन"
+    }
 
 }

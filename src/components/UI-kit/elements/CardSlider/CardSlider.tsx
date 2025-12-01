@@ -11,7 +11,7 @@ import 'swiper/css'
 import 'swiper/css/free-mode'
 import 'swiper/css/navigation'
 import 'swiper/css/thumbs'
-// Типы
+
 interface ZoomImageProps {
   src: string
   alt?: string
@@ -476,8 +476,9 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
   const [mainLoaded, setMainLoaded] = useState(false)
   const [thumbnailLoaded, setThumbnailLoaded] = useState(false)
 
+  // ✅ ИСПРАВЛЕНИЕ: используем useRef для мгновенной передачи индекса в модал
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalImageIndex, setModalImageIndex] = useState(0)
+  const modalImageIndexRef = useRef(0)
 
   const isSingleImage = images.length === 1
   const slidesToShow = containerWidth
@@ -587,8 +588,9 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
     [isSingleImage, mainInstanceRef]
   )
 
+  // ✅ ИСПРАВЛЕНИЕ: мгновенно обновляем ref
   const handleDoubleClick = useCallback((index: number) => {
-    setModalImageIndex(index)
+    modalImageIndexRef.current = index
     setIsModalOpen(true)
   }, [])
 
@@ -596,8 +598,9 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
     setIsModalOpen(false)
   }, [])
 
+  // ✅ ИСПРАВЛЕНИЕ: обновляем ref
   const handleModalThumbnailClick = useCallback((index: number) => {
-    setModalImageIndex(index)
+    modalImageIndexRef.current = index
   }, [])
 
   const structuredData = useMemo(() => {
@@ -655,11 +658,12 @@ const SlickCardSlider: React.FC<SlickCardSliderProps> = ({
     <>
       <StructuredData data={structuredData} />
 
+      {/* ✅ ИСПРАВЛЕНИЕ: передаем ref.current вместо состояния */}
       <ModalGallery
         isOpen={isModalOpen}
         onClose={handleModalClose}
         images={images}
-        currentIndex={modalImageIndex}
+        targetIndex={modalImageIndexRef.current}
         productName={productName}
         onThumbnailClick={handleModalThumbnailClick}
         isSingleImage={isSingleImage}
@@ -703,74 +707,76 @@ const StructuredData: React.FC<{data: any}> = ({data}) => (
   <script type='application/ld+json' dangerouslySetInnerHTML={{__html: JSON.stringify(data)}} />
 )
 
-const ModalGallery: React.FC<{
+interface ModalGalleryProps {
   isOpen: boolean
   onClose: () => void
   images: string[]
-  currentIndex: number
+  targetIndex: number
   productName: string
   onThumbnailClick: (index: number) => void
   isSingleImage: boolean
-}> = ({isOpen, onClose, images, currentIndex, productName, onThumbnailClick, isSingleImage}) => {
-  const [localIndex, setLocalIndex] = useState(currentIndex)
+}
+export const ModalGallery: React.FC<ModalGalleryProps> = ({
+  isOpen,
+  onClose,
+  images,
+  targetIndex,
+  productName,
+  onThumbnailClick,
+  isSingleImage
+}) => {
+  const [localIndex, setLocalIndex] = useState(0)
+  const [sliderReady, setSliderReady] = useState(false)
 
-  const [modalMainSliderRef, modalMainInstanceRef] = useKeenSlider<HTMLDivElement>({
-    initial: currentIndex,
+  const [mainSliderRef, mainSliderInstanceRef] = useKeenSlider<HTMLDivElement>({
+    initial: 0,
     loop: !isSingleImage,
-    slides: {
-      perView: 1,
-      spacing: 0
+    slides: {perView: 1, spacing: 0},
+    created: () => {
+      setSliderReady(true)
     },
-    slideChanged: (slider: any) => {
+    slideChanged: (slider) => {
       const newIndex = slider.track.details.rel
       setLocalIndex(newIndex)
       onThumbnailClick(newIndex)
     }
   })
 
-  const [modalThumbnailSliderRef, modalThumbnailInstanceRef] = useKeenSlider<HTMLDivElement>({
-    initial: currentIndex,
+  const [thumbSliderRef, thumbSliderInstanceRef] = useKeenSlider<HTMLDivElement>({
+    initial: 0,
     loop: false,
     mode: 'free-snap' as const,
-    slides: {
-      perView: 'auto',
-      spacing: 12
-    },
+    slides: {perView: 'auto', spacing: 12},
     rubberband: false
   })
 
-  useEffect(() => {
-    if (!modalMainInstanceRef.current) return
+  // Синхронизация слайдеров по targetIndex при открытии и изменениях
+  useLayoutEffect(() => {
+    if (!isOpen || !sliderReady || !mainSliderInstanceRef.current) return
 
-    const currentSlide = modalMainInstanceRef.current.track.details.rel
-    if (currentIndex !== localIndex && currentIndex !== currentSlide) {
-      modalMainInstanceRef.current.moveToIdx(currentIndex, true)
-      setLocalIndex(currentIndex)
-    }
-  }, [currentIndex, localIndex, modalMainInstanceRef])
+    const timer = setTimeout(() => {
+      mainSliderInstanceRef.current?.moveToIdx(targetIndex, true)
+      setLocalIndex(targetIndex)
 
-  useEffect(() => {
-    if (!modalThumbnailInstanceRef.current) return
+      if (thumbSliderInstanceRef.current) {
+        thumbSliderInstanceRef.current.moveToIdx(targetIndex, true)
+      }
+    }, 0)
 
-    try {
-      modalThumbnailInstanceRef.current.moveToIdx(localIndex, true)
-    } catch (error) {
-      console.warn('Modal thumbnail sync failed:', error)
-    }
-  }, [localIndex, modalThumbnailInstanceRef])
+    return () => clearTimeout(timer)
+  }, [isOpen, targetIndex, sliderReady, mainSliderInstanceRef, thumbSliderInstanceRef])
 
   const handleArrowClick = useCallback(
     (direction: 'prev' | 'next') => {
-      if (!modalMainInstanceRef.current) return
+      if (!mainSliderInstanceRef.current) return
 
-      const slider = modalMainInstanceRef.current
-      const currentIdx = slider.track.details.rel
+      const currentIdx = mainSliderInstanceRef.current.track.details.rel
       const nextIdx =
         direction === 'prev' ? (currentIdx - 1 + images.length) % images.length : (currentIdx + 1) % images.length
 
-      slider.moveToIdx(nextIdx, true)
+      mainSliderInstanceRef.current.moveToIdx(nextIdx, true)
     },
-    [images.length, modalMainInstanceRef]
+    [images.length, mainSliderInstanceRef]
   )
 
   const isAtStart = localIndex === 0
@@ -781,6 +787,7 @@ const ModalGallery: React.FC<{
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = ''
+      setSliderReady(false)
     }
 
     return () => {
@@ -810,30 +817,23 @@ const ModalGallery: React.FC<{
             <ArrowButton
               direction='left'
               extraClass={styles.modalArrowLeft}
-              disabled={!isSingleImage && isAtStart}
+              disabled={isAtStart}
               onClick={(e) => {
                 e.stopPropagation()
-                if (!isAtStart) {
-                  handleArrowClick('prev')
-                }
+                if (!isAtStart) handleArrowClick('prev')
               }}
             />
           )}
 
           <div className={styles.modalImageContainer}>
-            <div ref={modalMainSliderRef} className='keen-slider' style={{height: '100%'}}>
+            <div ref={mainSliderRef} className='keen-slider' style={{height: '100%'}}>
               {images.map((media, index) => {
                 const type = getMediaType(media)
                 return (
                   <div
                     key={index}
                     className='keen-slider__slide'
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      height: '100%'
-                    }}
+                    style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}
                   >
                     {type === 'video' ? (
                       <video src={media} autoPlay muted loop playsInline controls className={styles.modalVideo} />
@@ -854,12 +854,10 @@ const ModalGallery: React.FC<{
             <ArrowButton
               direction='right'
               extraClass={styles.modalArrowRight}
-              disabled={!isSingleImage && isAtEnd}
+              disabled={isAtEnd}
               onClick={(e) => {
                 e.stopPropagation()
-                if (!isAtEnd) {
-                  handleArrowClick('next')
-                }
+                if (!isAtEnd) handleArrowClick('next')
               }}
             />
           )}
@@ -867,16 +865,18 @@ const ModalGallery: React.FC<{
 
         {!isSingleImage && (
           <div className={styles.modalThumbnails}>
-            <div ref={modalThumbnailSliderRef} className='keen-slider'>
+            <div ref={thumbSliderRef} className='keen-slider'>
               {images.map((image, index) => {
                 const type = getMediaType(image)
                 return (
                   <div
                     key={index}
-                    className={`keen-slider__slide ${styles.modalThumbnail} ${
-                      index === localIndex ? styles.modalThumbnailActive : ''
-                    }`}
-                    onClick={() => onThumbnailClick(index)}
+                    className={`keen-slider__slide ${styles.modalThumbnail} ${index === localIndex ? styles.modalThumbnailActive : ''}`}
+                    onClick={() => {
+                      setLocalIndex(index)
+                      onThumbnailClick(index)
+                      mainSliderInstanceRef.current?.moveToIdx(index, true)
+                    }}
                   >
                     <MediaRenderer
                       media={image}

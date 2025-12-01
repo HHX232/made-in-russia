@@ -250,6 +250,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
           </div>
           <div className={`${styles.footer__bottom__inner}`}>
             <a
+              rel='nofollow'
               href='https://exporteru.com'
               className={`${styles.footer__bottom__link}`}
               onClick={(e) => {
@@ -276,6 +277,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
               exporteru.com
             </a>
             <a
+              rel='nofollow'
               href='https://en.exporteru.com'
               className={`${styles.footer__bottom__link}`}
               onClick={(e) => {
@@ -301,6 +303,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
               en.exporteru.com
             </a>
             <a
+              rel='nofollow'
               href='https://cn.exporteru.com'
               className={`${styles.footer__bottom__link}`}
               onClick={(e) => {
@@ -326,6 +329,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
               cn.exporteru.com
             </a>
             <a
+              rel='nofollow'
               href='https://in.exporteru.com'
               className={`${styles.footer__bottom__link}`}
               onClick={(e) => {

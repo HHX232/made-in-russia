@@ -275,7 +275,8 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
           </svg>
           <div className={styles.gray__dot}></div>
           <a href='#cardCommentsSection' className={styles.reviews__count}>
-            {cardData?.reviewsCount} {t('revues')}
+            {/* {cardData?.reviewsCount} {t('revues')} */}
+            {t('reviews.count', {count: cardData?.reviewsCount ?? 0})}
           </a>
         </div>
         <div className={styles.prices__box__new}>
@@ -374,7 +375,10 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
       {/* Первая секция */}
       <span className={`${styles.card__row__info} ${styles.card__col__info__first}`}>
         <NewFullTopInfo />
-        <Link href={`/data-vendor/${cardData?.user?.id}`} className={styles.about__vendor}>
+        <Link
+          href={`/data-vendor/${cardData?.user?.id}`}
+          className={`${styles.about__vendor} ${styles.about__vendor_none}`}
+        >
           <h3 className={styles.vendor__title}>{t('companyDescription')}</h3>
           <div className={styles.vendor__box__info}>
             <div className={styles.vendor__avatar}>

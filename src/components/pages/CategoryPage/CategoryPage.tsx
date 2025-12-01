@@ -381,7 +381,6 @@ const CategoryPage = ({
                 categoryTitleName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')
               : categoryName.charAt(0).toUpperCase() + categoryName.slice(1).replace(/_/g, ' ').replace(/%20/g, ' ')}
           </h1>
-          <p dangerouslySetInnerHTML={{__html: categoryDescription || ''}} className={styles.categoryDescription}></p>
 
           {!isLastCategoryLevel && categoriesToDisplay.length > 0 && shouldShowDesktop && (
             <div className={`row ${styles.category__cards__grid}`}>
@@ -545,6 +544,7 @@ const CategoryPage = ({
               )}
             </>
           )}
+          <p dangerouslySetInnerHTML={{__html: categoryDescription || ''}} className={styles.categoryDescription}></p>
 
           <Catalog
             mathMinHeight={true}

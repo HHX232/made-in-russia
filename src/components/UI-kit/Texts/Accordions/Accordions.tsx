@@ -42,6 +42,18 @@ const Accordion: React.FC<AccordionProps> = ({
 
   const isActive = (index: number) => activeItems.includes(index)
 
+  const ChevronIcon = () => (
+    <svg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
+      <path
+        d='M13.5 6.75L9 11.25L4.5 6.75'
+        stroke='white'
+        strokeWidth='1.5'
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+    </svg>
+  )
+
   return (
     <div className={`${styles.accordion} ${extraClass}`}>
       {items.map((item, index) => (
@@ -135,7 +147,9 @@ const Accordion: React.FC<AccordionProps> = ({
                   </svg>
                 </button>
               )}
-              <span className={styles.accordion__toggle}></span>
+              <div className={styles.accordion__chevron}>
+                <ChevronIcon />
+              </div>
             </div>
           </div>
           <div className={styles.accordion__content}>

@@ -4,6 +4,7 @@ import style from './MainCategoryPage.module.scss'
 import {useTranslations} from 'next-intl'
 import Image from 'next/image'
 import {useEffect} from 'react'
+import Link from 'next/link'
 
 interface MainCategoryPageProps {
   categories?: Category[]
@@ -57,14 +58,14 @@ const MainCategoryPage = ({categories}: MainCategoryPageProps) => {
           <div className={style.categoriesGrid}>
             {topLevelCategories.map((category: Category) => (
               <div key={category.id} className={style.gridCol}>
-                <a href={`/categories/${normalizeSlug(category.slug)}`} className={style.categorysCard}>
+                <Link href={`/categories/${normalizeSlug(category.slug)}`} className={style.categorysCard}>
                   <h3 className={style.categorysCardTitle}>{category.name}</h3>
                   {category.imageUrl && (
                     <div className={style.categorysCardImage}>
                       <Image width={500} height={300} src={category.imageUrl} alt={category.name} loading='lazy' />
                     </div>
                   )}
-                </a>
+                </Link>
               </div>
             ))}
           </div>

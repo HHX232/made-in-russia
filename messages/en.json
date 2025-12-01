@@ -254,6 +254,7 @@
     "addRow": "Add row"
   },
   "VendorPage": {
+    "errorCreatingQuestion": "Error creating question",
     "saving": "Save",
      "mediaSavedSuccessfully": "Media saved successfully",
     "noWriten": "Not filled",
@@ -356,6 +357,9 @@
       }
     },
     "CardTopPage": {
+      "reviews": {
+    "count": "{count, plural, one {{count} review} other {{count} reviews}}"
+  },
       "error":"Error!",
       "from": "from",
       "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account",
@@ -389,7 +393,8 @@
       "technicalCharacteristics": "Technical specifications:",
       "companyDescription": "Supplier information",
       "locationInfo": "Location Information",
-      "deliveryDescription": "Delivery Methods Information",
+      "deliveryDescription": "Delivery type",
+      "deliveryTerms": "Incoterms delivery terms",
       "emptyAddress": "address not specified",
       "INN": "TIN"
     },
@@ -398,7 +403,8 @@
       "technicalCharacteristics": "Technical specifications:",
       "companyDescription": "Supplier information",
       "locationInfo": "Location Information",
-      "deliveryDescription": "Delivery Methods Information",
+      "deliveryDescription": "Delivery type",
+      "deliveryTerms": "Incoterms delivery terms",
       "emptyAddress": "address not specified",
       "INN": "TIN",
       "days": "{count, plural, one {day} other {days}}"
@@ -430,6 +436,9 @@
     "mainText": "Page not found or deleted. Check the URL or return to home."
   },
   "CardTopPage": {
+    "reviews": {
+    "count": "{count, plural, one {{count} review} other {{count} reviews}}"
+  },
     "error":"Error!",
     "from": "from",
     "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account",
@@ -466,7 +475,8 @@
       "technicalCharacteristics": "Technical specifications:",
       "companyDescription": "Supplier information",
      "locationInfo": "Location Information",
-      "deliveryDescription": "Delivery Methods Information",
+      "deliveryDescription": "Delivery type",
+      "deliveryTerms": "Incoterms delivery terms",
       "emptyAddress": "address not specified",
       "INN": "TIN",
       "days": "{count, plural, one {day} other {days}}"
@@ -1009,7 +1019,7 @@
     "reset": "Reset"
   },
   "CardsCatalogNew": {
-    "nohavecards": "products not added",
+        "nohavecards": "products in this category have not been added yet",
     "notFound": "Not found",
     "popularProducts": "Popular products",
     "viewAll": "View all"
@@ -1095,6 +1105,9 @@
   "sbros": "Reset",
   "cancel": "Cancel",
   "submit": "Apply"
-}
+},
+ "MobileNavigation": {
+      "login": "Login"
+    }
 
 }

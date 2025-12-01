@@ -11,6 +11,12 @@
   }
 }
 
+@media (min-width: 860px) {
+  .about__vendor_none {
+    display: none !important;
+  }
+}
+
 .card__middle__box {
   margin-top: 60px;
 

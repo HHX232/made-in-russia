@@ -264,6 +264,7 @@
     "addRow": "Добавить строку"
   },
   "VendorPage": {
+    "errorCreatingQuestion":"Ошибка создания вопроса",
     "saving":"Сохранить",
     "mediaSavedSuccessfully":"Медиа успешно сохранен",
     "noWriten":"Не заполнено",
@@ -368,6 +369,9 @@
       }
     },
     "CardTopPage": {
+      "reviews": {
+    "count": "{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}"
+  },
       "error":"Ошибка!",
       "from": "от",
       "errorUpdatingFavorites": "Ошибка при обновлении избранного. Зарегистрируйтесь или войдите в свой аккаунт",
@@ -402,7 +406,8 @@
       "technicalCharacteristics": "Технические характеристики:",
       "companyDescription": "Информация о поставщике",
       "locationInfo": "Информация о местонахождении",
-      "deliveryDescription": "Информация о способах доставки",
+      "deliveryDescription": "Вид доставки",
+      "deliveryTerms": "Условия поставки инкотермс",
       "emptyAddress": "адрес не указан",
       "INN": "ИНН"
     },
@@ -411,7 +416,8 @@
       "technicalCharacteristics": "Технические характеристики:",
       "companyDescription": "Информация о поставщике",
       "locationInfo": "Информация о местонахождении",
-      "deliveryDescription": "Информация о способах доставки",
+      "deliveryDescription": "Вид доставки",
+      "deliveryTerms": "Условия поставки инкотермс",
       "emptyAddress": "адрес не указан",
       "INN": "ИНН",
       "days": "{count, plural, one {день} few {дня} many {дней} other {дней}}"
@@ -440,6 +446,9 @@
     }
   },
   "CardTopPage": {
+    "reviews": {
+    "count": "{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}"
+  },
     "error":"Ошибка!",
     "from": "от",
     "errorUpdatingFavorites": "Ошибка при обновлении избранного. Зарегистрируйтесь или войдите в свой аккаунт",
@@ -476,7 +485,8 @@
     "technicalCharacteristics": "Технические характеристики:",
     "companyDescription": "Информация о поставщике",
     "locationInfo": "Информация о местонахождении",
-    "deliveryDescription": "Информация о способах доставки",
+    "deliveryDescription": "Вид доставки",
+    "deliveryTerms": "Условия поставки инкотермс",
     "emptyAddress": "адрес не указан",
     "INN": "ИНН",
     "days": "{count, plural, one {день} few {дня} many {дней} other {дня}}"
@@ -1027,7 +1037,7 @@
     "reset": "Сбросить"
   },
   "CardsCatalogNew": {
-    "nohavecards":"товары не добавлены",
+    "nohavecards":"товары данной категории еще не добавлены",
     "notFound": "Не найдено",
     "popularProducts": "Популярные товары",
     "viewAll": "Смотреть все"
@@ -1110,5 +1120,8 @@
     "sbros":"Сбросить",
     "cancel":"Отмена",
     "submit":"Применить"
+  },
+  "MobileNavigation":{
+    "login":"Вход"
   }
 }

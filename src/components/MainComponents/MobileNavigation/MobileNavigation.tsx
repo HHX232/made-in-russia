@@ -6,6 +6,7 @@ import {Heart, MessageCircle} from 'lucide-react'
 import styles from './MobileNavigation.module.scss'
 import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useTranslations} from 'next-intl'
 
 const MobileNavigation = () => {
   const [isVisible, setIsVisible] = useState(true)
@@ -13,7 +14,7 @@ const MobileNavigation = () => {
   const [currentY, setCurrentY] = useState(0)
   const navRef = useRef<HTMLDivElement>(null)
   const {user} = useTypedSelector((state) => state.user)
-
+  const t = useTranslations('MobileNavigation')
   const handleTouchStart = (e: React.TouchEvent) => {
     setStartY(e.touches[0].clientY)
   }
@@ -76,7 +77,7 @@ const MobileNavigation = () => {
 
           {/* Профиль */}
           <div className={styles.navItem}>
-            <ProfileButtonUI />
+            <ProfileButtonUI specialUnloginLabel={t('login')} />
           </div>
         </div>
       </nav>

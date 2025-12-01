@@ -8,6 +8,8 @@ import ICardFull from '@/services/card/card.types'
 import {useTranslations} from 'next-intl'
 import ShowMarkdown from '@/components/UI-kit/Texts/ShowMarkdown/ShowMarkdown'
 import MarkdownEditor from '@/components/UI-kit/MDEditor/MarkdownEditor'
+import Link from 'next/link'
+import Image from 'next/image'
 
 const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoading, cardData}) => {
   const t = useTranslations('CardMiddlePage')
@@ -67,6 +69,38 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
           {!isLoading ? <ShowMarkdown markValue={cardData.furtherDescription} /> : <></>}
         </div>
         <div className={styles.all__info__box}>
+          <Link
+            href={`/data-vendor/${cardData?.user?.id}`}
+            className={`${styles.about__vendor} ${styles.about__vendor_none}`}
+          >
+            <h3 className={styles.vendor__title}>{t('companyDescription')}</h3>
+            <div className={styles.vendor__box__info}>
+              <div className={styles.vendor__avatar}>
+                {!!cardData?.user.avatarUrl ? (
+                  <Image
+                    className={styles.avatar__image}
+                    width={80}
+                    height={80}
+                    src={cardData.user.avatarUrl}
+                    alt='avatar'
+                  />
+                ) : (
+                  <div className={styles.char__box}>
+                    {' '}
+                    <p className={styles.avatar__char}>
+                      {!!cardData?.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                        ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                        : cardData?.user.login.charAt(0).toUpperCase()}
+                    </p>
+                  </div>
+                )}
+                <p className={styles.vendor__name}>{cardData?.user.login}</p>
+              </div>
+              <p className={styles.vendor__inn}>
+                {t('INN')}: {cardData?.user.vendorDetails?.inn}
+              </p>
+            </div>
+          </Link>
           <div className={styles.about__vendor}>
             <h3 className={styles.vendor__title}>{t('locationInfo')}</h3>
             <div className={styles.vendor__box__location}>
@@ -96,7 +130,22 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
                   {cardData.deliveryMethodsDetails?.map((el, i) => (
                     <li className={styles.del__list__item} key={i}>
                       <p>{el.name}</p>
-                      <p>{el.value + ' ' + t('days', {count: el.value})}</p>
+                      {/* <p>{el.value + ' ' + t('days', {count: el.value})}</p> */}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+          {cardData?.deliveryTerms && cardData?.deliveryTerms?.length !== 0 && (
+            <div className={styles.about__vendor}>
+              <h3 className={styles.vendor__title}>{t('deliveryTerms')}</h3>
+              <div className={styles.vendor__box__del__info}>
+                <ul className={styles.del__list}>
+                  {cardData.deliveryTerms?.map((el, i) => (
+                    <li className={styles.del__list__item} key={i}>
+                      <p style={{fontWeight: '500'}}>{el.code}</p>
+                      <p style={{maxWidth: '85%'}}>{el.description}</p>
                     </li>
                   ))}
                 </ul>

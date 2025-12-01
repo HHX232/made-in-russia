@@ -1,3 +1,5 @@
+import {DeliveryTerm} from '@/components/UI-kit/DeliveryTermsSelector/DeliveryTermsSelector'
+
 export interface ICategory {
   id: number
   name: string
@@ -60,6 +62,7 @@ interface DiscountPriceRange {
 
 interface ICardFull {
   approveStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
+  deliveryTerms: DeliveryTerm[]
   packagingOptions?: {
     name: string
     price: number | string
