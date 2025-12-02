@@ -4,7 +4,7 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  margin-top: 60px;
+  margin-top: 20px;
 }
 
 .category__list {
@@ -56,12 +56,12 @@
 
 .category__title__main {
   margin-bottom: 25px;
-  font-size: 36px;
+  font-size: 30px;
   font-weight: 600;
   line-height: 44px;
 
   @media (max-width: 750px) {
-    font-size: 28px;
+    font-size: 25px;
     line-height: 36px;
   }
 }
@@ -117,6 +117,7 @@
     width: 100%;
     align-items: center;
     aspect-ratio: 302/201;
+    border-radius:10px;
 
     img {
       display: block;
@@ -179,6 +180,8 @@
 
     li {
       line-height: 130%;
+      list-style: outside;
+      margin: 5px 0 10px 10px;
 
       a {
         color: #000;
@@ -186,11 +189,11 @@
         transition: color 0.3s ease-in-out;
 
         @media (max-width: 900px) {
-          font-size: 14px;
+          font-size: 18px;
         }
 
         @media (max-width: 600px) {
-          font-size: 12px;
+          font-size: 14px;
         }
 
         &:hover {
