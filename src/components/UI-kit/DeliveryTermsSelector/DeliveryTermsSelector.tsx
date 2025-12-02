@@ -122,7 +122,7 @@ const DeliveryTermsSelector = ({
   const initialSelectedIds = selectedTermIds.length > 0 ? selectedTermIds : ['']
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(initialSelectedIds)
   // Первый dropdown открыт по умолчанию, только если первый элемент пустой
-  const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(initialSelectedIds[0] === '' ? 0 : null)
+  const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([])
   const [activeTerms, setActiveTerms] = useState<DeliveryTerm[]>(availableTerms)

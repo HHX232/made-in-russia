@@ -5,7 +5,7 @@ import Image from 'next/image'
 import styles from './LoginPage.module.scss'
 import {SetStateAction, MouseEvent, useEffect, useState, useRef, useId} from 'react'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
-import {axiosClassic} from '@/api/api.interceptor'
+import instance, {axiosClassic} from '@/api/api.interceptor'
 import {toast} from 'sonner'
 import {saveTokenStorage} from '@/services/auth/auth.helper'
 import Footer from '@/components/MainComponents/Footer/Footer'
@@ -156,21 +156,30 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
     } catch (error: any) {
       console.error('Telegram auth error:', error)
 
-      // if (error.response?.status === 404) {
-      // Пользователь не найден, перенаправляем на регистрацию с данными Telegram
-      const queryParams = new URLSearchParams({
-        email: user.email || '',
-        picture: user.photo_url || '',
-        telegram_id: user.id?.toString() || '',
-        username: user.username || '',
-        firstName: user.first_name || '',
-        lastName: user.last_name || ''
-      })
+      const data = await instance.post('/oauth2/telegram/callback', user)
+      console.log('data', data)
+      const {accessToken, refreshToken} = data.data
 
-      router.push(`/register?${queryParams.toString()}`)
-      // } else {
-      // toast.error(t('autorithationErrorTelegram'))
-      // }
+      if (accessToken && refreshToken) {
+        saveTokenStorage({accessToken, refreshToken})
+        router.push('/profile')
+      } else {
+        // if (error.response?.status === 404) {
+        // Пользователь не найден, перенаправляем на регистрацию с данными Telegram
+        const queryParams = new URLSearchParams({
+          email: user.email || '',
+          picture: user.photo_url || '',
+          telegram_id: user.id?.toString() || '',
+          username: user.username || '',
+          firstName: user.first_name || '',
+          lastName: user.last_name || ''
+        })
+
+        router.push(`/register?${queryParams.toString()}`)
+        // } else {
+        // toast.error(t('autorithationErrorTelegram'))
+        // }
+      }
     }
   }
 

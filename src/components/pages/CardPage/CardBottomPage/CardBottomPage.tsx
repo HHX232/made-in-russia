@@ -313,14 +313,29 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: IC
 
   return (
     <div id='cardCommentsSection' className={`${styles.card__bottom__box}`}>
+      {/* Секция вопросов - теперь первая */}
+      {cardData?.faq && cardData.faq.length > 0 && (
+        <div className={`${styles.questions__wrapper}`}>
+          <div className={`${styles.section__title}`}>
+            <h2 className={`fontInstrument ${styles.font_title}`}>{t('questions')}</h2>
+          </div>
+          <div className={`${styles.questions__content}`}>
+            <Accordion
+              extraClass={styles.extra__accordion}
+              items={cardData.faq.map((el) => ({title: el.question, value: el.answer, id: el.id.toString()})) || []}
+              multiActive={false}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Заголовок отзывов */}
       <div className={`${styles.section__title}`}>
-        <h2 className={`fontInstrument ${styles.font_title}`}>
-          {t('revues')}
-          {/* <span className={`${styles.count__badge}`}>{cardData?.reviewsCount ? cardData?.reviewsCount : '0'}</span> */}
-        </h2>
+        <h2 className={`fontInstrument ${styles.font_title}`}>{t('revues')}</h2>
       </div>
 
       <div className={`${styles.content__wrapper}`}>
+        {/* Секция комментариев */}
         <div className={`${styles.comments__section}`}>
           {isLoading && comments.length === 0 ? (
             <Skeleton height={100} count={3} style={{marginBottom: '16px', width: '90%', maxWidth: '400px'}} />
@@ -353,24 +368,9 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: IC
               )}
             </>
           )}
-
-          {cardData?.faq && cardData.faq.length > 0 && (
-            <div className={`${styles.questions__section}`}>
-              <h3 className={`fontInstrument ${styles.questions__title}`}>
-                {t('questions')}
-                {/* <span className={`${styles.count__badge}`}>{cardData.faq.length}</span> */}
-              </h3>
-              <div className={`${styles.questions__content}`}>
-                <Accordion
-                  extraClass={styles.extra__accordion}
-                  items={cardData.faq.map((el) => ({title: el.question, value: el.answer, id: el.id.toString()})) || []}
-                  multiActive={false}
-                />
-              </div>
-            </div>
-          )}
         </div>
 
+        {/* Форма создания комментария */}
         <div className={`${styles.create__comment__box}`}>
           <div className={`${styles.create__comment__box__rating}`}>
             <p>{t('pleaseCreateComment')}</p>

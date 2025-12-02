@@ -1099,7 +1099,9 @@
     "comment": {
       "approved": "已确认",
       "pending": "审核中",
-      "rejected": "已拒绝"
+      "rejected": "已拒绝",
+      "success": "删除成功！",
+      "error": "删除时出错！"
     },
     "cropEditor": {
   "sbros": "重置",
@@ -1108,6 +1110,9 @@
 },
 "MobileNavigation": {
       "login": "登录"
-    }
+    },
+    "ReviewsToNumber":{
+  "count":"{count} 条评论"
+  }
 
 }

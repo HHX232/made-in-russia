@@ -1037,7 +1037,7 @@
     "reset": "Сбросить"
   },
   "CardsCatalogNew": {
-    "nohavecards":"товары данной категории еще не добавлены",
+    "nohavecards":"Товары данной категории еще не добавлены",
     "notFound": "Не найдено",
     "popularProducts": "Популярные товары",
     "viewAll": "Смотреть все"
@@ -1114,7 +1114,9 @@
   "comment":{
     "approved":"Подтверждено",
     "pending":"Модерация",
-    "rejected":"Отклонено"
+    "rejected":"Отклонено",
+    "success":"Успешно удалено!",
+    "error":"Ошибка при удалении!"
   },
   "cropEditor":{
     "sbros":"Сбросить",
@@ -1123,5 +1125,8 @@
   },
   "MobileNavigation":{
     "login":"Вход"
+  },
+  "ReviewsToNumber":{
+    "count":"{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}}"
   }
 }

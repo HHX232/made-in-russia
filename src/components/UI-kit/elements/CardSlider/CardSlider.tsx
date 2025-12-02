@@ -349,7 +349,7 @@ const MediaRenderer: React.FC<{
           }}
           className={`${styles.imageSlider__mainImage} ${className} ${
             displayType === 'vertical' ? styles.imageSlider__mainImageVertical : ''
-          }`}
+          } ${displayType === 'wide' ? styles.imageSlider__mainImageWide : ''}`}
           role='img'
           aria-label={alt}
           onClick={onClick}
@@ -1126,7 +1126,12 @@ const ThumbnailSlider: React.FC<{
   // Рассчитываем количество видимых слайдов
   const slidesPerView = useMemo(() => {
     if (containerWidth === 0) return 4
-    return calculateSlidesToShow(containerWidth, images.length)
+    const calculated = calculateSlidesToShow(containerWidth, images.length)
+    // На мобильных устройствах показываем меньше слайдов
+    if (window.innerWidth <= 768) {
+      return Math.min(calculated, 3) // Показываем 2.5 слайда на мобильных
+    }
+    return calculated
   }, [containerWidth, images.length])
 
   // Синхронизация активного индекса с умной прокруткой
@@ -1134,7 +1139,8 @@ const ThumbnailSlider: React.FC<{
     if (!thumbsSwiper || thumbsSwiper.destroyed) return
 
     const totalSlides = images.length
-    const visibleSlides = Math.floor(slidesPerView)
+    const visibleSlides = slidesPerView // Используем точное значение (может быть 2.5)
+    const fullVisibleSlides = Math.floor(visibleSlides) // Полностью видимые слайды
 
     // Если слайдов меньше или равно видимым, не скролим
     if (totalSlides <= visibleSlides) {
@@ -1143,28 +1149,42 @@ const ThumbnailSlider: React.FC<{
 
     // Получаем текущую позицию первого видимого слайда
     const currentFirstVisible = thumbsSwiper.activeIndex
-    const currentLastVisible = currentFirstVisible + visibleSlides - 1
-
-    // Если активный слайд уже видим и не на краях, ничего не делаем
-    if (activeIndex > currentFirstVisible && activeIndex < currentLastVisible) {
-      return
-    }
+    const currentLastFullVisible = currentFirstVisible + fullVisibleSlides - 1
 
     // Определяем новую позицию прокрутки
-    let targetIndex: number
+    let targetIndex: number | null = null
 
-    if (activeIndex <= 1) {
-      // Если в начале списка - показываем с начала
+    // Специальная обработка для начала списка
+    if (activeIndex === 0) {
       targetIndex = 0
-    } else if (activeIndex >= totalSlides - 2) {
-      // Если в конце списка - показываем последние слайды
-      targetIndex = Math.max(0, totalSlides - visibleSlides)
-    } else {
-      // В середине - показываем активный слайд вторым
-      targetIndex = activeIndex - 1
+    }
+    // Специальная обработка для конца списка
+    else if (activeIndex >= totalSlides - 1) {
+      targetIndex = Math.max(0, totalSlides - Math.ceil(visibleSlides))
+    }
+    // Кликнули на последний полностью видимый слайд - сдвигаем вперед
+    else if (activeIndex === currentLastFullVisible && activeIndex < totalSlides - 1) {
+      targetIndex = Math.min(currentFirstVisible + 1, totalSlides - Math.ceil(visibleSlides))
+    }
+    // Кликнули на первый видимый слайд (но не самый первый в списке) - сдвигаем назад
+    else if (activeIndex === currentFirstVisible && activeIndex > 0) {
+      targetIndex = Math.max(0, currentFirstVisible - 1)
+    }
+    // Слайд находится в "безопасной зоне" - показываем его по центру/второй позиции
+    else if (activeIndex > currentLastFullVisible || activeIndex < currentFirstVisible) {
+      if (fullVisibleSlides === 2) {
+        // Для 2 видимых слайдов - делаем активный первым
+        targetIndex = Math.max(0, Math.min(activeIndex, totalSlides - Math.ceil(visibleSlides)))
+      } else {
+        // Для 3+ видимых слайдов - показываем активный вторым
+        targetIndex = Math.max(0, Math.min(activeIndex - 1, totalSlides - Math.ceil(visibleSlides)))
+      }
     }
 
-    thumbsSwiper.slideTo(targetIndex, 300)
+    // Если нужно прокрутить
+    if (targetIndex !== null && targetIndex !== currentFirstVisible) {
+      thumbsSwiper.slideTo(targetIndex, 300)
+    }
   }, [activeIndex, thumbsSwiper, slidesPerView, images.length])
 
   return (
@@ -1173,11 +1193,22 @@ const ThumbnailSlider: React.FC<{
         onSwiper={setThumbsSwiper}
         spaceBetween={GAP}
         slidesPerView={slidesPerView}
+        slidesPerGroupAuto={true}
         freeMode={true}
         watchSlidesProgress={true}
         modules={[FreeMode, Navigation, Thumbs]}
         className={styles.thumbnailSwiper}
         resistanceRatio={0}
+        breakpoints={{
+          0: {
+            slidesPerView: 2.5,
+            spaceBetween: 12
+          },
+          768: {
+            slidesPerView: slidesPerView,
+            spaceBetween: GAP
+          }
+        }}
       >
         {images.map((image, index) => {
           const type = getMediaType(image)

@@ -261,6 +261,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
   const NewFullTopInfo = () => {
     const t = useTranslations('CardTopPage')
+    const t2 = useTranslations('ReviewsToNumber')
 
     return (
       <div className={styles.full__info__box}>
@@ -276,7 +277,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
           <div className={styles.gray__dot}></div>
           <a href='#cardCommentsSection' className={styles.reviews__count}>
             {/* {cardData?.reviewsCount} {t('revues')} */}
-            {t('reviews.count', {count: cardData?.reviewsCount ?? 0})}
+            {t2('count', {count: cardData?.reviewsCount ?? 0})}
           </a>
         </div>
         <div className={styles.prices__box__new}>

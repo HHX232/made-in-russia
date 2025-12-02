@@ -30,6 +30,15 @@
   font-weight: 400;
 }
 
+.questions__wrapper {
+  width: 100%;
+  margin-bottom: 40px;
+
+  @media (max-width: 1150px) {
+    margin-bottom: 30px;
+  }
+}
+
 .content__wrapper {
   display: grid;
   width: 100%;
@@ -308,12 +317,6 @@
   }
 }
 
-.questions__section {
-  width: 100%;
-
-  // margin-top: 60px;
-}
-
 .questions__title {
   position: relative;
   margin-bottom: 30px;
@@ -329,8 +332,8 @@
 .questions__content {
   width: 100%;
   padding: 20px;
+  border-radius: 10px;
   background-color: #f6f6f6;
-  border-radius:10px;
 }
 
 .no__comments {
@@ -373,8 +376,6 @@
 }
 
 .extra__accordion {
-  // background-color: red !important;
-
   & > div > div:first-child > h2 {
     font-size: 15px !important;
   }

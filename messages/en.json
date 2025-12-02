@@ -1019,7 +1019,7 @@
     "reset": "Reset"
   },
   "CardsCatalogNew": {
-        "nohavecards": "products in this category have not been added yet",
+        "nohavecards": "Products in this category have not been added yet",
     "notFound": "Not found",
     "popularProducts": "Popular products",
     "viewAll": "View all"
@@ -1097,10 +1097,12 @@
     "dontHaveDescr": "Description not added"
   },
   "comment": {
-    "approved": "Approved",
-    "pending": "Moderation",
-    "rejected": "Rejected"
-  },
+      "approved": "Approved",
+      "pending": "Moderation",
+      "rejected": "Rejected",
+      "success": "Successfully deleted!",
+      "error": "Error deleting!"
+    },
   "cropEditor": {
   "sbros": "Reset",
   "cancel": "Cancel",
@@ -1108,6 +1110,10 @@
 },
  "MobileNavigation": {
       "login": "Login"
-    }
+  },
+
+  "ReviewsToNumber":{
+  "count":"{count, plural, one {{count} review} other {{count} reviews}}"
+  }
 
 }

@@ -1078,10 +1078,12 @@
     "dontHaveDescr": "विवरण जोड़ा नहीं गया"
   },
   "comment": {
-    "approved": "स्वीकृत",
-    "pending": "मॉडरेशन",
-    "rejected": "अस्वीकृत"
-  },
+      "approved": "स्वीकृत",
+      "pending": "मॉडरेशन",
+      "rejected": "अस्वीकृत",
+      "success": "सफलतापूर्वक हटाया गया!",
+      "error": "हटाने में त्रुटि!"
+    },
   "cropEditor": {
   "sbros": "रीसेट",
   "cancel": "रद्द करें",
@@ -1089,6 +1091,9 @@
 },
 "MobileNavigation": {
       "login": "लॉगिन"
-    }
+    },
+  "ReviewsToNumber":{
+  "count":"{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}"
+  }
 
 }
