@@ -4,16 +4,8 @@ export function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL_SECOND || 'https://exporteru.com'
 
   const robotsTxt = `User-agent: *
-Allow: /card/*
-Allow: /data-vendor/*
-Allow: /categories/*
-Allow: /categories
-Allow: /about-us
-Allow: /help
-Allow: /privacy
-Allow: /terms
-Allow: /login
-Allow: /
+
+Disallow: /
 
 Disallow: /vendor
 Disallow: /profile
