@@ -329,7 +329,6 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: IC
         </div>
       )}
 
-      {/* Заголовок отзывов */}
       <div className={`${styles.section__title}`}>
         <h2 className={`fontInstrument ${styles.font_title}`}>{t('revues')}</h2>
       </div>

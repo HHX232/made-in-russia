@@ -102,6 +102,10 @@
   // }
 }
 
+.dark {
+  color: #4b5563 !important;
+}
+
 .back_transparent {
   background-color: transparent !important;
 }
@@ -177,10 +181,13 @@
 }
 
 .profile_text {
-  color: #fff;
   font-size: 14px;
   text-align: center;
   transition: all 0.15s;
+}
+
+.profile_text * {
+  color: inherit !important;
 }
 
 @media (max-width: 620px) {

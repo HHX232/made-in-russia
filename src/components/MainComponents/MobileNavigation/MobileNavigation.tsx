@@ -77,7 +77,7 @@ const MobileNavigation = () => {
 
           {/* Профиль */}
           <div className={styles.navItem}>
-            <ProfileButtonUI specialUnloginLabel={t('login')} />
+            <ProfileButtonUI useDarkText={true} specialUnloginLabel={t('login')} />
           </div>
         </div>
       </nav>

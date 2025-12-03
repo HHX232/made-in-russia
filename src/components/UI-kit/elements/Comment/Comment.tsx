@@ -44,9 +44,9 @@ const Comment: FC<CommentProps> = ({
     const innerF = async () => {
       try {
         await instance.delete(`/me/reviews/${id}`)
-        toast.success('success')
+        toast.success(t('success'))
       } catch {
-        toast.error('error')
+        toast.error(t('error'))
       }
     }
     innerF()

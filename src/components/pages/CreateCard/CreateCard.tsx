@@ -61,7 +61,15 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(initialData?.category || null)
 
   const t = useTranslations('createCard')
-  const [selectedDeliveryIds, setSelectedDeliveryIds] = useState<string[]>([])
+  const [selectedDeliveryIds, setSelectedDeliveryIds] = useState<string[]>(
+    initialData?.deliveryTerms?.map((el) => el.id) || []
+  )
+
+  useEffect(() => {
+    if (initialData?.deliveryTerms) {
+      setSelectedDeliveryIds(initialData.deliveryTerms.map((el) => el.id))
+    }
+  }, [initialData?.deliveryTerms])
 
   const pathname = usePathname()
   const currentLangFromHook = useCurrentLanguage()
@@ -286,7 +294,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       e.preventDefault()
 
       console.log('descriptions,', descriptions)
-
+      console.log('Current selectedDeliveryIds:', selectedDeliveryIds)
       // Выполняем полную валидацию при сабмите
       const {validationErrors, isFormValid: isValid} = validateAllFields()
       setErrors(validationErrors)
@@ -384,7 +392,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       pricesArray,
       pathname,
       initialData,
-      t
+      t,
+      selectedDeliveryIds
     ]
   )
 
@@ -603,10 +612,11 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             <DeliveryTermsSelector
               selectedTermIds={selectedDeliveryIds}
               onChange={(ids) => {
-                const filledIds = ids.filter((id) => id !== '')
+                console.log('DeliveryTermsSelector onChange:', ids) // Для дебага
+                const filledIds = ids.filter((id) => id !== '' && id !== null && id !== undefined)
                 setSelectedDeliveryIds(filledIds)
               }}
-              maxSelections={11}
+              maxSelections={100}
               useNewTheme={true}
             />
             <CreateDescriptionsElements descriptionError={errors.description} currentDynamicLang={currentLangState} />

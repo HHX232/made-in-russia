@@ -28,9 +28,10 @@ interface IProfileProps {
   extraClass?: string
   extraStyles?: CSSProperties
   specialUnloginLabel?: string
+  useDarkText?: boolean
 }
 
-const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnloginLabel}) => {
+const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnloginLabel, useDarkText = false}) => {
   const {user} = useTypedSelector((state) => state.user)
   const {clearUser} = useActions()
   const {removeUserFromCache} = useUserCache()
@@ -153,7 +154,11 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnl
             width={28}
             height={28}
           />
-          <p dangerouslySetInnerHTML={{__html: specialUnloginLabel || t('login')}} className={styles.profile_text}></p>
+          <p
+            style={{color: useDarkText ? '#4b5563' : '#ffffff'}}
+            dangerouslySetInnerHTML={{__html: specialUnloginLabel || t('login')}}
+            className={`${styles.profile_text} ${useDarkText && styles.dark}`}
+          ></p>
         </>
       )}
     </div>
