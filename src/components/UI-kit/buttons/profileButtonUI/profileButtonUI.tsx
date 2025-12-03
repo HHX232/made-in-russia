@@ -21,7 +21,7 @@ const ava6 = '/avatars/avatar-v-6.svg'
 const ava7 = '/avatars/avatar-v-7.svg'
 const ava8 = '/avatars/avatar-v-8.svg'
 const ava9 = '/avatars/avatar-v-9.svg'
-const userLogin2 = '/iconsNew/userNew.svg'
+// const userLogin2 = '/iconsNew/userNew.svg'
 const avatarsArray = [ava, ava1, ava2, ava3, ava4, ava5, ava6, ava7, ava8, ava9]
 
 interface IProfileProps {
@@ -149,18 +149,43 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnl
         </>
       ) : (
         <>
-          <Image
+          {/* <Image
             className={`${styles.image} ${styles.back_transparent}`}
             src={userLogin2}
             alt='Please login'
             width={28}
             height={28}
-          />
+          /> */}
+          <svg
+            className={`${styles.image} ${styles.back_transparent}`}
+            width='28'
+            height='28'
+            viewBox='0 0 26 26'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              d='M13 13C15.9916 13 18.4167 10.5749 18.4167 7.58333C18.4167 4.59179 15.9916 2.16667 13 2.16667C10.0085 2.16667 7.58337 4.59179 7.58337 7.58333C7.58337 10.5749 10.0085 13 13 13Z'
+              stroke={useDarkText ? '#4b5563' : 'white'}
+              stroke-width='2'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            />
+            <path
+              d='M22.3059 23.8333C22.3059 19.6408 18.135 16.25 13 16.25C7.86504 16.25 3.69421 19.6408 3.69421 23.8333'
+              stroke={useDarkText ? '#4b5563' : 'white'}
+              stroke-width='2'
+              stroke-linecap='round'
+              stroke-linejoin='round'
+            />
+          </svg>
+
           <p
             style={{color: useDarkText ? '#4b5563' : '#ffffff'}}
             className={`${styles.profile_text} ${useDarkText ? styles.dark : ''}`}
+            dangerouslySetInnerHTML={{__html: specialUnloginLabel || t('login')}}
           >
-            {specialUnloginLabel || t('login')}
+            {/* {specialUnloginLabel || t('login')} */}
           </p>
         </>
       )}

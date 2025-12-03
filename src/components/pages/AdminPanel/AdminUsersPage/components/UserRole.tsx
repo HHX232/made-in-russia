@@ -13,6 +13,7 @@ import {User} from '@/store/User/user.slice'
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import MultiDropSelect from '@/components/UI-kit/Texts/MultiDropSelect/MultiDropSelect'
 import {toast} from 'sonner'
+import formatDateToDayMonth from '@/utils/formatedDateToMonth'
 
 const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'Kazakhstan']
 const trashImage = '/admin/trash.svg'
@@ -105,9 +106,6 @@ const UserRow: FC<{
   onUnbanUser?: (userId: number) => void
   instance?: any
 }> = ({user, onUpdateUser, onUpdateRole, onDeleteUser, onBanUser, onUnbanUser, instance}) => {
-  const [activeCountry, setActiveCountry] = useState(
-    user.region || user.vendorDetails?.countries?.[0]?.name || user.vendorDetails?.countries?.[0]?.value || ''
-  )
   const [activeRole, setActiveRole] = useState(user.role)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -163,14 +161,6 @@ const UserRow: FC<{
     }
     fetchCategories()
   }, [editData.role, categories.length])
-
-  const handleCountryChange = (newCountry: string) => {
-    setActiveCountry(newCountry)
-    onUpdateUser?.(user.id, {
-      ...user,
-      ...(editData.role !== 'Vendor' ? {region: newCountry} : {})
-    })
-  }
 
   const handleRoleChange = (newRole: string) => {
     setActiveRole(newRole as User['role'])
@@ -302,7 +292,6 @@ const UserRow: FC<{
       }
 
       onUpdateUser?.(user.id, updatedUser)
-      setActiveCountry(editData.region)
       setActiveRole(editData.role)
       setIsEditModalOpen(false)
       toast.success('Изменения успешно сохранены')
@@ -369,6 +358,16 @@ const UserRow: FC<{
   }, [selectedCategories, flatOptions])
 
   const isBanned = !user.isEnabled
+
+  // Форматирование даты регистрации
+  const formattedRegistrationDate = useMemo(() => {
+    try {
+      return formatDateToDayMonth(user.registrationDate, 'ru')
+    } catch (error) {
+      console.error('Ошибка форматирования даты:', error)
+      return 'Неизвестно'
+    }
+  }, [user.registrationDate])
 
   return (
     <div className={styles.user__row}>
@@ -676,20 +675,7 @@ const UserRow: FC<{
       </div>
       <div className={`${styles.email__text}`}>{user.email}</div>
 
-      <DropList
-        direction='bottom'
-        trigger='hover'
-        safeAreaEnabled
-        positionIsAbsolute={false}
-        title={activeCountry}
-        extraStyle={{minWidth: 'fit-content'}}
-        extraClass={styles.drop__list__extra__country}
-        items={REGION_OPTIONS.map((region) => (
-          <p onClick={() => handleCountryChange(region)} key={region}>
-            {region}
-          </p>
-        ))}
-      />
+      <div className={`${styles.registration__date__text}`}>{formattedRegistrationDate}</div>
 
       <DropList
         direction='bottom'

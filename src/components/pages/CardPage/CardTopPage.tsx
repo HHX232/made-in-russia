@@ -332,7 +332,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             listGap='10'
             items={[
               {title: t('articul'), value: cardData?.article || ''},
-              ...(cardData?.characteristics?.slice(0, 4)?.map((el) => ({
+              ...(cardData?.characteristics?.map((el) => ({
                 title: el.name,
                 value: el.value
               })) || [])

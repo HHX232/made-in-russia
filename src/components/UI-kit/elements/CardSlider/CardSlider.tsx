@@ -328,24 +328,21 @@ const MediaRenderer: React.FC<{
       )
     }
 
-    const needsBackground = displayType === 'vertical' || displayType === 'wide'
-
     return (
       <div
         className={styles.mediaRendererWrapper}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {needsBackground && (
-          <div className={styles.imageSlider__backgroundImage} style={{backgroundImage: `url(${media})`}} />
-        )}
+        <div className={styles.imageSlider__backgroundImage} style={{backgroundImage: `url(${media})`}} />
+
         <div
           style={{
             backgroundImage: `url(${media})`,
             cursor: 'pointer',
             height: '100%',
-            position: needsBackground ? 'relative' : 'static',
-            zIndex: needsBackground ? 1 : 'auto'
+            position: 'relative',
+            zIndex: 1
           }}
           className={`${styles.imageSlider__mainImage} ${className} ${
             displayType === 'vertical' ? styles.imageSlider__mainImageVertical : ''
@@ -371,10 +368,9 @@ const MediaRenderer: React.FC<{
 MediaRenderer.displayName = 'MediaRenderer'
 
 const useContainerWidth = (isClient: boolean) => {
-  // ИЗМЕНИ эту строку:
   const [containerWidth, setContainerWidth] = useState<number | null>(() => {
     if (typeof window === 'undefined' || !isClient) return null
-    return window.innerWidth // Используем ширину окна как начальное значение
+    return window.innerWidth
   })
 
   const measureContainer = useCallback(() => {

@@ -198,7 +198,7 @@ const LoadMoreTrigger: FC<{onLoadMore: () => void; hasMore: boolean}> = ({onLoad
 }
 
 const AdminUsersPage: FC = () => {
-  const allTitles = ['ID', 'Имя', 'Почта', 'Страна', 'Роль', 'Изменить']
+  const allTitles = ['ID', 'Имя', 'Почта', 'Дата регистрации', 'Роль', 'Изменить']
 
   const {
     users,
@@ -601,7 +601,7 @@ const AdminUsersPage: FC = () => {
       <div className={styles.users__table}>
         <div className={styles.table__titles}>
           {allTitles.map((title) => (
-            <div key={title}>{title}</div>
+            <div key={title} dangerouslySetInnerHTML={{__html: title}} />
           ))}
         </div>
         <div className={styles.table__rows}>
