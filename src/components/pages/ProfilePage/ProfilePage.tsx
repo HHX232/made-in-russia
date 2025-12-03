@@ -1,5 +1,5 @@
 'use client'
-import {FC, useCallback, useEffect, useState} from 'react'
+import {FC, useCallback, useEffect, useMemo, useState} from 'react'
 import styles from './ProfilePage.module.scss'
 import Header from '@/components/MainComponents/Header/Header'
 import instance from '@/api/api.interceptor'
@@ -925,13 +925,33 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
   )
   const currentLang = useCurrentLanguage()
   const searchParams = useSearchParams()
+  const activeTabParam = useMemo(() => searchParams.get('activeTab'), [searchParams])
 
   useEffect(() => {
+    console.log('useEffect triggered')
+    console.log('searchParams:', searchParams)
+    console.log('searchParams.toString():', searchParams.toString())
+
     const activeTab = searchParams.get('activeTab')
+    console.log('activeTab value:', activeTab)
+
     if (activeTab && ['profile', 'recentlyView', 'favorites', 'comments', 'sessions'].includes(activeTab)) {
+      console.log('Condition passed, setting tab to:', activeTab)
       setCurrentTab(activeTab as 'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions')
+      setSidebarShow(false)
+      console.log('закрыли сайдбар')
+    } else {
+      console.log('Condition failed')
     }
-  }, [searchParams])
+  }, [searchParams.toString()])
+
+  useEffect(() => {
+    if (activeTabParam && ['profile', 'recentlyView', 'favorites', 'comments', 'sessions'].includes(activeTabParam)) {
+      setCurrentTab(activeTabParam as 'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions')
+      setSidebarShow(false)
+      console.log('закрыли сайдбар', activeTabParam)
+    }
+  }, [activeTabParam])
 
   const handleLogout = () => {
     if (isLogoutPending) return

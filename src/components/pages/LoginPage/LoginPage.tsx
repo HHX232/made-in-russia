@@ -156,7 +156,17 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
     } catch (error: any) {
       console.error('Telegram auth error:', error)
 
-      const data = await instance.post('/oauth2/telegram/callback', user)
+      const {first_name, last_name, username, photo_url, auth_date, ...userWithoutNames} = user
+
+      const updatedUser = {
+        ...userWithoutNames,
+        photoUrl: user.photo_url,
+        authDate: user.auth_date,
+        firstName: user.first_name,
+        lastName: user.last_name
+      }
+
+      const data = await instance.post('/oauth2/telegram/callback', updatedUser)
       console.log('data', data)
       const {accessToken, refreshToken} = data.data
 

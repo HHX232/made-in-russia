@@ -186,10 +186,6 @@
   transition: all 0.15s;
 }
 
-.profile_text * {
-  color: inherit !important;
-}
-
 @media (max-width: 620px) {
   .profile_text {
     font-size: 12px;

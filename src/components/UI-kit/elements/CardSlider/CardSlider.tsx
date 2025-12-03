@@ -170,7 +170,7 @@ const ArrowButton: React.FC<ArrowButtonProps> = React.memo(({onClick, disabled, 
   const svgStyle = direction === 'left' ? {transform: 'rotate(180deg)'} : {}
 
   return (
-    <div className={arrowClass} onClick={onClick} role='button' tabIndex={0}>
+    <div style={{opacity: disabled ? '0.5' : 1}} className={arrowClass} onClick={onClick} role='button' tabIndex={0}>
       <svg style={svgStyle} width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'>
         <path
           d='M12.0254 4.94165L17.0837 9.99998L12.0254 15.0583'
@@ -716,6 +716,7 @@ interface ModalGalleryProps {
   onThumbnailClick: (index: number) => void
   isSingleImage: boolean
 }
+
 export const ModalGallery: React.FC<ModalGalleryProps> = ({
   isOpen,
   onClose,
@@ -779,8 +780,8 @@ export const ModalGallery: React.FC<ModalGalleryProps> = ({
     [images.length, mainSliderInstanceRef]
   )
 
-  const isAtStart = localIndex === 0
-  const isAtEnd = localIndex === images.length - 1
+  const isAtStart = !isSingleImage && localIndex === 0
+  const isAtEnd = !isSingleImage && localIndex === images.length - 1
 
   useEffect(() => {
     if (isOpen) {

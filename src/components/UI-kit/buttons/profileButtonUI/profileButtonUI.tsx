@@ -143,7 +143,9 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnl
             height={28}
             priority
           />
-          <p className={styles.profile_text}>{userName || 'User'}</p>
+          <p style={{color: useDarkText ? '#4b5563' : '#ffffff'}} className={styles.profile_text}>
+            {userName || 'User'}
+          </p>
         </>
       ) : (
         <>
@@ -156,9 +158,10 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnl
           />
           <p
             style={{color: useDarkText ? '#4b5563' : '#ffffff'}}
-            dangerouslySetInnerHTML={{__html: specialUnloginLabel || t('login')}}
-            className={`${styles.profile_text} ${useDarkText && styles.dark}`}
-          ></p>
+            className={`${styles.profile_text} ${useDarkText ? styles.dark : ''}`}
+          >
+            {specialUnloginLabel || t('login')}
+          </p>
         </>
       )}
     </div>

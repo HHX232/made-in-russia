@@ -652,8 +652,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
     if (activeTab && validTabs.includes(activeTab as TCurrentTab)) {
       setCurrentTab(activeTab as TCurrentTab)
+      setSidebarShow(false)
     }
-  }, [searchParams])
+  }, [searchParams.toString()])
 
   useEffect(() => {
     const fetchVendorData = async () => {
