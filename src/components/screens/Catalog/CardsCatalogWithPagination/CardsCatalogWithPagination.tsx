@@ -14,6 +14,7 @@ import useProductsWithPagination from './useProductsWithPagination'
 import Image from 'next/image'
 import {useTranslations} from 'next-intl'
 import useWindowWidth from '@/hooks/useWindoWidth'
+import ChangeOwnerModal from './ChangeOwnerModal/ChangeOwnerModal'
 
 interface CardsCatalogWithPaginationProps {
   initialProducts?: Product[]
@@ -33,6 +34,7 @@ interface CardsCatalogWithPaginationProps {
   specialFilters?: {name: string; id: string}[]
   showAdminStatusFilters?: boolean
   onApproveStatusChange?: (status: 'APPROVED' | 'PENDING' | 'ALL' | 'REJECTED') => void
+  instance?: any // Axios instance для useUsers
 }
 
 interface PageParams {
@@ -97,6 +99,10 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   )
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false)
   const statusDropdownRef = useRef<HTMLDivElement>(null)
+
+  // Состояние для модального окна смены владельца
+  const [selectedProductForOwnerChange, setSelectedProductForOwnerChange] = useState<Product | null>(null)
+  const [isOwnerModalOpen, setIsOwnerModalOpen] = useState(false)
 
   useEffect(() => {
     const updateFiltersWidth = () => {
@@ -275,6 +281,24 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
     [onApproveStatusChange]
   )
 
+  // Обработчик открытия модального окна смены владельца
+  const handleOpenOwnerModal = useCallback((product: Product) => {
+    setSelectedProductForOwnerChange(product)
+    setIsOwnerModalOpen(true)
+  }, [])
+
+  // Обработчик закрытия модального окна
+  const handleCloseOwnerModal = useCallback(() => {
+    setIsOwnerModalOpen(false)
+    setSelectedProductForOwnerChange(null)
+  }, [])
+
+  // Обработчик успешной смены владельца
+  const handleOwnerChanged = useCallback(() => {
+    // Перезагружаем список продуктов
+    handleCloseOwnerModal()
+  }, [handleCloseOwnerModal])
+
   // Генерация массива номеров страниц для пагинации
   const getPageNumbers = useCallback(() => {
     const pages: (number | string)[] = []
@@ -387,7 +411,11 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
         {/* Сетка товаров */}
         {!isEmpty && (
           <div className={`${styled.catalog__vitrine}`}>
-            <div ref={gridContainerRef} className={styled.vitrine__grid}>
+            <div
+              ref={gridContainerRef}
+              style={{gap: showAdminStatusFilters ? '70px 16px' : ''}}
+              className={styled.vitrine__grid}
+            >
               {(showTableFilters && !!specialFilters && specialFilters?.length !== 0) || showAdminStatusFilters ? (
                 <div className={`${styled.section_flexheader} ${isForAdmin && styled.noOverflow}`}>
                   <div ref={filtersContainerRef} className={styled.filters_scroll_container}>
@@ -507,6 +535,38 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
                   ))
                 : products.map((product) => (
                     <div className={styled.card_wrapper} key={product.id}>
+                      {/* Строка с владельцем товара */}
+                      {showAdminStatusFilters && product.user && (
+                        <div className={styled.owner_bar} onClick={() => handleOpenOwnerModal(product)}>
+                          <div className={styled.owner_info}>
+                            {product.user.avatarUrl ? (
+                              <img
+                                src={product.user.avatarUrl}
+                                alt={product.user.login}
+                                className={styled.owner_avatar}
+                              />
+                            ) : (
+                              <div className={styled.owner_avatar_placeholder}>
+                                {product.user.login.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            <div className={styled.owner_text}>
+                              <span className={styled.owner_label}>Владелец:</span>
+                              <span className={styled.owner_name}>{product.user.login}</span>
+                            </div>
+                          </div>
+                          <svg width='20' height='20' viewBox='0 0 20 20' fill='none' className={styled.owner_arrow}>
+                            <path
+                              d='M7.5 15L12.5 10L7.5 5'
+                              stroke='currentColor'
+                              strokeWidth='1.5'
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                            />
+                          </svg>
+                        </div>
+                      )}
+
                       <Card
                         isForAdmin={isForAdmin}
                         approveStatus={product?.approveStatus}
@@ -597,6 +657,15 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
           </div>
         )}
       </div>
+
+      {/* Модальное окно смены владельца */}
+      {isOwnerModalOpen && selectedProductForOwnerChange && (
+        <ChangeOwnerModal
+          product={selectedProductForOwnerChange}
+          onClose={handleCloseOwnerModal}
+          onSuccess={handleOwnerChanged}
+        />
+      )}
     </section>
   )
 }

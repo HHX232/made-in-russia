@@ -410,6 +410,7 @@
       "days": "{count, plural, one {दिन} other {दिन}}"
     },
     "CardBottomPage": {
+      "similar": "समान उत्पाद",
       "send": "भेजें",
       "success": "सफलता!",
       "newDayerror": "खाते की आयु 7 दिनों से अधिक होनी चाहिए",
@@ -482,6 +483,7 @@
     "days": "{count, plural, one {दिन} other {दिन}}"
   },
   "CardBottomPage": {
+    "similar": "समान उत्पाद",
     "send": "भेजें",
     "success": "सफलता!",
     "newDayerror": "खाते की आयु 7 दिनों से अधिक होनी चाहिए",

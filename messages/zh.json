@@ -410,6 +410,7 @@
       "days": "{count, plural, other {天}}"
     },
     "CardBottomPage": {
+      "similar": "类似商品",
       "send": "发送",
       "newDayerror": "您必须经过授权且账户注册时间需超过7天",
       "success": "成功！",
@@ -482,6 +483,7 @@
       "days": "{count, plural, other {天}}"
   },
   "CardBottomPage": {
+    "similar": "类似商品",
     "send": "发送",
     "success": "成功！",
     "newDayerror": "您必须经过授权且账户注册时间需超过7天",

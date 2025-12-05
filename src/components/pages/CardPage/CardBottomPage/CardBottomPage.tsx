@@ -15,6 +15,9 @@ import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {getAccessToken} from '@/services/auth/auth.helper'
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import CreateImagesInputMinimalistic from '@/components/UI-kit/inputs/CreateImagesInputMinimalistic/CreateImagesInputMinimalistic'
+import {Product} from '@/services/products/product.types'
+import instance from '@/api/api.interceptor'
+import Card from '@/components/UI-kit/elements/card/card'
 
 interface ICardBottomPageProps {
   isLoading: boolean
@@ -22,6 +25,7 @@ interface ICardBottomPageProps {
   cardData: ICardFull | null
   hasMore: boolean
   onLoadMore?: () => void
+  productId?: string | number
 }
 
 interface IUploadedFile {
@@ -73,7 +77,7 @@ const FilePreview = React.memo(({fileObj, onRemove}: {fileObj: IUploadedFile; on
 
 FilePreview.displayName = 'FilePreview'
 
-const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: ICardBottomPageProps) => {
+const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore, productId}: ICardBottomPageProps) => {
   const [commentValue, setCommentValue] = useState('')
   const [uploadedFiles, setUploadedFiles] = useState<IUploadedFile[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -87,6 +91,23 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: IC
   const t = useTranslations('CardBottomPage')
   const currentLang = useCurrentLanguage()
   const [error, setError] = useState('')
+  const [similarProducts, setSimilarProducts] = useState<Product[]>([])
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const {data} = await instance.get(`/products/${productId || cardData?.id}/similar`, {
+          headers: {
+            'Accept-language': currentLang
+          }
+        })
+        setSimilarProducts(data)
+      } catch {
+        console.log('message')
+      }
+    }
+    fetchProducts()
+  }, [])
 
   const convertFilesToUploadedFiles = (files: File[]): IUploadedFile[] => {
     return files.map((file) => {
@@ -312,92 +333,116 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore}: IC
   }
 
   return (
-    <div id='cardCommentsSection' className={`${styles.card__bottom__box}`}>
-      {/* Секция вопросов - теперь первая */}
-      {cardData?.faq && cardData.faq.length > 0 && (
-        <div className={`${styles.questions__wrapper}`}>
-          <div className={`${styles.section__title}`}>
-            <h2 className={`fontInstrument ${styles.font_title}`}>{t('questions')}</h2>
+    <div id='cardCommentsSection' className={styles.card__bottom__box}>
+      <div className={styles.content__wrapper}>
+        {cardData?.faq && cardData.faq.length > 0 && (
+          <div className={styles.questions__wrapper}>
+            <div className={styles.section__title}>
+              <h2 className={`fontInstrument ${styles.font_title}`}>{t('questions')}</h2>
+            </div>
+            <div className={styles.questions__content}>
+              <Accordion
+                extraClass={styles.extra__accordion}
+                items={
+                  cardData.faq.map((el) => ({
+                    title: el.question,
+                    value: el.answer,
+                    id: el.id.toString()
+                  })) || []
+                }
+                multiActive={false}
+              />
+            </div>
+            <div className={styles.section__title}>
+              <h2 className={`fontInstrument ${styles.font_title}`}>{t('similar')}</h2>
+            </div>
+            <div className={styles.sim_box}>
+              {similarProducts.map((el) => (
+                <Card
+                  id={el.id}
+                  deliveryMethod={el.deliveryMethod}
+                  title={el.title}
+                  price={el.originalPrice}
+                  discount={el.discount}
+                  previewImageUrl={el.previewImageUrl}
+                  discountedPrice={el.discountedPrice}
+                  fullProduct={el}
+                  key={el.id}
+                />
+              ))}
+            </div>
           </div>
-          <div className={`${styles.questions__content}`}>
-            <Accordion
-              extraClass={styles.extra__accordion}
-              items={cardData.faq.map((el) => ({title: el.question, value: el.answer, id: el.id.toString()})) || []}
-              multiActive={false}
-            />
+        )}
+
+        <div className={styles.comments__column}>
+          <div className={styles.section__title}>
+            <h2 id='reviews-title' className={`fontInstrument ${styles.font_title}`}>
+              {t('revues')}
+            </h2>
           </div>
-        </div>
-      )}
+          <div className={styles.create__comment__box}>
+            <div className={styles.create__comment__box__rating}>
+              <p>{t('pleaseCreateComment')}</p>
+              <StarRating starsCountSet={starsCountSet} setStarsCountSet={setStarsCountSet} />
+            </div>
 
-      <div className={`${styles.section__title}`}>
-        <h2 className={`fontInstrument ${styles.font_title}`}>{t('revues')}</h2>
-      </div>
+            <form onSubmit={handleSubmit} className={styles.create__comment__form}>
+              <TextAreaUI
+                minRows={2}
+                maxRows={10}
+                theme='newWhite'
+                autoResize
+                placeholder={t('writeCommentPlaceholder')}
+                onSetValue={(e) => setCommentValue(e)}
+                extraClass={styles.extra__textarea__width}
+                currentValue={commentValue}
+              />
 
-      <div className={`${styles.content__wrapper}`}>
-        {/* Секция комментариев */}
-        <div className={`${styles.comments__section}`}>
-          {isLoading && comments.length === 0 ? (
-            <Skeleton height={100} count={3} style={{marginBottom: '16px', width: '90%', maxWidth: '400px'}} />
-          ) : (
-            <>
-              <ul className={`${styles.comments__list}`}>
-                {comments.length > 0 ? (
-                  comments.map((el, i) => (
-                    <li className={`${styles.comments__list__item}`} key={i}>
-                      <Comment {...el} />
+              <CreateImagesInputMinimalistic
+                onFilesChange={(files) => {
+                  const uploadedFilesArray = convertFilesToUploadedFiles(files)
+                  setUploadedFiles(uploadedFilesArray)
+                }}
+              />
+
+              <button type='submit' className={styles.send__comment__button} disabled={!commentValue.trim()}>
+                {t('send')}
+              </button>
+            </form>
+          </div>
+          <div className={styles.comments__section}>
+            {isLoading && comments.length === 0 ? (
+              <Skeleton height={100} count={3} style={{marginBottom: '16px', width: '90%', maxWidth: '400px'}} />
+            ) : (
+              <>
+                <ul className={styles.comments__list}>
+                  {comments.length > 0 ? (
+                    comments.map((el, i) => (
+                      <li className={styles.comments__list__item} key={i}>
+                        <Comment {...el} />
+                      </li>
+                    ))
+                  ) : (
+                    <li className={styles.no__comments}>
+                      <p className={styles.create__first__comment}>{t('noComments')}</p>
                     </li>
-                  ))
-                ) : (
-                  <li className={`${styles.no__comments}`}>
-                    <p className={`${styles.create__first__comment}`}>{t('noComments')}</p>
-                  </li>
+                  )}
+                </ul>
+
+                {hasMore && (
+                  <div className={styles.load__more__container}>
+                    <button
+                      onClick={onLoadMore || function () {}}
+                      className={styles.load__more__button}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? t('loading') || 'Загрузка...' : t('loadMore') || 'Просмотреть еще'}
+                    </button>
+                  </div>
                 )}
-              </ul>
-
-              {hasMore && (
-                <div className={`${styles.load__more__container}`}>
-                  <button
-                    onClick={onLoadMore || function () {}}
-                    className={`${styles.load__more__button}`}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? t('loading') || 'Загрузка...' : t('loadMore') || 'Просмотреть еще'}
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* Форма создания комментария */}
-        <div className={`${styles.create__comment__box}`}>
-          <div className={`${styles.create__comment__box__rating}`}>
-            <p>{t('pleaseCreateComment')}</p>
-            <StarRating starsCountSet={starsCountSet} setStarsCountSet={setStarsCountSet} />
+              </>
+            )}
           </div>
-
-          <form onSubmit={handleSubmit} className={`${styles.create__comment__form}`}>
-            <TextAreaUI
-              minRows={2}
-              maxRows={10}
-              theme='newWhite'
-              autoResize
-              placeholder={t('writeCommentPlaceholder')}
-              onSetValue={(e) => setCommentValue(e)}
-              extraClass={styles.extra__textarea__width}
-              currentValue={commentValue}
-            />
-            <CreateImagesInputMinimalistic
-              onFilesChange={(files) => {
-                const uploadedFilesArray = convertFilesToUploadedFiles(files)
-                setUploadedFiles(uploadedFilesArray)
-              }}
-            />
-
-            <button type='submit' className={`${styles.send__comment__button}`} disabled={!commentValue.trim()}>
-              {t('send')}
-            </button>
-          </form>
         </div>
       </div>
     </div>

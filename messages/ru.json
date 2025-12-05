@@ -423,6 +423,7 @@
       "days": "{count, plural, one {день} few {дня} many {дней} other {дней}}"
     },
     "CardBottomPage": {
+      "similar":"Похожие товары",
       "send":"Отправить",
       "success": "Успешно!",
       "successPublished": "Отзыв отправлен на модерацию",
@@ -492,6 +493,7 @@
     "days": "{count, plural, one {день} few {дня} many {дней} other {дня}}"
   },
   "CardBottomPage": {
+     "similar":"Похожие товары",
     "send":"Отправить",
     "success": "Успешно!",
     "successPublished": "Отзыв отправлен на модерацию",

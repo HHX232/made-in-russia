@@ -410,6 +410,7 @@
       "days": "{count, plural, one {day} other {days}}"
     },
     "CardBottomPage": {
+      "similar": "Similar products",
        "send": "Send",
       "success": "Success!",
       "newDayerror": "You must be authorized and your account age must be more than 7 days",
@@ -482,6 +483,7 @@
       "days": "{count, plural, one {day} other {days}}"
   },
   "CardBottomPage": {
+    "similar": "Similar products",
      "send": "Send",
     "success": "Success!",
     "newDayerror": "You must be authorized and your account age must be more than 7 days",

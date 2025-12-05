@@ -117,6 +117,7 @@ export default function CommentsSection({cardId}: CommentsSectionProps) {
 
   return (
     <CardBottomPageClient
+      productId={cardId}
       isLoading={isLoading}
       cardData={cardDataNew ?? ({} as ICardFull)}
       comments={comments}

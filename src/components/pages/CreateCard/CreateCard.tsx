@@ -499,7 +499,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               </div>
               <CreateCardProductCategory
                 initialProductCategory={selectedCategory || undefined}
-                // initialProductCategory={getValueForLang(selectedCategory, 'category')}
                 onSetCategory={(category) => setSelectedCategory(category)}
               />
             </div>

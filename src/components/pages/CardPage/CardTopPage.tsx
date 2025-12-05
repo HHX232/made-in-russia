@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import CardSlider from '@/components/UI-kit/elements/CardSlider/CardSlider'
 import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
-
 import Link from 'next/link'
 import Head from 'next/head'
 import styles from './CardPage.module.scss'
@@ -30,8 +29,6 @@ interface IPriceList {
   items: IPriceItem[]
   discountExpiration?: string | null
 }
-
-const im4 = '/shop__test.svg'
 
 // Компонент микроразметки
 const ProductSchema = ({
@@ -275,7 +272,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             />
           </svg>
           <div className={styles.gray__dot}></div>
-          <a href='#cardCommentsSection' className={styles.reviews__count}>
+          <a href='#reviews-title' className={styles.reviews__count}>
             {/* {cardData?.reviewsCount} {t('revues')} */}
             {t2('count', {count: cardData?.reviewsCount ?? 0})}
           </a>

@@ -286,8 +286,8 @@ const Card = memo<ICardProps>(
       )
     }
 
-    const vendorLogin = fullProduct.user.login
-    const vendorAddress = fullProduct.user.vendorDetails?.address
+    const vendorLogin = fullProduct.user?.login || ''
+    const vendorAddress = fullProduct.user?.vendorDetails?.address
     const priceCurrency = fullProduct?.priceCurrency || 'RUB'
     const isInFavorite = productInFavorites.some((product) => product.id === (fullProduct.id ? fullProduct.id : {}))
 
