@@ -357,19 +357,21 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore, pro
               <h2 className={`fontInstrument ${styles.font_title}`}>{t('similar')}</h2>
             </div>
             <div className={styles.sim_box}>
-              {similarProducts.map((el) => (
-                <Card
-                  id={el.id}
-                  deliveryMethod={el.deliveryMethod}
-                  title={el.title}
-                  price={el.originalPrice}
-                  discount={el.discount}
-                  previewImageUrl={el.previewImageUrl}
-                  discountedPrice={el.discountedPrice}
-                  fullProduct={el}
-                  key={el.id}
-                />
-              ))}
+              {similarProducts.length === 0 && <p className={styles.create__first__comment}>{t('similarNotFound')}</p>}
+              {similarProducts.length !== 0 &&
+                similarProducts.map((el) => (
+                  <Card
+                    id={el.id}
+                    deliveryMethod={el.deliveryMethod}
+                    title={el.title}
+                    price={el.originalPrice}
+                    discount={el.discount}
+                    previewImageUrl={el.previewImageUrl}
+                    discountedPrice={el.discountedPrice}
+                    fullProduct={el}
+                    key={el.id}
+                  />
+                ))}
             </div>
           </div>
         )}

@@ -411,6 +411,7 @@
     },
     "CardBottomPage": {
       "similar": "समान उत्पाद",
+      "similarNotFound": "समान उत्पाद नहीं मिले",
       "send": "भेजें",
       "success": "सफलता!",
       "newDayerror": "खाते की आयु 7 दिनों से अधिक होनी चाहिए",
@@ -484,6 +485,7 @@
   },
   "CardBottomPage": {
     "similar": "समान उत्पाद",
+    "similarNotFound": "समान उत्पाद नहीं मिले",
     "send": "भेजें",
     "success": "सफलता!",
     "newDayerror": "खाते की आयु 7 दिनों से अधिक होनी चाहिए",

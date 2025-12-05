@@ -424,6 +424,7 @@
     },
     "CardBottomPage": {
       "similar":"Похожие товары",
+      "similarNotFound":"Похожие товары не найдены",
       "send":"Отправить",
       "success": "Успешно!",
       "successPublished": "Отзыв отправлен на модерацию",
@@ -494,6 +495,7 @@
   },
   "CardBottomPage": {
      "similar":"Похожие товары",
+     "similarNotFound":"Похожие товары не найдены",
     "send":"Отправить",
     "success": "Успешно!",
     "successPublished": "Отзыв отправлен на модерацию",

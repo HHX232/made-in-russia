@@ -411,6 +411,7 @@
     },
     "CardBottomPage": {
       "similar": "Similar products",
+      "similarNotFound": "Similar products not found",
        "send": "Send",
       "success": "Success!",
       "newDayerror": "You must be authorized and your account age must be more than 7 days",
@@ -484,6 +485,7 @@
   },
   "CardBottomPage": {
     "similar": "Similar products",
+    "similarNotFound": "Similar products not found",
      "send": "Send",
     "success": "Success!",
     "newDayerror": "You must be authorized and your account age must be more than 7 days",
