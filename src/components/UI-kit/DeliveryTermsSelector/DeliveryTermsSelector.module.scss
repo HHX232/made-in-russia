@@ -88,6 +88,32 @@
   }
 }
 
+.drop__extra__image__modal__second {
+  width: 300px !important;
+  height: 300px !important;
+  aspect-ratio: 1/1;
+}
+
+.drop__extra {
+  max-width: none !important;
+
+  & > div > svg {
+    display: none !important;
+  }
+
+  & > ul {
+    width: max-content !important;
+    max-width: none !important;
+    transform: translate(-100%, -20%);
+  }
+}
+
+.title__wrapper {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
 .dropdown__list {
   position: absolute;
   z-index: 1000090000;

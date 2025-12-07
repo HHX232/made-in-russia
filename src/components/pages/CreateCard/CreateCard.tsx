@@ -39,16 +39,16 @@ import DeliveryTermsSelector from '@/components/UI-kit/DeliveryTermsSelector/Del
 const vopros = '/vopros.svg'
 // Конфигурация изображений для подсказок
 export const HELP_IMAGES = {
-  title: '/create/help1.jpg',
-  productImages: '/create/help2.jpg',
-  prices: '/create/help3.jpg',
-  saleDate: '/create/help4.jpg',
-  delivery: '/create/help5.jpg',
-  charactersTable: '/create/help6.jpg',
-  description: '/create/help7.jpg',
-  companyDescription: '/create/help8.jpg',
+  title: '/newHelps/name.png',
+  productImages: '',
+  prices: '/newHelps/spisocCen.png',
+  saleDate: '/newHelps/info-about-price.png',
+  delivery: '/newHelps/incomers.png',
+  charactersTable: '/newHelps/charachterisrick.png',
+  description: '/newHelps/description.png',
+  companyDescription: '',
   faq: '/create/help9.jpg',
-  similarProducts: '/create/help10.jpg'
+  similarProducts: ''
 } as const
 
 const CreateCard: FC<CreateCardProps> = ({initialData}) => {
@@ -460,26 +460,28 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 <label className={`${styles.create__label__title}`} htmlFor='cy-title-create-input'>
                   {t('name')}
                 </label>
-                <DropList
-                  direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
-                  safeAreaEnabled
-                  positionIsAbsolute={false}
-                  trigger='hover'
-                  extraClass={`${styles.drop__extra} ${styles.drop__extra__first}`}
-                  arrowClassName={`${styles.arrow__none}`}
-                  title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                  items={[
-                    <Image
-                      className={`${styles.drop__extra__image}`}
-                      src={HELP_IMAGES.title}
-                      alt={t('altHelpWithName')}
-                      width={300}
-                      height={300}
-                      key={1}
-                      onClick={() => openModal(HELP_IMAGES.title)}
-                    />
-                  ]}
-                />
+                {HELP_IMAGES.title.length !== 0 && (
+                  <DropList
+                    direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+                    safeAreaEnabled
+                    positionIsAbsolute={false}
+                    trigger='hover'
+                    extraClass={`${styles.drop__extra} ${styles.drop__extra__first}`}
+                    arrowClassName={`${styles.arrow__none}`}
+                    title={<Image src={vopros} alt='vopros' width={27} height={27} />}
+                    items={[
+                      <Image
+                        className={`${styles.drop__extra__image}`}
+                        src={HELP_IMAGES.title}
+                        alt={t('altHelpWithName')}
+                        width={300}
+                        height={300}
+                        key={1}
+                        onClick={() => openModal(HELP_IMAGES.title)}
+                      />
+                    ]}
+                  />
+                )}
               </div>
               <TextInputUI
                 errorValue={errors.cardTitle}
@@ -506,26 +508,28 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             <div className={`${styles.create__input__box__span} ${styles.create__input__box__span__images}`}>
               <div className={`${styles.label__title__box}`}>
                 <p className={`${styles.create__label__title}`}>{t('imageCard')}</p>
-                <DropList
-                  direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
-                  safeAreaEnabled
-                  positionIsAbsolute={false}
-                  trigger='hover'
-                  extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
-                  arrowClassName={`${styles.arrow__none}`}
-                  title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                  items={[
-                    <Image
-                      className={`${styles.drop__extra__image}`}
-                      src={HELP_IMAGES.productImages}
-                      alt={t('altHelpWithImageCard')}
-                      width={300}
-                      height={300}
-                      key={1}
-                      onClick={() => openModal(HELP_IMAGES.productImages)}
-                    />
-                  ]}
-                />
+                {HELP_IMAGES.productImages.length !== 0 && (
+                  <DropList
+                    direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+                    safeAreaEnabled
+                    positionIsAbsolute={false}
+                    trigger='hover'
+                    extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
+                    arrowClassName={`${styles.arrow__none}`}
+                    title={<Image src={vopros} alt='vopros' width={27} height={27} />}
+                    items={[
+                      <Image
+                        className={`${styles.drop__extra__image}`}
+                        src={HELP_IMAGES.productImages}
+                        alt={t('altHelpWithImageCard')}
+                        width={300}
+                        height={300}
+                        key={1}
+                        onClick={() => openModal(HELP_IMAGES.productImages)}
+                      />
+                    ]}
+                  />
+                )}
               </div>
               <CreateImagesInput
                 onFilesChange={handleUploadedFilesChange}
@@ -542,26 +546,28 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             <div style={{display: 'none'}}>
               <div className={`${styles.label__title__box}`}>
                 <h3 className={`${styles.create__similar__products__box__title}`}>{t('similarProducts')}</h3>
-                <DropList
-                  direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
-                  safeAreaEnabled
-                  positionIsAbsolute={false}
-                  trigger='hover'
-                  extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
-                  arrowClassName={`${styles.arrow__none}`}
-                  title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                  items={[
-                    <Image
-                      className={`${styles.drop__extra__image}`}
-                      src={HELP_IMAGES.similarProducts}
-                      alt={t('altHelpWithSimilarProducts')}
-                      width={300}
-                      height={300}
-                      key={1}
-                      onClick={() => openModal(HELP_IMAGES.similarProducts)}
-                    />
-                  ]}
-                />
+                {HELP_IMAGES.similarProducts.length !== 0 && (
+                  <DropList
+                    direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+                    safeAreaEnabled
+                    positionIsAbsolute={false}
+                    trigger='hover'
+                    extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
+                    arrowClassName={`${styles.arrow__none}`}
+                    title={<Image src={vopros} alt='vopros' width={27} height={27} />}
+                    items={[
+                      <Image
+                        className={`${styles.drop__extra__image}`}
+                        src={HELP_IMAGES.similarProducts}
+                        alt={t('altHelpWithSimilarProducts')}
+                        width={300}
+                        height={300}
+                        key={1}
+                        onClick={() => openModal(HELP_IMAGES.similarProducts)}
+                      />
+                    ]}
+                  />
+                )}
               </div>
 
               <CreateSimilarProducts

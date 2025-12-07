@@ -3,10 +3,16 @@ import {useState, useEffect, useRef} from 'react'
 import Image from 'next/image'
 import styles from './DeliveryTermsSelector.module.scss'
 import {axiosClassic} from '@/api/api.interceptor'
+import {HELP_IMAGES} from '@/components/pages/CreateCard/CreateCard'
+import DropList from '../Texts/DropList/DropList'
+import {useImageModal} from '@/hooks/useImageModal'
+import useWindowWidth from '@/hooks/useWindoWidth'
+import ModalWindowDefault from '../modals/ModalWindowDefault/ModalWindowDefault'
 
 const plusCircle = '/create-card/plus-circle.svg'
 const minusCircle = '/create-card/minusCircle.svg'
 const deliveryTermsImage = '/del.jpeg'
+const vopros = '/vopros.svg'
 
 export interface DeliveryTerm {
   id: string
@@ -127,6 +133,8 @@ const DeliveryTermsSelector = ({
   const dropdownRefs = useRef<(HTMLDivElement | null)[]>([])
   const [activeTerms, setActiveTerms] = useState<DeliveryTerm[]>(availableTerms)
   const [isFirstRender, setIsFirstRender] = useState(true)
+  const {modalImage, isModalOpen: isHelpModalOpen, openModal, closeModal} = useImageModal()
+  const windowWidth = useWindowWidth()
 
   useEffect(() => {
     if (!isFirstRender) {
@@ -208,11 +216,65 @@ const DeliveryTermsSelector = ({
   const getSelectedTerm = (termId: string): DeliveryTerm | undefined => {
     return activeTerms.find((term) => term.id === termId)
   }
-
+  {
+    /* <DropList
+                    direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
+                    safeAreaEnabled
+                    extraClass={`${styles.drop__extra}`}
+                    positionIsAbsolute={false}
+                    trigger='hover'
+                    arrowClassName={`${styles.arrow__none}`}
+                    title={<Image src={vopros} alt='question' width={27} height={27} />}
+                    items={[
+                      <Image
+                        onClick={() => openModal(HELP_IMAGES.delivery)}
+                        src={HELP_IMAGES.delivery}
+                        alt='question'
+                        width={300}
+                        height={300}
+                        key={1}
+                      />
+                    ]}
+                  /> */
+  }
   return (
     <div className={styles.delivery__terms__wrapper}>
+      <ModalWindowDefault isOpen={isHelpModalOpen} onClose={closeModal}>
+        {modalImage && (
+          <Image
+            className={`${styles.drop__extra__image} ${styles.drop__extra__image__modal}`}
+            src={modalImage}
+            alt='Help image'
+            width={1000}
+            height={1000}
+          />
+        )}
+      </ModalWindowDefault>
       <div className={styles.delivery__terms__header}>
-        {title && <h3 className={styles.delivery__terms__title}>{title}</h3>}
+        {title && (
+          <div className={styles.title__wrapper}>
+            <h3 className={styles.delivery__terms__title}>{title}</h3>
+            <DropList
+              direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
+              safeAreaEnabled
+              extraClass={`${styles.drop__extra}`}
+              positionIsAbsolute={false}
+              trigger='hover'
+              arrowClassName={`${styles.arrow__none}`}
+              title={<Image src={vopros} alt='question' width={27} height={27} />}
+              items={[
+                <Image
+                  onClick={() => openModal(HELP_IMAGES.delivery)}
+                  src={HELP_IMAGES.delivery}
+                  alt='question'
+                  width={300}
+                  height={300}
+                  key={1}
+                />
+              ]}
+            />
+          </div>
+        )}
         <button type='button' className={styles.help__button} onClick={() => setIsModalOpen(true)}>
           Описание методов
         </button>

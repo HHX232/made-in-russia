@@ -11,6 +11,7 @@ import {useActions} from '@/hooks/useActions'
 import ProductService from '@/services/products/product.service'
 import {useTranslations} from 'next-intl'
 import CardsCatalogv2 from './CardsCatalogv2/CardsCatalog'
+import Link from 'next/link'
 
 export interface CatalogProps {
   initialProducts: Product[]
@@ -235,7 +236,7 @@ const Catalog: FC<CatalogProps> = ({
                 {t('resultTitle')}: {resultTitle || textParams}
               </h2>
             )}
-            <div className={styles.spec__search__line}>
+            <div className={`${styles.spec__search__line} ${showAdminStatusFilters && styles.full__search}`}>
               <button className={styles.mobile__filter__button} onClick={() => setIsMobileFilterOpen(true)}>
                 <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
@@ -332,6 +333,11 @@ const Catalog: FC<CatalogProps> = ({
                 <p className={styles.global_count__cards}>
                   {t('found')} {productsCountGlobal} {t('products')}
                 </p>
+              )}
+              {showAdminStatusFilters && (
+                <Link href='/create-card'>
+                  <div className={styles.create__button__admin}> Создать товар</div>
+                </Link>
               )}
             </div>
           </div>

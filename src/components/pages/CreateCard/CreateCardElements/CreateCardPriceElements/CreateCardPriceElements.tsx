@@ -26,12 +26,11 @@ interface CreateCardPriceElementsProps {
   pricesError?: string
   inputType?: TInputType[]
   currentLanguage: Language
-  // Изменяем тип для поддержки массива массивов
   dropdownPricesOptions?: string[][]
-  // Добавляем новый пропс для управления возможностью создания новых опций
   canCreateNewOption?: boolean[]
   extra__rows__grid?: string
 }
+
 const sanitizeQuantity = (value: string) => {
   const match = value.match(/^\d+/)
   return match ? match[0] : ''
@@ -48,7 +47,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     canCreateNewOption = [],
     extra__rows__grid
   }) => {
-    // RTK actions
     const {
       updateCharacteristic,
       setCharacteristics,
@@ -68,15 +66,17 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       setCurrentLanguage
     } = useActions()
 
-    // RTK selectors
     const currentData = useTypedSelector((state) => state.multiLanguageCardPriceData[currentLanguage])
     const currentErrors = useTypedSelector((state) => state.multiLanguageCardPriceData.errors[currentLanguage])
     const storeCurrentLanguage = useTypedSelector((state) => state.multiLanguageCardPriceData.currentLanguage)
 
-    // Локальное состояние только для списка цен (так как он не в слайсе)
+    // Состояние для цены со скидкой (отдельный инпут)
+    const [discountPrice, setDiscountPrice] = useState('')
+
+    // Локальное состояние для списка цен (теперь БЕЗ priceWithDiscount)
     const [pricesMatrix, setPricesMatrix] = useState<string[][]>(
       (pricesArray || []).map((row) => {
-        const newRow = [...row]
+        const newRow = [row[0], row[1], row[3], row[4]] // убираем индекс 2 (priceWithDiscount)
         if (newRow[0]) {
           const match = newRow[0].match(/^\d+/)
           newRow[0] = match ? match[0] : ''
@@ -85,14 +85,19 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       })
     )
 
-    // Добавляем ключи для принудительного ре-рендера RowsInputs при смене языка
     const [characteristicsKey, setCharacteristicsKey] = useState(0)
     const [deliveryKey, setDeliveryKey] = useState(0)
     const [packagingKey, setPackagingKey] = useState(0)
 
     const t = useTranslations('CreateCardPriceElementsText')
 
-    // Функция для преобразования dropdownPricesOptions в нужный формат для RowsInputs
+    // Инициализация цены со скидкой из pricesArray
+    useEffect(() => {
+      if (pricesArray && pricesArray.length > 0 && pricesArray[0][2]) {
+        setDiscountPrice(pricesArray[0][2])
+      }
+    }, [])
+
     const prepareDropdownOptions = () => {
       if (!inputType || dropdownPricesOptions.length === 0) {
         return []
@@ -101,7 +106,10 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       const result: string[][] = []
       let dropdownIndex = 0
 
-      inputType.forEach((type, index) => {
+      // Корректируем для нового набора inputType (без priceWithDiscount)
+      const adjustedInputType = inputType.filter((_, index) => index !== 2)
+
+      adjustedInputType.forEach((type, index) => {
         if (type === 'dropdown') {
           if (dropdownIndex < dropdownPricesOptions.length) {
             result[index] = dropdownPricesOptions[dropdownIndex]
@@ -117,7 +125,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       return result
     }
 
-    // Функция для подготовки массива canCreateNewOption в нужном формате
     const prepareCanCreateNewOption = () => {
       if (!inputType || canCreateNewOption.length === 0) {
         return []
@@ -126,7 +133,9 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       const result: boolean[] = []
       let dropdownIndex = 0
 
-      inputType.forEach((type, index) => {
+      const adjustedInputType = inputType.filter((_, index) => index !== 2)
+
+      adjustedInputType.forEach((type, index) => {
         if (type === 'dropdown') {
           if (dropdownIndex < canCreateNewOption.length) {
             result[index] = canCreateNewOption[dropdownIndex]
@@ -142,33 +151,29 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       return result
     }
 
-    // Устанавливаем текущий язык в store при изменении пропса
     useEffect(() => {
       if (currentLanguage !== storeCurrentLanguage) {
         setCurrentLanguage(currentLanguage)
       }
     }, [currentLanguage, storeCurrentLanguage, setCurrentLanguage])
 
-    // Принудительно обновляем ключи при смене языка для ре-рендера компонентов
     useEffect(() => {
       setCharacteristicsKey((prev) => prev + 1)
       setDeliveryKey((prev) => prev + 1)
       setPackagingKey((prev) => prev + 1)
     }, [currentLanguage])
 
-    // Обработчик для матрицы цен (остается локальным, так как не в слайсе)
+    // Обработчик для матрицы цен (теперь с 4 колонками вместо 5)
     const handlePriceSetValue = (rowIndex: number, inputIndex: number, value: string) => {
       const newMatrix = [...pricesMatrix]
 
       if (!newMatrix[rowIndex]) {
-        newMatrix[rowIndex] = new Array(5).fill('')
+        newMatrix[rowIndex] = new Array(4).fill('')
       }
 
       let sanitizedValue = value
 
-      // Если это первая колонка (quantity), фильтруем ввод
       if (inputIndex === 0) {
-        // Оставляем только цифры перед любым дефисом
         const match = sanitizedValue.match(/^\d+/)
         sanitizedValue = match ? match[0] : ''
       }
@@ -176,16 +181,16 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       newMatrix[rowIndex][inputIndex] = sanitizedValue
       setPricesMatrix(newMatrix)
 
-      // Преобразуем в формат для родительского компонента
+      // Преобразуем в формат для родительского компонента, добавляя discountPrice
       const formattedPrices = newMatrix
         .filter((row) => row.some((cell) => cell.trim()))
         .map((row) => ({
           quantity: row[0] || '',
           priceWithoutDiscount: row[1] || '',
-          priceWithDiscount: row[2] || '',
-          currency: row[3] || '',
-          unit: row[4] || '',
-          value: parseFloat(row[2] || row[1] || '0')
+          priceWithDiscount: discountPrice || '', // Берем из отдельного состояния
+          currency: row[2] || '',
+          unit: row[3] || '',
+          value: parseFloat(discountPrice || row[1] || '0')
         }))
 
       onSetPricesArray(formattedPrices)
@@ -199,16 +204,34 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
         .map((row) => ({
           quantity: row[0] || '',
           priceWithoutDiscount: row[1] || '',
-          priceWithDiscount: row[2] || '',
-          currency: row[3] || '',
-          unit: row[4] || '',
-          value: parseFloat(row[2] || row[1] || '0')
+          priceWithDiscount: discountPrice || '',
+          currency: row[2] || '',
+          unit: row[3] || '',
+          value: parseFloat(discountPrice || row[1] || '0')
         }))
 
       onSetPricesArray(formattedPrices)
     }
 
-    // Обработчики для характеристик
+    // Обработчик для отдельного инпута цены со скидкой
+    const handleDiscountPriceChange = (value: string) => {
+      setDiscountPrice(value)
+
+      // Обновляем родительский компонент
+      const formattedPrices = pricesMatrix
+        .filter((row) => row.some((cell) => cell.trim()))
+        .map((row) => ({
+          quantity: row[0] || '',
+          priceWithoutDiscount: row[1] || '',
+          priceWithDiscount: value || '',
+          currency: row[2] || '',
+          unit: row[3] || '',
+          value: parseFloat(value || row[1] || '0')
+        }))
+
+      onSetPricesArray(formattedPrices)
+    }
+
     const handleCharacteristicSetValue = (rowIndex: number, inputIndex: number, value: string) => {
       const field = inputIndex === 0 ? 'title' : 'characteristic'
       updateCharacteristic({
@@ -230,9 +253,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       })
     }
 
-    // Обработчики для доставки - теперь только title
     const handleDeliverySetValue = (rowIndex: number, inputIndex: number, value: string) => {
-      // Всегда обновляем только title (единственное поле)
       updateDelivery({
         language: currentLanguage,
         index: rowIndex,
@@ -244,7 +265,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     const handleDeliveryRowsChange = (newRows: string[][]) => {
       const delivery = newRows.map((row) => ({
         title: row[0] || '',
-        daysDelivery: '100' // Фиксированное значение для сохранения формата данных
+        daysDelivery: '100'
       }))
       setDelivery({
         language: currentLanguage,
@@ -252,7 +273,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       })
     }
 
-    // Обработчики для упаковки
     const handlePackagingSetValue = (rowIndex: number, inputIndex: number, value: string) => {
       const field = inputIndex === 0 ? 'title' : 'price'
       updatePackaging({
@@ -274,7 +294,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       })
     }
 
-    // Валидация и обработчики для информации о ценах
     const validateSaleDate = (value: string) => {
       if (!value.trim()) {
         setError({
@@ -340,16 +359,19 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       }
     }
 
-    // Синхронизация с внешними изменениями для цен
     useEffect(() => {
       if (pricesArray && JSON.stringify(pricesArray) !== JSON.stringify(pricesMatrix)) {
-        setPricesMatrix(pricesArray)
+        // Преобразуем с учетом новой структуры (без priceWithDiscount в матрице)
+        const newMatrix = pricesArray.map((row) => [row[0], row[1], row[3], row[4]])
+        setPricesMatrix(newMatrix)
+        // Обновляем discountPrice из первой строки
+        if (pricesArray.length > 0 && pricesArray[0][2]) {
+          setDiscountPrice(pricesArray[0][2])
+        }
       }
     }, [pricesArray])
 
-    // Преобразование данных из store в формат для RowsInputs
     const characteristicsMatrix = currentData.characteristics.map((item) => [item.title, item.characteristic])
-    // Для delivery теперь только одна колонка с title
     const deliveryMatrix = currentData.delivery.map((item) => [item.title])
     const packagingMatrix = currentData.packaging.map((item) => [item.title, item.price])
 
@@ -360,13 +382,14 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       console.log('currentData', currentData)
     }, [currentData])
 
-    // Подготавливаем данные для dropdown опций
     const preparedDropdownOptions = prepareDropdownOptions()
     const preparedCanCreateNewOption = prepareCanCreateNewOption()
 
+    // Корректируем inputType, убирая третий элемент
+    const adjustedInputType = inputType ? inputType.filter((_, index) => index !== 2) : undefined
+
     return (
       <div className={styles.create__prices__box}>
-        {/* Left */}
         <ModalWindowDefault isOpen={isModalOpen} onClose={closeModal}>
           {modalImage && (
             <Image
@@ -382,68 +405,86 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
           <div className={styles.rows__inputs__box__inner}>
             <div style={{zIndex: '66666666'}} className={`${styles.create__label__title__box}`}>
               <p className={`${styles.create__label__title}`}>{t('pricesList')}</p>
-              <DropList
-                direction={windowWidth && windowWidth < 768 ? 'left' : 'bottom'}
-                safeAreaEnabled
-                positionIsAbsolute={false}
-                trigger='hover'
-                arrowClassName={`${styles.arrow__none}`}
-                title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                items={[
-                  <Image
-                    onClick={() => openModal(HELP_IMAGES.prices)}
-                    src={HELP_IMAGES.prices}
-                    alt='question'
-                    width={300}
-                    height={300}
-                    key={1}
-                  />
-                ]}
-              />
-            </div>
-            <RowsInputs
-              useNewTheme
-              inputsInRowCount={5}
-              maxRows={1}
-              extra__rows__grid={styles.extra__rows__grid}
-              extraButtonPlusClass={styles.extra__plus__button__class}
-              extraGlobalClass={styles.delete__minus__button}
-              dropdownOptions={preparedDropdownOptions}
-              canCreateNewOption={preparedCanCreateNewOption}
-              inputType={inputType}
-              initialRowsCount={1}
-              idNames={['elementCount', 'originalPrice', 'priceWithDiscount', 'currency', 'unit']}
-              titles={[t('elementCount'), t('originalPrice'), t('priceWithDiscount'), t('currency'), t('unit')]}
-              rowsInitialValues={pricesMatrix}
-              onSetValue={handlePriceSetValue}
-              onRowsChange={handlePriceRowsChange}
-              errorMessage={pricesError}
-              minFilledRows={1}
-            />
-            <div className={styles.seller__date__box}>
-              <div className={styles.seller__title}>
-                <p className={styles.seller__title__text}>{t('infoAboutPrices')} </p>
+              {HELP_IMAGES.prices.length !== 0 && (
                 <DropList
-                  direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
+                  direction={windowWidth && windowWidth < 768 ? 'left' : 'bottom'}
                   safeAreaEnabled
-                  extraClass={`${styles.drop__extra}`}
                   positionIsAbsolute={false}
                   trigger='hover'
-                  useNewTheme
                   arrowClassName={`${styles.arrow__none}`}
-                  title={<Image src={vopros} alt='question' width={27} height={27} />}
+                  title={<Image src={vopros} alt='vopros' width={27} height={27} />}
                   items={[
                     <Image
-                      src={HELP_IMAGES.saleDate}
-                      className={styles.drop__extra__image__modal__second}
+                      onClick={() => openModal(HELP_IMAGES.prices)}
+                      src={HELP_IMAGES.prices}
                       alt='question'
-                      width={600}
-                      onClick={() => openModal(HELP_IMAGES.saleDate)}
-                      height={600}
+                      width={300}
+                      height={300}
                       key={1}
                     />
                   ]}
                 />
+              )}
+            </div>
+            <div style={{display: 'flex', flexDirection: 'column', width: '100%', gap: '20px'}}>
+              <RowsInputs
+                useNewTheme
+                inputsInRowCount={4}
+                maxRows={1}
+                extra__rows__grid={styles.extra__rows__grid}
+                extraButtonPlusClass={styles.extra__plus__button__class}
+                extraGlobalClass={styles.delete__minus__button}
+                dropdownOptions={preparedDropdownOptions}
+                canCreateNewOption={preparedCanCreateNewOption}
+                inputType={adjustedInputType}
+                initialRowsCount={1}
+                idNames={['elementCount', 'originalPrice', 'currency', 'unit']}
+                titles={[t('elementCount'), t('originalPrice'), t('currency'), t('unit')]}
+                rowsInitialValues={pricesMatrix}
+                onSetValue={handlePriceSetValue}
+                onRowsChange={handlePriceRowsChange}
+                errorMessage={pricesError}
+                minFilledRows={1}
+              />
+              <div className={styles.seller__date__box__inner__date}>
+                <p className={styles.seller__date__box__inner__date__text}>{t('minimalVolumeTitle')}</p>
+                <TextInputUI
+                  idForLabel='cy-minimalVolume'
+                  inputType='number'
+                  currentValue={currentData.priceInfo.minimalVolume}
+                  onSetValue={handleMinVolumeChange}
+                  theme='newWhite'
+                  placeholder={t('minimalVolumePlaceholder')}
+                  errorValue={currentErrors.minVolumeError}
+                />
+              </div>
+            </div>
+            <div className={styles.seller__date__box}>
+              <div className={styles.seller__title}>
+                <p className={styles.seller__title__text}>{t('infoAboutPrices')} </p>
+                {HELP_IMAGES.saleDate.length !== 0 && (
+                  <DropList
+                    direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
+                    safeAreaEnabled
+                    extraClass={`${styles.drop__extra}`}
+                    positionIsAbsolute={false}
+                    trigger='hover'
+                    useNewTheme
+                    arrowClassName={`${styles.arrow__none}`}
+                    title={<Image src={vopros} alt='question' width={27} height={27} />}
+                    items={[
+                      <Image
+                        src={HELP_IMAGES.saleDate}
+                        className={styles.drop__extra__image__modal__second}
+                        alt='question'
+                        width={600}
+                        onClick={() => openModal(HELP_IMAGES.saleDate)}
+                        height={600}
+                        key={1}
+                      />
+                    ]}
+                  />
+                )}
               </div>
               <div className={styles.seller__date__box__inner}>
                 <div className={styles.seller__date__box__inner__date}>
@@ -459,15 +500,14 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                   />
                 </div>
                 <div className={styles.seller__date__box__inner__date}>
-                  <p className={styles.seller__date__box__inner__date__text}>{t('minimalVolumeTitle')}</p>
+                  <p className={styles.seller__date__box__inner__date__text}>{t('priceWithDiscount')}</p>
                   <TextInputUI
-                    idForLabel='cy-minimalVolume'
+                    idForLabel='cy-priceWithDiscount'
                     inputType='number'
-                    currentValue={currentData.priceInfo.minimalVolume}
-                    onSetValue={handleMinVolumeChange}
+                    currentValue={discountPrice}
+                    onSetValue={handleDiscountPriceChange}
                     theme='newWhite'
-                    placeholder={t('minimalVolumePlaceholder')}
-                    errorValue={currentErrors.minVolumeError}
+                    placeholder={t('priceWithDiscount')}
                   />
                 </div>
               </div>
@@ -525,25 +565,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             <div style={{zIndex: '7777'}} className={styles.del__box}>
               <div className={styles.seller__title}>
                 <p className={styles.seller__title__text}>{t('deliveryInfo')}</p>
-                <DropList
-                  direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
-                  safeAreaEnabled
-                  extraClass={`${styles.drop__extra}`}
-                  positionIsAbsolute={false}
-                  trigger='hover'
-                  arrowClassName={`${styles.arrow__none}`}
-                  title={<Image src={vopros} alt='question' width={27} height={27} />}
-                  items={[
-                    <Image
-                      onClick={() => openModal(HELP_IMAGES.delivery)}
-                      src={HELP_IMAGES.delivery}
-                      alt='question'
-                      width={300}
-                      height={300}
-                      key={1}
-                    />
-                  ]}
-                />
               </div>
               <RowsInputs
                 key={`delivery-${deliveryKey}`}
@@ -578,7 +599,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             </div>
           </div>
         </div>
-        {/* Right */}
       </div>
     )
   }
