@@ -335,12 +335,12 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore, pro
   return (
     <div id='cardCommentsSection' className={styles.card__bottom__box}>
       <div className={styles.content__wrapper}>
-        {cardData?.faq && cardData.faq.length > 0 && (
-          <div className={styles.questions__wrapper}>
-            <div className={styles.section__title}>
-              <h2 className={`fontInstrument ${styles.font_title}`}>{t('questions')}</h2>
-            </div>
-            <div className={styles.questions__content}>
+        <div className={styles.questions__wrapper}>
+          <div className={`${styles.section__title} ${styles.desctop__show}`}>
+            <h2 className={`fontInstrument ${styles.font_title}`}>{t('questions')}</h2>
+          </div>
+          {cardData?.faq && cardData.faq.length > 0 ? (
+            <div className={`${styles.questions__content} ${styles.desctop__show}`}>
               <Accordion
                 extraClass={styles.extra__accordion}
                 items={
@@ -353,65 +353,58 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore, pro
                 multiActive={false}
               />
             </div>
-            <div className={styles.section__title}>
-              <h2 className={`fontInstrument ${styles.font_title}`}>{t('similar')}</h2>
-            </div>
-            <div className={styles.sim_box}>
-              {similarProducts.length === 0 && <p className={styles.create__first__comment}>{t('similarNotFound')}</p>}
-              {similarProducts.length !== 0 &&
-                similarProducts.map((el) => (
-                  <Card
-                    id={el.id}
-                    deliveryMethod={el.deliveryMethod}
-                    title={el.title}
-                    price={el.originalPrice}
-                    discount={el.discount}
-                    previewImageUrl={el.previewImageUrl}
-                    discountedPrice={el.discountedPrice}
-                    fullProduct={el}
-                    key={el.id}
-                  />
-                ))}
-            </div>
+          ) : (
+            <p>{t('noQuestions')}</p>
+          )}
+          <div className={`${styles.section__title} `}>
+            <h2 className={`fontInstrument ${styles.font_title}`}>{t('similar')}</h2>
           </div>
-        )}
+          <div className={styles.sim_box}>
+            {similarProducts.length === 0 && <p className={styles.create__first__comment}>{t('similarNotFound')}</p>}
+            {similarProducts.length !== 0 &&
+              similarProducts.map((el) => (
+                <Card
+                  id={el.id}
+                  deliveryMethod={el.deliveryMethod}
+                  title={el.title}
+                  price={el.originalPrice}
+                  discount={el.discount}
+                  previewImageUrl={el.previewImageUrl}
+                  discountedPrice={el.discountedPrice}
+                  fullProduct={el}
+                  key={el.id}
+                />
+              ))}
+          </div>
+        </div>
 
         <div className={styles.comments__column}>
-          <div className={styles.section__title}>
-            <h2 id='reviews-title' className={`fontInstrument ${styles.font_title}`}>
-              {t('revues')}
-            </h2>
+          <div className={`${styles.section__title} ${styles.desctop__hide}`}>
+            <h2 className={`fontInstrument ${styles.font_title}`}>{t('questions')}</h2>
           </div>
-          <div className={styles.create__comment__box}>
-            <div className={styles.create__comment__box__rating}>
-              <p>{t('pleaseCreateComment')}</p>
-              <StarRating starsCountSet={starsCountSet} setStarsCountSet={setStarsCountSet} />
+          {cardData?.faq && cardData.faq.length > 0 ? (
+            <div className={`${styles.questions__content} ${styles.desctop__hide}`}>
+              <Accordion
+                extraClass={styles.extra__accordion}
+                items={
+                  cardData.faq.map((el) => ({
+                    title: el.question,
+                    value: el.answer,
+                    id: el.id.toString()
+                  })) || []
+                }
+                multiActive={false}
+              />
             </div>
+          ) : (
+            <p>{t('noQuestions')}</p>
+          )}
 
-            <form onSubmit={handleSubmit} className={styles.create__comment__form}>
-              <TextAreaUI
-                minRows={2}
-                maxRows={10}
-                theme='newWhite'
-                autoResize
-                placeholder={t('writeCommentPlaceholder')}
-                onSetValue={(e) => setCommentValue(e)}
-                extraClass={styles.extra__textarea__width}
-                currentValue={commentValue}
-              />
-
-              <CreateImagesInputMinimalistic
-                onFilesChange={(files) => {
-                  const uploadedFilesArray = convertFilesToUploadedFiles(files)
-                  setUploadedFiles(uploadedFilesArray)
-                }}
-              />
-
-              <button type='submit' className={styles.send__comment__button} disabled={!commentValue.trim()}>
-                {t('send')}
-              </button>
-            </form>
+          <div className={`${styles.section__title} ${styles.relative_title}`}>
+            <div id='reviews-title' className={styles.absolute_title_link}></div>
+            <h2 className={`fontInstrument ${styles.font_title}`}>{t('revues')}</h2>
           </div>
+
           <div className={styles.comments__section}>
             {isLoading && comments.length === 0 ? (
               <Skeleton height={100} count={3} style={{marginBottom: '16px', width: '90%', maxWidth: '400px'}} />
@@ -444,6 +437,36 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore, pro
                 )}
               </>
             )}
+          </div>
+          <div className={styles.create__comment__box}>
+            <div className={styles.create__comment__box__rating}>
+              <p>{t('pleaseCreateComment')}</p>
+              <StarRating starsCountSet={starsCountSet} setStarsCountSet={setStarsCountSet} />
+            </div>
+
+            <form onSubmit={handleSubmit} className={styles.create__comment__form}>
+              <TextAreaUI
+                minRows={2}
+                maxRows={10}
+                theme='newWhite'
+                autoResize
+                placeholder={t('writeCommentPlaceholder')}
+                onSetValue={(e) => setCommentValue(e)}
+                extraClass={styles.extra__textarea__width}
+                currentValue={commentValue}
+              />
+
+              <CreateImagesInputMinimalistic
+                onFilesChange={(files) => {
+                  const uploadedFilesArray = convertFilesToUploadedFiles(files)
+                  setUploadedFiles(uploadedFilesArray)
+                }}
+              />
+
+              <button type='submit' className={styles.send__comment__button} disabled={!commentValue.trim()}>
+                {t('send')}
+              </button>
+            </form>
           </div>
         </div>
       </div>

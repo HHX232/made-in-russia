@@ -423,6 +423,7 @@
       "days": "{count, plural, one {день} few {дня} many {дней} other {дней}}"
     },
     "CardBottomPage": {
+      "noQuestions":"Вопросы и быстрые ответы на них пока не добавлены",
       "similar":"Похожие товары",
       "similarNotFound":"Похожие товары не найдены",
       "send":"Отправить",
@@ -494,6 +495,7 @@
     "days": "{count, plural, one {день} few {дня} many {дней} other {дня}}"
   },
   "CardBottomPage": {
+     "noQuestions":"Вопросы и быстрые ответы на них пока не добавлены",
      "similar":"Похожие товары",
      "similarNotFound":"Похожие товары не найдены",
     "send":"Отправить",

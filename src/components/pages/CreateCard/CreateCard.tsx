@@ -47,7 +47,7 @@ export const HELP_IMAGES = {
   charactersTable: '/newHelps/charachterisrick.png',
   description: '/newHelps/description.png',
   companyDescription: '',
-  faq: '/create/help9.jpg',
+  faq: '/newHelps/faq.png',
   similarProducts: ''
 } as const
 
@@ -461,25 +461,33 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                   {t('name')}
                 </label>
                 {HELP_IMAGES.title.length !== 0 && (
-                  <DropList
-                    direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
-                    safeAreaEnabled
-                    positionIsAbsolute={false}
-                    trigger='hover'
-                    extraClass={`${styles.drop__extra} ${styles.drop__extra__first}`}
-                    arrowClassName={`${styles.arrow__none}`}
-                    title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                    items={[
-                      <Image
-                        className={`${styles.drop__extra__image}`}
-                        src={HELP_IMAGES.title}
-                        alt={t('altHelpWithName')}
-                        width={300}
-                        height={300}
-                        key={1}
-                        onClick={() => openModal(HELP_IMAGES.title)}
-                      />
-                    ]}
+                  // <DropList
+                  //   direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+                  //   safeAreaEnabled
+                  //   positionIsAbsolute={false}
+                  //   trigger='hover'
+                  //   extraClass={`${styles.drop__extra} ${styles.drop__extra__first}`}
+                  //   arrowClassName={`${styles.arrow__none}`}
+                  //   title={<Image src={vopros} alt='vopros' width={27} height={27} />}
+                  //   items={[
+                  //     <Image
+                  //       className={`${styles.drop__extra__image}`}
+                  //       src={HELP_IMAGES.title}
+                  //       alt={t('altHelpWithName')}
+                  //       width={300}
+                  //       height={300}
+                  //       key={1}
+                  //       onClick={() => openModal(HELP_IMAGES.title)}
+                  //     />
+                  //   ]}
+                  // />
+                  <Image
+                    onClick={() => openModal(HELP_IMAGES.title)}
+                    src={vopros}
+                    style={{cursor: 'pointer'}}
+                    alt='vopros'
+                    width={27}
+                    height={27}
                   />
                 )}
               </div>
@@ -509,25 +517,33 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               <div className={`${styles.label__title__box}`}>
                 <p className={`${styles.create__label__title}`}>{t('imageCard')}</p>
                 {HELP_IMAGES.productImages.length !== 0 && (
-                  <DropList
-                    direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
-                    safeAreaEnabled
-                    positionIsAbsolute={false}
-                    trigger='hover'
-                    extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
-                    arrowClassName={`${styles.arrow__none}`}
-                    title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                    items={[
-                      <Image
-                        className={`${styles.drop__extra__image}`}
-                        src={HELP_IMAGES.productImages}
-                        alt={t('altHelpWithImageCard')}
-                        width={300}
-                        height={300}
-                        key={1}
-                        onClick={() => openModal(HELP_IMAGES.productImages)}
-                      />
-                    ]}
+                  // <DropList
+                  //   direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+                  //   safeAreaEnabled
+                  //   positionIsAbsolute={false}
+                  //   trigger='hover'
+                  //   extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
+                  //   arrowClassName={`${styles.arrow__none}`}
+                  //   title={<Image src={vopros} alt='vopros' width={27} height={27} />}
+                  //   items={[
+                  //     <Image
+                  //       className={`${styles.drop__extra__image}`}
+                  //       src={HELP_IMAGES.productImages}
+                  //       alt={t('altHelpWithImageCard')}
+                  //       width={300}
+                  //       height={300}
+                  //       key={1}
+                  //       onClick={() => openModal(HELP_IMAGES.productImages)}
+                  //     />
+                  //   ]}
+                  // />
+                  <Image
+                    onClick={() => openModal(HELP_IMAGES.productImages)}
+                    src={vopros}
+                    style={{cursor: 'pointer'}}
+                    alt='vopros'
+                    width={27}
+                    height={27}
                   />
                 )}
               </div>
@@ -547,25 +563,33 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               <div className={`${styles.label__title__box}`}>
                 <h3 className={`${styles.create__similar__products__box__title}`}>{t('similarProducts')}</h3>
                 {HELP_IMAGES.similarProducts.length !== 0 && (
-                  <DropList
-                    direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
-                    safeAreaEnabled
-                    positionIsAbsolute={false}
-                    trigger='hover'
-                    extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
-                    arrowClassName={`${styles.arrow__none}`}
-                    title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                    items={[
-                      <Image
-                        className={`${styles.drop__extra__image}`}
-                        src={HELP_IMAGES.similarProducts}
-                        alt={t('altHelpWithSimilarProducts')}
-                        width={300}
-                        height={300}
-                        key={1}
-                        onClick={() => openModal(HELP_IMAGES.similarProducts)}
-                      />
-                    ]}
+                  // <DropList
+                  //   direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
+                  //   safeAreaEnabled
+                  //   positionIsAbsolute={false}
+                  //   trigger='hover'
+                  //   extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
+                  //   arrowClassName={`${styles.arrow__none}`}
+                  //   title={<Image src={vopros} alt='vopros' width={27} height={27} />}
+                  //   items={[
+                  //     <Image
+                  //       className={`${styles.drop__extra__image}`}
+                  //       src={HELP_IMAGES.similarProducts}
+                  //       alt={t('altHelpWithSimilarProducts')}
+                  //       width={300}
+                  //       height={300}
+                  //       key={1}
+                  //       onClick={() => openModal(HELP_IMAGES.similarProducts)}
+                  //     />
+                  //   ]}
+                  // />
+                  <Image
+                    onClick={() => openModal(HELP_IMAGES.similarProducts)}
+                    src={vopros}
+                    style={{cursor: 'pointer'}}
+                    alt='vopros'
+                    width={27}
+                    height={27}
                   />
                 )}
               </div>

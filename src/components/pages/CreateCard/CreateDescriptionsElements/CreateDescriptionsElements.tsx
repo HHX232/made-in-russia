@@ -2,7 +2,7 @@
 import {FC, useState, useRef, useEffect} from 'react'
 import styles from './CreateDescriptionsElements.module.scss'
 import Image from 'next/image'
-import DropList from '@/components/UI-kit/Texts/DropList/DropList'
+// import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import {useImageModal} from '@/hooks/useImageModal'
 import {HELP_IMAGES} from '../CreateCard'
@@ -116,7 +116,7 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
               {t('descriptionPlaceholder')}{' '}
               <span className={`${styles.required} ${showDescriptionError ? styles.required__error : ''}`}>*</span>
             </p>
-            <DropList
+            {/* <DropList
               direction={'bottom'}
               safeAreaEnabled
               extraClass={`${styles.drop__extra}`}
@@ -133,7 +133,17 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
                   height={300}
                   key={1}
                 />
+                
               ]}
+              
+            /> */}
+            <Image
+              onClick={() => openModal(HELP_IMAGES.description)}
+              src={vopros}
+              style={{cursor: 'pointer'}}
+              alt='vopros'
+              width={27}
+              height={27}
             />
           </div>
           <div className={styles.editor__wrapper} onFocus={handleDescriptionFocus} onBlur={handleDescriptionBlur}>

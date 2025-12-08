@@ -8,6 +8,14 @@
   }
 }
 
+.onlyShow {
+  cursor: default !important;
+
+  & > * {
+    cursor: default !important;
+  }
+}
+
 .cat__search {
   width: 100%;
   padding: 12px 16px;
@@ -185,12 +193,12 @@
   transition: background-color 0.2s;
 
   &:hover {
-     border-radius: 10px;
+    border-radius: 10px;
     background-color: #dedede;
   }
 
   &.optionSelected {
-     border-radius: 10px;
+    border-radius: 10px;
     background-color: #f0f7ff;
 
     &:hover {

@@ -109,9 +109,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     }, 0)
   }
 
-  const handleBold = () => insertMarkdown('**', '**')
-  const handleItalic = () => insertMarkdown('*', '*') // use standard markdown italics
-  const handleUnderline = () => insertMarkdown('<u>', '</u>') // underline not native markdown, keep html tags
+  const handleBold = () => insertMarkdown('<b>', '</b>')
+  const handleItalic = () => insertMarkdown('<i>', '</i>')
+  const handleUnderline = () => insertMarkdown('<u>', '</u>')
 
   const handleUnorderedList = () => {
     if (readOnly) return

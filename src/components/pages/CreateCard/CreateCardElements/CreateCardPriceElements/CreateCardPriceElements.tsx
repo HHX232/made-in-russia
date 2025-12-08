@@ -406,23 +406,31 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             <div style={{zIndex: '66666666'}} className={`${styles.create__label__title__box}`}>
               <p className={`${styles.create__label__title}`}>{t('pricesList')}</p>
               {HELP_IMAGES.prices.length !== 0 && (
-                <DropList
-                  direction={windowWidth && windowWidth < 768 ? 'left' : 'bottom'}
-                  safeAreaEnabled
-                  positionIsAbsolute={false}
-                  trigger='hover'
-                  arrowClassName={`${styles.arrow__none}`}
-                  title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                  items={[
-                    <Image
-                      onClick={() => openModal(HELP_IMAGES.prices)}
-                      src={HELP_IMAGES.prices}
-                      alt='question'
-                      width={300}
-                      height={300}
-                      key={1}
-                    />
-                  ]}
+                // <DropList
+                //   direction={windowWidth && windowWidth < 768 ? 'left' : 'bottom'}
+                //   safeAreaEnabled
+                //   positionIsAbsolute={false}
+                //   trigger='hover'
+                //   arrowClassName={`${styles.arrow__none}`}
+                //   title={<Image src={vopros} alt='vopros' width={27} height={27} />}
+                //   items={[
+                //     <Image
+                //       onClick={() => openModal(HELP_IMAGES.prices)}
+                //       src={HELP_IMAGES.prices}
+                //       alt='question'
+                //       width={300}
+                //       height={300}
+                //       key={1}
+                //     />
+                //   ]}
+                // />
+                <Image
+                  onClick={() => openModal(HELP_IMAGES.prices)}
+                  src={vopros}
+                  style={{cursor: 'pointer'}}
+                  alt='vopros'
+                  width={27}
+                  height={27}
                 />
               )}
             </div>
@@ -463,26 +471,34 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               <div className={styles.seller__title}>
                 <p className={styles.seller__title__text}>{t('infoAboutPrices')} </p>
                 {HELP_IMAGES.saleDate.length !== 0 && (
-                  <DropList
-                    direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
-                    safeAreaEnabled
-                    extraClass={`${styles.drop__extra}`}
-                    positionIsAbsolute={false}
-                    trigger='hover'
-                    useNewTheme
-                    arrowClassName={`${styles.arrow__none}`}
-                    title={<Image src={vopros} alt='question' width={27} height={27} />}
-                    items={[
-                      <Image
-                        src={HELP_IMAGES.saleDate}
-                        className={styles.drop__extra__image__modal__second}
-                        alt='question'
-                        width={600}
-                        onClick={() => openModal(HELP_IMAGES.saleDate)}
-                        height={600}
-                        key={1}
-                      />
-                    ]}
+                  // <DropList
+                  //   direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
+                  //   safeAreaEnabled
+                  //   extraClass={`${styles.drop__extra}`}
+                  //   positionIsAbsolute={false}
+                  //   trigger='hover'
+                  //   useNewTheme
+                  //   arrowClassName={`${styles.arrow__none}`}
+                  //   title={<Image src={vopros} alt='question' width={27} height={27} />}
+                  //   items={[
+                  //     <Image
+                  //       src={HELP_IMAGES.saleDate}
+                  //       className={styles.drop__extra__image__modal__second}
+                  //       alt='question'
+                  //       width={600}
+                  //       onClick={() => openModal(HELP_IMAGES.saleDate)}
+                  //       height={600}
+                  //       key={1}
+                  //     />
+                  //   ]}
+                  // />
+                  <Image
+                    onClick={() => openModal(HELP_IMAGES.saleDate)}
+                    src={vopros}
+                    style={{cursor: 'pointer'}}
+                    alt='vopros'
+                    width={27}
+                    height={27}
                   />
                 )}
               </div>

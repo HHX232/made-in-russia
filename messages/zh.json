@@ -410,6 +410,7 @@
       "days": "{count, plural, other {天}}"
     },
     "CardBottomPage": {
+      "noQuestions": "问题和快速答案尚未添加",
       "similar": "类似商品",
       "similarNotFound": "未找到类似商品",
       "send": "发送",
@@ -484,6 +485,7 @@
       "days": "{count, plural, other {天}}"
   },
   "CardBottomPage": {
+    "noQuestions": "问题和快速答案尚未添加",
     "similar": "类似商品",
     "similarNotFound": "未找到类似商品",
     "send": "发送",

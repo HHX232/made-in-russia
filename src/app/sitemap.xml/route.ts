@@ -84,14 +84,14 @@ export async function GET() {
     }))
 
     // Динамические страницы вендоров
-    const vendorUrls = seoData.vendors.map((vendor) => ({
-      url: `${baseUrl}/data-vendor/${vendor.id}`,
-      lastModified: new Date(vendor.updatedAt || vendor.registeredAt).toISOString(),
-      changeFrequency: 'monthly',
-      priority: 0.5
-    }))
+    // const vendorUrls = seoData.vendors.map((vendor) => ({
+    //   url: `${baseUrl}/data-vendor/${vendor.id}`,
+    //   lastModified: new Date(vendor.updatedAt || vendor.registeredAt).toISOString(),
+    //   changeFrequency: 'monthly',
+    //   priority: 0.5
+    // }))
 
-    const allUrls = [...staticUrls, ...productUrls, ...vendorUrls]
+    const allUrls = [...staticUrls, ...productUrls]
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

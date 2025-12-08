@@ -518,7 +518,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
     return (
       <div
         style={{cursor: 'default'}}
-        className={`${styles.multiDropSelect} ${styles.readOnly} ${disabled ? styles.disabled : ''}`}
+        className={`${styles.multiDropSelect} ${styles.readOnly} ${isOnlyShow && styles.onlyShow} ${disabled ? styles.disabled : ''}`}
       >
         <DropdownTitle />
       </div>
@@ -526,7 +526,7 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
   }
 
   return (
-    <div className={`${styles.multiDropSelect} ${disabled ? styles.disabled : ''}`}>
+    <div className={`${styles.multiDropSelect} ${isOnlyShow && styles.onlyShow} ${disabled ? styles.disabled : ''} `}>
       <DropList
         extraClass={styles.dropList}
         gap='0'

@@ -24,30 +24,66 @@
 }
 
 .descr__list__item {
+  position: relative; // КЛЮЧЕВОЕ: для абсолютного позиционирования линии
   display: flex;
   width: 100%;
-  align-items: end;
   justify-content: space-between;
   color: rgb(47 47 47 / 70%); // 2F2F2F 70%
-  gap: 0;
+  gap: 8px; // Минимальный отступ между элементами
+  overflow-x: clip;
 
   & > p {
-    max-width: 40%;
+    position: relative;
+    z-index: 2; // КЛЮЧЕВОЕ: текст поверх линии
+
+    // КЛЮЧЕВОЕ: фон для каждой строки отдельно
+    display: inline;
+    max-width: 45%;
+    padding: 0 4px;
+    background-color: #fff;
+    box-decoration-break: clone;
+    box-decoration-break: clone;
+    line-height: 1.4;
     text-align: start;
+  }
+
+  & > p:first-child {
+    max-height: fit-content;
+
+    &::before {
+      position: absolute;
+      z-index: 1;
+      right: -100vw;
+      bottom: 4px;
+      width: 100vw;
+      height: 1px;
+      background-image: repeating-linear-gradient(
+        to right,
+        rgb(47 47 47 / 20%) 0,
+        rgb(47 47 47 / 20%) 4px,
+        transparent 4px,
+        transparent 8px
+      );
+      content: '';
+      pointer-events: none;
+    }
   }
 }
 
 .element__title {
   flex-shrink: 0;
+  padding-right: 4px !important; // Отступ справа
+  padding-left: 0 !important; // Без отступа слева
   color: rgb(47 47 47 / 70%);
 }
 
 .dotted__line {
+  position: absolute; // КЛЮЧЕВОЕ: абсолютное позиционирование
+  z-index: 1; // КЛЮЧЕВОЕ: линия под текстом
+  right: 0;
+  bottom: 3px; // Выравнивание с базовой линией текста
+  left: 0;
   height: 1px;
-  flex-grow: 1;
-  align-self: flex-end;
-  margin: 0 4px;
-  margin-bottom: 3px; // Отступ для выравнивания с базовой линией текста
   background-image: repeating-linear-gradient(
     to right,
     rgb(47 47 47 / 20%) 0,
@@ -55,11 +91,14 @@
     transparent 4px,
     transparent 8px
   );
+  pointer-events: none; // На всякий случай, чтобы не мешала кликам
 }
 
 .element__value {
   max-width: 45%;
   flex-shrink: 0;
+  padding-right: 0 !important; // Без отступа справа
+  padding-left: 4px !important; // Отступ слева
   color: rgb(47 47 47 / 70%);
 }
 
@@ -68,7 +107,6 @@
 .titleFontSize {
   &_14 {
     font-size: 14px;
-    text-align: end;
 
     @media (max-width: 580px) {
       font-size: 12px;
@@ -77,7 +115,6 @@
 
   &_15 {
     font-size: 15px;
-    text-align: end;
 
     @media (max-width: 580px) {
       font-size: 13px;
@@ -86,7 +123,6 @@
 
   &_16 {
     font-size: 16px;
-    text-align: end;
 
     @media (max-width: 580px) {
       font-size: 14px;
@@ -95,7 +131,6 @@
 
   &_17 {
     font-size: 17px;
-    text-align: end;
 
     @media (max-width: 580px) {
       font-size: 15px;
@@ -104,7 +139,6 @@
 
   &_18 {
     font-size: 18px;
-    text-align: end;
 
     @media (max-width: 580px) {
       font-size: 16px;
@@ -113,7 +147,6 @@
 
   &_20 {
     font-size: 20px;
-    text-align: end;
 
     @media (max-width: 580px) {
       font-size: 18px;
@@ -122,7 +155,6 @@
 
   &_22 {
     font-size: 22px;
-    text-align: end;
 
     @media (max-width: 580px) {
       font-size: 20px;
@@ -131,7 +163,6 @@
 
   &_23 {
     font-size: 23px;
-    text-align: end;
 
     @media (max-width: 580px) {
       font-size: 21px;
@@ -140,7 +171,6 @@
 
   &_24 {
     font-size: 24px;
-    text-align: end;
 
     @media (max-width: 580px) {
       font-size: 22px;
@@ -149,7 +179,6 @@
 
   &_25 {
     font-size: 25px;
-    text-align: end;
 
     @media (max-width: 580px) {
       font-size: 23px;

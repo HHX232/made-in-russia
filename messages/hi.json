@@ -410,6 +410,8 @@
       "days": "{count, plural, one {दिन} other {दिन}}"
     },
     "CardBottomPage": {
+      "noQuestions": "प्रश्न और त्वरित उत्तर अभी तक नहीं जोड़े गए हैं",
+
       "similar": "समान उत्पाद",
       "similarNotFound": "समान उत्पाद नहीं मिले",
       "send": "भेजें",
@@ -484,6 +486,7 @@
     "days": "{count, plural, one {दिन} other {दिन}}"
   },
   "CardBottomPage": {
+    "noQuestions": "प्रश्न और त्वरित उत्तर अभी तक नहीं जोड़े गए हैं",
     "similar": "समान उत्पाद",
     "similarNotFound": "समान उत्पाद नहीं मिले",
     "send": "भेजें",

@@ -4,9 +4,9 @@ import Image from 'next/image'
 import styles from './DeliveryTermsSelector.module.scss'
 import {axiosClassic} from '@/api/api.interceptor'
 import {HELP_IMAGES} from '@/components/pages/CreateCard/CreateCard'
-import DropList from '../Texts/DropList/DropList'
+// import DropList from '../Texts/DropList/DropList'
 import {useImageModal} from '@/hooks/useImageModal'
-import useWindowWidth from '@/hooks/useWindoWidth'
+// import useWindowWidth from '@/hooks/useWindoWidth'
 import ModalWindowDefault from '../modals/ModalWindowDefault/ModalWindowDefault'
 
 const plusCircle = '/create-card/plus-circle.svg'
@@ -134,7 +134,7 @@ const DeliveryTermsSelector = ({
   const [activeTerms, setActiveTerms] = useState<DeliveryTerm[]>(availableTerms)
   const [isFirstRender, setIsFirstRender] = useState(true)
   const {modalImage, isModalOpen: isHelpModalOpen, openModal, closeModal} = useImageModal()
-  const windowWidth = useWindowWidth()
+  // const windowWidth = useWindowWidth()
 
   useEffect(() => {
     if (!isFirstRender) {
@@ -254,7 +254,7 @@ const DeliveryTermsSelector = ({
         {title && (
           <div className={styles.title__wrapper}>
             <h3 className={styles.delivery__terms__title}>{title}</h3>
-            <DropList
+            {/* <DropList
               direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
               safeAreaEnabled
               extraClass={`${styles.drop__extra}`}
@@ -272,6 +272,14 @@ const DeliveryTermsSelector = ({
                   key={1}
                 />
               ]}
+            /> */}
+            <Image
+              onClick={() => openModal(HELP_IMAGES.delivery)}
+              src={vopros}
+              style={{cursor: 'pointer'}}
+              alt='vopros'
+              width={27}
+              height={27}
             />
           </div>
         )}

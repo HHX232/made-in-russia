@@ -1,12 +1,12 @@
 import {FC} from 'react'
 import styles from './CreateFaqCard.module.scss'
 import Image from 'next/image'
-import DropList from '@/components/UI-kit/Texts/DropList/DropList'
+// import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import RowsInputs from '@/components/UI-kit/RowsInputs/RowsInputs'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import {useImageModal} from '@/hooks/useImageModal'
 import {HELP_IMAGES} from '../CreateCard'
-import useWindowWidth from '@/hooks/useWindoWidth'
+// import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
 
 const vopros = '/vopros.svg'
@@ -18,7 +18,7 @@ interface CreateFaqCardProps {
 
 const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
-  const windowWidth = useWindowWidth()
+  // const windowWidth = useWindowWidth()
   const t = useTranslations('CreateFaqCard')
 
   return (
@@ -36,7 +36,7 @@ const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
       </ModalWindowDefault>
       <div className={`${styles.descr__el__title} ${styles.descr__el__title__right}`}>
         <p className={`${styles.descr__title}`}>{t('faqTitle')}</p>
-        <DropList
+        {/* <DropList
           direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
           safeAreaEnabled
           extraClass={`${styles.drop__extra}`}
@@ -56,6 +56,14 @@ const CreateFaqCard: FC<CreateFaqCardProps> = ({values, onChange}) => {
               key={1}
             />
           ]}
+        /> */}
+        <Image
+          onClick={() => openModal(HELP_IMAGES.faq)}
+          src={vopros}
+          style={{cursor: 'pointer'}}
+          alt='vopros'
+          width={27}
+          height={27}
         />
       </div>
       <RowsInputs

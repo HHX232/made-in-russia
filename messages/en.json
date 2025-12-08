@@ -410,6 +410,7 @@
       "days": "{count, plural, one {day} other {days}}"
     },
     "CardBottomPage": {
+      "noQuestions": "Questions and quick answers have not been added yet",
       "similar": "Similar products",
       "similarNotFound": "Similar products not found",
        "send": "Send",
@@ -484,6 +485,7 @@
       "days": "{count, plural, one {day} other {days}}"
   },
   "CardBottomPage": {
+    "noQuestions": "Questions and quick answers have not been added yet",
     "similar": "Similar products",
     "similarNotFound": "Similar products not found",
      "send": "Send",
