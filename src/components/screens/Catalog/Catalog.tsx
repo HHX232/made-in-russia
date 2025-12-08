@@ -230,7 +230,7 @@ const Catalog: FC<CatalogProps> = ({
           <div
             className={`${styles.top__fliters__container__inner} ${styles.top__fliters__container__inner__spec__search}`}
           >
-            {/* Кнопка фильтра для мобильных устройств */}
+            {/* Кнопка фильтра для мобильных устройств!!! */}
             {showSearchTitle && (
               <h2 className={styles.search__title__big}>
                 {t('resultTitle')}: {resultTitle || textParams}
