@@ -57,8 +57,23 @@
 }
 
 .header__top_image_telegram {
+  position: relative;
+  z-index: 1000;
   width: 21px;
   height: 18px;
+
+  // &::before {
+  //   position: absolute;
+  //   content: "";
+  //   background-image: url('/telegram.svg');
+  //   background-size: contain;
+  //   background-repeat: no-repeat;
+  //   width: 28px;
+  //   height: 20px;
+  //   left: 0;
+  //   top: 0;
+  //   z-index: 1000;
+  // }
 }
 
 .header__top_image_telephone {

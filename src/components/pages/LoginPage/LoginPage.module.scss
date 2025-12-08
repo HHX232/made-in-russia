@@ -31,12 +31,13 @@
   display: flex;
   width: 54%;
   min-height: 575px;
-  border-radius:10px;
+
   // min-height: 680px;
   max-height: fit-content;
   flex-direction: column;
   align-items: center;
   padding: 20px 75px;
+  border-radius: 10px;
   background-color: #f6f6f6;
 
   @media (max-width: 1200px) {
@@ -115,6 +116,7 @@
 
   // max-width: 350px;
   padding: 11px 0;
+  border-radius: 7px;
 
   // border-radius: 10px;
   // margin: auto auto 0;
@@ -124,7 +126,7 @@
   font-size: 24px;
   font-weight: 500;
   transition: all 0.2s;
-  border-radius: 7px;
+
   &:hover {
     background-color: #006bff;
   }
@@ -133,10 +135,11 @@
 .form__button_register {
   display: block;
   width: 100%;
-  border-radius: 7px;
+
   // max-width: 350px;
   padding: 12px 0;
   border: 3px solid #e1251b !important;
+  border-radius: 7px;
 
   // border-radius: 10px;
   margin: 0 auto;
@@ -383,8 +386,24 @@
 }
 
 .registr__image {
+  position: relative;
+  z-index: 1000;
   aspect-ratio: 1/1;
   cursor: pointer;
+
+  &::before {
+    position: absolute;
+    z-index: 1002;
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 23px;
+    background-image: url('/iconsNew/telegram.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    content: '';
+  }
 }
 
 .problem__link {

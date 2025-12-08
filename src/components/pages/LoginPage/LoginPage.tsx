@@ -266,13 +266,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                         )} */}
 
                         <div className={styles.telegram__button__container}>
-                          <Image
-                            className={`${styles.registr__image}`}
-                            src={tg}
-                            width={28}
-                            height={20}
-                            alt='registr with telegram'
-                          />
+                          <div className={`${styles.registr__image}`} style={{width: '28px', height: '23px'}} />
                           <p className={styles.tg_text}>{t('loginWithTelegram')}</p>
                           <TelegramLoginWidget
                             onAuth={handleTelegramAuth}
