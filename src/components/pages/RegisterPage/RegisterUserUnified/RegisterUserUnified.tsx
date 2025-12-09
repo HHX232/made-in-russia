@@ -215,7 +215,10 @@ const RegisterUserUnified: React.FC<RegisterUserUnifiedProps> = ({
           value='Personal'
           textColor='dark'
           checked={selectedOption === 'Personal'}
-          onChange={handleOptionChange}
+          onChange={(e) => {
+            console.log('click radio')
+            handleOptionChange(e)
+          }}
           allowUnchecked={true}
         />
       </div>

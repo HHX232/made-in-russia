@@ -150,9 +150,8 @@ const RegisterPage = ({categories}: {categories?: Category[]}) => {
     router.push('/register?type=vendor', {scroll: false})
   }
 
-  // Хендлеры
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedOption((prev) => (prev === e.target.value ? '' : e.target.value))
+    setSelectedOption(e.target.checked ? e.target.value : '')
   }
 
   const onChangeTelNumber = (val: string) => {
