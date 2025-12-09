@@ -111,7 +111,7 @@ export default async function ProfilePageMain() {
     vendorDetails: userData?.data.vendorDetails || undefined
   }
   // console.log('initialUserData:', initialUserData)
-  return <ProfilePage firstUserData={initialUserData} />
+  return <ProfilePage isForOwner firstUserData={initialUserData} />
 }
 
 export async function generateMetadata() {

@@ -911,7 +911,7 @@ const SessionsTab: FC = () => {
   )
 }
 
-const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
+const ProfilePage: FC<{firstUserData?: User; isForOwner?: boolean}> = ({firstUserData, isForOwner}) => {
   const {userData, loading, error} = useUserData()
   const {latestViews, isEmpty} = useTypedSelector((state) => state.latestViews)
   const [needToSave, setNeedToSave] = useState(false)
@@ -1034,6 +1034,7 @@ const ProfilePage: FC<{firstUserData?: User}> = ({firstUserData}) => {
               currentTab={currentTab}
               onTabChange={setCurrentTab}
               onLogout={() => setWantQuite(true)}
+              isForOwner={isForOwner}
               sidebarShow={sidebarShow}
               onDeleteAccount={handleDeleteAccount}
             />

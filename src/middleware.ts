@@ -4,6 +4,7 @@ import instance, {axiosClassic} from './api/api.interceptor'
 import Cookies from 'js-cookie'
 import {User} from './services/users.types'
 import ICardFull from './services/card/card.types'
+import {securityMiddleware} from './middlewares/security'
 
 // Функция для определения локали по поддомену
 const getLocaleFromSubdomain = (hostname: string): string | null => {
@@ -124,6 +125,9 @@ export async function middleware(request: NextRequest) {
   const hostnameFromHeaders = request.headers.get('host')
   console.log('🥰 Реальный hostname из headers:', hostnameFromHeaders)
   const acceptLanguageFromRequest = request.headers.get('accept-language')
+
+  const securityCheck = await securityMiddleware(request)
+  if (securityCheck) return securityCheck
 
   if (request.nextUrl.pathname.startsWith('/api')) {
     const response = NextResponse.next()

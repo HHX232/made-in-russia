@@ -354,7 +354,9 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore, pro
               />
             </div>
           ) : (
-            <p>{t('noQuestions')}</p>
+            <p style={{color: '#a2a2a2'}} className={`${styles.desctop__show}`}>
+              {t('noQuestions')}
+            </p>
           )}
           <div className={`${styles.section__title} `}>
             <h2 className={`fontInstrument ${styles.font_title}`}>{t('similar')}</h2>
@@ -397,7 +399,9 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore, pro
               />
             </div>
           ) : (
-            <p>{t('noQuestions')}</p>
+            <p style={{color: '#a2a2a2'}} className={` ${styles.desctop__hide}`}>
+              {t('noQuestions')}
+            </p>
           )}
 
           <div className={`${styles.section__title} ${styles.relative_title}`}>

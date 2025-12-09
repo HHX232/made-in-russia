@@ -62,7 +62,7 @@ const MobileNavigation = () => {
         <div className={styles.navContent}>
           {/* Избранное */}
           <Link
-            href={user?.role === 'user' ? '/profile?activeTab=favorites' : '/vendor?activeTab=favorites'}
+            href={user?.role.toLowerCase() === 'user' ? '/profile?activeTab=favorites' : '/vendor?activeTab=favorites'}
             className={styles.navItem}
           >
             <Heart className={styles.navIcon} />
