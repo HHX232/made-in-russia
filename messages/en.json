@@ -357,6 +357,7 @@
       }
     },
     "CardTopPage": {
+      "minimalValue": "Minimum supply volume",
       "reviews": {
     "count": "{count, plural, one {{count} review} other {{count} reviews}}"
   },
@@ -439,6 +440,7 @@
     "mainText": "Page not found or deleted. Check the URL or return to home."
   },
   "CardTopPage": {
+    "minimalValue": "Minimum supply volume",
     "reviews": {
     "count": "{count, plural, one {{count} review} other {{count} reviews}}"
   },
@@ -511,6 +513,7 @@
   "createCard": {
     "savingLoad": "Saving...",
     "mg": "milligram",
+    "bag": "bag",
     "g": "gram",
     "kg": "kilogram",
     "c": "centner",

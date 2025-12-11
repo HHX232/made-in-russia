@@ -328,6 +328,13 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             titleFontSize='16'
             listGap='10'
             items={[
+              {
+                title: t('minimalValue'),
+                value:
+                  (cardData?.minimumOrderQuantity?.toString() || '') +
+                    ' ' +
+                    (cardData?.prices[0].unit?.toString() || '') || ''
+              },
               {title: t('articul'), value: cardData?.article || ''},
               ...(cardData?.characteristics?.map((el) => ({
                 title: el.name,

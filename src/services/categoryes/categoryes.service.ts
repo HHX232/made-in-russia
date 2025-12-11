@@ -13,6 +13,7 @@ export interface Category {
   description?: string
   metaDescription?: string
   imageUrl?: string
+  okved?: string[]
   iconUrl?: string | null
   children: Category[]
   creationDate: string
@@ -224,6 +225,7 @@ const CategoriesAPI = {
       metaDescriptionTranslations: payload.metaDescriptionTranslations || {en: '', ru: '', zh: '', hi: ''},
       okvedCategories: payload.okvedCategories || []
     }
+    console.log('то что пришло в функцию', payload, 'то что отправляем', dataPayload)
 
     const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
     formData.append('data', jsonBlob)

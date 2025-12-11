@@ -284,7 +284,7 @@ const DeliveryTermsSelector = ({
           </div>
         )}
         <button type='button' className={styles.help__button} onClick={() => setIsModalOpen(true)}>
-          Описание методов
+          Описание условий
         </button>
       </div>
 

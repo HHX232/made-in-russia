@@ -27,6 +27,9 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
   const currentLang = useCurrentLanguage()
 
   useEffect(() => {
+    console.log('allCategories', allCategories)
+  }, [allCategories])
+  useEffect(() => {
     const fetchCategories = async () => {
       try {
         setIsLoading(true)
@@ -78,10 +81,20 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
 
     const lowerSearchTerm = searchTerm.toLowerCase()
 
+    // Поиск по имени категории
     if (category.name.toLowerCase().includes(lowerSearchTerm)) {
       return true
     }
 
+    // Поиск по OKVED кодам
+    if (category.okved && category.okved.length > 0) {
+      const okvedMatch = category.okved.some((code) => code.toLowerCase().includes(lowerSearchTerm))
+      if (okvedMatch) {
+        return true
+      }
+    }
+
+    // Поиск в дочерних категориях
     if (category.children && category.children.length > 0) {
       return category.children.some((child) => categoryContainsSearch(child, searchTerm))
     }

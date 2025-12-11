@@ -428,10 +428,20 @@
 }
 
 .delivery__terms__title {
+  position: relative;
   margin: 0;
   color: #2f2f2f;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 500;
+
+  &::before {
+    position: absolute;
+    top: -3px;
+    right: -15px;
+    color: #2a2e46;
+    content: '*';
+    font-size: 18px;
+  }
 }
 
 .help__button {

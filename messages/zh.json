@@ -357,6 +357,7 @@
       }
     },
     "CardTopPage": {
+      "minimalValue": "最小供货量",
       "reviews": {
     "count": "{count} 条评论"
   },
@@ -439,6 +440,7 @@
     "mainText": "页面未找到或已删除。请检查URL或返回首页。"
   },
   "CardTopPage": {
+    "minimalValue": "最小供货量",
     "reviews": {
     "count": "{count} 条评论"
   },
@@ -509,6 +511,7 @@
     "publishing": "发布中..."
   },
   "createCard": {
+    "bag": "袋",
     "savingLoad": "保存中...",
     "mg": "毫克",
     "g": "克",

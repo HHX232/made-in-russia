@@ -107,7 +107,7 @@ const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore, pro
       }
     }
     fetchProducts()
-  }, [])
+  }, [currentLang])
 
   const convertFilesToUploadedFiles = (files: File[]): IUploadedFile[] => {
     return files.map((file) => {

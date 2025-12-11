@@ -5,7 +5,6 @@ import styles from './CreateCard.module.scss'
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
-import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import Image from 'next/image'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import CreateCardPriceElements from './CreateCardElements/CreateCardPriceElements/CreateCardPriceElements'
@@ -44,6 +43,7 @@ export const HELP_IMAGES = {
   prices: '/newHelps/spisocCen.png',
   saleDate: '/newHelps/info-about-price.png',
   delivery: '/newHelps/incomers.png',
+  deliveryCars: '/newHelps/vid-dostavky.png',
   charactersTable: '/newHelps/charachterisrick.png',
   description: '/newHelps/description.png',
   companyDescription: '',
@@ -517,26 +517,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               <div className={`${styles.label__title__box}`}>
                 <p className={`${styles.create__label__title}`}>{t('imageCard')}</p>
                 {HELP_IMAGES.productImages.length !== 0 && (
-                  // <DropList
-                  //   direction={windowWidth && windowWidth < 768 ? 'bottom' : 'right'}
-                  //   safeAreaEnabled
-                  //   positionIsAbsolute={false}
-                  //   trigger='hover'
-                  //   extraClass={`${styles.drop__extra} ${styles.drop__extra__second}`}
-                  //   arrowClassName={`${styles.arrow__none}`}
-                  //   title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                  //   items={[
-                  //     <Image
-                  //       className={`${styles.drop__extra__image}`}
-                  //       src={HELP_IMAGES.productImages}
-                  //       alt={t('altHelpWithImageCard')}
-                  //       width={300}
-                  //       height={300}
-                  //       key={1}
-                  //       onClick={() => openModal(HELP_IMAGES.productImages)}
-                  //     />
-                  //   ]}
-                  // />
                   <Image
                     onClick={() => openModal(HELP_IMAGES.productImages)}
                     src={vopros}
@@ -629,7 +609,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                   t('cm'),
                   t('pair'),
                   t('set'),
-                  t('box')
+                  t('box'),
+                  t('bag')
                 ]
               ]}
               canCreateNewOption={[false, true]}

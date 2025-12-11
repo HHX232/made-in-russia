@@ -12,6 +12,7 @@ export interface MultiSelectOption {
   icon?: string
   children?: MultiSelectOption[]
   imageUrl?: string
+  okved?: string[]
 }
 
 interface MultiDropSelectProps {
@@ -67,9 +68,17 @@ const MultiDropSelect: React.FC<MultiDropSelectProps> = ({
 
     const lowerSearchTerm = searchTerm.toLowerCase()
 
-    // Проверяем саму категорию
+    // Проверяем саму категорию по имени
     if (category.label.toLowerCase().includes(lowerSearchTerm)) {
       return true
+    }
+
+    // Поиск по OKVED кодам
+    if (category.okved && category.okved.length > 0) {
+      const okvedMatch = category.okved.some((code) => code.toLowerCase().includes(lowerSearchTerm))
+      if (okvedMatch) {
+        return true
+      }
     }
 
     // Рекурсивно проверяем всех детей

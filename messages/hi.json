@@ -357,6 +357,8 @@
       }
     },
     "CardTopPage": {
+      "minimalValue": "न्यूनतम आपूर्ति मात्रा",
+
       "reviews": {
     "count": "{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}"
   },
@@ -440,6 +442,7 @@
     "mainText": "पृष्ठ नहीं मिला या हटा दिया गया।"
   },
   "CardTopPage": {
+    "minimalValue": "न्यूनतम आपूर्ति मात्रा",
     "reviews": {
     "count": "{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}"
   },
@@ -510,6 +513,7 @@
     "publishing": "प्रकाशित हो रहा है..."
   },
   "createCard": {
+    "bag": "बैग",
     "savingLoad": "सहेजा जा रहा है...",
     "mg": "मिलीग्राम",
     "g": "ग्राम",

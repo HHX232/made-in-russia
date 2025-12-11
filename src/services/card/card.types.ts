@@ -5,6 +5,7 @@ export interface ICategory {
   name: string
   slug: string
   imageUrl: string
+  okved?: string[]
   children: ICategory[]
   creationDate: string
   lastModificationDate: string

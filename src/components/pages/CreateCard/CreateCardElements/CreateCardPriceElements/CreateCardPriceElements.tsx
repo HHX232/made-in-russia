@@ -532,6 +532,14 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
           <div className={`${styles.rows__inputs__box__inner} ${styles.rows__inputs__box__inner__description}`}>
             <div className={`${styles.create__label__title__box}`}>
               <p className={`${styles.create__label__title}`}>{t('characteristickTable')}</p>
+              <Image
+                onClick={() => openModal(HELP_IMAGES.charactersTable)}
+                src={vopros}
+                style={{cursor: 'pointer'}}
+                alt='vopros'
+                width={27}
+                height={27}
+              />
             </div>
             <RowsInputs
               key={`characteristics-${characteristicsKey}`}
@@ -581,6 +589,14 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             <div style={{zIndex: '7777'}} className={styles.del__box}>
               <div className={styles.seller__title}>
                 <p className={styles.seller__title__text}>{t('deliveryInfo')}</p>
+                <Image
+                  onClick={() => openModal(HELP_IMAGES.deliveryCars)}
+                  src={vopros}
+                  style={{cursor: 'pointer'}}
+                  alt='vopros'
+                  width={27}
+                  height={27}
+                />
               </div>
               <RowsInputs
                 key={`delivery-${deliveryKey}`}

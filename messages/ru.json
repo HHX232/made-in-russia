@@ -369,6 +369,7 @@
       }
     },
     "CardTopPage": {
+        "minimalValue":"Минимальный объем поставки",
       "reviews": {
     "count": "{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}"
   },
@@ -449,6 +450,7 @@
     }
   },
   "CardTopPage": {
+      "minimalValue":"Минимальный объем поставки",
     "reviews": {
     "count": "{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}"
   },
@@ -542,6 +544,7 @@
     "pair": "пара",
     "set": "комплект",
     "box": "коробка",
+    "bag": "мешок",
     "savingLoad": "Сохранение...",
     "languageForInput": "Активный язык товара",
     "languageForInputSubtitle": "Обязателен к заполнению минимум 1 язык",
@@ -600,8 +603,8 @@
     "infoAboutPrices": "Скидка на товар",
     "daysCountBeforeSale": "До окончания акции",
     "daysCountBeforeSalePlaceholder": "До окончания ... дней",
-    "minimalVolumeTitle": "Минимальный объем",
-    "minimalVolumePlaceholder": "Минимальный объем заказа ...",
+    "minimalVolumeTitle": "Минимальный объем поставки",
+    "minimalVolumePlaceholder": "Минимальный объем поставки ...",
     "deliveryInfo": " Вид доставки",
     "daysDelivery": "Сроки доставки в днях",
     "packagingOptions": "Варианты упаковки",
