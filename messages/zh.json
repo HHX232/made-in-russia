@@ -511,6 +511,13 @@
     "publishing": "发布中..."
   },
   "createCard": {
+    "deliveryTermsError": "必须添加至少1种交付选项",
+    "titleError": "必须指定商品名称",
+    "categoryError": "必须选择商品类别",
+    "minimumImages": "必须添加至少1张商品图片",
+    "onePriceError": "必须指定商品价格",
+    "characteristicError": "必须添加至少1种特性",
+    "descriptionError": "必须添加商品描述",
     "bag": "袋",
     "savingLoad": "保存中...",
     "mg": "毫克",
@@ -537,7 +544,6 @@
     "alternativeAdditionalDescr": "附加可选描述",
     "validateError": "验证错误",
     "error": "错误",
-    "categoryError": "请选择产品类别",
     "elCount": "件",
     "updateCardProcess": "更新产品中...",
     "saveCardProcess": "保存产品中...",
@@ -556,12 +562,7 @@
     "similarProducts": "相似产品",
     "altHelpWithSimilarProducts": "相似产品帮助",
     "save": "保存",
-    "titleError": "产品名称为必填项",
-    "minimumImages": "至少1张图片",
     "now": "现在",
-    "onePriceError": "至少添加一个价格",
-    "descriptionError": "描述为必填项",
-    "characteristicError": "特性表中至少需要填写一行",
     "topDescrError": "顶部公司描述为必填项",
     "bottomError": "底部公司描述为必填项",
     "companyImagesError": "至少需要上传一张公司图片",
@@ -1121,7 +1122,26 @@
       "login": "登录"
     },
     "ReviewsToNumber":{
-  "count":"{count} 条评论"
+  "count":"{count} 条评论",
+  "mg": "{count} 毫克",
+  "g": "{count} 克",
+  "kg": "{count} 千克",
+  "c": "{count} 公担",
+  "t": "{count} 吨",
+  "ml": "{count} 毫升",
+  "l": "{count} 升",
+  "hl": "{count} 百升",
+  "m3": "{count} 立方米",
+  "m2": "{count} 平方米",
+  "cm2": "{count} 平方厘米",
+  "pcs": "{count} 件",
+  "pack": "{count} 包",
+  "m": "{count} 米",
+  "cm": "{count} 厘米",
+  "pair": "{count} 对",
+  "set": "{count} 套",
+  "box": "{count} 箱",
+  "bag": "{count} 袋"
   }
 
 }

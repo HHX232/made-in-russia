@@ -18,6 +18,7 @@ import {toast} from 'sonner'
 import DropList from '../../Texts/DropList/DropList'
 import {useNProgress} from '@/hooks/useProgress'
 import ServiceFavorites from '@/services/favorite/favorite.service'
+import {Heart} from 'lucide-react'
 
 const t1 = '/tree.jpg'
 const t2 = '/tree2.jpg'
@@ -401,9 +402,7 @@ const Card = memo<ICardProps>(
                     onClick={handleToggleFavorite}
                     disabled={isTogglingFavorite}
                   >
-                    <svg className={`${styles.icon} ${styles.icon__star_e}`}>
-                      <use href='/iconsNew/symbol/sprite.svg#star-e'></use>
-                    </svg>
+                    <Heart className={styles.navIcon} />
                   </button>
                 </div>
               </div>

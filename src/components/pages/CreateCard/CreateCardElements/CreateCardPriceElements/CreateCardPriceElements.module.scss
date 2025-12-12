@@ -20,11 +20,11 @@
   gap: 50px;
 }
 
-.textarea__extra__padding {
-  & > div:last-child {
-    padding: 12px 21px;
-  }
-}
+// .textarea__extra__padding {
+//   & > div:last-child {
+//     padding: 12px 21px;
+//   }
+// }
 
 .extra__rows__grid {
   @media (max-width: 440px) {
@@ -148,7 +148,7 @@
 
 .extra__plus__button__class {
   border: 1px solid rgb(47 47 47 / 20%) !important;
-      border-radius: 10px;
+  border-radius: 10px;
 }
 
 .drop__extra__image__modal__second {

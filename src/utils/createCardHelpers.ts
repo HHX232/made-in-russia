@@ -41,8 +41,9 @@ export const validateField = (
   pricesArray: PriceItem[],
   description: string,
   descriptionMatrix: string[][],
-
-  translations: (val: string) => string
+  translations: (val: string) => string,
+  selectedDeliveryIds?: string[],
+  selectedCategory?: ICategory | null // Добавлен новый параметр
 ): string => {
   switch (fieldName) {
     case 'cardTitle':
@@ -67,6 +68,19 @@ export const validateField = (
       const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell?.trim()))
       const matrixError = filledRows.length === 0 ? translations('characteristicError') : ''
       return matrixError
+
+    case 'deliveryTerms':
+      console.log('Хай - deliveryTerms validation, selectedDeliveryIds:', selectedDeliveryIds)
+      const deliveryError =
+        !selectedDeliveryIds || selectedDeliveryIds.length === 0 ? translations('deliveryTermsError') : ''
+      console.log('Хай - deliveryTerms validation result:', deliveryError)
+      return deliveryError
+
+    case 'selectedCategory': // Добавлен новый case
+      console.log('Хай - selectedCategory validation, selectedCategory:', selectedCategory)
+      const categoryError = !selectedCategory ? translations('categoryError') : ''
+      console.log('Хай - selectedCategory validation result:', categoryError)
+      return categoryError
 
     default:
       return ''
@@ -256,7 +270,8 @@ export const submitFormCardData = async ({
   console.log('remainingInitialImages:', remainingInitialImages)
   console.log('objectRemainingInitialImages:', objectRemainingInitialImages)
   console.log('pricesArray:', pricesArray)
-
+  console.log('Хай - preparing data object')
+  console.log('Хай - deliveryTermIds will be:', selectedDeliveryIds)
   const pricesArrayForSubmit = pricesArray.map((item) => ({
     ...item,
     quantity: parseQuantityRange(item.quantity)

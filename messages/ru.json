@@ -526,6 +526,13 @@
     "mainText": "Страница не найдена или удалена. Проверьте правильность URL или вернитесь на главную."
   },
   "createCard": {
+    "deliveryTermsError": "Необходимо добавить минимум 1 вариант поставки",
+  "titleError": "Необходимо указать наименование товара",
+  "categoryError": "Необходимо выбрать категорию товара",
+  "minimumImages": "Необходимо добавить минимум 1 изображение товара",
+  "onePriceError": "Необходимо указать стоимость товара",
+  "characteristicError": "Необходимо добавить минимум 1 характеристику",
+  "descriptionError": "Необходимо добавить описание товара",
     "mg": "миллиграмм",
     "g": "грамм",
     "kg": "килограмм",
@@ -552,7 +559,6 @@
     "alternativeAdditionalDescr": "Дополнительное не обязательное описание",
     "validateError": "Ошибка валидации",
     "error": "Ошибка",
-    "categoryError": "Пожалуйста, выберите категорию товара",
     "elCount": "шт",
     "updateCardProcess": "Обновление товара...",
     "saveCardProcess": "Сохранение товара...",
@@ -571,13 +577,7 @@
     "similarProducts": "Похожие товары",
     "altHelpWithSimilarProducts": "Помощь по похожим товарам",
     "save": "Сохранить",
-
-    "titleError": "Название товара обязательно для заполнения",
-    "minimumImages": "Минимум 1 изображения",
     "now": "Сейчас",
-    "onePriceError": "Добавьте хотя бы одну цену",
-    "descriptionError": "'Описание обязательно",
-    "characteristicError": "Необходимо заполнить хотя бы одну строку в таблице характеристик",
     "topDescrError": "Верхнее описание компании обязательно для заполнения",
     "bottomError": "Нижнее описание компании обязательно для заполнения",
     "companyImagesError": "'Необходимо загрузить хотя бы одно изображение компании",
@@ -1136,6 +1136,25 @@
     "login":"Вход"
   },
   "ReviewsToNumber":{
-    "count":"{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}}"
+    "count":"{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}}",
+    "mg": "{count, plural, one {{count} миллиграмм} few {{count} миллиграмма} many {{count} миллиграмм} other {{count} миллиграмма}}",
+    "g": "{count, plural, one {{count} грамм} few {{count} грамма} many {{count} грамм} other {{count} грамма}}",
+    "kg": "{count, plural, one {{count} килограмм} few {{count} килограмма} many {{count} килограмм} other {{count} килограмма}}",
+    "c": "{count, plural, one {{count} центнер} few {{count} центнера} many {{count} центнеров} other {{count} центнера}}",
+    "t": "{count, plural, one {{count} тонна} few {{count} тонны} many {{count} тонн} other {{count} тонны}}",
+    "ml": "{count, plural, one {{count} миллилитр} few {{count} миллилитра} many {{count} миллилитров} other {{count} миллилитра}}",
+    "l": "{count, plural, one {{count} литр} few {{count} литра} many {{count} литров} other {{count} литра}}",
+    "hl": "{count, plural, one {{count} гектолитр} few {{count} гектолитра} many {{count} гектолитров} other {{count} гектолитра}}",
+    "m3": "{count, plural, one {{count} метр³} few {{count} метра³} many {{count} метров³} other {{count} метра³}}",
+    "m2": "{count, plural, one {{count} метр²} few {{count} метра²} many {{count} метров²} other {{count} метра²}}",
+    "cm2": "{count, plural, one {{count} сантиметр²} few {{count} сантиметра²} many {{count} сантиметров²} other {{count} сантиметра²}}",
+    "pcs": "{count, plural, one {{count} штука} few {{count} штуки} many {{count} штук} other {{count} штуки}}",
+    "pack": "{count, plural, one {{count} упаковка} few {{count} упаковки} many {{count} упаковок} other {{count} упаковки}}",
+    "m": "{count, plural, one {{count} метр} few {{count} метра} many {{count} метров} other {{count} метра}}",
+    "cm": "{count, plural, one {{count} сантиметр} few {{count} сантиметра} many {{count} сантиметров} other {{count} сантиметра}}",
+    "pair": "{count, plural, one {{count} пара} few {{count} пары} many {{count} пар} other {{count} пары}}",
+    "set": "{count, plural, one {{count} комплект} few {{count} комплекта} many {{count} комплектов} other {{count} комплекта}}",
+    "box": "{count, plural, one {{count} коробка} few {{count} коробки} many {{count} коробок} other {{count} коробки}}",
+    "bag": "{count, plural, one {{count} мешок} few {{count} мешка} many {{count} мешков} other {{count} мешка}}"
   }
 }

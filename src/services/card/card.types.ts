@@ -59,6 +59,7 @@ interface DiscountPriceRange {
   originalPrice: number
   to: number
   unit: string
+  unitSlug: string
 }
 
 interface ICardFull {

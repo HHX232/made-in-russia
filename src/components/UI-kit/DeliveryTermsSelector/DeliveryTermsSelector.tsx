@@ -31,6 +31,7 @@ interface DeliveryTermsSelectorProps {
   errorMessage?: string
   useNewTheme?: boolean
   helpImageSrc?: string
+  errorValue?: string
 }
 
 const DEFAULT_DELIVERY_TERMS: DeliveryTerm[] = [
@@ -122,7 +123,8 @@ const DeliveryTermsSelector = ({
   placeholder = 'Выберите условия поставки',
   errorMessage = '',
   useNewTheme = true,
-  helpImageSrc = deliveryTermsImage
+  helpImageSrc = deliveryTermsImage,
+  errorValue
 }: DeliveryTermsSelectorProps) => {
   // Инициализируем с одним пустым элементом, если selectedTermIds пустой
   const initialSelectedIds = selectedTermIds.length > 0 ? selectedTermIds : ['']
@@ -328,7 +330,7 @@ const DeliveryTermsSelector = ({
                 }}
               >
                 <div
-                  className={`${styles.dropdown__trigger} ${!selectedId && errorMessage ? styles.dropdown__error : ''}`}
+                  className={`${styles.dropdown__trigger} ${!selectedId && (errorMessage || errorValue) ? styles.dropdown__error : ''}`}
                   onClick={() => setOpenDropdownIndex(isOpen ? null : rowIndex)}
                 >
                   {selectedTerm ? (

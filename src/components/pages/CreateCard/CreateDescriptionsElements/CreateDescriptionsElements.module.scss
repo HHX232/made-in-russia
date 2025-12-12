@@ -23,6 +23,8 @@
 
 .editor__wrapper {
   width: 100%;
+  border-radius: 8px;
+  transition: border 0.2s ease-in-out;
 
   /* Стилизация изображений в превью */
   .md-editor-preview img[src^='data:image'] {
@@ -32,7 +34,6 @@
 
   /* Стилизация кода с base64 в редакторе */
   .md-editor-input-wrapper {
-    /* Обрезка длинных строк в редакторе */
     .cm-string,
     .cm-url {
       &:has-text('data:image') {
@@ -45,7 +46,6 @@
       }
     }
 
-    /* Альтернативный подход через селектор содержимого */
     .cm-line:has(.cm-string:contains('data:image')),
     .cm-line:has(.cm-url:contains('data:image')) {
       .cm-string,
@@ -59,10 +59,8 @@
     }
   }
 
-  /* Стилизация для CodeMirror 6 (если используется) */
   .cm-editor {
     .cm-line {
-      /* Обрезка только для строк с base64 */
       .cm-string {
         &[class*='data:image'] {
           display: inline-block;
@@ -73,6 +71,54 @@
         }
       }
     }
+  }
+}
+
+// Стиль для ошибки редактора
+.editor__error {
+  // Оборачиваем редактор в контейнер с красной обводкой
+  position: relative;
+  border: 2px solid #f44 !important;
+  border-radius: 17px;
+
+  // Применяем обводку к самому редактору внутри
+  :global {
+    .md-editor {
+      border-color: #f44 !important;
+      box-shadow: 0 0 0 1px rgb(255 68 68 / 20%) !important;
+    }
+
+    .md-editor-input-wrapper,
+    .md-editor-preview {
+      border-color: #f44 !important;
+    }
+
+    // Для CodeMirror
+    .cm-editor {
+      border-color: #f44 !important;
+
+      &.cm-focused {
+        outline: 2px solid rgb(255 68 68 / 30%) !important;
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  // Анимация пульсации при первом показе ошибки
+  animation: errorPulse 0.5s ease-in-out;
+}
+
+@keyframes errorPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(255 68 68 / 40%);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgb(255 68 68 / 0%);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 68 68 / 0%);
   }
 }
 
@@ -137,21 +183,30 @@
   display: none !important;
 }
 
-// Добавьте эти стили к существующим
-
 .has__error {
   .editor__wrapper {
     position: relative;
-
-    // Визуальная индикация ошибки будет применена через конфиг редактора
   }
 }
 
 .error__message {
   padding: 0 8px;
   margin: 8px 0 0;
+  animation: slideDown 0.3s ease-out;
   color: #f44;
   font-size: 14px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .required {
@@ -160,14 +215,13 @@
   right: -13px;
   color: #000;
   font-size: 18px;
+  transition: color 0.2s ease-in-out;
 }
 
 .required__error {
   margin-left: 4px;
   color: #f44 !important;
   font-weight: normal;
-
-  // display: block !important;
 }
 
 .optional {

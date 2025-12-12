@@ -2,30 +2,27 @@
 import {FC, useState, useRef, useEffect} from 'react'
 import styles from './CreateDescriptionsElements.module.scss'
 import Image from 'next/image'
-// import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import {useImageModal} from '@/hooks/useImageModal'
 import {HELP_IMAGES} from '../CreateCard'
 import {useTranslations} from 'next-intl'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-// import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import MarkdownEditor from '@/components/UI-kit/MDEditor/MarkdownEditor'
 
 const vopros = '/vopros.svg'
 
-// Тип для маппинга blob URL -> File
 export interface ImageMapping {
   blobUrl: string
   file: File
-  // Можно добавить дополнительные поля
-  uploadedUrl?: string // URL после загрузки на сервер
+  uploadedUrl?: string
 }
 
 interface CreateDescriptionsElementsProps {
   onImagesChange?: (images: ImageMapping[]) => void
-  descriptionError?: string // Ошибка для основного описания
-  imagesError?: string // Ошибка для изображений (не используется, так как изображения необязательны)
+  haveError?: boolean
+  descriptionError?: string
+  imagesError?: string
   currentDynamicLang: 'ru' | 'en' | 'zh'
   fullObjectForDescriptions?: {
     ru: {description: string; additionalDescription: string}
@@ -41,46 +38,15 @@ interface CreateDescriptionsElementsProps {
 
 const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
   descriptionError = '',
+  haveError = false,
   currentDynamicLang
-  // fullObjectForDescriptions,
-  // setFullObjectForDescriptions
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const {setDescriptionOne, setAdditionalDescription} = useActions()
+  const {setDescriptionOne} = useActions()
   const {descriptions} = useTypedSelector((state) => state.multilingualDescriptions)
 
-  // Локальное состояние для отображения ошибки с учетом фокуса
-  const [showDescriptionError, setShowDescriptionError] = useState(false)
-  const [descriptionTouched, setDescriptionTouched] = useState(false)
-
-  // Проверка, является ли описание пустым (только заголовок)
-  const isDescriptionEmpty = (value: string) => {
-    const cleanValue = value.replace(/^#\s*[^\n]*\s*$/gm, '').trim()
-    return cleanValue.length === 0
-  }
-
-  // Обработчик фокуса на основном описании
-  const handleDescriptionFocus = () => {
-    setDescriptionTouched(true)
-  }
-
-  // Обработчик потери фокуса на основном описании
-  const handleDescriptionBlur = () => {
-    const currentDescription = descriptions[currentDynamicLang].description
-    if (descriptionError && isDescriptionEmpty(currentDescription)) {
-      setShowDescriptionError(true)
-    }
-  }
-
-  // Показываем ошибку, если есть внешняя ошибка и поле было затронуто
-  useEffect(() => {
-    const currentDescription = descriptions[currentDynamicLang].description
-    if (descriptionError && descriptionTouched && isDescriptionEmpty(currentDescription)) {
-      setShowDescriptionError(true)
-    } else {
-      setShowDescriptionError(false)
-    }
-  }, [descriptionError, descriptionTouched, currentDynamicLang, descriptions])
+  // Локальное состояние для управления отображением ошибки
+  const [showError, setShowError] = useState(false)
+  const [hasUserInput, setHasUserInput] = useState(false)
 
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
   const t = useTranslations('CreateDescription')
@@ -91,13 +57,49 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
     lastActiveLangRef.current.push(currentDynamicLang)
   }, [currentDynamicLang])
 
+  // Проверка, является ли описание пустым (только заголовок или пустая строка)
+  const isDescriptionEmpty = (value: string) => {
+    const cleanValue = value.replace(/^#\s*[^\n]*\s*$/gm, '').trim()
+    return cleanValue.length === 0
+  }
+
+  // Обновляем showError когда приходит внешняя ошибка
+  useEffect(() => {
+    if (haveError || descriptionError) {
+      const currentDescription = descriptions[currentDynamicLang]?.description || ''
+      // Показываем ошибку только если поле пустое и не было пользовательского ввода
+      if (isDescriptionEmpty(currentDescription) && !hasUserInput) {
+        setShowError(true)
+      }
+    }
+  }, [haveError, descriptionError, currentDynamicLang, descriptions, hasUserInput])
+
+  // Обработчик изменения значения
+  const handleDescriptionChange = (val: string) => {
+    console.log('value in mdEditor', val)
+
+    // Если пользователь начал вводить - скрываем ошибку
+    if (!hasUserInput) {
+      setHasUserInput(true)
+    }
+
+    // Скрываем ошибку при любом вводе
+    if (showError) {
+      setShowError(false)
+    }
+
+    setDescriptionOne({language: currentDynamicLang, description: val})
+    console.log('descriptions after set', descriptions)
+  }
+
+  // Сброс состояния при смене языка
+  useEffect(() => {
+    setHasUserInput(false)
+    setShowError(false)
+  }, [currentDynamicLang])
+
   return (
     <div className={styles.create__descriptions__box}>
-      {/* <div style={{display: 'flex', flexDirection: 'column'}} className=''>
-        <p>{'RU DeSCR' + descriptions['ru'].description}</p>
-        <p>{'EN DeSCR' + descriptions['en'].description}</p>
-        <p>{'ZH DeSCR' + descriptions['zh'].description}</p>
-      </div> */}
       <ModalWindowDefault isOpen={isModalOpen} onClose={closeModal}>
         {modalImage && (
           <Image
@@ -110,33 +112,12 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
         )}
       </ModalWindowDefault>
       <div className={`${styles.left}`}>
-        <div className={`${styles.left__top__descr} ${showDescriptionError ? styles.has__error : ''}`}>
+        <div className={`${styles.left__top__descr} ${showError ? styles.has__error : ''}`}>
           <div className={`${styles.descr__el__title}`}>
             <p className={`${styles.descr__title}`}>
               {t('descriptionPlaceholder')}{' '}
-              <span className={`${styles.required} ${showDescriptionError ? styles.required__error : ''}`}>*</span>
+              <span className={`${styles.required} ${showError ? styles.required__error : ''}`}>*</span>
             </p>
-            {/* <DropList
-              direction={'bottom'}
-              safeAreaEnabled
-              extraClass={`${styles.drop__extra}`}
-              positionIsAbsolute={false}
-              trigger='hover'
-              arrowClassName={`${styles.arrow__none}`}
-              title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-              items={[
-                <Image
-                  onClick={() => openModal(HELP_IMAGES.description)}
-                  src={HELP_IMAGES.description}
-                  alt='vopros'
-                  width={300}
-                  height={300}
-                  key={1}
-                />
-                
-              ]}
-              
-            /> */}
             <Image
               onClick={() => openModal(HELP_IMAGES.description)}
               src={vopros}
@@ -146,63 +127,15 @@ const CreateDescriptionsElements: FC<CreateDescriptionsElementsProps> = ({
               height={27}
             />
           </div>
-          <div className={styles.editor__wrapper} onFocus={handleDescriptionFocus} onBlur={handleDescriptionBlur}>
-            {/* <TextAreaUI
-              extraClass={`${styles.editor__extra__text}`}
-              rows={18}
-              onSetValue={(val) => setDescriptionOne({language: currentDynamicLang, description: val})}
-              currentValue={descriptions[currentDynamicLang].description}
-              placeholder={t('writeDescription')}
-              theme='newWhite'
-            /> */}
+          <div className={`${styles.editor__wrapper} ${showError ? styles.editor__error : ''}`}>
             <MarkdownEditor
-              onValueChange={(val) => {
-                console.log('value in mdEditor', val)
-                setDescriptionOne({language: 'ru', description: val})
-                console.log('descriptions after set', descriptions)
-              }}
+              onValueChange={handleDescriptionChange}
               placeholder={t('writeDescription')}
-              initialValue={descriptions[currentDynamicLang].description}
+              initialValue={descriptions[currentDynamicLang]?.description || ''}
             />
           </div>
-          {showDescriptionError && <p className={styles.error__message}>{descriptionError}</p>}
+          {showError && descriptionError && <p className={styles.error__message}>{descriptionError}</p>}
         </div>
-        {/* <div className={`${styles.left__bottom__descr}`}>
-          <div className={`${styles.descr__el__title}`}>
-            <p className={`${styles.descr__title}`}>
-              {t('secondDescr')}
-              <span className={styles.optional}>({t('secondDescrSpan')})</span>
-            </p>
-            <DropList
-              direction={'left'}
-              safeAreaEnabled
-              extraClass={`${styles.drop__extra} ${styles.second__drop__extra}`}
-              positionIsAbsolute={false}
-              trigger='hover'
-              arrowClassName={`${styles.arrow__none}`}
-              title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-              items={[
-                <Image
-                  onClick={() => openModal(HELP_IMAGES.description)}
-                  src={HELP_IMAGES.description}
-                  alt='vopros'
-                  width={300}
-                  height={300}
-                  key={1}
-                />
-              ]}
-            />
-          </div>
-
-          <TextAreaUI
-            theme='newWhite'
-            rows={15}
-            extraClass={`${styles.editor__extra__text}`}
-            onSetValue={(val) => setAdditionalDescription({language: currentDynamicLang, additionalDescription: val})}
-            currentValue={descriptions[currentDynamicLang].additionalDescription}
-            placeholder={t('writeSecondDescr')}
-          />
-        </div> */}
       </div>
     </div>
   )

@@ -29,8 +29,19 @@
     align-items: center;
     justify-content: center;
     padding: 16px;
+    border: 2px solid transparent;
     border-radius: 15px;
     background-color: #f8f9fa;
+    transition: all 0.3s ease;
+
+    // Стиль при ошибке
+    &__error {
+      border-color: #f44 !important;
+      animation: errorPulse 0.5s ease-in-out;
+
+      // background-color: #fff5f5;
+      box-shadow: 0 0 0 3px rgb(255 68 68 / 10%);
+    }
   }
 
   &__empty {
@@ -38,6 +49,21 @@
     color: #6c757d;
     font-size: 14px;
     text-align: center;
+    transition: color 0.3s ease;
+
+    &__error {
+      color: #f44;
+      font-weight: 500;
+    }
+  }
+
+  // Сообщение об ошибке под блоком выбора
+  &__errorMessage {
+    padding: 0 8px;
+    margin: -12px 0 0;
+    animation: slideDown 0.3s ease-out;
+    color: #f44;
+    font-size: 14px;
   }
 
   &__selectedItem {
@@ -123,11 +149,9 @@
   &__search {
     width: 100%;
     padding: 14px 16px;
-    border: 1px solid rgb(47 47 47 / 20%);
+    border: 2px solid rgb(47 47 47 / 20%);
     border-radius: 15px;
     font-size: 16px;
-
-    /* Минимум 16px для предотвращения зума на iOS */
     outline: none;
     transition: all 0.2s ease;
 
@@ -138,6 +162,18 @@
 
     &::placeholder {
       color: #6c757d;
+    }
+
+    // Стиль при ошибке
+    &__error {
+      border-color: #f44 !important;
+
+      // background-color: #fff5f5;
+
+      &:focus {
+        border-color: #f44 !important;
+        box-shadow: 0 0 0 3px rgb(255 68 68 / 15%) !important;
+      }
     }
   }
 
@@ -186,7 +222,6 @@
     text-align: center;
   }
 
-  // Стили для блока "Не найдено"
   &__notFound {
     padding: 30px 20px;
     border-radius: 0;
@@ -224,7 +259,6 @@
     padding: 4px;
   }
 
-  // Новые стили для группы категорий
   &__categoryGroup {
     margin-bottom: 2px;
   }
@@ -258,7 +292,6 @@
       color: #06c;
     }
 
-    // Стили для разных уровней вложенности
     &--level0 {
       color: #212529;
       font-weight: 600;
@@ -300,7 +333,6 @@
     }
   }
 
-  // Новые стили для иконки раскрытия
   &__expandIcon {
     display: flex;
     min-width: 12px;
@@ -340,17 +372,44 @@
     font-weight: bold;
   }
 
-  // Контейнер для дочерних элементов
   &__childrenContainer {
     border-left: 2px solid #e9ecef;
     margin-top: 2px;
     margin-left: 0;
-    animation: slideDown 0.2s ease-out;
+    animation: slideDownCategory 0.2s ease-out;
+  }
+}
+
+// Анимация пульсации при ошибке
+@keyframes errorPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(255 68 68 / 40%);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgb(255 68 68 / 0%);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 68 68 / 0%);
+  }
+}
+
+// Анимация появления сообщения об ошибке
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 // Анимация для появления дочерних элементов
-@keyframes slideDown {
+@keyframes slideDownCategory {
   from {
     max-height: 0;
     opacity: 0;
@@ -381,8 +440,6 @@
     &__search {
       padding: 10px 14px;
       font-size: 16px;
-
-      /* Остается 16px для предотвращения зума на мобильных */
     }
 
     &__dropdownItem {
@@ -418,6 +475,10 @@
 
     &__notFoundSubtext {
       font-size: 12px;
+    }
+
+    &__errorMessage {
+      font-size: 13px;
     }
   }
 }

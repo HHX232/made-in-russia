@@ -54,6 +54,7 @@
 
 // !EXTRA
 .extra_extraDropListClass {
+  left: 0 !important;
   transform: none !important;
 
   & > li:hover {
@@ -68,9 +69,7 @@
 
     & > div {
       padding: 12px 15px;
-
       border-radius: 8px;
-
       border-top: 0 solid rgb(47 47 47 / 20%);
       border-right: 1px solid rgb(47 47 47 / 20%);
       border-bottom: 0 solid rgb(47 47 47 / 20%);
@@ -127,8 +126,8 @@
   width: 100%;
   padding: 12px 15px;
   border: 1px solid rgb(47 47 47 / 20%);
+  border-radius: 15px;
   background-color: #fff;
-   border-radius: 15px;
 }
 
 .modal__text {

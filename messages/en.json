@@ -511,6 +511,13 @@
     "publishing": "Publishing..."
   },
   "createCard": {
+    "deliveryTermsError": "At least 1 delivery option must be added",
+    "titleError": "Product name must be specified",
+    "categoryError": "Product category must be selected",
+    "minimumImages": "At least 1 product image must be added",
+    "onePriceError": "Product price must be specified",
+    "characteristicError": "At least 1 characteristic must be added",
+    "descriptionError": "Product description must be added",
     "savingLoad": "Saving...",
     "mg": "milligram",
     "bag": "bag",
@@ -537,7 +544,6 @@
     "alternativeAdditionalDescr": "Additional optional description",
     "validateError": "Validation error",
     "error": "Error",
-    "categoryError": "Please select product category",
     "elCount": "pcs",
     "updateCardProcess": "Updating product...",
     "saveCardProcess": "Saving product...",
@@ -556,12 +562,7 @@
     "similarProducts": "Similar products",
     "altHelpWithSimilarProducts": "Similar products help",
     "save": "Save",
-    "titleError": "Product name is required",
-    "minimumImages": "Minimum 1 image",
     "now": "Now",
-    "onePriceError": "Add at least one price",
-    "descriptionError": "Description is required",
-    "characteristicError": "At least one row in the characteristics table must be filled",
     "topDescrError": "Top company description is required",
     "bottomError": "Bottom company description is required",
     "companyImagesError": "At least one company image must be uploaded",
@@ -1122,7 +1123,26 @@
   },
 
   "ReviewsToNumber":{
-  "count":"{count, plural, one {{count} review} other {{count} reviews}}"
+  "count":"{count, plural, one {{count} review} other {{count} reviews}}",
+  "mg": "{count, plural, one {{count} milligram} other {{count} milligrams}}",
+    "g": "{count, plural, one {{count} gram} other {{count} grams}}",
+    "kg": "{count, plural, one {{count} kilogram} other {{count} kilograms}}",
+    "c": "{count, plural, one {{count} centner} other {{count} centners}}",
+    "t": "{count, plural, one {{count} ton} other {{count} tons}}",
+    "ml": "{count, plural, one {{count} milliliter} other {{count} milliliters}}",
+    "l": "{count, plural, one {{count} liter} other {{count} liters}}",
+    "hl": "{count, plural, one {{count} hectoliter} other {{count} hectoliters}}",
+    "m3": "{count, plural, one {{count} cubic meter} other {{count} cubic meters}}",
+    "m2": "{count, plural, one {{count} square meter} other {{count} square meters}}",
+    "cm2": "{count, plural, one {{count} square centimeter} other {{count} square centimeters}}",
+    "pcs": "{count, plural, one {{count} piece} other {{count} pieces}}",
+    "pack": "{count, plural, one {{count} pack} other {{count} packs}}",
+    "m": "{count, plural, one {{count} meter} other {{count} meters}}",
+    "cm": "{count, plural, one {{count} centimeter} other {{count} centimeters}}",
+    "pair": "{count, plural, one {{count} pair} other {{count} pairs}}",
+    "set": "{count, plural, one {{count} set} other {{count} sets}}",
+    "box": "{count, plural, one {{count} box} other {{count} boxes}}",
+    "bag": "{count, plural, one {{count} bag} other {{count} bags}}"
   }
 
 }

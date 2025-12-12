@@ -21,6 +21,7 @@ export interface FormState {
   descriptionImages: ImageMapping[]
   descriptionMatrix: string[][]
   packageArray: string[][]
+  selectedDeliveryIds: string[]
   // companyData: CompanyDescriptionData
   // companyDataImages: {id: number; position: number}[]
   faqMatrix: string[][]

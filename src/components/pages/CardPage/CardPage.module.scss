@@ -618,9 +618,25 @@
   }
 }
 
-.active__star {
+.activeHeart {
+  width: 28px;
+  height: 28px;
+
   & > path {
+    fill: #f00;
+    stroke: transparent;
+    stroke-width: 1.5px;
+  }
+}
+
+.inactiveHeart {
+  width: 28px;
+  height: 28px;
+
+  & > path {
+    fill: none;
     stroke: #fff;
+    stroke-width: 1.5px;
   }
 }
 

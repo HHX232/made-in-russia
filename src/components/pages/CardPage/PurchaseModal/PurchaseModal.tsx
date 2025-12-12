@@ -47,38 +47,33 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
   const cleanPhoneNumber = (phone: string): string => {
     if (!phone) return ''
 
-    const countryCodes = [
-      {code: '+375', length: 12}, // Беларусь: +375 + 9 цифр
-      {code: '+7', length: 11}, // Россия/Казахстан: +7 + 10 цифр
-      {code: '+86', length: 13} // Китай: +86 + 11 цифр
-    ]
+    const countryCodes = ['+375', '+7', '+86']
 
-    // Удаляем все пробелы для проверки
-    const cleanPhone = phone.replace(/\s/g, '')
+    // Удаляем пробелы и тире
+    let clean = phone.replace(/[\s-]/g, '')
 
-    // Проверяем каждый код страны
-    for (const {code, length} of countryCodes) {
-      if (cleanPhone.startsWith(code)) {
-        // Проверяем, не дублируется ли код сразу после себя
-        const codeDigits = code.slice(1) // убираем +
-        const afterCode = cleanPhone.slice(code.length, code.length + codeDigits.length)
+    // Если пользователь ввёл без +, но с кодом страны — добавляем +
+    for (const code of countryCodes) {
+      const noPlus = code.slice(1) // 375, 7, 86
+      if (clean.startsWith(noPlus)) {
+        clean = '+' + clean
+        break
+      }
+    }
 
-        // Если после кода идут те же цифры, что и в коде - это дублирование
-        if (afterCode === codeDigits) {
-          return code + cleanPhone.slice(code.length + codeDigits.length)
-        }
+    // После нормализации проверяем дублирование
+    for (const code of countryCodes) {
+      const digits = code.slice(1) // например '375'
 
-        // Проверяем общую длину - если номер слишком длинный, возможно дублирование
-        if (cleanPhone.length > length + codeDigits.length) {
-          // Проверяем точное дублирование: +7 7... или +375 375...
-          if (cleanPhone.slice(code.length, code.length + codeDigits.length) === codeDigits) {
-            return code + cleanPhone.slice(code.length + codeDigits.length)
-          }
+      if (clean.startsWith(code)) {
+        // Если дальше идут такие же цифры → удаляем повторение
+        if (clean.slice(code.length, code.length + digits.length) === digits) {
+          clean = code + clean.slice(code.length + digits.length)
         }
       }
     }
 
-    return phone
+    return clean
   }
 
   // Отладочная информация

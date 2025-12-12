@@ -9,9 +9,16 @@ import Image from 'next/image'
 interface CreateCardProductCategoryProps {
   initialProductCategory?: ICategory
   onSetCategory: (category: ICategory | null) => void
+  errorValue?: string // Новый проп для ошибки
+  haveError?: boolean // Булево значение для состояния ошибки
 }
 
-const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialProductCategory, onSetCategory}) => {
+const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({
+  initialProductCategory,
+  onSetCategory,
+  errorValue = '',
+  haveError = false
+}) => {
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(initialProductCategory || null)
   const [searchQuery, setSearchQuery] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -19,6 +26,7 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
+  const [showError, setShowError] = useState(false) // Локальное состояние для отображения ошибки
 
   const dropdownRef = useRef<HTMLDivElement>(null)
   const searchWrapperRef = useRef<HTMLDivElement>(null)
@@ -26,9 +34,19 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
   const t = useTranslations('CreateCardProductCategory')
   const currentLang = useCurrentLanguage()
 
+  // Обработка показа ошибки
+  useEffect(() => {
+    if ((haveError || errorValue) && !selectedCategory) {
+      setShowError(true)
+    } else {
+      setShowError(false)
+    }
+  }, [haveError, errorValue, selectedCategory])
+
   useEffect(() => {
     console.log('allCategories', allCategories)
   }, [allCategories])
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -51,7 +69,6 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
     onSetCategory(selectedCategory)
   }, [selectedCategory, onSetCategory])
 
-  // Улучшенный обработчик скролла - закрывает меню только если инпут вышел за экран
   useEffect(() => {
     const handleScroll = () => {
       if (isDropdownOpen && searchWrapperRef.current) {
@@ -60,7 +77,6 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
 
         if (isOutOfView) {
           setIsDropdownOpen(false)
-          // Убираем фокус с инпута при закрытии
           if (inputRef.current) {
             inputRef.current.blur()
           }
@@ -81,12 +97,10 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
 
     const lowerSearchTerm = searchTerm.toLowerCase()
 
-    // Поиск по имени категории
     if (category.name.toLowerCase().includes(lowerSearchTerm)) {
       return true
     }
 
-    // Поиск по OKVED кодам
     if (category.okved && category.okved.length > 0) {
       const okvedMatch = category.okved.some((code) => code.toLowerCase().includes(lowerSearchTerm))
       if (okvedMatch) {
@@ -94,7 +108,6 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
       }
     }
 
-    // Поиск в дочерних категориях
     if (category.children && category.children.length > 0) {
       return category.children.some((child) => categoryContainsSearch(child, searchTerm))
     }
@@ -164,6 +177,8 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
 
   const handleSelectCategory = (category: Category) => {
     setSelectedCategory(category as ICategory)
+    // Скрываем ошибку при выборе категории
+    setShowError(false)
 
     if (category.children && category.children.length > 0) {
       toggleCategoryExpanded(category.id.toString())
@@ -261,9 +276,15 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
 
   return (
     <div className={styles.cat__box}>
-      <div className={styles.cat__selected} onClick={handleSelectedAreaClick} style={{cursor: 'pointer'}}>
+      <div
+        className={`${styles.cat__selected} ${showError ? styles.cat__selected__error : ''}`}
+        onClick={handleSelectedAreaClick}
+        style={{cursor: 'pointer'}}
+      >
         {!selectedCategory ? (
-          <p className={styles.cat__empty}>{t('emptyCategory')}</p>
+          <p className={`${styles.cat__empty} ${showError ? styles.cat__empty__error : ''}`}>
+            {showError && errorValue ? errorValue : t('emptyCategory')}
+          </p>
         ) : (
           <div className={styles.cat__selectedItem}>
             {selectedCategory.imageUrl && (
@@ -289,6 +310,8 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
         )}
       </div>
 
+      {/* {showError && errorValue && <p className={styles.cat__errorMessage}>{errorValue}</p>} */}
+
       <div className={styles.cat__add}>
         <div ref={searchWrapperRef} className={styles.cat__searchWrapper}>
           <input
@@ -299,7 +322,7 @@ const CreateCardProductCategory: FC<CreateCardProductCategoryProps> = ({initialP
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsDropdownOpen(true)}
-            className={styles.cat__search}
+            className={`${styles.cat__search} ${showError ? styles.cat__search__error : ''}`}
           />
 
           {isDropdownOpen && (

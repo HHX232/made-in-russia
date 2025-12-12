@@ -3,7 +3,6 @@
 import {useState, useEffect, memo} from 'react'
 import styles from './CreateCardPriceElements.module.scss'
 import RowsInputs from '@/components/UI-kit/RowsInputs/RowsInputs'
-import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import Image from 'next/image'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {HELP_IMAGES} from '../../CreateCard'
@@ -29,11 +28,7 @@ interface CreateCardPriceElementsProps {
   dropdownPricesOptions?: string[][]
   canCreateNewOption?: boolean[]
   extra__rows__grid?: string
-}
-
-const sanitizeQuantity = (value: string) => {
-  const match = value.match(/^\d+/)
-  return match ? match[0] : ''
+  charMatrixError?: string
 }
 
 const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
@@ -45,7 +40,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     currentLanguage,
     dropdownPricesOptions = [],
     canCreateNewOption = [],
-    extra__rows__grid
+    extra__rows__grid,
+    charMatrixError
   }) => {
     const {
       updateCharacteristic,
@@ -73,15 +69,11 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     // Состояние для цены со скидкой (отдельный инпут)
     const [discountPrice, setDiscountPrice] = useState('')
 
-    // Локальное состояние для списка цен (теперь БЕЗ priceWithDiscount)
+    // Локальное состояние для списка цен (БЕЗ quantity - только price, currency, unit)
     const [pricesMatrix, setPricesMatrix] = useState<string[][]>(
       (pricesArray || []).map((row) => {
-        const newRow = [row[0], row[1], row[3], row[4]] // убираем индекс 2 (priceWithDiscount)
-        if (newRow[0]) {
-          const match = newRow[0].match(/^\d+/)
-          newRow[0] = match ? match[0] : ''
-        }
-        return newRow
+        // Берем только индексы 1, 3, 4 (priceWithoutDiscount, currency, unit)
+        return [row[1], row[3], row[4]]
       })
     )
 
@@ -106,8 +98,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       const result: string[][] = []
       let dropdownIndex = 0
 
-      // Корректируем для нового набора inputType (без priceWithDiscount)
-      const adjustedInputType = inputType.filter((_, index) => index !== 2)
+      // Корректируем для нового набора inputType (только 3 поля: price, currency, unit)
+      const adjustedInputType = [inputType[1], inputType[3], inputType[4]] // берем индексы для price, currency, unit
 
       adjustedInputType.forEach((type, index) => {
         if (type === 'dropdown') {
@@ -133,7 +125,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       const result: boolean[] = []
       let dropdownIndex = 0
 
-      const adjustedInputType = inputType.filter((_, index) => index !== 2)
+      const adjustedInputType = [inputType[1], inputType[3], inputType[4]]
 
       adjustedInputType.forEach((type, index) => {
         if (type === 'dropdown') {
@@ -163,34 +155,27 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       setPackagingKey((prev) => prev + 1)
     }, [currentLanguage])
 
-    // Обработчик для матрицы цен (теперь с 4 колонками вместо 5)
+    // Обработчик для матрицы цен (теперь с 3 колонками: price, currency, unit)
     const handlePriceSetValue = (rowIndex: number, inputIndex: number, value: string) => {
       const newMatrix = [...pricesMatrix]
 
       if (!newMatrix[rowIndex]) {
-        newMatrix[rowIndex] = new Array(4).fill('')
+        newMatrix[rowIndex] = new Array(3).fill('')
       }
 
-      let sanitizedValue = value
-
-      if (inputIndex === 0) {
-        const match = sanitizedValue.match(/^\d+/)
-        sanitizedValue = match ? match[0] : ''
-      }
-
-      newMatrix[rowIndex][inputIndex] = sanitizedValue
+      newMatrix[rowIndex][inputIndex] = value
       setPricesMatrix(newMatrix)
 
-      // Преобразуем в формат для родительского компонента, добавляя discountPrice
+      // Преобразуем в формат для родительского компонента, ВСЕГДА добавляя quantity: '1'
       const formattedPrices = newMatrix
         .filter((row) => row.some((cell) => cell.trim()))
         .map((row) => ({
-          quantity: row[0] || '',
-          priceWithoutDiscount: row[1] || '',
-          priceWithDiscount: discountPrice || '', // Берем из отдельного состояния
-          currency: row[2] || '',
-          unit: row[3] || '',
-          value: parseFloat(discountPrice || row[1] || '0')
+          quantity: '1', // ВСЕГДА единица
+          priceWithoutDiscount: row[0] || '',
+          priceWithDiscount: discountPrice || '',
+          currency: row[1] || '',
+          unit: row[2] || '',
+          value: parseFloat(discountPrice || row[0] || '0')
         }))
 
       onSetPricesArray(formattedPrices)
@@ -202,12 +187,12 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       const formattedPrices = newRows
         .filter((row) => row.some((cell) => cell.trim()))
         .map((row) => ({
-          quantity: row[0] || '',
-          priceWithoutDiscount: row[1] || '',
+          quantity: '1', // ВСЕГДА единица
+          priceWithoutDiscount: row[0] || '',
           priceWithDiscount: discountPrice || '',
-          currency: row[2] || '',
-          unit: row[3] || '',
-          value: parseFloat(discountPrice || row[1] || '0')
+          currency: row[1] || '',
+          unit: row[2] || '',
+          value: parseFloat(discountPrice || row[0] || '0')
         }))
 
       onSetPricesArray(formattedPrices)
@@ -221,12 +206,12 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       const formattedPrices = pricesMatrix
         .filter((row) => row.some((cell) => cell.trim()))
         .map((row) => ({
-          quantity: row[0] || '',
-          priceWithoutDiscount: row[1] || '',
+          quantity: '1', // ВСЕГДА единица
+          priceWithoutDiscount: row[0] || '',
           priceWithDiscount: value || '',
-          currency: row[2] || '',
-          unit: row[3] || '',
-          value: parseFloat(value || row[1] || '0')
+          currency: row[1] || '',
+          unit: row[2] || '',
+          value: parseFloat(value || row[0] || '0')
         }))
 
       onSetPricesArray(formattedPrices)
@@ -361,8 +346,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
 
     useEffect(() => {
       if (pricesArray && JSON.stringify(pricesArray) !== JSON.stringify(pricesMatrix)) {
-        // Преобразуем с учетом новой структуры (без priceWithDiscount в матрице)
-        const newMatrix = pricesArray.map((row) => [row[0], row[1], row[3], row[4]])
+        // Преобразуем с учетом новой структуры (без quantity, берем только price, currency, unit)
+        const newMatrix = pricesArray.map((row) => [row[1], row[3], row[4]])
         setPricesMatrix(newMatrix)
         // Обновляем discountPrice из первой строки
         if (pricesArray.length > 0 && pricesArray[0][2]) {
@@ -385,8 +370,10 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     const preparedDropdownOptions = prepareDropdownOptions()
     const preparedCanCreateNewOption = prepareCanCreateNewOption()
 
-    // Корректируем inputType, убирая третий элемент
-    const adjustedInputType = inputType ? inputType.filter((_, index) => index !== 2) : undefined
+    // Корректируем inputType для 3 полей: price, currency, unit
+    const adjustedInputType: TInputType[] | undefined = inputType
+      ? [inputType[1], inputType[3], inputType[4]]
+      : undefined
 
     return (
       <div className={styles.create__prices__box}>
@@ -406,24 +393,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             <div style={{zIndex: '66666666'}} className={`${styles.create__label__title__box}`}>
               <p className={`${styles.create__label__title}`}>{t('pricesList')}</p>
               {HELP_IMAGES.prices.length !== 0 && (
-                // <DropList
-                //   direction={windowWidth && windowWidth < 768 ? 'left' : 'bottom'}
-                //   safeAreaEnabled
-                //   positionIsAbsolute={false}
-                //   trigger='hover'
-                //   arrowClassName={`${styles.arrow__none}`}
-                //   title={<Image src={vopros} alt='vopros' width={27} height={27} />}
-                //   items={[
-                //     <Image
-                //       onClick={() => openModal(HELP_IMAGES.prices)}
-                //       src={HELP_IMAGES.prices}
-                //       alt='question'
-                //       width={300}
-                //       height={300}
-                //       key={1}
-                //     />
-                //   ]}
-                // />
                 <Image
                   onClick={() => openModal(HELP_IMAGES.prices)}
                   src={vopros}
@@ -437,7 +406,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             <div style={{display: 'flex', flexDirection: 'column', width: '100%', gap: '20px'}}>
               <RowsInputs
                 useNewTheme
-                inputsInRowCount={4}
+                inputsInRowCount={3}
                 maxRows={1}
                 extra__rows__grid={styles.extra__rows__grid}
                 extraButtonPlusClass={styles.extra__plus__button__class}
@@ -446,8 +415,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 canCreateNewOption={preparedCanCreateNewOption}
                 inputType={adjustedInputType}
                 initialRowsCount={1}
-                idNames={['elementCount', 'originalPrice', 'currency', 'unit']}
-                titles={[t('elementCount'), t('originalPrice'), t('currency'), t('unit')]}
+                idNames={['originalPrice', 'currency', 'unit']}
+                titles={[t('originalPrice'), t('currency'), t('unit')]}
                 rowsInitialValues={pricesMatrix}
                 onSetValue={handlePriceSetValue}
                 onRowsChange={handlePriceRowsChange}
@@ -471,27 +440,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               <div className={styles.seller__title}>
                 <p className={styles.seller__title__text}>{t('infoAboutPrices')} </p>
                 {HELP_IMAGES.saleDate.length !== 0 && (
-                  // <DropList
-                  //   direction={windowWidth && windowWidth < 768 ? 'bottom' : 'left'}
-                  //   safeAreaEnabled
-                  //   extraClass={`${styles.drop__extra}`}
-                  //   positionIsAbsolute={false}
-                  //   trigger='hover'
-                  //   useNewTheme
-                  //   arrowClassName={`${styles.arrow__none}`}
-                  //   title={<Image src={vopros} alt='question' width={27} height={27} />}
-                  //   items={[
-                  //     <Image
-                  //       src={HELP_IMAGES.saleDate}
-                  //       className={styles.drop__extra__image__modal__second}
-                  //       alt='question'
-                  //       width={600}
-                  //       onClick={() => openModal(HELP_IMAGES.saleDate)}
-                  //       height={600}
-                  //       key={1}
-                  //     />
-                  //   ]}
-                  // />
                   <Image
                     onClick={() => openModal(HELP_IMAGES.saleDate)}
                     src={vopros}
@@ -583,7 +531,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               rowsInitialValues={characteristicsMatrix}
               onSetValue={handleCharacteristicSetValue}
               onRowsChange={handleCharacteristicRowsChange}
-              errorMessage={currentErrors.characteristicsError}
+              errorMessage={charMatrixError}
               minFilledRows={1}
             />
             <div style={{zIndex: '7777'}} className={styles.del__box}>

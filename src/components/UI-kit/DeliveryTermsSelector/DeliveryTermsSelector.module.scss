@@ -30,6 +30,10 @@
   flex: 1;
 }
 
+.dropdown__error {
+  border: 2px solid #ac2525 !important;
+}
+
 .dropdown__trigger {
   display: flex;
   min-height: 56px;

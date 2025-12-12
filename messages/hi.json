@@ -513,6 +513,13 @@
     "publishing": "प्रकाशित हो रहा है..."
   },
   "createCard": {
+    "deliveryTermsError": "कम से कम 1 डिलीवरी विकल्प जोड़ा जाना चाहिए",
+    "titleError": "उत्पाद का नाम निर्दिष्ट किया जाना चाहिए",
+    "categoryError": "उत्पाद श्रेणी का चयन किया जाना चाहिए",
+    "minimumImages": "कम से कम 1 उत्पाद छवि जोड़ी जानी चाहिए",
+    "onePriceError": "उत्पाद मूल्य निर्दिष्ट किया जाना चाहिए",
+    "characteristicError": "कम से कम 1 विशेषता जोड़ी जानी चाहिए",
+    "descriptionError": "उत्पाद विवरण जोड़ा जाना चाहिए",
     "bag": "बैग",
     "savingLoad": "सहेजा जा रहा है...",
     "mg": "मिलीग्राम",
@@ -539,7 +546,6 @@
     "alternativeAdditionalDescr": "अतिरिक्त विवरण",
     "validateError": "सत्यापन त्रुटि",
     "error": "त्रुटि",
-    "categoryError": "उत्पाद श्रेणी चुनें",
     "elCount": "पीस",
     "updateCardProcess": "उत्पाद अपडेट हो रहा है...",
     "saveCardProcess": "उत्पाद सहेजा जा रहा है...",
@@ -558,12 +564,7 @@
     "similarProducts": "समान उत्पाद",
     "altHelpWithSimilarProducts": "समान उत्पाद सहायता",
     "save": "सहेजें",
-    "titleError": "नाम आवश्यक है",
-    "minimumImages": "न्यूनतम 1 छवि",
     "now": "अब",
-    "onePriceError": "कम से कम एक मूल्य जोड़ें",
-    "descriptionError": "विवरण आवश्यक है",
-    "characteristicError": "कम से कम एक पंक्ति भरी होनी चाहिए",
     "topDescrError": "शीर्ष विवरण आवश्यक है",
     "bottomError": "निचला विवरण आवश्यक है",
     "companyImagesError": "कम से कम एक छवि",
@@ -1122,7 +1123,26 @@
       "login": "लॉगिन"
     },
   "ReviewsToNumber":{
-  "count":"{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}"
+  "count":"{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}",
+  "mg": "{count, plural, one {{count} मिलीग्राम} other {{count} मिलीग्राम}}",
+  "g": "{count, plural, one {{count} ग्राम} other {{count} ग्राम}}",
+  "kg": "{count, plural, one {{count} किलोग्राम} other {{count} किलोग्राम}}",
+  "c": "{count, plural, one {{count} क्विंटल} other {{count} क्विंटल}}",
+  "t": "{count, plural, one {{count} टन} other {{count} टन}}",
+  "ml": "{count, plural, one {{count} मिलीलीटर} other {{count} मिलीलीटर}}",
+  "l": "{count, plural, one {{count} लीटर} other {{count} लीटर}}",
+  "hl": "{count, plural, one {{count} हेक्टोलीटर} other {{count} हेक्टोलीटर}}",
+  "m3": "{count, plural, one {{count} घन मीटर} other {{count} घन मीटर}}",
+  "m2": "{count, plural, one {{count} वर्ग मीटर} other {{count} वर्ग मीटर}}",
+  "cm2": "{count, plural, one {{count} वर्ग सेंटीमीटर} other {{count} वर्ग सेंटीमीटर}}",
+  "pcs": "{count, plural, one {{count} नग} other {{count} नग}}",
+  "pack": "{count, plural, one {{count} पैकेट} other {{count} पैकेट}}",
+  "m": "{count, plural, one {{count} मीटर} other {{count} मीटर}}",
+  "cm": "{count, plural, one {{count} सेंटीमीटर} other {{count} सेंटीमीटर}}",
+  "pair": "{count, plural, one {{count} जोड़ी} other {{count} जोड़ी}}",
+  "set": "{count, plural, one {{count} सेट} other {{count} सेट}}",
+  "box": "{count, plural, one {{count} डिब्बा} other {{count} डिब्बे}}",
+  "bag": "{count, plural, one {{count} थैला} other {{count} थैले}}"
   }
 
 }

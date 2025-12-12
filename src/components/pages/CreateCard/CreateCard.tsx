@@ -16,7 +16,6 @@ import ICardFull, {ICategory} from '@/services/card/card.types'
 import {Product} from '@/services/products/product.types'
 import CreateSimilarProducts from './CreateSimilarProducts/CreateSimilarProducts'
 import CreateCardProductCategory from './CreateCardProductCategory/CreateCardProductCategory'
-import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {ValidationErrors, CreateCardProps, ICurrentLanguage} from './CreateCard.types'
@@ -126,7 +125,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
   // Используем универсальный хук для модального окна
   const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
-  const windowWidth = useWindowWidth()
 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
 
@@ -135,7 +133,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     initialData?.media.map((el) => el.url) || []
   )
 
-  // ! new line
   const initialImages = useMemo(
     () =>
       initialData?.media.map((el, i) => ({
@@ -148,8 +145,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
   const [objectRemainingInitialImages, setObjectRemainingInitialImages] = useState<{id: number; position: number}[]>(
     initialImages || []
   )
-
-  const [testFaq, setTestFaq] = useState<string[][]>([['', '']])
 
   const [pricesArray, setPricesArray] = useState<
     {
@@ -185,10 +180,21 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     pricesArray: '',
     description: '',
     descriptionImages: '',
-    descriptionMatrix: ''
-    // faqMatrix: ''
+    descriptionMatrix: '',
+    deliveryTerms: '',
+    selectedCategory: ''
   })
 
+  const handleCategoryChange = useCallback(
+    (category: ICategory | null) => {
+      setSelectedCategory(category)
+      // Очищаем ошибку при выборе категории
+      if (errors.selectedCategory && category) {
+        setErrors((prev) => ({...prev, selectedCategory: ''}))
+      }
+    },
+    [errors.selectedCategory]
+  )
   const formState = useMemo(
     () => ({
       isValidForm,
@@ -208,7 +214,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       packageArray: multyLangObjectForPrices?.[currentLangState]?.packaging?.map((el) => [el.title, el.price]),
       faqMatrix: faqMatrixForOthers?.[currentLangState || 'en'] || [],
       errors,
-      selectedDeliveryMethodIds: [1]
+      selectedDeliveryMethodIds: [1],
+      selectedDeliveryIds
     }),
     [
       isValidForm,
@@ -225,7 +232,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       descriptionImages,
       characteristics,
       faqMatrixForOthers,
-      errors
+      errors,
+      selectedDeliveryIds
     ]
   )
 
@@ -295,32 +303,49 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
 
       console.log('descriptions,', descriptions)
       console.log('Current selectedDeliveryIds:', selectedDeliveryIds)
+
       // Выполняем полную валидацию при сабмите
       const {validationErrors, isFormValid: isValid} = validateAllFields()
       setErrors(validationErrors)
       setIsValidForm(isValid)
 
       if (!isValid) {
-        Object.entries(validationErrors).forEach(([key, value]) => {
-          if (value) {
+        console.log('Хай - Form validation failed, errors:', validationErrors)
+
+        // Собираем все ошибки в массив
+        const errorMessages = Object.entries(validationErrors)
+          .filter(([key, value]) => value && value.trim() !== '')
+          .map(([key, value]) => value)
+
+        console.log('Хай - Error messages count:', errorMessages.length)
+        console.log('Хай - Error messages array:', errorMessages)
+        errorMessages.forEach((msg, idx) => {
+          console.log(`Хай - Error ${idx}:`, msg)
+        })
+
+        if (errorMessages.length > 0) {
+          errorMessages.forEach((message, index) => {
             toast.error(
               <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
                 <strong style={{display: 'block', marginBottom: 4}}>{t('error')}</strong>
-                <span>{value}</span>
+                <span>{message}</span>
               </div>,
               {
                 style: {
                   background: '#AC2525'
-                }
+                },
+                duration: 4000
               }
             )
-          }
-        })
+          })
+        }
+
         return
       }
 
       const loadingToast = toast.loading(t('savingLoad'))
       console.log('cardObjectForOthers', cardObjectForOthers)
+
       try {
         await submitFormCardData({
           cardObjectForOthers,
@@ -340,6 +365,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
           initialData,
           selectedDeliveryIds
         })
+
         toast.dismiss(loadingToast)
         toast.success(
           <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
@@ -356,23 +382,12 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             }
           }
         )
-        // invalidateProductsCache(queryClient)
+
         router.push(`/vendor`)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
         toast.dismiss(loadingToast)
         console.log(e, 'path:', e?.message?.errors?.message)
-        // toast.error(
-        //   <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-        //     <strong style={{display: 'block', marginBottom: 4}}>{t('saveError')}</strong>
-        //     <span>{e?.message?.errors?.message}</span>
-        //   </div>,
-        //   {
-        //     style: {
-        //       background: '#AC2525'
-        //     }
-        //   }
-        // )
       }
     },
     [
@@ -509,7 +524,9 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               </div>
               <CreateCardProductCategory
                 initialProductCategory={selectedCategory || undefined}
-                onSetCategory={(category) => setSelectedCategory(category)}
+                onSetCategory={handleCategoryChange}
+                errorValue={errors.selectedCategory}
+                haveError={!!errors.selectedCategory}
               />
             </div>
             {/* Поле "Изображения товара" */}
@@ -617,19 +634,29 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               currentLanguage={currentLangState}
               onSetPricesArray={handlePricesArrayChange}
               pricesError={errors.pricesArray}
+              charMatrixError={errors.descriptionMatrix}
             />
 
             <DeliveryTermsSelector
               selectedTermIds={selectedDeliveryIds}
               onChange={(ids) => {
-                console.log('DeliveryTermsSelector onChange:', ids) // Для дебага
+                console.log('DeliveryTermsSelector onChange:', ids)
                 const filledIds = ids.filter((id) => id !== '' && id !== null && id !== undefined)
                 setSelectedDeliveryIds(filledIds)
+
+                if (errors.deliveryTerms && filledIds.length > 0) {
+                  setErrors((prev) => ({...prev, deliveryTerms: ''}))
+                }
               }}
               maxSelections={100}
               useNewTheme={true}
+              errorValue={errors.deliveryTerms}
             />
-            <CreateDescriptionsElements descriptionError={errors.description} currentDynamicLang={currentLangState} />
+            <CreateDescriptionsElements
+              haveError={!!errors.description}
+              descriptionError={errors.description}
+              currentDynamicLang={currentLangState}
+            />
 
             {/* CreateFaqCard */}
             {currentLangState === 'ru' && (
@@ -679,24 +706,24 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 className={`${styles.create____submit__button}`}
                 type='submit'
                 // disabled={!isFormValid}
-                onClick={() => {
-                  validateAllFields()
-                  Object.entries(errors).forEach(([key, value]) => {
-                    if (value) {
-                      toast.error(
-                        <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
-                          <strong style={{display: 'block', marginBottom: 4}}>{t('error')}</strong>
-                          <span>{value}</span>
-                        </div>,
-                        {
-                          style: {
-                            background: '#AC2525'
-                          }
-                        }
-                      )
-                    }
-                  })
-                }}
+                // onClick={() => {
+                //   validateAllFields()
+                //   Object.entries(errors).forEach(([key, value]) => {
+                //     if (value) {
+                //       toast.error(
+                //         <div data-special-attr-for-error={true} style={{lineHeight: 1.5}}>
+                //           <strong style={{display: 'block', marginBottom: 4}}>{t('error')}</strong>
+                //           <span>{value}</span>
+                //         </div>,
+                //         {
+                //           style: {
+                //             background: '#AC2525'
+                //           }
+                //         }
+                //       )
+                //     }
+                //   })
+                // }}
               >
                 {t('save')}
               </button>

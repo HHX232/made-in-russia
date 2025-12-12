@@ -16,7 +16,9 @@ export const useFormValidation = (
     pricesArray: '',
     description: '',
     descriptionImages: '',
-    descriptionMatrix: ''
+    descriptionMatrix: '',
+    selectedCategory: '',
+    deliveryTerms: ''
   })
 
   // Кэшируем значения для отслеживания изменений
@@ -27,13 +29,17 @@ export const useFormValidation = (
     pricesArrayLength: number
     currentMainDescription: string
     descriptionMatrixString: string
+    selectedDeliveryIdsLength: number
+    selectedCategoryId: number | null // Добавлено
   }>({
     currentTitle: '',
     uploadedFilesLength: 0,
     remainingImagesLength: 0,
     pricesArrayLength: 0,
     currentMainDescription: '',
-    descriptionMatrixString: ''
+    descriptionMatrixString: '',
+    selectedDeliveryIdsLength: 0,
+    selectedCategoryId: null // Добавлено
   })
 
   // Получаем актуальные значения
@@ -54,17 +60,16 @@ export const useFormValidation = (
       switch (fieldName) {
         case 'cardTitle':
           return current.currentTitle !== currentTitle
-        // case 'uploadedFiles':
-        //   return (
-        //     current.uploadedFilesLength !== (formState.uploadedFiles?.length || 0) ||
-        //     current.remainingImagesLength !== (formState.remainingInitialImages?.length || 0)
-        //   )
         case 'pricesArray':
           return current.pricesArrayLength !== (formState.pricesArray?.length || 0)
         case 'description':
           return current.currentMainDescription !== currentMainDescription
         case 'descriptionMatrix':
           return current.descriptionMatrixString !== descriptionMatrixString
+        case 'deliveryTerms':
+          return current.selectedDeliveryIdsLength !== (formState.selectedDeliveryIds?.length || 0)
+        case 'selectedCategory': // Добавлено
+          return current.selectedCategoryId !== (formState.selectedCategory?.id || null)
         default:
           return false
       }
@@ -75,7 +80,9 @@ export const useFormValidation = (
       formState.remainingInitialImages,
       formState.pricesArray,
       currentMainDescription,
-      descriptionMatrixString
+      descriptionMatrixString,
+      formState.selectedDeliveryIds,
+      formState.selectedCategory // Добавлено в зависимости
     ]
   )
 
@@ -87,7 +94,9 @@ export const useFormValidation = (
       remainingImagesLength: formState.remainingInitialImages?.length || 0,
       pricesArrayLength: formState.pricesArray?.length || 0,
       currentMainDescription,
-      descriptionMatrixString
+      descriptionMatrixString,
+      selectedDeliveryIdsLength: formState.selectedDeliveryIds?.length || 0,
+      selectedCategoryId: formState.selectedCategory?.id || null // Добавлено
     }
   }, [
     currentTitle,
@@ -95,19 +104,24 @@ export const useFormValidation = (
     formState.remainingInitialImages,
     formState.pricesArray,
     currentMainDescription,
-    descriptionMatrixString
+    descriptionMatrixString,
+    formState.selectedDeliveryIds,
+    formState.selectedCategory // Добавлено в зависимости
   ])
 
   // Функция для валидации отдельного поля с кэшированием
   const validateSingleField = useCallback(
     (fieldName: keyof ValidationErrors, forceUpdate: boolean = false): string => {
-      // Если значение не изменилось и не требуется принудительное обновление, возвращаем кэшированный результат
+      console.log('Хай - validateSingleField called for:', fieldName, 'forceUpdate:', forceUpdate)
+      console.log('Хай - formState.selectedDeliveryIds:', formState.selectedDeliveryIds)
+      console.log('Хай - formState.selectedCategory:', formState.selectedCategory)
+
       if (!forceUpdate && !hasFieldChanged(fieldName)) {
+        console.log('Хай - using cached result for:', fieldName)
         return fieldValidationCache.current[fieldName] || ''
       }
 
       console.log('currentMainDescription', currentMainDescription)
-      // Выполняем валидацию только для конкретного поля
       const validationResult = validateField(
         fieldName as any,
         currentTitle,
@@ -116,10 +130,13 @@ export const useFormValidation = (
         formState.pricesArray,
         currentMainDescription,
         formState.descriptionMatrix,
-        translations
+        translations,
+        formState.selectedDeliveryIds,
+        formState.selectedCategory // Добавлен параметр
       )
 
-      // Обновляем кэш для этого поля
+      console.log('Хай - validation result for', fieldName, ':', validationResult)
+
       fieldValidationCache.current[fieldName] = validationResult
 
       return validationResult
@@ -132,26 +149,35 @@ export const useFormValidation = (
       formState.pricesArray,
       currentMainDescription,
       formState.descriptionMatrix,
-      translations
+      translations,
+      formState.selectedDeliveryIds,
+      formState.selectedCategory // Добавлено в зависимости
     ]
   )
 
   // Функция для валидации всех полей (используется при сабмите)
   const validateAllFields = useCallback((): {validationErrors: ValidationErrors; isFormValid: boolean} => {
-    // Обновляем кэш значений
+    console.log('Хай - validateAllFields called')
+    console.log('Хай - formState at validation:', formState)
+
     updateValuesCache()
 
-    // Валидируем все поля принудительно
     const validationErrors: ValidationErrors = {
       cardTitle: validateSingleField('cardTitle', true),
       uploadedFiles: validateSingleField('uploadedFiles', true),
       pricesArray: validateSingleField('pricesArray', true),
       description: validateSingleField('description', true),
       descriptionMatrix: validateSingleField('descriptionMatrix', true),
-      descriptionImages: '' // Если нет логики валидации, оставляем пустым
+      descriptionImages: '',
+      deliveryTerms: validateSingleField('deliveryTerms', true),
+      selectedCategory: validateSingleField('selectedCategory', true) // Добавлено
     }
 
+    console.log('Хай - all validation errors:', validationErrors)
+
     const isFormValid = !Object.values(validationErrors).some((error) => error !== '')
+
+    console.log('Хай - isFormValid:', isFormValid)
 
     return {validationErrors, isFormValid}
   }, [validateSingleField, updateValuesCache])

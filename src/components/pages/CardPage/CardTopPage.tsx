@@ -17,6 +17,7 @@ import {toast} from 'sonner'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import ServiceFavorites from '@/services/favorite/favorite.service'
+import {Heart} from 'lucide-react'
 
 interface IPriceItem {
   title: string | ReactNode
@@ -153,8 +154,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   const t = useTranslations('CardPage.CardTopPage')
   const [cardMiniData, setCardMiniData] = useState<ICardFull | null>(cardData)
   const [isMounted, setIsMounted] = useState(false)
-  const [vendorModalOpen, setVendorModalOpen] = useState(false)
-  const windowWidth = useWindowWidth()
+
   const locale = useLocale()
 
   const [purchaseModalOpen, setPurchaseModalOpen] = useState(false)
@@ -260,6 +260,21 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     const t = useTranslations('CardTopPage')
     const t2 = useTranslations('ReviewsToNumber')
 
+    const getMinimalValueText = () => {
+      const quantity = cardData?.minimumOrderQuantity || 1
+      const unitSlug = cardData?.prices[0]?.unitSlug
+
+      if (!unitSlug || quantity === 0) {
+        return quantity.toString()
+      }
+
+      try {
+        return t2(unitSlug, {count: quantity})
+      } catch (error) {
+        return `${quantity} ${unitSlug}`
+      }
+    }
+
     return (
       <div className={styles.full__info__box}>
         <h1 className={styles.productTitle}>{cardData?.title}</h1>
@@ -302,7 +317,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             disabled={isTogglingFavorite}
             aria-label={isInFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
           >
-            <svg
+            {/* <svg
               className={!isInFavorite ? styles.active__star : ''}
               width='28'
               height='28'
@@ -318,7 +333,8 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
                 strokeLinecap='round'
                 strokeLinejoin='round'
               />
-            </svg>
+            </svg> */}
+            <Heart className={isInFavorite ? styles.activeHeart : styles.inactiveHeart} />
           </button>
         </div>
 
@@ -330,10 +346,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             items={[
               {
                 title: t('minimalValue'),
-                value:
-                  (cardData?.minimumOrderQuantity?.toString() || '') +
-                    ' ' +
-                    (cardData?.prices[0].unit?.toString() || '') || ''
+                value: getMinimalValueText()
               },
               {title: t('articul'), value: cardData?.article || ''},
               ...(cardData?.characteristics?.map((el) => ({

@@ -116,8 +116,8 @@
 /* Account menu human */
 .menu_human {
   padding: 34px 32px 35px;
-  background-color: #f6f6f6;
   border-radius: 10px;
+  background-color: #f6f6f6;
 
   @media (max-width: 768px) {
     padding: 35px 30px;
@@ -1019,8 +1019,7 @@
   }
 
   .defaultColor {
-    // stroke={currentTab === 'sessions' ? '#0047BA' : '#2F2F2F'}
-    & > path {
+    & > svg > path {
       stroke: #939393 !important;
     }
 
@@ -1030,8 +1029,7 @@
   }
 
   .accentColor {
-    // stroke={currentTab === 'sessions' ? '#0047BA' : '#2F2F2F'}
-    & > path {
+    & > svg > path {
       stroke: #0047ba !important;
     }
 
