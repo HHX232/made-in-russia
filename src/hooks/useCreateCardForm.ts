@@ -30,6 +30,7 @@ export const useCreateCardForm = (initialData?: ICardFull) => {
     similarProducts: new Set<Product>(),
     selectedCategory: initialData?.category || null,
     selectedDeliveryMethodIds: [1],
+    selectedDeliveryIds: initialData?.deliveryTerms?.map((el) => el.id) || [], // Добавлено
     saleDate: initialData?.daysBeforeDiscountExpires?.toString() || '',
     currentLangState: currentLang as ICurrentLanguage,
     cardTitle: initialData?.title || '',
@@ -52,27 +53,6 @@ export const useCreateCardForm = (initialData?: ICardFull) => {
     descriptionImages: [],
     descriptionMatrix: initialData?.characteristics.map((el: any) => [el.name, el.value]) || [],
     packageArray: [],
-    companyData: {
-      topDescription: initialData?.aboutVendor?.mainDescription || '',
-      images:
-        initialData && initialData?.aboutVendor && initialData?.aboutVendor?.media?.length > 0
-          ? initialData.aboutVendor.media.map((el: any) => ({
-              image: el.url as string,
-              description: el.altText
-            }))
-          : [
-              {image: null, description: ''},
-              {image: null, description: ''},
-              {image: null, description: ''},
-              {image: null, description: ''}
-            ],
-      bottomDescription: initialData?.aboutVendor?.furtherDescription || ''
-    },
-    companyDataImages:
-      initialData?.aboutVendor?.media.map((el: any, i: number) => ({
-        id: el.id,
-        position: i
-      })) || [],
     faqMatrix: initialData?.faq.map((el: any) => [el.question, el.answer]) || [
       ['', ''],
       ['', ''],
@@ -87,8 +67,8 @@ export const useCreateCardForm = (initialData?: ICardFull) => {
       description: '',
       descriptionImages: '',
       descriptionMatrix: '',
-      companyData: '',
-      faqMatrix: ''
+      deliveryTerms: '',
+      selectedCategory: ''
     },
     cardObjectForOthers: cardObjectForOthers
   }))
