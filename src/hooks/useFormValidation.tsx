@@ -18,7 +18,8 @@ export const useFormValidation = (
     descriptionImages: '',
     descriptionMatrix: '',
     selectedCategory: '',
-    deliveryTerms: ''
+    deliveryTerms: '',
+    minimalVolume: '' // Добавлено
   })
 
   // Кэшируем значения для отслеживания изменений
@@ -30,7 +31,8 @@ export const useFormValidation = (
     currentMainDescription: string
     descriptionMatrixString: string
     selectedDeliveryIdsLength: number
-    selectedCategoryId: number | null // Добавлено
+    selectedCategoryId: number | null
+    minimalVolume: string // Добавлено
   }>({
     currentTitle: '',
     uploadedFilesLength: 0,
@@ -39,7 +41,8 @@ export const useFormValidation = (
     currentMainDescription: '',
     descriptionMatrixString: '',
     selectedDeliveryIdsLength: 0,
-    selectedCategoryId: null // Добавлено
+    selectedCategoryId: null,
+    minimalVolume: '' // Добавлено
   })
 
   // Получаем актуальные значения
@@ -68,8 +71,10 @@ export const useFormValidation = (
           return current.descriptionMatrixString !== descriptionMatrixString
         case 'deliveryTerms':
           return current.selectedDeliveryIdsLength !== (formState.selectedDeliveryIds?.length || 0)
-        case 'selectedCategory': // Добавлено
+        case 'selectedCategory':
           return current.selectedCategoryId !== (formState.selectedCategory?.id || null)
+        case 'minimalVolume': // Добавлено
+          return current.minimalVolume !== (formState.minimalVolume || '')
         default:
           return false
       }
@@ -82,7 +87,8 @@ export const useFormValidation = (
       currentMainDescription,
       descriptionMatrixString,
       formState.selectedDeliveryIds,
-      formState.selectedCategory // Добавлено в зависимости
+      formState.selectedCategory,
+      formState.minimalVolume // Добавлено в зависимости
     ]
   )
 
@@ -96,7 +102,8 @@ export const useFormValidation = (
       currentMainDescription,
       descriptionMatrixString,
       selectedDeliveryIdsLength: formState.selectedDeliveryIds?.length || 0,
-      selectedCategoryId: formState.selectedCategory?.id || null // Добавлено
+      selectedCategoryId: formState.selectedCategory?.id || null,
+      minimalVolume: formState.minimalVolume || '' // Добавлено
     }
   }, [
     currentTitle,
@@ -106,7 +113,8 @@ export const useFormValidation = (
     currentMainDescription,
     descriptionMatrixString,
     formState.selectedDeliveryIds,
-    formState.selectedCategory // Добавлено в зависимости
+    formState.selectedCategory,
+    formState.minimalVolume // Добавлено в зависимости
   ])
 
   // Функция для валидации отдельного поля с кэшированием
@@ -115,6 +123,7 @@ export const useFormValidation = (
       console.log('Хай - validateSingleField called for:', fieldName, 'forceUpdate:', forceUpdate)
       console.log('Хай - formState.selectedDeliveryIds:', formState.selectedDeliveryIds)
       console.log('Хай - formState.selectedCategory:', formState.selectedCategory)
+      console.log('Хай - formState.minimalVolume:', formState.minimalVolume)
 
       if (!forceUpdate && !hasFieldChanged(fieldName)) {
         console.log('Хай - using cached result for:', fieldName)
@@ -132,7 +141,8 @@ export const useFormValidation = (
         formState.descriptionMatrix,
         translations,
         formState.selectedDeliveryIds,
-        formState.selectedCategory // Добавлен параметр
+        formState.selectedCategory,
+        formState.minimalVolume // Добавлен параметр
       )
 
       console.log('Хай - validation result for', fieldName, ':', validationResult)
@@ -151,7 +161,8 @@ export const useFormValidation = (
       formState.descriptionMatrix,
       translations,
       formState.selectedDeliveryIds,
-      formState.selectedCategory // Добавлено в зависимости
+      formState.selectedCategory,
+      formState.minimalVolume // Добавлено в зависимости
     ]
   )
 
@@ -170,7 +181,8 @@ export const useFormValidation = (
       descriptionMatrix: validateSingleField('descriptionMatrix', true),
       descriptionImages: '',
       deliveryTerms: validateSingleField('deliveryTerms', true),
-      selectedCategory: validateSingleField('selectedCategory', true) // Добавлено
+      selectedCategory: validateSingleField('selectedCategory', true),
+      minimalVolume: validateSingleField('minimalVolume', true) // Добавлено
     }
 
     console.log('Хай - all validation errors:', validationErrors)
@@ -180,7 +192,7 @@ export const useFormValidation = (
     console.log('Хай - isFormValid:', isFormValid)
 
     return {validationErrors, isFormValid}
-  }, [validateSingleField, updateValuesCache])
+  }, [validateSingleField, updateValuesCache, formState])
 
   // Функция для получения текущего состояния валидации (без пересчета)
   const getCurrentValidationErrors = useCallback((): ValidationErrors => {

@@ -43,7 +43,8 @@ export const validateField = (
   descriptionMatrix: string[][],
   translations: (val: string) => string,
   selectedDeliveryIds?: string[],
-  selectedCategory?: ICategory | null // Добавлен новый параметр
+  selectedCategory?: ICategory | null,
+  minimalVolume?: string
 ): string => {
   switch (fieldName) {
     case 'cardTitle':
@@ -52,8 +53,7 @@ export const validateField = (
 
     case 'uploadedFiles':
       const totalImages = (uploadedFiles?.length || 0) + (remainingInitialImages?.length || 0)
-      const filesError =
-        totalImages < 1 ? translations('minimumImages') + `, ${translations('now')} ${totalImages}/1` : ''
+      const filesError = totalImages < 1 ? translations('minimumImages') : ''
       return filesError
 
     case 'pricesArray':
@@ -65,7 +65,8 @@ export const validateField = (
       return descError
 
     case 'descriptionMatrix':
-      const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell?.trim()))
+      const filledRows = descriptionMatrix.filter((row) => row.every((cell) => cell?.trim()))
+      console.log('filledRows', filledRows)
       const matrixError = filledRows.length === 0 ? translations('characteristicError') : ''
       return matrixError
 
@@ -82,6 +83,21 @@ export const validateField = (
       console.log('Хай - selectedCategory validation result:', categoryError)
       return categoryError
 
+    case 'minimalVolume': // Добавлен новый case
+      console.log('Хай - minimalVolume validation, minimalVolume:', minimalVolume)
+      if (!minimalVolume || minimalVolume.trim() === '') {
+        const volumeError = translations('minimalVolumeError')
+        console.log('Хай - minimalVolume validation result (empty):', volumeError)
+        return volumeError
+      }
+      const volume = parseInt(minimalVolume)
+      if (isNaN(volume) || volume <= 0) {
+        const volumeError = translations('minimalVolumeInvalidError')
+        console.log('Хай - minimalVolume validation result (invalid):', volumeError)
+        return volumeError
+      }
+      console.log('Хай - minimalVolume validation result: valid')
+      return ''
     default:
       return ''
   }
@@ -506,7 +522,14 @@ export const submitFormCardData = async ({
 
       const errorMessage = errorData?.errors?.message || errorData?.message || `HTTP error! status: ${response.status}`
 
-      toast.error(errorMessage)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <span>{errorMessage}</span>
+        </div>,
+        {
+          style: {background: '#AC2525'}
+        }
+      )
       console.log('errorData in !response.ok', errorData, 'response', response)
       console.log('сообщение об ошибке', errorMessage)
       throw new Error(`HTTP error! status: ${response.status}, message: ${errorMessage}`)

@@ -75,6 +75,7 @@ interface RowsInputsProps {
   onClick?: (rowIndex: number, inputIndex: number, value: string) => void
   onFocus?: (rowIndex: number, inputIndex: number, value: string) => void
   onKeyUp?: (rowIndex: number, inputIndex: number, value: string, event: React.KeyboardEvent) => void
+  maxLength?: number | number[]
 }
 
 const getDefaultButtonSizes = (size: ButtonSize): ButtonSizes => {
@@ -154,7 +155,6 @@ const Dropdown = ({
     hi: 'साफ़ करें'
   }
 
-  // Функция проверки видимости dropdown меню
   const isDropdownVisible = () => {
     if (!dropdownListRef.current) return true
 
@@ -162,7 +162,6 @@ const Dropdown = ({
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth
 
-    // Проверяем, находится ли dropdown в пределах экрана
     const isInViewport = rect.top >= 0 && rect.left >= 0 && rect.bottom <= viewportHeight && rect.right <= viewportWidth
 
     return isInViewport
@@ -185,12 +184,10 @@ const Dropdown = ({
     const handleScroll = (event: Event) => {
       const target = event.target as Element
 
-      // Если скролл происходит внутри самого dropdown - игнорируем
       if (dropdownRef.current && (dropdownRef.current === target || dropdownRef.current.contains(target))) {
         return
       }
 
-      // Проверяем, выходит ли dropdown за пределы экрана
       if (!isDropdownVisible()) {
         setIsOpen(false)
         setIsCreatingNew(false)
@@ -199,7 +196,6 @@ const Dropdown = ({
     }
 
     if (isOpen) {
-      // Добавляем слушатель с небольшой задержкой для debounce
       let scrollTimeout: NodeJS.Timeout
       const debouncedScroll = (e: Event) => {
         clearTimeout(scrollTimeout)
@@ -376,7 +372,6 @@ interface SortableRowProps {
   extraClass?: string
   isLastRow: boolean
   totalRows: number
-
   canRemove: boolean
   onUpdateValue: (rowIndex: number, inputIndex: number, value: string) => void
   onRemoveRow: (rowIndex: number) => void
@@ -401,6 +396,7 @@ interface SortableRowProps {
   onClick?: (rowIndex: number, inputIndex: number, value: string) => void
   onFocus?: (rowIndex: number, inputIndex: number, value: string) => void
   onKeyUp?: (rowIndex: number, inputIndex: number, value: string, event: React.KeyboardEvent) => void
+  maxLength?: number | number[]
 }
 
 const SortableRow = ({
@@ -435,7 +431,8 @@ const SortableRow = ({
   extraPlaceholder,
   totalRows,
   extra__rows__grid,
-  useOneWord
+  useOneWord,
+  maxLength
 }: SortableRowProps) => {
   const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id})
   const shouldShowDnD = showDnDButton && !isOnlyShow && totalRows > 1
@@ -446,11 +443,18 @@ const SortableRow = ({
     opacity: isDragging ? 0.5 : 1
   }
 
+  const getMaxLengthForInput = (inputIndex: number): number | undefined => {
+    if (!maxLength) return undefined
+    if (typeof maxLength === 'number') return maxLength
+    return maxLength[inputIndex]
+  }
+
   const renderInput = (value: string, inputIndex: number, lastElemet: boolean) => {
     const currentInputType = inputType?.[inputIndex] || 'text'
     const inputId =
       `cy-create-card-row-input-${idNames?.[inputIndex]}` ||
       `cy-create-card-row-input-${inputIndex}-${currentInputType}`
+    const currentMaxLength = getMaxLengthForInput(inputIndex)
 
     if (currentInputType === 'dropdown') {
       const options = dropdownOptions?.[inputIndex] || []
@@ -480,6 +484,7 @@ const SortableRow = ({
     if (currentInputType === 'textarea') {
       return (
         <TextAreaUI
+          maxLength={currentMaxLength}
           key={inputIndex}
           extraClass={`${styles.area__extra__min__height} ${extraTextareaClass}`}
           theme={
@@ -518,6 +523,7 @@ const SortableRow = ({
         onSetValue={(newValue) => !isOnlyShow && onUpdateValue(rowIndex, inputIndex, newValue)}
         errorValue={hasError && !value ? ' ' : ''}
         readOnly={isOnlyShow}
+        maxLength={currentMaxLength}
         onBlur={onBlur && !isOnlyShow ? () => onBlur(rowIndex, inputIndex, value) : undefined}
         onClick={onClick && !isOnlyShow ? () => onClick(rowIndex, inputIndex, value) : undefined}
         onFocus={onFocus && !isOnlyShow ? () => onFocus(rowIndex, inputIndex, value) : undefined}
@@ -628,7 +634,8 @@ const RowsInputs = ({
   createButtonExtraText,
   extraPlaceholder,
   extra__rows__grid,
-  useOneWord = false
+  useOneWord = false,
+  maxLength
 }: RowsInputsProps) => {
   const t = useTranslations('rowsImputs')
   const [rows, setRows] = useState<string[][]>(() => {
@@ -691,16 +698,6 @@ const RowsInputs = ({
     if (duplicates.length > 0) {
       console.warn('🚨 Дублирующиеся rowIds найдены:', duplicates)
     }
-
-    // console.log('📊 RowsInputs Debug:', {
-    //   controlled,
-    //   externalValuesLength: externalValues?.length || 0,
-    //   rowsLength: rows.length,
-    //   rowIdsLength: rowIds.length,
-    //   currentRowsLength: currentRows.length,
-    //   duplicatesFound: duplicates.length > 0,
-    //   rowIds: rowIds.slice(0, 3)
-    // })
   }, [controlled, externalValues, rows, rowIds])
 
   const currentRows = controlled && externalValues ? externalValues : rows
@@ -915,6 +912,7 @@ const RowsInputs = ({
                     onClick={onClick}
                     onFocus={onFocus}
                     onKeyUp={onKeyUp}
+                    maxLength={maxLength}
                   />
                 )
               })}

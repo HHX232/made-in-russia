@@ -30,7 +30,7 @@ export const useCreateCardForm = (initialData?: ICardFull) => {
     similarProducts: new Set<Product>(),
     selectedCategory: initialData?.category || null,
     selectedDeliveryMethodIds: [1],
-    selectedDeliveryIds: initialData?.deliveryTerms?.map((el) => el.id) || [], // Добавлено
+    selectedDeliveryIds: initialData?.deliveryTerms?.map((el) => el.id) || [],
     saleDate: initialData?.daysBeforeDiscountExpires?.toString() || '',
     currentLangState: currentLang as ICurrentLanguage,
     cardTitle: initialData?.title || '',
@@ -68,7 +68,8 @@ export const useCreateCardForm = (initialData?: ICardFull) => {
       descriptionImages: '',
       descriptionMatrix: '',
       deliveryTerms: '',
-      selectedCategory: ''
+      selectedCategory: '',
+      minimalVolume: ''
     },
     cardObjectForOthers: cardObjectForOthers
   }))

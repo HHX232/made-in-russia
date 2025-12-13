@@ -27,6 +27,10 @@
 // }
 
 .extra__rows__grid {
+  & > label > div:last-child > input {
+    text-align: center !important;
+  }
+
   @media (max-width: 440px) {
     grid-template-columns: repeat(2, 1fr) !important;
   }
@@ -120,12 +124,27 @@
   gap: 20px;
 }
 
+.seller__date__box__inner__date__text {
+  color: #818181;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.extra__error_class {
+  & > div:last-child {
+    margin-top: 10px;
+    color: #f44;
+    font-size: 16px;
+  }
+}
+
 .seller__date__box__inner__date {
   display: grid;
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  grid-template-columns: 1fr 1.5fr;
+  gap: 20px;
+  grid-template-columns: 1fr 1.5fr 1fr;
 }
 
 .seller__title {
