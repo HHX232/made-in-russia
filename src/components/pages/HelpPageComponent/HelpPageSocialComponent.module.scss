@@ -1,0 +1,146 @@
+@import '@/scss/config/mixins';
+
+/* ------------------------------------------------------------------------------------------------------------------------------
+CONTACT PAGE SOCIAL
+-------------------------------------------------------------------------------------------------------------------------------- */
+.contacts_social {
+  color: #2f2f2f;
+
+  @include md {
+    max-width: 360px;
+    margin-inline: auto;
+  }
+
+  @include sm {
+    padding-top: 4px;
+  }
+
+  &__title {
+    margin-top: -8px;
+    margin-bottom: 40px;
+    font-size: 46px;
+    font-weight: 500;
+    line-height: 100%;
+
+    @include md {
+      display: none;
+    }
+  }
+
+  &__item {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: start;
+    gap: 14px;
+    transition: all 0.3s ease-in-out;
+
+    @include sm {
+      gap: 8px;
+    }
+
+    &:hover {
+      transform: scale(1.1) translateX(2%);
+    }
+  }
+
+  &__network {
+    display: inline-flex;
+    color: #2f2f2f;
+    font-size: 18px;
+    font-weight: 500;
+    gap: 14px;
+    white-space: nowrap;
+
+    svg {
+      height: 24px;
+      aspect-ratio: 1/1;
+
+      @include sm {
+        height: 20px;
+      }
+    }
+
+    svg.icon_contacts_wechat {
+      height: 32px;
+      margin-top: -5px;
+
+      @include sm {
+        height: 25px;
+        margin-top: -2px;
+      }
+    }
+
+    span {
+      font-size: 18px;
+    }
+
+    @include sm {
+      color: #171717;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+
+  &__nikname {
+    color: #2f2f2f;
+    font-size: 16px;
+    font-weight: 400;
+    white-space: nowrap;
+
+    @include sm {
+      color: #171717;
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+
+  // Grid layout styles
+  &__grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(12, 1fr);
+    row-gap: 65px;
+  }
+
+  &__col {
+    width: 100%;
+    grid-column: span 5;
+
+    &:nth-child(3n) {
+      grid-column: span 2;
+    }
+
+    @include xl {
+      grid-column: span 5;
+
+      &:nth-child(2n + 1) {
+        grid-column: span 7;
+      }
+    }
+  }
+
+  // Icon styles
+  &__icon {
+    width: 24px;
+    height: 24px;
+    aspect-ratio: 1/1;
+
+    @include sm {
+      width: 20px;
+      height: 20px;
+    }
+
+    &_wechat {
+      width: 32px;
+      height: 32px;
+      margin-top: -5px;
+
+      @include sm {
+        width: 25px;
+        height: 25px;
+        margin-top: -2px;
+      }
+    }
+  }
+}

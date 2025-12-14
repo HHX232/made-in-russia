@@ -1,0 +1,53 @@
+.chatHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: white;
+}
+
+.productInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.productImage {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.productDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.productName {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.productPrice {
+  margin: 0;
+  color: #007bff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.participants {
+  display: flex;
+  gap: 8px;
+}
+
+.participant {
+  padding: 4px 8px;
+  border-radius: 12px;
+  background-color: #f1f3f4;
+  color: #5f6368;
+  font-size: 12px;
+}

@@ -12,22 +12,25 @@ interface ShopButtonUIProps {
 const ShopButtonUI: FC<ShopButtonUIProps> = ({extraClass = '', svgColor = 'white'}) => {
   const [basketCounter, setBasketCounter] = useState(0)
   const {productsInBasket} = useTypedSelector((state) => state.basket)
-
+  const [isClient, setIsClient] = useState(false)
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
   useEffect(() => {
     setBasketCounter(productsInBasket.length)
-    console.log('productsInBasket.length ', productsInBasket.length)
-    console.log('productsInBasket ', productsInBasket)
+    // console.log('productsInBasket.length ', productsInBasket.length)
+    // console.log('productsInBasket ', productsInBasket)
   }, [productsInBasket])
 
   return (
     <Link href={'/basket'} className={`${styles.basket__box} ${extraClass}`}>
-      {productsInBasket.length > 0 && (
+      {isClient && productsInBasket.length > 0 && (
         <div className={`${basketCounter > 9 ? styles.basket_big : ''} ${styles.counter}`}>
           {productsInBasket.length}
         </div>
       )}
       <svg
-        onClick={() => console.log('Click')}
+        // onClick={() => console.log('Click')}
         className={styles.basket__img}
         style={{cursor: 'pointer'}}
         width='26'

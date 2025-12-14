@@ -1,17 +1,20 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import {FC, useEffect, useState} from 'react'
 import styles from './Filters.module.scss'
 import CategoryCheckBoxUI from '@/components/UI-kit/inputs/CategoryCheckBoxUI/CategoryCheckBoxUI'
-import DropList from '@/components/UI-kit/Texts/DropList/DropList'
+// import DropList from '@/components/UI-kit/Texts/DropList/DropList'
 import RangeInput from '@/components/UI-kit/inputs/RangeInputUI/RangeInputUI'
-import {useQuery, useQueryClient} from '@tanstack/react-query'
-import FiltersService from '@/services/filters/Filters.service'
+import {useQueryClient} from '@tanstack/react-query'
 import Skeleton from 'react-loading-skeleton'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-import CheckBoxInputUI from '@/components/UI-kit/inputs/CheckBoxInputUI/CheckBoxInputUI'
-import {useWindowWidth} from '@/hooks/useWindoWidth'
-// импорт классический
+import {useCategories} from '@/services/categoryes/categoryes.service'
+import useWindowWidth from '@/hooks/useWindoWidth'
+import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+// import {renderCategoryItems} from '@/components/MainComponents/Header/Header'
+// import CategoriesService, {Category} from '@/services/categoryes/categoryes.service'
 
 const Arrow = ({isActive}: {isActive: boolean}) => {
   return (
@@ -40,76 +43,114 @@ const Arrow = ({isActive}: {isActive: boolean}) => {
   )
 }
 
-const Filters: FC = () => {
-  const [filtersIsOpen, setFiltersIsOpen] = useState(false)
-  const queryClient = useQueryClient()
-  const {delivery, selectedFilters} = useTypedSelector((state) => state.filters)
-  const windowWidth = useWindowWidth()
-  const toggleFilters = () => {
-    if (windowWidth > 500) return
+const Filters: FC<{
+  specialFilters?: {name: string; id: string}[]
+  extraBoxClass?: string
+  extraDeleteButtonClass?: string
+}> = ({specialFilters, extraBoxClass, extraDeleteButtonClass}) => {
+  const [filtersIsOpen, setFiltersIsOpen] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
 
+  const queryClient = useQueryClient()
+  const {delivery, selectedFilters, searchTitle} = useTypedSelector((state) => state.filters)
+  const windowWidth = useWindowWidth()
+  const t = useTranslations('Filters')
+  const currentLang = useCurrentLanguage()
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  const toggleFilters = () => {
+    if (!isMounted || !windowWidth || windowWidth > 500) return
     setFiltersIsOpen((prev) => !prev)
   }
 
-  const {data, isLoading} = useQuery({
-    queryKey: ['filters'],
-    queryFn: () => FiltersService.getAll()
-  })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const {data, isLoading} = useCategories(currentLang as any)
 
-  const {data: dataDel, isLoading: isDelLoading} = useQuery({
-    queryKey: ['deliveris'],
-    queryFn: () => FiltersService.getDeliveryMethodIds()
-  })
+  useEffect(() => {
+    console.log('data filters', data)
+  }, [data])
+  // const {data: dataDel, isLoading: isDelLoading} = useQuery({
+  //   queryKey: ['deliveris'],
+  //   queryFn: () => FiltersService.getDeliveryMethodIds({currentLang})
+  // })
 
-  const {clearFilters, clearDelivery, toggleDelivery} = useActions()
+  const {clearFilters, clearDelivery, setSearchTitle} = useActions()
 
-  const handleDeliveryChange = (isChecked: boolean, title: string) => {
-    toggleDelivery(title)
-  }
   useEffect(() => {
     queryClient.invalidateQueries({queryKey: ['products']})
-  }, [selectedFilters, delivery, queryClient])
+    // console.log('Мы сделала не валидными продукты; ' + searchTitle)
+  }, [selectedFilters, delivery, queryClient, searchTitle])
 
-  const listOpenIf = () => {
+  const listOpenIf = (): string => {
+    if (!isMounted || !windowWidth) return styles.isCloseList
+
     if (windowWidth > 500) return styles.isOpenList
-    if (windowWidth < 500 && filtersIsOpen) return styles.isOpenList
-    if (windowWidth < 500 && !filtersIsOpen) return styles.isCloseList
+    if (windowWidth <= 500 && filtersIsOpen) return styles.isOpenList
+    if (windowWidth <= 500 && !filtersIsOpen) return styles.isCloseList
+
+    return styles.isCloseList
   }
+
+  const getTitlesBoxClassName = (): string => {
+    let className = styles.titles__box
+
+    if (!filtersIsOpen) {
+      className += ` ${styles.titles__box_without__margin}`
+    }
+
+    if (isMounted && windowWidth && windowWidth > 500) {
+      className += ` ${styles.titles__box_with__margin}`
+    }
+
+    return className
+  }
+
+  const shouldShowArrow = (): boolean => {
+    return isMounted && !!windowWidth && windowWidth < 500
+  }
+
+  const getSkeletonMaxWidth = (): string => {
+    if (!isMounted || !windowWidth) return '200px'
+    return windowWidth < 550 ? '200px' : 'auto'
+  }
+
   return (
-    <div className={`${styles.filters__box}`}>
-      <div
-        className={`${styles.titles__box} ${!filtersIsOpen && styles.titles__box_without__margin} ${windowWidth > 500 && styles.titles__box_with__margin}`}
-      >
-        <div onClick={toggleFilters} className={`${styles.title__box}`}>
-          {windowWidth < 500 && <Arrow isActive={filtersIsOpen} />}
-          <h4 className={`${styles.filters__title}`}>Фильтры</h4>
-        </div>
-        <button
+    <div className={`${styles.filters__box} ${extraBoxClass}`}>
+      <div className={getTitlesBoxClassName()}>
+        {/* <div onClick={toggleFilters} className={`${styles.title__box}`}>
+          {shouldShowArrow() && <Arrow isActive={filtersIsOpen} />}
+          <h4 className={`${styles.filters__title}`}>{t('filtersTitle')}</h4>
+        </div> */}
+        {/* <button
           onClick={() => {
             clearFilters()
             clearDelivery()
+            setSearchTitle('')
           }}
-          className={`${styles.clear__filters}`}
+          className={`${styles.clear__filters} ${styles.clear__filters__button__title}`}
         >
           сброс
-        </button>
+        </button> */}
       </div>
       <span className={`${styles.span_over} ${listOpenIf()}`}>
         <div className={`${styles.filters__part}`}>
-          <p className={`${styles.filters__part_title}`}>Категории</p>
+          <p className={`${styles.filters__part_title}`}>{t('filtersCategory')}</p>
+
           <div className={`${styles.filters__part_checkboxes}`}>
             {!isLoading &&
-              data?.map((filter) => (
-                <CategoryCheckBoxUI
-                  key={filter.id}
-                  title={filter.name}
-                  filterName={filter.id.toString()}
-                  // onChange={handleFilterChange}
-                />
+              (specialFilters || data)?.map((filter) => (
+                <CategoryCheckBoxUI key={filter.id} title={filter.name} filterName={filter.id.toString()} />
               ))}
             {isLoading && (
               <Skeleton
-                style={{display: 'flex', gap: '7px', height: '20px', maxWidth: `${windowWidth < 550 ? '200px' : ''}`}}
+                style={{
+                  display: 'flex',
+                  gap: '7px',
+                  height: '20px',
+                  maxWidth: getSkeletonMaxWidth()
+                }}
                 count={5}
               />
             )}
@@ -119,74 +160,38 @@ const Filters: FC = () => {
           <div className={`${styles.filters__part_droplists}`}>
             <RangeInput
               filterName='priceRange'
-              title='Стоимость'
+              title={t('filtersPrice')}
               min={0}
-              max={100000}
-              step={10}
-              defaultMin={100}
-              defaultMax={100000}
-              // onChange={handleRangeChange}
+              max={1000000}
+              step={100}
+              defaultMin={0}
+              defaultMax={1000000}
               debounceTime={500}
             />
           </div>
         </div>
-        <div className={`${styles.part__drop} ${styles.part__drop__lists}`}>
+        {/* <div className={`${styles.part__drop} ${styles.part__drop__lists}`}>
           <p className={`${styles.filters__part_title_drop}`}>Категории</p>
           <div className={`${styles.filters__part_droplists}`}>
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Сырье'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Металлургия'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Древесина'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Щебни'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Соли'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
-            <DropList
-              positionIsAbsolute={false}
-              direction={'right'}
-              gap={'25'}
-              title='Угли'
-              items={['Сырье1', 'Сырье2', 'Сырье3', 'Сырье4']}
-            />
+         
+            {renderCategoryItems(categoriesList, false, 'right', '25')}
           </div>
-        </div>
-        <div className={`${styles.end__part}`}>
+        </div> */}
+        {/* <div className={`${styles.end__part}`}>
           <div className={`${styles.end__part_title}`}>Способы доставки</div>
           <div className={`${styles.end__part_droplists}`}>
             {isDelLoading && (
               <Skeleton
-                style={{display: 'flex', gap: '7px', height: '20px', maxWidth: `${windowWidth < 550 ? '190px' : ''}`}}
+                style={{
+                  display: 'flex',
+                  gap: '7px',
+                  height: '20px',
+                  maxWidth: getSkeletonMaxWidth()
+                }}
                 count={5}
               />
             )}
-            {!isDelLoading && (
+        {!isDelLoading && (
               <>
                 {dataDel?.map((el, i) => {
                   return (
@@ -196,31 +201,43 @@ const Filters: FC = () => {
                       setCheckedOnFirstRender={!!delivery?.includes(el.id.toString())}
                       filterName={el.id.toString()}
                       onChange={handleDeliveryChange}
+                      extraStyles={{minHeight: '20px', minWidth: '20px'}}
                     />
                   )
                 })}
               </>
-            )}
+            )} 
           </div>
-        </div>
+        </div> */}
       </span>
+      <div style={{paddingRight: '23px', marginTop: '10px'}} className=''>
+        {windowWidth && windowWidth <= 500 && filtersIsOpen && (
+          <button
+            onClick={() => {
+              clearFilters()
+              clearDelivery()
+              setSearchTitle('')
+            }}
+            className={`${styles.clear__filters} ${styles.clear__filters__button__bottom} ${extraDeleteButtonClass}`}
+          >
+            {t('filtersReset')}
+          </button>
+        )}
+        {windowWidth && windowWidth > 500 && (
+          <button
+            onClick={() => {
+              clearFilters()
+              clearDelivery()
+              setSearchTitle('')
+            }}
+            className={`${styles.clear__filters} ${styles.clear__filters__button__bottom} ${extraDeleteButtonClass}`}
+          >
+            {t('filtersReset')}
+          </button>
+        )}
+      </div>
     </div>
   )
 }
 
 export default Filters
-
-{
-  /* <div className='active-filters'>
-        <h3>Активные фильтры:</h3>
-        {activeFilters.length > 0 ? (
-          <ul>
-            {activeFilters.map((filter) => (
-              <li key={filter}>{filter}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>Нет активных фильтров</p>
-        )}
-      </div> */
-}

@@ -1,30 +1,31 @@
+'use client'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import Skeleton from 'react-loading-skeleton'
 import styles from './CardBottomPage.module.scss'
-import {useEffect, useRef, useState} from 'react'
-import {ICommentProps} from '@/components/UI-kit/elements/Comment/Comment.types'
+import React, {useState, useRef, useEffect, useCallback} from 'react'
 import Comment from '@/components/UI-kit/elements/Comment/Comment'
-import Image from 'next/image'
 import Accordion from '@/components/UI-kit/Texts/Accordions/Accordions'
-const accordionItems = [
-  {
-    title: 'Что такое Next.js?',
-    value: 'Next.js - это React фреймворк для создания веб-приложений с серверным рендерингом.',
-    isDefaultActive: true
-  },
-  {
-    title: 'Преимущества TypeScript',
-    value: 'TypeScript добавляет статическую типизацию в JavaScript, что помогает выявлять ошибки на этапе разработки.',
-    isDefaultActive: false
-  },
-  {
-    title: 'SCSS Modules',
-    value: 'SCSS Modules позволяют использовать локальные стили, избегая конфликтов имен классов.',
-    isDefaultActive: false
-  }
-]
+import ICardFull, {Review} from '@/services/card/card.types'
+import StarRating from '@/components/UI-kit/inputs/StarRating/StarRating'
+import {toast} from 'sonner'
+import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import {getAccessToken} from '@/services/auth/auth.helper'
+import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
+import CreateImagesInputMinimalistic from '@/components/UI-kit/inputs/CreateImagesInputMinimalistic/CreateImagesInputMinimalistic'
+import {Product} from '@/services/products/product.types'
+import instance from '@/api/api.interceptor'
+import Card from '@/components/UI-kit/elements/card/card'
+
 interface ICardBottomPageProps {
   isLoading: boolean
-  comments: ICommentProps[]
+  comments: Review[]
+  cardData: ICardFull | null
+  hasMore: boolean
+  onLoadMore?: () => void
+  productId?: string | number
 }
 
 interface IUploadedFile {
@@ -33,60 +34,95 @@ interface IUploadedFile {
   type: 'image' | 'video'
 }
 
-const AutoResizeTextarea = ({
-  value,
-  onChange,
-  placeholder = 'Напишите отзыв...',
-  ...props
-}: {
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
-  placeholder?: string
-}) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-
-  const autoResize = () => {
-    const textarea = textareaRef.current
-    if (textarea) {
-      textarea.style.height = 'auto'
-      textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px'
-    }
-  }
+const FilePreview = React.memo(({fileObj, onRemove}: {fileObj: IUploadedFile; onRemove: (id: string) => void}) => {
+  const [objectURL, setObjectURL] = useState<string>('')
 
   useEffect(() => {
-    autoResize()
-  }, [value])
+    const url = URL.createObjectURL(fileObj.file)
+    setObjectURL(url)
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onChange?.(e)
-    autoResize()
-  }
+    return () => {
+      URL.revokeObjectURL(url)
+    }
+  }, [fileObj.file])
+
+  const handleRemove = useCallback(() => {
+    onRemove(fileObj.id)
+  }, [fileObj.id, onRemove])
+
+  if (!objectURL) return null
 
   return (
-    <textarea
-      ref={textareaRef}
-      className={styles.create__comment__textarea}
-      value={value}
-      onChange={handleChange}
-      placeholder={placeholder}
-      rows={1}
-      {...props}
-    />
+    <li className={`${styles.file__preview}`}>
+      {fileObj.type === 'image' ? (
+        <img
+          src={objectURL}
+          alt={fileObj.file.name}
+          width={60}
+          height={60}
+          className={styles.file__preview}
+          style={{objectFit: 'cover'}}
+        />
+      ) : (
+        <video className={styles.file__preview} width={60} height={60} style={{objectFit: 'cover'}}>
+          <source src={objectURL} type={fileObj.file.type} />
+        </video>
+      )}
+      <button type='button' onClick={handleRemove} className={`${styles.remove__button}`}>
+        ×
+      </button>
+    </li>
   )
-}
+})
 
-const CardBottomPage = ({isLoading, comments}: ICardBottomPageProps) => {
-  const [activeIndex, setActiveIndex] = useState(1)
+FilePreview.displayName = 'FilePreview'
+
+const CardBottomPage = ({isLoading, comments, cardData, hasMore, onLoadMore, productId}: ICardBottomPageProps) => {
   const [commentValue, setCommentValue] = useState('')
   const [uploadedFiles, setUploadedFiles] = useState<IUploadedFile[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
-
+  const [starsCountSet, setStarsCountSet] = useState<number>(5)
   const MAX_IMAGE_SIZE = 5 * 1024 * 1024
   const MAX_VIDEO_SIZE = 200 * 1024 * 1024
   const MAX_FILES_COUNT = 20
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
   const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mov']
   const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES]
+  const t = useTranslations('CardBottomPage')
+  const currentLang = useCurrentLanguage()
+  const [error, setError] = useState('')
+  const [similarProducts, setSimilarProducts] = useState<Product[]>([])
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const {data} = await instance.get(`/products/${productId || cardData?.id}/similar`, {
+          headers: {
+            'Accept-language': currentLang
+          }
+        })
+        setSimilarProducts(data)
+      } catch {
+        console.log('message')
+      }
+    }
+    fetchProducts()
+  }, [currentLang])
+
+  const convertFilesToUploadedFiles = (files: File[]): IUploadedFile[] => {
+    return files.map((file) => {
+      const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)
+      return {
+        file,
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        type: isImage ? 'image' : 'video'
+      }
+    })
+  }
+
+  const removeFile = useCallback((fileId: string) => {
+    setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
+  }, [])
 
   const validateFile = (file: File): boolean => {
     const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)
@@ -94,21 +130,63 @@ const CardBottomPage = ({isLoading, comments}: ICardBottomPageProps) => {
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       console.error(`Файл "${file.name}" имеет неподдерживаемый формат`)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('fileUploadErrorType', {fileName: file.name})}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return false
     }
 
     if (file.type === 'image/svg+xml') {
-      console.error(`SVG файлы не поддерживаются`)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('svgError')}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return false
     }
 
     if (isImage && file.size > MAX_IMAGE_SIZE) {
       console.error(`Изображение "${file.name}" превышает размер 5MB`)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('bigImage')}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return false
     }
 
     if (isVideo && file.size > MAX_VIDEO_SIZE) {
-      console.error(`Видео "${file.name}" превышает размер 200MB`)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('bigVideo')}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return false
     }
 
@@ -119,7 +197,17 @@ const CardBottomPage = ({isLoading, comments}: ICardBottomPageProps) => {
     const files = Array.from(e.target.files || [])
 
     if (uploadedFiles.length + files.length > MAX_FILES_COUNT) {
-      console.error(`Можно загрузить не более ${MAX_FILES_COUNT} файлов`)
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('defaultError')}</strong>
+          <span>{t('bigFiles', {maxFilesCount: MAX_FILES_COUNT})}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
       return
     }
 
@@ -143,236 +231,248 @@ const CardBottomPage = ({isLoading, comments}: ICardBottomPageProps) => {
       setUploadedFiles((prev) => [...prev, ...validFiles])
     }
 
-    // Очистка input
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
   }
 
-  const removeFile = (fileId: string) => {
-    setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await publishComment()
   }
 
-  const uploadFilesToServer = async (files: IUploadedFile[]): Promise<string[]> => {
-    const formData = new FormData()
-
-    files.forEach((fileObj, index) => {
-      formData.append(`files[${index}]`, fileObj.file)
-    })
-
+  const publishComment = async () => {
+    const loadingToast = toast.loading(t('publishing'))
     try {
-      const response = await fetch('/api/upload-files', {
-        method: 'POST',
-        body: formData
-      })
+      const token = getAccessToken()
+
+      const formDataToSend = new FormData()
+
+      const dataPayload = {
+        text: commentValue.trim(),
+        rating: starsCountSet
+      }
+
+      const jsonBlob = new Blob([JSON.stringify(dataPayload)], {type: 'application/json'})
+      formDataToSend.append('data', jsonBlob)
+
+      if (uploadedFiles.length > 0) {
+        uploadedFiles.forEach((fileObj) => {
+          formDataToSend.append('media', fileObj.file)
+        })
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/products/${cardData?.id}/reviews`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Accept-Language': currentLang
+          },
+          body: formDataToSend
+        }
+      )
 
       if (!response.ok) {
-        throw new Error('Ошибка загрузки файлов на сервер')
+        const errorData = await response.json()
+        console.log('Error data from server:', errorData)
+        throw new Error(JSON.stringify(errorData))
       }
 
       const result = await response.json()
-      return result.fileUrls || []
-    } catch (error) {
-      console.error('Upload error:', error)
-      throw new Error('Не удалось загрузить файлы')
-    }
-  }
+      console.log(result)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+      toast.dismiss(loadingToast)
 
-    if (!commentValue.trim() && uploadedFiles.length === 0) {
-      return
-    }
+      toast.success(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('success')}</strong>
+          <span>{t('successPublished')}</span>
+        </div>,
+        {
+          style: {
+            background: '#2E7D32'
+          }
+        }
+      )
 
-    try {
-      let fileUrls: string[] = []
-
-      if (uploadedFiles.length > 0) {
-        fileUrls = await uploadFilesToServer(uploadedFiles)
-      }
-
-      // Отправляем комментарий с URL загруженных файлов
-      const commentData = {
-        text: commentValue,
-        fileUrls: fileUrls,
-        timestamp: new Date().toISOString()
-      }
-
-      console.log('Comment data:', commentData)
-
-      // Здесь будет логика отправки комментария на сервер
-      // const response = await fetch('/api/comments', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(commentData),
-      // })
-
-      // Очистка формы после успешной отправки
       setCommentValue('')
       setUploadedFiles([])
-    } catch (error) {
-      console.error('Submit error:', error)
+      setStarsCountSet(4)
+    } catch (e: any) {
+      console.log('Error caught:', e)
+      toast.dismiss(loadingToast)
+
+      let errorMessage = t('errorPublishedText')
+
+      try {
+        const parsedError = JSON.parse(e.message)
+        if (parsedError && parsedError.message) {
+          errorMessage = parsedError.message
+          setError(parsedError)
+        }
+      } catch (parseError) {
+        if (e.message && e.message !== 'Failed to fetch') {
+          errorMessage = e.message
+        }
+      }
+
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('errorPublished')}</strong>
+          <span>{errorMessage}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
     }
   }
 
   return (
-    <div className={`${styles.card__bottom__box}`}>
-      <div className={`${styles.tabs__box}`}>
-        <div
-          onClick={() => setActiveIndex(1)}
-          className={`fontInstrument ${styles.tabs__box__item} ${activeIndex === 1 ? styles.tabs__box__item__active : ''}`}
-        >
-          Отзывы
-          <span className={`${styles.tabs__box__item__count__comments}`}>{comments.length}</span>
-        </div>
-        <div
-          onClick={() => setActiveIndex(2)}
-          className={`fontInstrument ${styles.tabs__box__item} ${activeIndex === 2 ? styles.tabs__box__item__active : ''}`}
-        >
-          Вопросы
-          <span className={`${styles.tabs__box__item__count__comments}`}>{comments.length}</span>
-        </div>
-      </div>
-
-      <div className={`${styles.tabs__box__content}`}>
-        {activeIndex === 1 && (
-          <>
-            {isLoading ? (
-              <Skeleton height={100} count={3} style={{marginBottom: '16px', width: '100000px', maxWidth: '600px'}} />
-            ) : (
-              <ul className={`${styles.comments__list}`}>
-                {comments.length > 0 ? (
-                  comments.map((el, i) => (
-                    <li className={`${styles.comments__list__item}`} key={i}>
-                      <Comment {...el} />
-                    </li>
-                  ))
-                ) : (
-                  <li className={`${styles.no__comments}`}>
-                    <p>Пока нет отзывов. Станьте первым!</p>
-                  </li>
-                )}
-              </ul>
-            )}
-
-            <div className={`${styles.create__comment__box}`}>
-              <p className={`${styles.create__comment__box__text}`}>
-                Здесь будет превью ранее сделанного заказа: товар, его кол-во, цена, адрес доставки и тп. (превью как в
-                корзине)
-              </p>
-
-              <form onSubmit={handleSubmit} className={`${styles.create__comment__form}`}>
-                {uploadedFiles.length > 0 && (
-                  <ul className={`${styles.files__preview__container}`}>
-                    {uploadedFiles.map((fileObj) => (
-                      <li key={fileObj.id} className={`${styles.file__preview}`}>
-                        {fileObj.type === 'image' ? (
-                          <Image
-                            src={URL.createObjectURL(fileObj.file)}
-                            alt={fileObj.file.name}
-                            width={60}
-                            height={60}
-                            className={styles.file__preview}
-                          />
-                        ) : (
-                          <video className={styles.file__preview}>
-                            <source src={URL.createObjectURL(fileObj.file)} type={fileObj.file.type} />
-                          </video>
-                        )}
-                        <button
-                          type='button'
-                          onClick={() => removeFile(fileObj.id)}
-                          className={`${styles.remove__button}`}
-                        >
-                          ×
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <span>
-                  <label
-                    className={`${styles.add__image__label} ${uploadedFiles.length >= MAX_FILES_COUNT ? styles.disabled : ''}`}
-                    htmlFor='image__input'
-                  >
-                    <svg
-                      className={`${styles.add__image__image}`}
-                      width='25'
-                      height='25'
-                      viewBox='0 0 25 25'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'
-                    >
-                      <path
-                        d='M4.16671 5.20833H17.7084V12.5H19.7917V5.20833C19.7917 4.05937 18.8573 3.125 17.7084 3.125H4.16671C3.01775 3.125 2.08337 4.05937 2.08337 5.20833V17.7083C2.08337 18.8573 3.01775 19.7917 4.16671 19.7917H12.5V17.7083H4.16671V5.20833Z'
-                        fill='#2A2E46'
-                      />
-                      <path
-                        d='M8.33337 11.4583L5.20837 15.625H16.6667L12.5 9.375L9.37504 13.5417L8.33337 11.4583Z'
-                        fill='#2A2E46'
-                      />
-                      <path
-                        d='M19.7917 14.5833H17.7084V17.7083H14.5834V19.7917H17.7084V22.9167H19.7917V19.7917H22.9167V17.7083H19.7917V14.5833Z'
-                        fill='#2A2E46'
-                      />
-                    </svg>
-
-                    <input
-                      ref={fileInputRef}
-                      className={`${styles.add__image__input}`}
-                      id='image__input'
-                      type='file'
-                      accept={`${ALLOWED_IMAGE_TYPES.join(',')}`}
-                      onChange={handleFilesChange}
-                      multiple
-                      disabled={uploadedFiles.length >= MAX_FILES_COUNT}
-                    />
-                    {/* {uploadedFiles.length > 0 && <span className={`${styles.file__indicator}`}></span>} */}
-                  </label>
-                  <AutoResizeTextarea
-                    onChange={(e) => setCommentValue(e.target.value)}
-                    value={commentValue}
-                    placeholder='Напишите отзыв...'
-                  />
-                  <button
-                    type='submit'
-                    className={`${styles.send__comment__button}`}
-                    disabled={!commentValue.trim() && uploadedFiles.length === 0}
-                  >
-                    <svg
-                      className={`${styles.send__comment__image}`}
-                      width='20'
-                      height='20'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'
-                    >
-                      <path
-                        d='M19.0781 2.76851C19.5282 1.52372 18.3219 0.317467 17.0771 0.768509L1.86357 6.27059C0.614607 6.72267 0.463565 8.42684 1.61252 9.09247L6.46877 11.9039L10.8052 7.56747C11.0017 7.37772 11.2648 7.27272 11.5379 7.2751C11.8111 7.27747 12.0723 7.38702 12.2655 7.58016C12.4586 7.77329 12.5681 8.03455 12.5705 8.30767C12.5729 8.5808 12.4679 8.84392 12.2781 9.04038L7.94169 13.3768L10.7542 18.2331C11.4188 19.382 13.1229 19.23 13.575 17.982L19.0781 2.76851Z'
-                        fill='#2A2E46'
-                      />
-                    </svg>
-                  </button>
-                </span>
-              </form>
+    <div id='cardCommentsSection' className={styles.card__bottom__box}>
+      <div className={styles.content__wrapper}>
+        <div className={styles.questions__wrapper}>
+          <div className={`${styles.section__title} ${styles.desctop__show}`}>
+            <h2 className={`fontInstrument ${styles.font_title}`}>{t('questions')}</h2>
+          </div>
+          {cardData?.faq && cardData.faq.length > 0 ? (
+            <div className={`${styles.questions__content} ${styles.desctop__show}`}>
+              <Accordion
+                extraClass={styles.extra__accordion}
+                items={
+                  cardData.faq.map((el) => ({
+                    title: el.question,
+                    value: el.answer,
+                    id: el.id.toString()
+                  })) || []
+                }
+                multiActive={false}
+              />
             </div>
-          </>
-        )}
+          ) : (
+            <p style={{color: '#a2a2a2'}} className={`${styles.desctop__show}`}>
+              {t('noQuestions')}
+            </p>
+          )}
+          <div className={`${styles.section__title} `}>
+            <h2 className={`fontInstrument ${styles.font_title}`}>{t('similar')}</h2>
+          </div>
+          <div className={styles.sim_box}>
+            {similarProducts.length === 0 && <p className={styles.create__first__comment}>{t('similarNotFound')}</p>}
+            {similarProducts.length !== 0 &&
+              similarProducts.map((el) => (
+                <Card
+                  id={el.id}
+                  deliveryMethod={el.deliveryMethod}
+                  title={el.title}
+                  price={el.originalPrice}
+                  discount={el.discount}
+                  previewImageUrl={el.previewImageUrl}
+                  discountedPrice={el.discountedPrice}
+                  fullProduct={el}
+                  key={el.id}
+                />
+              ))}
+          </div>
+        </div>
 
-        {activeIndex === 2 && (
-          <div className={`${styles.questions__content}`}>
-            {isLoading ? (
-              <div className={`${styles.skeleton__container}`}>
-                <Skeleton height={80} count={4} style={{marginBottom: '12px'}} />
-              </div>
+        <div className={styles.comments__column}>
+          <div className={`${styles.section__title} ${styles.desctop__hide}`}>
+            <h2 className={`fontInstrument ${styles.font_title}`}>{t('questions')}</h2>
+          </div>
+          {cardData?.faq && cardData.faq.length > 0 ? (
+            <div className={`${styles.questions__content} ${styles.desctop__hide}`}>
+              <Accordion
+                extraClass={styles.extra__accordion}
+                items={
+                  cardData.faq.map((el) => ({
+                    title: el.question,
+                    value: el.answer,
+                    id: el.id.toString()
+                  })) || []
+                }
+                multiActive={false}
+              />
+            </div>
+          ) : (
+            <p style={{color: '#a2a2a2'}} className={` ${styles.desctop__hide}`}>
+              {t('noQuestions')}
+            </p>
+          )}
+
+          <div className={`${styles.section__title} ${styles.relative_title}`}>
+            <div id='reviews-title' className={styles.absolute_title_link}></div>
+            <h2 className={`fontInstrument ${styles.font_title}`}>{t('revues')}</h2>
+          </div>
+
+          <div className={styles.comments__section}>
+            {isLoading && comments.length === 0 ? (
+              <Skeleton height={100} count={3} style={{marginBottom: '16px', width: '90%', maxWidth: '400px'}} />
             ) : (
-              <Accordion items={accordionItems} multiActive={false} />
+              <>
+                <ul className={styles.comments__list}>
+                  {comments.length > 0 ? (
+                    comments.map((el, i) => (
+                      <li className={styles.comments__list__item} key={i}>
+                        <Comment {...el} />
+                      </li>
+                    ))
+                  ) : (
+                    <li className={styles.no__comments}>
+                      <p className={styles.create__first__comment}>{t('noComments')}</p>
+                    </li>
+                  )}
+                </ul>
+
+                {hasMore && (
+                  <div className={styles.load__more__container}>
+                    <button
+                      onClick={onLoadMore || function () {}}
+                      className={styles.load__more__button}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? t('loading') || 'Загрузка...' : t('loadMore') || 'Просмотреть еще'}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
-        )}
+          <div className={styles.create__comment__box}>
+            <div className={styles.create__comment__box__rating}>
+              <p>{t('pleaseCreateComment')}</p>
+              <StarRating starsCountSet={starsCountSet} setStarsCountSet={setStarsCountSet} />
+            </div>
+
+            <form onSubmit={handleSubmit} className={styles.create__comment__form}>
+              <TextAreaUI
+                minRows={2}
+                maxRows={10}
+                theme='newWhite'
+                autoResize
+                placeholder={t('writeCommentPlaceholder')}
+                onSetValue={(e) => setCommentValue(e)}
+                extraClass={styles.extra__textarea__width}
+                currentValue={commentValue}
+              />
+
+              <CreateImagesInputMinimalistic
+                onFilesChange={(files) => {
+                  const uploadedFilesArray = convertFilesToUploadedFiles(files)
+                  setUploadedFiles(uploadedFilesArray)
+                }}
+              />
+
+              <button type='submit' className={styles.send__comment__button} disabled={!commentValue.trim()}>
+                {t('send')}
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   )

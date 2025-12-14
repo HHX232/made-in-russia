@@ -1,0 +1,114 @@
+/* Оптимизированные стили для максимальной производительности */
+
+.nprogressContainer {
+   pointer-events: none;
+   position: fixed;
+   top: 0;
+   left: 0;
+   right: 0;
+   height: 3px;
+   z-index: 9999;
+   background: transparent;
+   /* Оптимизация для GPU */
+   will-change: transform;
+   transform: translateZ(0);
+
+   /* Быстрое появление */
+   animation: nprogressFadeIn 0.05s ease-in;
+}
+
+.nprogressBar {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background: #AC2525;
+
+   /* Быстрые переходы без задержек */
+   transition: transform 0.1s ease-out;
+   transform-origin: left;
+   border-radius: 0 2px 2px 0;
+
+   /* GPU оптимизация */
+   will-change: transform;
+   transform: translateZ(0);
+
+   /* Убираем сложные эффекты для производительности */
+   box-shadow: 0 0 5px rgba(172, 37, 37, 0.5);
+}
+
+.nprogressPeg {
+   position: absolute;
+   right: 0;
+   top: 0;
+   height: 100%;
+   width: 80px;
+   /* Сократили с 100px */
+
+   /* Простой градиент без анимации */
+   background: linear-gradient(90deg,
+         transparent,
+         rgba(255, 255, 255, 0.3),
+         transparent);
+
+   /* Убираем сложную анимацию */
+   transform: rotate(2deg) translate(0px, -1px);
+
+   /* GPU оптимизация */
+   will-change: transform;
+   transform: translateZ(0);
+}
+
+@keyframes nprogressFadeIn {
+   from {
+      opacity: 0;
+   }
+
+   to {
+      opacity: 1;
+   }
+}
+
+/* Адаптивность без лишних медиа-запросов */
+@media (max-width: 768px) {
+   .nprogressContainer {
+      height: 2px;
+   }
+
+   .nprogressPeg {
+      width: 60px;
+   }
+}
+
+/* Минимальные стили для темной темы */
+@media (prefers-color-scheme: dark) {
+   .nprogressBar {
+      background: #AC2525;
+      box-shadow: 0 0 5px rgba(172, 37, 37, 0.6);
+   }
+}
+
+/* Отключаем анимации если пользователь предпочитает уменьшенную анимацию */
+@media (prefers-reduced-motion: reduce) {
+   .nprogressBar {
+      transition: none;
+   }
+
+   .nprogressContainer {
+      animation: none;
+   }
+}
+
+/* Дополнительные оптимизации для старых браузеров */
+.nprogressBar {
+   /* Фолбек для браузеров без поддержки will-change */
+   -webkit-transform: translateZ(0);
+   -moz-transform: translateZ(0);
+   -ms-transform: translateZ(0);
+   -o-transform: translateZ(0);
+
+   /* Отключаем сглаживание текста для лучшей производительности */
+   -webkit-font-smoothing: none;
+   -moz-osx-font-smoothing: unset;
+}

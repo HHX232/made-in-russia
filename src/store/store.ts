@@ -1,36 +1,34 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit'
-import {FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE} from 'redux-persist'
 import {filtersSlice} from './Filters/filters.slice'
 import {basketSlice} from './Basket/Basket.slice'
 import {favoritesSlice} from './Favorites/Favorites.types'
 import {registrationSlice} from './registerUser/registerUser.slice'
-import {storage} from '@/utils/storage/storage'
+import latestViewsSlice from './LatestViews/LatestViews.slice'
+import multilingualDescriptionsSlice from './multilingualDescriptionsInCard/multilingualDescriptions.slice'
+import multiLanguageCardPriceDataSlice from './multilingualDescriptionsInCard/multiLanguageCardPriceData.slice'
+import userSlice from './User/user.slice'
+import currentLangSlice from './сurrentLangStore/сurrentLangStore.slice'
+import sliderHomeSlice from './sliderHomeSlice/sliderHomeSlice'
+import chatSlice from './slices/chatSlice'
+
 const rootReducer = combineReducers({
   filters: filtersSlice.reducer,
   basket: basketSlice.reducer,
   favorites: favoritesSlice.reducer,
-  registration: registrationSlice.reducer
+  registration: registrationSlice.reducer,
+  latestViews: latestViewsSlice.reducer,
+  multilingualDescriptions: multilingualDescriptionsSlice.reducer,
+  multiLanguageCardPriceData: multiLanguageCardPriceDataSlice.reducer,
+  user: userSlice.reducer,
+  currentLangSlice: currentLangSlice.reducer,
+  sliderHomeSlice: sliderHomeSlice.reducer,
+  chat: chatSlice
 })
-
-const persistConfig = {
-  key: 'persist store',
-  storage: storage,
-  whitelist: ['filters', 'basket', 'favorites']
-}
-
-const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
-  reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
-      }
-    })
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware()
 })
-
-export const persistor = persistStore(store)
 
 export type TypeRootState = ReturnType<typeof store.getState>
 export type TypeAppDispatch = typeof store.dispatch

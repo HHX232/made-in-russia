@@ -1,0 +1,54 @@
+.BasketButtonUI_button__box__J1xo_ {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background-color: #ac2525;
+  border-radius: 10px;
+  padding: 7px 20px;
+  font-size: 15px;
+  line-height: 18px;
+  max-width: 170px;
+  color: #fff;
+  width: 100%;
+  justify-content: space-between;
+  margin: 28px auto 0;
+  border: 2px solid #ac2525;
+  transition: all 0.2s;
+}
+.BasketButtonUI_button__box__J1xo_:hover {
+  background-color: #b74444;
+  border-color: #b74444;
+}
+.BasketButtonUI_button__box__J1xo_:active {
+  background-color: #b84646;
+  border-color: #881d1d;
+}
+.BasketButtonUI_add__box__AFIty {
+  display: flex;
+  margin: 0 auto;
+  gap: 9px;
+  align-items: center;
+  justify-content: space-between;
+}
+.BasketButtonUI_count__box__umiRa {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+.BasketButtonUI_count__inBox__YMrTE,
+.BasketButtonUI_decrease__text___9_S1,
+.BasketButtonUI_increase__text___ZMAA {
+  color: #ac2525;
+  font-size: 20px;
+}
+.BasketButtonUI_count__active__b9vP8,
+.BasketButtonUI_count__active__b9vP8:hover {
+  background-color: #e9d6d7;
+}
+.BasketButtonUI_dark__text__Ou7UZ {
+  color: #000;
+}
+.BasketButtonUI_white__text__4BbD5 {
+  color: #fff;
+}

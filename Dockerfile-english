@@ -1,0 +1,75 @@
+# Шаг 1: Сборка приложения
+FROM node:20-alpine AS builder
+
+# Устанавливаем зависимости (поддержка yarn, npm, pnpm)
+WORKDIR /app
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+RUN \
+    npm install; \
+    if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+    elif [ -f package-lock.json ]; then npm ci; \
+    elif [ -f pnpm-lock.yaml ]; then corepack enable && pnpm install --frozen-lockfile; \
+    else echo "Lockfile not found." && exit 1; \
+    fi
+
+# Копируем исходный код и env-файлы
+COPY . .
+
+# Устанавливаем ENV переменные ДО сборки
+ENV NEXT_PUBLIC_API_URL=https://en.exporteru.com
+ENV NEXT_PUBLIC_API_URL_SECOND=https://en.exporteru.com
+ENV NEXT_PUBLIC_TELEPHONE=74959833888
+ENV NEXT_PUBLIC_EMAIL=info@exporteru.com
+ENV NEXT_PUBLIC_INSTA=info@exporteru.com
+ENV NEXT_PUBLIC_TELEGRAM=made_in_russia
+ENV NEXT_PUBLIC_SITE_URL=https://en.exporteru.com
+ENV INTERNAL_REQUEST_SECRET=wEEEhaveaStrosdvqUNJQreEA2819lYstRongSeCRrRRetkeyonrussiainmade8234
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_RECAPTCHA_KEY=6LdOU8YrAAAAAB__8RLFwWgFcMeD_FmKBISm9hD7
+ENV RECAPTCHA_SECRET_KEY=6LdOU8YrAAAAACMj5KhTh0W_8_1fhg5hKQ0OIZy9
+ENV NEXT_PUBLIC_BOT_NAME=exporteruenglishbot
+ENV BUNNY_CDN_URL=https://exporteru.b-cdn.net
+ENV BUNNY_STORAGE_ZONE=exporteru-cache
+ENV NEXT_PUBLIC_CDN_FOLDER=_next_en
+
+# Собираем приложение (с standalone)
+RUN npm run build
+
+# Проверяем что собралось
+RUN ls -la /app/ && echo "=== .next contents ===" && ls -la /app/.next/ || echo ".next folder not found"
+
+# Шаг 2: Продакшен образ
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+# Только runtime переменные (без NEXT_PUBLIC_*)
+ENV INTERNAL_REQUEST_SECRET=wEEEhaveaStrosdvqUNJQreEA2819lYstRongSeCRrRRetkeyonrussiainmade8234
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV RECAPTCHA_SECRET_KEY=6LdOU8YrAAAAACMj5KhTh0W_8_1fhg5hKQ0OIZy9
+ENV PORT=3000
+ENV BUNNY_STORAGE_ZONE=exporteru-cache
+
+# Копируем только необходимые файлы из builder
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+# Проверяем что скопировалось
+RUN ls -la /app/ && echo "=== standalone contents ===" && ls -la /app/standalone/ || echo "standalone folder not found"
+
+# Оптимизация образа
+RUN apk add --no-cache curl && \
+    addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001 -G nodejs && \
+    chown -R nextjs:nodejs /app
+
+USER nextjs
+
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=3s \
+    CMD curl -f http://localhost:3000 || exit 1
+
+CMD ["node", "server.js"]

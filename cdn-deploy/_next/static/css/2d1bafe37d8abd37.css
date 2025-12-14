@@ -1,0 +1,77 @@
+.nprogress-container {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0);
+  will-change: transform;
+  transform: translateZ(0);
+}
+.nprogress-bar {
+  left: 0;
+  width: 100%;
+  background: #ac2525;
+  transition: transform 0.1s ease-out;
+  transform-origin: left;
+  border-radius: 0 2px 2px 0;
+  transform: translateZ(0);
+  box-shadow: 0 0 5px rgba(172, 37, 37, 0.5);
+}
+.nprogress-bar,
+.nprogress-peg {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  will-change: transform;
+}
+.nprogress-peg {
+  right: 0;
+  width: 80px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: rotate(2deg) translateY(-1px);
+  transform: translateZ(0);
+}
+.nprogress-container {
+  animation: nprogress-fade-in 0.05s ease-in;
+}
+@keyframes nprogress-fade-in {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (max-width: 768px) {
+  .nprogress-container {
+    height: 2px;
+  }
+  .nprogress-peg {
+    width: 60px;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .nprogress-bar {
+    background: #ac2525;
+    box-shadow: 0 0 5px rgba(172, 37, 37, 0.6);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * .nprogress-bar {
+    transition: none;
+  }
+  * .nprogress-container {
+    animation: none;
+  }
+}
+.nprogress-bar {
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+}

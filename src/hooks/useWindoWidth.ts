@@ -1,24 +1,27 @@
 import {useState, useEffect} from 'react'
 
-export const useWindowWidth = (): number => {
-  const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0)
+/**
+ * Хук для получения ширины окна браузера
+ * Возвращает undefined до монтирования компонента (SSR-friendly)
+ */
+const useWindowWidth = (): number | undefined => {
+  const [windowWidth, setWindowWidth] = useState<number | undefined>(undefined)
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return
-    }
+    // Проверяем, что мы находимся в браузере
+    if (typeof window === 'undefined') return
 
     const handleResize = () => {
       setWindowWidth(window.innerWidth)
     }
 
-    // Устанавливаем обработчик события
+    // Устанавливаем начальное значение
+    setWindowWidth(window.innerWidth)
+
+    // Добавляем слушатель события
     window.addEventListener('resize', handleResize)
 
-    // Вызываем handleResize сразу, чтобы установить начальное значение
-    handleResize()
-
-    // Убираем обработчик при размонтировании
+    // Очищаем слушатель при размонтировании
     return () => {
       window.removeEventListener('resize', handleResize)
     }
@@ -26,3 +29,34 @@ export const useWindowWidth = (): number => {
 
   return windowWidth
 }
+
+export const useWindowWidthDebounced = (debounceMs: number = 150): number | undefined => {
+  const [windowWidth, setWindowWidth] = useState<number | undefined>(undefined)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    let timeoutId: NodeJS.Timeout
+
+    const handleResize = () => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        setWindowWidth(window.innerWidth)
+      }, debounceMs)
+    }
+
+    // Устанавливаем начальное значение без дебаунса
+    setWindowWidth(window.innerWidth)
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      clearTimeout(timeoutId)
+    }
+  }, [debounceMs])
+
+  return windowWidth
+}
+
+export default useWindowWidth

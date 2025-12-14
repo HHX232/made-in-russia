@@ -1,0 +1,536 @@
+.multiDropSelect {
+  position: relative;
+  width: 100%;
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.onlyShow {
+  cursor: default !important;
+
+  & > * {
+    cursor: default !important;
+  }
+}
+
+.cat__search {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #dee2e6;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgb(0 123 255 / 10%);
+  }
+
+  &::placeholder {
+    color: #6c757d;
+  }
+}
+
+.dropList {
+  width: 100%;
+
+  & > div > svg {
+    display: none;
+  }
+
+  & > ul > li:last-child {
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  & > ul > li:nth-last-child(2) {
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}
+
+.dropListContent {
+  top: 60%;
+
+  // overflow: hidden;
+  // max-height: 400px;
+  padding: 4px;
+  border-radius: 8px;
+  margin-top: 4px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 8%);
+  overflow-y: auto;
+}
+
+@media (max-width: 1050px) {
+  .dropListContent {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.dropdownTitle {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 21px;
+  border: 1px solid rgb(47 47 47 / 20%);
+  border-radius: 15px;
+  background: #dedede;
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: #b0b0b0;
+  }
+}
+
+.placeholder {
+  color: #999;
+  font-size: 14px;
+}
+
+.selectedItems {
+  display: flex;
+  flex: 1;
+  flex-wrap: nowrap;
+  margin-right: 8px;
+  gap: 6px;
+
+  & > span {
+    // min-width: max-content;
+
+    & > span {
+      display: -webkit-box;
+      overflow: hidden;
+      max-width: none;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      text-overflow: ellipsis;
+      white-space: normal;
+    }
+  }
+}
+
+.selectedItem {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #f5f5f5;
+  color: #333;
+  font-size: 13px;
+  gap: 4px;
+
+  &:hover {
+    background: #dedede;
+  }
+}
+
+.itemIcon,
+.optionIcon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.itemLabel {
+  overflow: hidden;
+  max-width: 150px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.removeButton {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #333;
+    opacity: 1;
+  }
+}
+
+.arrow {
+  flex-shrink: 0;
+  color: #666;
+  transition: transform 0.2s;
+
+  &.arrowUp {
+    transform: rotate(180deg);
+  }
+}
+
+.divider {
+  height: 1px;
+  margin: 4px -4px;
+  background-color: #f0f0f0;
+}
+
+.optionItem {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  margin: 2px 0;
+  transition: background-color 0.2s;
+
+  &:hover {
+    border-radius: 10px;
+    background-color: #dedede;
+  }
+
+  &.optionSelected {
+    border-radius: 10px;
+    background-color: #f0f7ff;
+
+    &:hover {
+      background-color: #dedede;
+    }
+  }
+}
+
+.optionContent {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.radioWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.optionLabel {
+  color: #333;
+  font-size: 14px;
+}
+
+// Стили для сообщения "Не найдено"
+.notFound {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  margin: 10px 0;
+}
+
+.notFoundContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.notFoundIcon {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+.notFoundText {
+  color: #6c757d;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.notFoundSubtext {
+  color: #adb5bd;
+  font-size: 14px;
+}
+
+// Стили для категорий
+.categoryGroup {
+  margin-bottom: 2px;
+}
+
+.categoryItem {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #495057;
+  cursor: pointer;
+  font-size: 14px;
+  gap: 8px;
+  text-align: left;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #dedede;
+  }
+
+  &:active {
+    background-color: #e9ecef;
+  }
+
+  &.categoryItemSelected {
+    background-color: #e7f1ff !important;
+    color: #06c;
+  }
+
+  // Стили для разных уровней вложенности
+  &--level0 {
+    color: #212529;
+    font-weight: 600;
+
+    &:hover {
+      background-color: #dedede;
+    }
+  }
+
+  &--level1 {
+    border-left: 3px solid #007bff;
+    color: #495057;
+    font-weight: 500;
+
+    &:hover {
+      background-color: #e8f5e9;
+    }
+  }
+
+  &--level2 {
+    border-left: 3px solid #28a745;
+    color: #6c757d;
+    font-weight: 400;
+
+    &:hover {
+      background-color: #fff3cd;
+    }
+  }
+
+  &--level3 {
+    border-left: 3px solid #ffc107;
+    color: #868e96;
+    font-size: 13px;
+    font-weight: 400;
+
+    &:hover {
+      background-color: #f8d7da;
+    }
+  }
+}
+
+.expandIcon {
+  display: flex;
+  min-width: 12px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+  color: #6c757d;
+  cursor: pointer;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+
+  &.expandIconExpanded {
+    transform: rotate(90deg);
+  }
+
+  &:hover {
+    color: #495057;
+  }
+}
+
+.levelIndicator {
+  margin-right: 4px;
+  color: #adb5bd;
+  font-family: monospace;
+}
+
+.categoryImage {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.categoryLabel {
+  flex: 1;
+}
+
+.childrenContainer {
+  border-left: 2px solid #e9ecef;
+  margin-top: 2px;
+  margin-left: 0;
+  animation: slideDown 0.2s ease-out;
+}
+
+// Анимация для появления дочерних элементов
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  to {
+    max-height: 500px;
+    opacity: 1;
+  }
+}
+
+.actions {
+  display: flex;
+  width: calc(100% + 8px);
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-top: 1px solid #f0f0f0;
+  margin: 0 -4px -4px;
+  background-color: #f9f9f9;
+}
+
+.actionButton {
+  padding: 8px 16px;
+  border: 1px solid rgb(47 47 47 / 20%);
+  border-radius: 4px;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    border-color: #d0d0d0;
+    background-color: #dedede;
+    color: #333;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &Primary {
+    border-color: #4a90e2;
+    background-color: #4a90e2;
+    color: #fff;
+    font-weight: 500;
+
+    &:hover {
+      border-color: #357abd;
+      background-color: #357abd;
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 768px) {
+  .categoryItem {
+    padding: 8px 10px;
+    font-size: 13px;
+
+    &--level3 {
+      font-size: 12px;
+    }
+  }
+
+  .categoryImage {
+    width: 28px;
+    height: 28px;
+  }
+
+  .expandIcon {
+    min-width: 10px;
+    font-size: 8px;
+  }
+
+  .notFoundIcon {
+    font-size: 28px;
+  }
+
+  .notFoundText {
+    font-size: 14px;
+  }
+
+  .notFoundSubtext {
+    font-size: 13px;
+  }
+}
+
+/* Новый дизайн для заголовка */
+.newThemeTitle {
+  border: 1px solid #ccc !important;
+  border-radius: 10px !important;
+  background-color: #fff !important;
+}
+
+.newThemeTitleTransparent {
+  background-color: transparent !important;
+}
+
+/* Контейнер выбранных элементов — горизонтальный скролл */
+.newThemeItems {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+  gap: 8px;
+
+  /* Firefox */
+  -ms-overflow-style: none;
+  overflow-x: auto;
+
+  /* Скрыть скроллбар для всех браузеров */
+  scrollbar-width: none;
+
+  // white-space: nowrap;
+
+  /* Internet Explorer и Edge */
+}
+
+.newThemeItems::-webkit-scrollbar {
+  display: none;
+
+  /* Chrome, Safari, Opera */
+}
+
+/* Оформление каждого выбранного элемента */
+.newThemeSelectedItem {
+  border-radius: 10px !important;
+  background-color: #0047ba !important;
+  color: #fff !important;
+}
+
+/* Убираем все закругления глобально при useNewTheme */
+.newThemeTitle,
+.newThemeSelectedItem,
+.newThemeItems,
+.multiDropSelect,
+.dropListContent,
+.optionItem,
+.categoryItem,
+.actionButton,
+.radioWrapper {
+  border-radius: 10px !important;
+}
+
+/* Отключаем усечение текста */
+.newThemeItems .itemLabel {
+  overflow: visible !important;
+  text-overflow: initial !important;
+  white-space: normal !important;
+}

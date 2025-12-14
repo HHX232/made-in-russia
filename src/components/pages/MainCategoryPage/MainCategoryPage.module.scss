@@ -1,0 +1,260 @@
+// Миксины для адаптивности
+@mixin sm {
+  @media (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (max-width: 991px) {
+    @content;
+  }
+}
+
+// Основной контейнер
+.catalog {
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+// Breadcrumbs
+.breadcrumbs {
+  padding: 15px 0;
+
+  &List {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+      color: #6b7280;
+      font-size: 14px;
+
+      a {
+        color: #6b7280;
+        text-decoration: none;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: var(--accent, #ac2525);
+        }
+      }
+
+      span:not(.breadSep) {
+        color: #2a2e46;
+      }
+    }
+  }
+}
+
+.breadSep {
+  margin: 0 8px;
+  color: #d1d5db;
+}
+
+// Скрытый заголовок для доступности
+.visuallyHidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+// Секция категорий
+.categorys {
+  padding-bottom: 30px;
+  margin-top: -5px;
+}
+
+.sectionHeader {
+  margin-top: 43px;
+  margin-bottom: 43px;
+
+  @include sm {
+    margin-bottom: 30px;
+  }
+
+  &Title {
+    color: #2a2e46;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+
+    @include md {
+      font-size: 2rem;
+    }
+
+    @include sm {
+      font-size: 1.75rem;
+    }
+  }
+}
+
+// Сетка категорий
+.categoriesGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+
+  @include md {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+
+  @include sm {
+    gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.gridCol {
+  // Колонка-обертка для карточки
+}
+
+// Карточка категории с новым дизайном
+.categorysCard {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding: 15px 14px;
+  border: 1px solid transparent;
+  aspect-ratio: 302/201;
+  background: #f6f6f6;
+  color: #2f2f2f;
+  transition: all 0.3s ease-in-out;
+  border-radius:10px;
+
+  @include sm {
+    aspect-ratio: 320/210;
+  }
+
+  &:hover {
+    border: 1px solid rgb(0 0 0 / 15%);
+    box-shadow: 0 0 32px 0 rgb(18 18 18 / 12%);
+
+    .categorysCardTitle {
+      color: var(--accent, #ac2525);
+    }
+  }
+
+  // Розовое свечение
+  &::before {
+    position: absolute;
+    top: 49%;
+    left: 1%;
+    width: 43%;
+    border-radius: 50%;
+    aspect-ratio: 3/2;
+    background-color: rgb(255 105 180 / 50%);
+    box-shadow: 0 0 20px 10px rgb(255 105 180 / 50%);
+    content: '';
+    transform: rotate(-20deg);
+  }
+
+  // Голубое свечение
+  &::after {
+    position: absolute;
+    top: 33%;
+    left: 25%;
+    width: 66%;
+    border-radius: 50%;
+    aspect-ratio: 3/2;
+    background-color: rgb(0 191 255 / 50%);
+    box-shadow: 0 0 30px 15px rgb(0 191 255 / 50%);
+    content: '';
+  }
+
+  &Title {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.062;
+    text-shadow:
+      3px 3px 5px #fff,
+      -3px -3px 5px #fff;
+    transition: all 0.3s ease-in-out;
+
+    @include md {
+      font-size: 18px;
+    }
+
+    @include sm {
+      font-size: 16px;
+    }
+  }
+
+  &Image {
+    position: absolute;
+    z-index: 1;
+    top: 33%;
+    left: 0;
+    display: block;
+    overflow: hidden;
+    width: 150%;
+    height: 125%;
+    border-radius: 50%;
+
+    img {
+      position: absolute;
+      right: 22%;
+      bottom: 18%;
+      display: block;
+      width: 80%;
+      height: auto;
+      object-fit: cover;
+    }
+  }
+}
+
+// Состояния загрузки и пустоты
+.loading {
+  padding: 4rem 0;
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #6b7280;
+  font-size: 1.125rem;
+  text-align: center;
+}
+
+.emptyState {
+  padding: 4rem 0;
+  text-align: center;
+
+  p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 1.125rem;
+  }
+}
+
+// Мобильная адаптивность
+@media (max-width: 480px) {
+  .categoriesGrid {
+    gap: 8px;
+  }
+
+  .categorysCard {
+    padding: 12px 10px;
+
+    &Title {
+      font-size: 14px;
+    }
+  }
+}

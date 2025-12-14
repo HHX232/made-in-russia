@@ -1,10 +1,11 @@
-import React, {useRef} from 'react'
+import React, {ReactNode, useRef} from 'react'
 import styles from './RadioButtonUI.module.scss'
 
 export interface RadioButtonProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string
+  label?: string | ReactNode
+  useRect?: boolean
   extraClassName?: string
-
+  textColor?: 'dark' | 'white'
   extraStyle?: React.CSSProperties
   /**
    * Whether the input is checked
@@ -47,6 +48,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
   label,
   extraClassName = '',
   extraStyle,
+  useRect,
   checked = false,
   onChange,
   name,
@@ -56,6 +58,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
   allowUnchecked = false,
   onCustomClick,
   id,
+  textColor = 'white',
   ...rest
 }) => {
   // Generate unique ID if not provided
@@ -118,6 +121,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
             className={`
             ${styles.radioButtonCheckmark} 
             ${checked ? styles.checked : ''}
+            ${useRect ? styles.rect__chekMark : ''}
           `}
           >
             {checked && (
@@ -136,7 +140,11 @@ const RadioButton: React.FC<RadioButtonProps> = ({
               </svg>
             )}
           </span>
-          {label && <span className={styles.labelText}>{label}</span>}
+          {label && (
+            <span style={{color: textColor === 'dark' ? '#2A2E46' : '#fff'}} className={styles.labelText}>
+              {label}
+            </span>
+          )}
         </label>
       </div>
     </div>

@@ -1,72 +1,314 @@
+@use 'sass:math';
 @import 'variables';
+@import './config/fonts';
+@import './config/root';
+@import './config/functions';
+@import './config/mixins';
+@import './config/placeholders';
+@import './config/reset';
+@import './config/typography';
+@import './config/base';
+@import './config/keyframes';
 
 /* Для Firefox */
-html {
-	scrollbar-width: thin;
-	/* 'auto' или 'thin' */
-	scrollbar-color: #2A2E46 #EFF1F8;
+// html {
+//   font-family: $font-inter;
+//   font-size: 15px;
+//   scroll-behavior: smooth;
+
+//   /* 'auto' или 'thin' */
+//   scrollbar-color: #2a2e46 #eff1f8;
+//   scrollbar-width: thin;
+//   text-size-adjust: 100%;
+// }
+
+body {
+  overflow: overlay;
+  max-width: 100vw !important;
+  font-family: AvrileSans, $font-inter !important;
+  line-height: 1.2;
+  overflow-x: hidden !important;
+}
+
+// ! NEW SLIDER
+#telegram-login-exporterubot {
+  cursor: pointer !important;
+
+  & > * {
+    cursor: pointer !important;
+  }
+
+  & > body {
+    cursor: pointer !important;
+  }
+
+  & > html > body {
+    cursor: pointer !important;
+  }
+}
+
+// Глобальные стили для keen-slider
+
+// Базовые стили keen-slider
+.keen-slider {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  height: 100%;
+  border-radius: 0;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+// Кастомизация для промо слайдеров
+.promo-keen-slider {
+  .keen-slider {
+    height: 100%;
+    border-radius: 0 !important;
+
+    &__slide {
+      display: flex;
+      height: 100%;
+      align-items: stretch;
+      border-radius: 0 !important;
+
+      & > div {
+        width: 100%;
+        height: 100%;
+        border-radius: 0 !important;
+      }
+    }
+  }
+}
+
+// Анимации для keen-slider (опционально)
+.keen-slider[data-keen-slider-v] {
+  transform: translateZ(0);
+}
+
+.keen-slider[data-keen-slider-moves] {
+  transform: translate3d(var(--keen-slider-move-x, 0), var(--keen-slider-move-y, 0), 0) rotateZ(0deg);
+}
+
+.keen-slider__slide {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+
+  // height: 100%;
+  min-height: 0;
+  border-radius: 0;
+  transform: translate3d(var(--keen-slider-slide-x, 0), var(--keen-slider-slide-y, 0), 0) rotateZ(0deg);
+
+  // @media (min-width: 800px) {
+  //   min-width: 450px !important;
+  // }
+}
+
+.keen_without_transform {
+  position: absolute !important;
+  transform: none !important;
+}
+
+// Добавьте в глобальные стили или в отдельный файл стилей:
+
+.no-scroll {
+  overflow: hidden !important;
+
+  // Для предотвращения сдвига контента при скрытии скроллбара
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+}
+
+// .companies__slider__main>.slick-list>.slick-track {
+// 	display: flex !important;
+
+// 	&>div>div {
+// 		display: flex !important;
+// 	}
+// }
+
+// .companies__slider__main>div>div>div>div {
+// 	background-color: #EFF1F8 !important;
+// 	padding: 10px !important;
+// }
+
+.category__slider__main .slick-dots {
+  position: static !important;
+}
+
+.category__slider__main {
+  .slick-track {
+    height: 220px;
+  }
+
+  .slick-slide {
+    & > div {
+      height: 100%;
+      padding-bottom: 6px;
+    }
+  }
+}
+
+.category__slider__first {
+  .slick-track {
+    height: 270px;
+  }
+}
+
+// md-editor-custom.module.scss
+// Добавьте эти стили в ваш основной файл стилей или создайте отдельный
+
+// Исправление видимости перегородки между редактором и превью
+.md-editor-resize-operate {
+  width: 2px !important;
+  background-color: #d9d9d9 !important;
+}
+
+.md-editor-toolbar-wrapper {
+  border-bottom: 2px solid #b8b8b8 !important;
+}
+
+.md-editor {
+  border: 2px solid #b8b8b8 !important;
+}
+
+// Дополнительные улучшения для темы
+.md-editor-light {
+  .toolbar-item {
+    &:hover {
+      background-color: #f0f0f0;
+    }
+
+    &.active {
+      background-color: #e6f7ff;
+      color: #1890ff;
+    }
+  }
+}
+
+.md-editor-toolbar {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  row-gap: 15px;
+
+  // &-left {
+  // 	width: 100%;
+  // 	justify-content: space-between;
+  // 	flex-wrap: wrap;
+  // }
+}
+
+.md-editor-toolbar-left {
+  width: 100% !important;
+  flex-wrap: wrap !important;
+  justify-content: space-around !important;
+}
+
+.md-editor-toolbar-right {
+  margin-left: auto;
+}
+
+.md-editor-preview h1 {
+  margin-top: 20px !important;
+  margin-bottom: 20px !important;
+  line-height: 1.2 !important;
+}
+
+.md-editor-preview h2 {
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+  line-height: 1.2 !important;
+}
+
+.md-editor-preview h3 {
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+  line-height: 1.2 !important;
+}
+
+.md-editor-preview h4 {
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+  line-height: 1.2 !important;
+}
+
+.md-editor-preview h5 {
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+  line-height: 1.2 !important;
+}
+
+.md-editor-preview h6 {
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+  line-height: 1.2 !important;
+}
+
+// Или более продвинутый вариант с учетом ширины скроллбара:
+.body-scroll-lock {
+  position: fixed !important;
+  overflow: hidden !important;
+  width: 100% !important;
+
+  // Для плавности
+  transition: none !important;
 }
 
 .react-loading-skeleton {
-	width: 1000px !important;
-	max-width: 100%;
+  width: 1000px !important;
+  max-width: 100%;
 }
 
 /* Для WebKit-браузеров */
-::-webkit-scrollbar {
-	width: 6px !important;
-	/* Толщина вертикального скроллбара */
-	height: 6px !important;
-	/* Толщина горизонтального скроллбара */
-}
+// ::-webkit-scrollbar {
+//   width: 6px !important;
 
-::-webkit-scrollbar-track {
-	background: #EFF1F8;
-	border-radius: 3px;
-	margin: 15px 0;
-}
+//   /* Толщина вертикального скроллбара */
+//   height: 6px !important;
 
-::-webkit-scrollbar-thumb {
-	background-color: #2A2E46;
-	border-radius: 3px;
-	border: 1px solid #EFF1F8;
-	/* Граница для лучшего визуального разделения */
-}
+//   /* Толщина горизонтального скроллбара */
+// }
 
-/* Принудительное применение стилей */
-body {
-	overflow: overlay;
-	/* Важно! Позволяет скроллбару накладываться на контент */
-}
+// ::-webkit-scrollbar-track {
+//   border-radius: 3px;
+//   margin: 15px 0;
+//   background: #eff1f8;
+// }
+
+// ::-webkit-scrollbar-thumb {
+//   border: 1px solid #eff1f8;
+//   border-radius: 3px;
+//   background-color: #2a2e46;
+
+//   /* Граница для лучшего визуального разделения */
+// }
 
 /* Гарантированное применение стилей */
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-	width: 6px !important;
-	height: 6px !important;
-}
+// html::-webkit-scrollbar,
+// body::-webkit-scrollbar {
+//   width: 6px !important;
+//   height: 6px !important;
+// }
 
-html {
-	font-family: $font-inter;
-	font-size: 15px;
-}
-
-.container {
-	max-width: 1200px;
-	width: 100%;
-	padding: 0 5px;
-	margin: 0 auto;
-}
-
-
+// .container {
+//   width: 100%;
+//   max-width: 1200px;
+//   padding: 0 5px;
+//   margin: 0 auto;
+//   background-color: red !important;
+// }
 
 .fontJaro {
-	font-family: $font-jaro;
+  font-family: $font-jaro;
 }
 
 .fontInstrument {
-	font-family: $font-instrument-sans;
-
+  font-family: $font-instrument-sans;
 }
 
 /* Reset CSS (Eric Meyer's Reset v2.0 + modern additions) */
@@ -151,13 +393,12 @@ time,
 mark,
 audio,
 video {
-	font-family: $font-inter;
-	font-size: 15px;
-	line-height: 18px;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	vertical-align: baseline;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: 15px;
+    vertical-align: baseline;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -172,51 +413,37 @@ hgroup,
 menu,
 nav,
 section {
-	display: block;
-}
-
-body {
-	line-height: 1;
+  display: block;
 }
 
 ol,
 ul {
-	list-style: none;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 blockquote,
 q {
-	quotes: none;
+  quotes: none;
 }
 
-blockquote:before,
-blockquote:after,
-q:before,
-q:after {
-	content: '';
-	content: none;
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
+  content: '';
+  content: none;
 }
 
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
 /* Modern additions */
 * {
-	box-sizing: border-box;
-}
-
-html {
-	-webkit-text-size-adjust: 100%;
-	-moz-text-size-adjust: 100%;
-	-ms-text-size-adjust: 100%;
-}
-
-a {
-	background-color: transparent;
-	text-decoration: none;
-	color: inherit;
+  box-sizing: border-box;
 }
 
 button,
@@ -224,29 +451,28 @@ input,
 optgroup,
 select,
 textarea {
-	font-family: inherit;
-	font-size: 100%;
-	line-height: 1.15;
-	margin: 0;
-	padding: 0;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
 }
 
 button,
 input {
-	overflow: visible;
+  overflow: visible;
 }
 
 button,
 select {
-	text-transform: none;
+  text-transform: none;
 }
 
 button,
 [type='button'],
 [type='reset'],
 [type='submit'] {
-	-webkit-appearance: button;
-	appearance: button;
+  appearance: button;
 }
 
 p,
@@ -256,420 +482,123 @@ h3,
 h4,
 h5,
 h6 {
-	margin: 0;
+  margin: 0;
 }
 
 a {
-	display: contents;
-	color: inherit;
-	-webkit-tap-highlight-color: rgb(0 0 0 / 0%);
-	text-decoration: none;
-	-webkit-touch-callout: none;
-	user-select: none;
+  display: contents;
+  background-color: transparent;
+  color: inherit;
+  -webkit-tap-highlight-color: rgb(0 0 0 / 0%);
+  text-decoration: none;
+  -webkit-touch-callout: none;
+  user-select: none;
 
-	&:focus,
-	&:hover,
-	&:visited,
-	&:link,
-	&:active {
-		outline: none;
-	}
+  &:focus,
+  &:hover,
+  &:visited,
+  &:link,
+  &:active {
+    outline: none;
+  }
 
-	&:hover {
-		text-decoration: none;
-	}
-}
-
-ul,
-ol {
-	padding: 0;
-	margin: 0;
-	list-style: none;
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 button {
-	border: unset;
-	background: transparent;
-	cursor: pointer;
+  border: unset;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 input {
-	outline: none;
+  outline: none;
 }
 
 img {
-	max-width: 100%;
-	height: auto;
-	border-style: none;
+  max-width: 100%;
+  height: auto;
+  border-style: none;
 }
 
-.slick-next:before,
-.slick-prev:before {
-	content: "" !important;
+.slick-next::before,
+.slick-prev::before {
+  content: '' !important;
 }
 
-.spec__slider_2 .slick-next:before {
-	display: none !important;
+.spec__slider_2 .slick-next::before {
+  display: none !important;
 }
 
 .spec__slider_2 .slick-list {
-	// width: 104%;
-	// left: -2%;
+  // width: 104%;
+  // left: -2%;
 }
 
 .spec__slider_2 .slick-slider .slick-list .slick-track {
-	gap: 15px !important;
-	display: flex;
-
+  display: flex;
+  gap: 15px !important;
 }
 
-.mini__card__slider .spec__slider_2 .slick-prev:before {
-	display: none !important;
+.mini__card__slider .spec__slider_2 .slick-prev::before {
+  display: none !important;
 }
 
-.mini__card__slider .slick-list .slick-track>div {
-	max-width: fit-content;
+.mini__card__slider .slick-list .slick-track > div {
+  max-width: fit-content;
 }
 
 @media (max-width: 768px) {
-	.slick-slide {
-		display: block;
-		padding: 0 8px !important;
-	}
+  .slick-slide {
+    display: block;
+    padding: 0 8px !important;
+  }
 
-	.spec__slider_2 .slick-next:before {
-		display: none !important;
-	}
+  .spec__slider_2 .slick-next::before {
+    display: none !important;
+  }
 
-	.spec__slider_2 .slick-prev:before {
-		display: none !important;
-	}
+  .spec__slider_2 .slick-prev::before {
+    display: none !important;
+  }
 
-	.spec__slider .slick-slide {
-		padding: 0 !important;
-	}
+  .spec__slider .slick-slide {
+    padding: 0 !important;
+  }
 }
 
-
-// !MARKDOWN Styles
-.borderText {
-	font-weight: 400;
-	font-size: 16px;
-	line-height: 150%;
-	padding: 2px 6px;
-	cursor: pointer;
-	border-radius: 4px;
-	border: 1px solid #B8B8B8;
-	background-color: #F7F7F7;
-	max-width: fit-content;
-}
-
-
-.mark_box {
-	padding: 0px;
-	font-size: 15px;
-	// max-width: 50%;
-
-	&>img {
-		border-radius: 6px;
-		margin: 0 !important;
-	}
-
-	&>p>img {
-		border-radius: 10px;
-		margin: 12px 0;
-		border: 2px solid #EEEFF8;
-		max-width: 500px;
-		max-height: 600px;
-	}
-
-	&>pre {
-		background-color: red !important;
-	}
-
-	&>blockquote {
-		width: 100%;
-		padding: 10px;
-		background-color: #fffaebc2;
-		font-size: 19px;
-		border-radius: 10px;
-		margin: 15px 0;
-	}
-
-	&>h1 {
-
-		margin-bottom: 16px;
-	}
-
-	table {
-		border-collapse: collapse;
-	}
-
-	table>td {
-		display: flex;
-		align-items: center;
-	}
-
-	td>img {
-		max-width: 40%;
-		margin: 0 auto;
-
-	}
-
-	&>h2 {
-		margin-bottom: 15px;
-		margin-top: 10px;
-	}
-
-	&>h3 {
-
-		margin: 14px 0;
-	}
-
-	&>h4 {
-
-		margin: 8px 0;
-	}
-
-	&>h5 {
-
-		margin: 8px 0;
-	}
-
-	&>h6 {
-
-		margin: 6px 0;
-
-	}
-
-	p>img {
-		width: 100%;
-		margin: 18px 0 !important;
-		border: 2px solid #EEEFF8;
-	}
-
-	&>p>a {
-		text-decoration: underline;
-		text-underline-offset: 3px;
-		cursor: pointer;
-		font-style: italic !important;
-	}
-
-	&>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	&>h1>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	&>h2>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	&>h3>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	&>h4>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	&>h5>a {
-		font-style: italic !important;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	&>p {
-		margin: 9px 0 !important;
-
-		font-size: 15px !important;
-		line-height: 150%;
-	}
-
-	&>li {
-
-		font-size: 18px !important;
-		line-height: 150%;
-	}
-
-	&>hr {
-		width: 100%;
-		height: 1px !important;
-		background-color: #d9d9d9;
-		margin: 4px 0;
-	}
-
-	&>p {
-		margin: 8px 0;
-
-	}
-
-	&>ol {
-
-		font-size: 18px !important;
-		margin: 15px 0;
-		margin-left: 20px;
-		list-style: circle;
-
-	}
-
-	&>ol>li>ol {
-		list-style: disc;
-		margin-left: 16px;
-	}
-
-	&>ul {
-		margin: 10px 0;
-
-		font-size: 18px !important;
-	}
-
-	&>ul>li>img {
-		border: 2px solid #EEEFF8;
-	}
-
-	&>ol>li>img {
-		margin: 10px 0;
-		border-radius: 10px;
-		border: 3px solid #EEEFF8;
-	}
-
-	&>img {
-		width: 100%;
-		margin: 15px 0 !important;
-		border: 2px solid #EEEFF8;
-	}
-}
-
-.mark_box table {
-	width: 100%;
-	border-collapse: collapse;
-	margin: 1rem 0;
-	font-size: 18px;
-	text-align: left;
-}
-
-.mark_box th,
-.mark_box td {
-	padding: 10px 15px;
-	border: 1px solid #ddd;
-}
-
-.mark_box th {
-	background-color: #f4f4f4;
-	font-weight: bold;
-}
-
-.mark_box tr:nth-child(even) {
-	background-color: #f9f9f9;
-}
-
-.mark_box tr:hover {
-	background-color: #e9f5ff;
-}
-
-.mark_box caption {
-	caption-side: top;
-	text-align: center;
-	font-size: 1.2rem;
-	font-weight: bold;
-	color: #555;
-	margin-bottom: 10px;
-}
-
-
-@media (max-width:1000px) {
-	.mark_box {
-		&>h1 {
-
-			font-size: 34px !important;
-		}
-
-		&>h2 {
-
-			font-size: 29px !important;
-		}
-
-		&>h3 {
-
-			font-size: 20px !important;
-		}
-
-		&>h4 {
-
-			font-size: 20px !important;
-		}
-
-		&>h5 {
-
-			font-size: 20px !important;
-		}
-
-		&>h6 {}
-	}
-}
-
-@media (max-width:700px) {
-	.mark_box {
-		&>h1 {
-
-			font-size: 30px !important;
-		}
-
-		&>h2 {
-
-			font-size: 25px !important;
-		}
-
-		&>h3 {
-
-			font-size: 19px !important;
-		}
-
-		&>h4 {
-
-			font-size: 19px !important;
-		}
-
-		&>h5 {
-
-			font-size: 17px !important;
-		}
-
-	}
-}
-
-@media (max-width:560px) {
-	.mark_box {
-		padding-bottom: 130px !important;
-	}
+/* Альтернативное решение через JavaScript + CSS */
+.truncated__base64 {
+  display: inline-block;
+  overflow: hidden;
+  max-width: 200px;
+  color: #0969da;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 @media (max-width: 600px) {
-	html {
-		scrollbar-width: none;
-		/* скрыть скроллбар в Firefox */
-	}
+  // html {
+  //   scrollbar-width: none;
 
-	body {
-		overflow-x: hidden;
-	}
+  //   /* скрыть скроллбар в Firefox */
+  // }
 
-	/* Для WebKit-браузеров */
-	::-webkit-scrollbar {
-		display: none !important;
-	}
+  body {
+    overflow-x: hidden;
+  }
 
+  /* Для WebKit-браузеров */
+  // ::-webkit-scrollbar {
+  //   display: none !important;
+  // }
 }

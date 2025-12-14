@@ -1,162 +1,371 @@
-import {FC, ReactNode} from 'react'
-import styles from './Ads.module.scss'
-import Slider from 'react-slick'
-import {StaticImageData} from 'next/image'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client'
+import React, {FC, useMemo, useState, useEffect, useRef} from 'react'
+import styles from './Promo.module.scss'
 import Link from 'next/link'
-// import {useWindowWidth} from '@/hooks/useWindoWidth'
-import 'slick-carousel/slick/slick.css'
-import 'slick-carousel/slick/slick-theme.css'
-import {useWindowWidth} from '@/hooks/useWindoWidth'
+import {IPromoFromServer} from '@/app/page'
+import Head from 'next/head'
+import {
+  generateMainPromoSchema,
+  generateItemListSchema,
+  generateOrganizationSchema,
+  generateWebSiteSchema,
+  generateBreadcrumbSchema,
+  stripHtml
+} from './ads.helpers'
 
-const ads1 = '/ads1.jpg'
-const ads2 = '/ads2.jpg'
-const ads3 = '/ads3.jpg'
-interface IAdsItem {
-  title?: string | ReactNode
-  subtitle?: string | ReactNode
-  text?: string | ReactNode
-  image: string | StaticImageData
-  extraClass?: string
-  href: string
+import {useKeenSlider} from 'keen-slider/react'
+import {useTranslations} from 'next-intl'
+
+interface PromoItemOptimizedProps {
+  ad: IPromoFromServer
+  priority?: boolean
+  sizes?: string
+  onContentHeightChange?: (height: number) => void
 }
 
-const AdsItem: FC<IAdsItem> = ({title, subtitle, text, image, extraClass, href = '#'}) => {
-  const imageUrl = typeof image === 'string' ? image : image.src
+const PromoItemOptimized: FC<PromoItemOptimizedProps> = ({ad, onContentHeightChange}) => {
+  const t = useTranslations('PromoItem')
+  const textBoxRef = useRef<HTMLDivElement>(null)
 
-  return (
-    <Link
-      href={href}
-      style={{backgroundImage: `url(${imageUrl})`, display: 'block'}}
-      className={`${styles.ads__item_box} ${extraClass || ''}`}
-    >
-      <div className={`${styles.ads__item_box__inner}`}>
-        {typeof title === 'string' ? <h2 className={`${styles.el__title} fontInstrument`}>{title}</h2> : title}
-        {typeof subtitle === 'string' ? (
-          <p className={`${styles.el__subtitle} fontInstrument`}>{subtitle}</p>
-        ) : (
-          subtitle
-        )}
-        {typeof text === 'string' ? <p className={`${styles.el__text} fontInstrument`}>{text}</p> : text}
-      </div>
-    </Link>
-  )
-}
-
-const Ads: FC = () => {
-  const windowWidth = useWindowWidth()
-  // let windowLess768 = false
-  // useEffect(() => {
-  //   if (windowWidth <= 768) {
-  //     windowLess768 = true
-  //   } else {
-  //     windowLess768 = false
-  //   }
-  // }, [windowWidth])
-
-  // на 670 сделай 1 slidesToShow
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 1500,
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4500,
-    // pauseOnHover: true,
-    responsive: [
-      {
-        breakpoint: 670,
-        settings: {
-          speed: 1500,
-          autoplay: true,
-          autoplaySpeed: 4500,
-
-          slidesToShow: 1,
-          slidesToScroll: 1
+  useEffect(() => {
+    if (textBoxRef.current && onContentHeightChange) {
+      const updateHeight = () => {
+        if (textBoxRef.current && window.innerWidth <= 576) {
+          onContentHeightChange(textBoxRef.current.clientHeight)
         }
       }
-    ]
-  }
+
+      updateHeight()
+      const timer = setTimeout(updateHeight, 100)
+
+      return () => clearTimeout(timer)
+    }
+  }, [ad, onContentHeightChange])
 
   return (
-    <div className={`${styles.ads_box}`}>
-      <div className='container'>
-        <div className={`${styles.ads_box__inner}`}>
-          <AdsItem
-            extraClass={styles.ads__item_box_1}
-            href='#'
-            title='Горящие скидки на дерево'
-            subtitle='Успей и закажи прямо сейчас'
-            text={
-              <p className={`${styles.spec__text} fontInstrument`}>
-                Только с <span> 20 АПРЕЛЯ</span> по <span>14 МАЯ</span>
-              </p>
-            }
-            image={ads1}
-          />
+    <div className={styles.marketing_card}>
+      <div className={styles.marketing_card__container}>
+        <div className={styles.marketing_card__content}>
+          <div ref={textBoxRef}>
+            <h3 className={styles.marketing_card__title} dangerouslySetInnerHTML={{__html: ad.title}} />
 
-          <AdsItem
-            href='#'
-            extraClass={styles.ads__item_box_2}
-            title={<h3 className={`${styles.second__title} fontInstrument`}>Новая поставка угля</h3>}
-            subtitle={<p className={`${styles.second__subtitle} fontInstrument`}>Бери пока не раскупили!</p>}
-            text=''
-            image={ads2}
-          />
+            <p className={styles.marketing_card__description} dangerouslySetInnerHTML={{__html: ad.subtitle}} />
+          </div>
 
-          <AdsItem
-            href='#'
-            extraClass={styles.ads__item_box_3}
-            title={<p className={`${styles.third__title} fontInstrument`}> Камень со скидкой </p>}
-            subtitle={<p className={`${styles.third__subtitle} fontInstrument`}> до 40%</p>}
-            text={<p className={`${styles.third__text} fontInstrument`}> Скидка работает только при самовывозе* </p>}
-            image={ads3}
-          />
-
-          {windowWidth < 768 && (
-            <Slider className={`${styles.slider__box__custom}`} {...settings}>
-              <AdsItem
-                href='#'
-                extraClass={styles.ads__item_box_4}
-                title={<h3 className={`${styles.second__title} fontInstrument`}>Новая поставка угля</h3>}
-                subtitle={<p className={`${styles.second__subtitle} fontInstrument`}>Бери пока не раскупили!</p>}
-                text=''
-                image={ads2}
-              />
-              <AdsItem
-                href='#'
-                extraClass={styles.ads__item_box_5}
-                title={<p className={`${styles.third__title} fontInstrument`}> Камень со скидкой </p>}
-                subtitle={<p className={`${styles.third__subtitle} fontInstrument`}> до 40%</p>}
-                text={
-                  <p className={`${styles.third__text} fontInstrument`}> Скидка работает только при самовывозе* </p>
-                }
-                image={ads3}
-              />
-              <AdsItem
-                href='#'
-                extraClass={styles.ads__item_box_6}
-                title={<h3 className={`${styles.second__title} fontInstrument`}>Новая поставка угля</h3>}
-                subtitle={<p className={`${styles.second__subtitle} fontInstrument`}>Бери пока не раскупили!</p>}
-                text=''
-                image={ads2}
-              />
-              <AdsItem
-                href='#'
-                extraClass={styles.ads__item_box_5}
-                title={<p className={`${styles.third__title} fontInstrument`}> Камень со скидкой </p>}
-                subtitle={<p className={`${styles.third__subtitle} fontInstrument`}> до 40%</p>}
-                text={
-                  <p className={`${styles.third__text} fontInstrument`}> Скидка работает только при самовывозе* </p>
-                }
-                image={ads3}
-              />
-            </Slider>
-          )}
+          <Link href={ad.link} className={styles.btn_accent}>
+            {t('goToCategory')}
+          </Link>
         </div>
+        <div className={styles.marketing_card__overlay} />
+      </div>
+
+      <div className={styles.marketing_card__image}>
+        <div className={styles.marketing_card__image_overlay} style={{backgroundImage: `url(${ad.imageUrl})`}} />
       </div>
     </div>
   )
 }
 
-export default Ads
+interface NavigationGroupProps {
+  currentSlide: number
+  totalSlides: number
+  onPrev: () => void
+  onNext: () => void
+  textContentHeight?: number
+}
+
+const NavigationGroup: FC<NavigationGroupProps> = ({currentSlide, totalSlides, onPrev, onNext, textContentHeight}) => {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 576)
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  const style: React.CSSProperties = {
+    ...(isMobile && textContentHeight ? {top: `${textContentHeight + 150}px`} : {}),
+    ['--total-slides' as any]: totalSlides
+  }
+
+  return (
+    <div className={styles.navigation_group} style={style}>
+      <div className={styles.navigation_group__counter}>
+        <span className={styles.current}>{currentSlide + 1}</span>/<span className={styles.total}>{totalSlides}</span>
+      </div>
+
+      <div className={styles.navigation_group__pagination}>
+        <div className={styles.custom_pagination_bullet} style={{transform: `translateX(${currentSlide * 100}%)`}} />
+      </div>
+
+      <div className={styles.navigation_group__arrows}>
+        <div
+          className={`${styles.arrow} ${styles.arrow_left} ${currentSlide === 0 ? styles.arrow_disabled : ''}`}
+          onClick={onPrev}
+        />
+        <div
+          className={`${styles.arrow} ${styles.arrow_right} ${currentSlide === totalSlides - 1 ? styles.arrow_disabled : ''}`}
+          onClick={onNext}
+        />
+      </div>
+    </div>
+  )
+}
+
+interface DynamicSliderProps {
+  ads: IPromoFromServer[]
+  isLoading: boolean
+}
+
+const DynamicSlider: FC<DynamicSliderProps> = ({ads, isLoading}) => {
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [sliderReady, setSliderReady] = useState(false)
+  const [textContentHeight, setTextContentHeight] = useState<number | undefined>(undefined)
+  const [opacities, setOpacities] = useState<number[]>([])
+  const [sliderHeight, setSliderHeight] = useState<number | undefined>(undefined)
+  const contentHeightsRef = useRef<{[key: number]: number}>({})
+
+  const updateSliderHeight = () => {
+    const activeSlide = document.querySelector(`.keen-slider__slide:nth-child(${currentSlide + 1})`) as HTMLElement
+    if (activeSlide) {
+      setSliderHeight(activeSlide.offsetHeight)
+    }
+  }
+
+  useEffect(() => {
+    if (sliderReady) {
+      updateSliderHeight()
+    }
+  }, [sliderReady, currentSlide])
+
+  useEffect(() => {
+    updateSliderHeight()
+  }, [currentSlide, ads])
+
+  useEffect(() => {
+    window.addEventListener('resize', updateSliderHeight)
+    return () => window.removeEventListener('resize', updateSliderHeight)
+  }, [])
+
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        setSliderReady(true)
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [isLoading])
+
+  const updateTextContentHeight = () => {
+    if (window.innerWidth <= 576) {
+      const height = contentHeightsRef.current[currentSlide]
+      if (height !== undefined) {
+        setTextContentHeight(height)
+      }
+    } else {
+      setTextContentHeight(undefined)
+    }
+  }
+
+  useEffect(() => {
+    updateTextContentHeight()
+  }, [currentSlide])
+
+  const handleContentHeightChange = (index: number) => (height: number) => {
+    contentHeightsRef.current[index] = height
+    if (index === currentSlide) {
+      updateTextContentHeight()
+    }
+  }
+
+  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
+    loop: false,
+    slides: {
+      perView: 1,
+      spacing: 0
+    },
+    slideChanged(slider) {
+      const newSlide = slider.track.details.rel
+      setCurrentSlide(newSlide)
+      updateTextContentHeight()
+    },
+    detailsChanged(s) {
+      const new_opacities = s.track.details.slides.map((slide) => slide.portion)
+      setOpacities(new_opacities)
+    },
+    created() {
+      updateTextContentHeight()
+    }
+  })
+
+  useEffect(() => {
+    const handleResize = () => {
+      updateTextContentHeight()
+      updateSliderHeight()
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [currentSlide])
+
+  if (!sliderReady) {
+    return <StaticPromoFallback ads={ads} />
+  }
+
+  const handlePrev = () => {
+    instanceRef.current?.prev()
+  }
+
+  const handleNext = () => {
+    instanceRef.current?.next()
+  }
+
+  return (
+    <div style={{transform: 'none'}} className={`${styles.marketing_swiper} `}>
+      <NavigationGroup
+        currentSlide={currentSlide}
+        totalSlides={ads.length}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        textContentHeight={textContentHeight}
+      />
+
+      <div
+        style={{
+          transform: 'none',
+          position: 'relative',
+          height: `${sliderHeight}px`
+        }}
+        ref={sliderRef}
+        className={`keen-slider ${styles.fade_slider}`}
+      >
+        {ads.map((ad, index) => (
+          <div style={{opacity: opacities[index]}} className='keen-slider__slide keen_without_transform' key={ad.id}>
+            <PromoItemOptimized
+              ad={ad}
+              priority={index === 0}
+              sizes='100vw'
+              onContentHeightChange={handleContentHeightChange(index)}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const StaticPromoFallback: FC<{ads: IPromoFromServer[]}> = ({ads}) => {
+  const firstAd = ads[0]
+
+  if (!firstAd) return null
+
+  return (
+    <div className={styles.marketing_swiper}>
+      <PromoItemOptimized ad={firstAd} priority={true} sizes='100vw' />
+    </div>
+  )
+}
+
+interface PromoProps {
+  ads: IPromoFromServer[]
+  organizationName?: string
+  baseUrl?: string
+  siteTitle?: string
+}
+
+const extractOrderNumber = (text: string): {order: number; cleanText: string} => {
+  const match = text.match(/^(\d+)\s+(.*)/)
+  if (match) {
+    return {
+      order: parseInt(match[1], 10),
+      cleanText: match[2]
+    }
+  }
+  return {
+    order: Infinity,
+    cleanText: text
+  }
+}
+
+const sortAndCleanAds = (ads: IPromoFromServer[]): IPromoFromServer[] => {
+  return ads
+    .map((ad) => {
+      const titleData = extractOrderNumber(ad.title)
+      const subtitleData = extractOrderNumber(ad.subtitle)
+
+      return {
+        ...ad,
+        title: titleData.cleanText,
+        subtitle: subtitleData.cleanText,
+        order: titleData.order
+      }
+    })
+    .sort((a, b) => a.order - b.order)
+}
+
+const Promo: FC<PromoProps> = ({
+  ads,
+  organizationName = 'Exporteru',
+  baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://exporteru.com',
+  siteTitle = 'Exporteru.com'
+}) => {
+  const [isPageLoaded, setIsPageLoaded] = useState(false)
+  const t = useTranslations('PromoItem')
+
+  const sortedAds = useMemo(() => sortAndCleanAds(ads), [ads])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageLoaded(true)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  const schemas = useMemo(() => {
+    const mainPromoSchema = generateMainPromoSchema(sortedAds, organizationName, baseUrl)
+    const itemListSchema = generateItemListSchema(sortedAds, baseUrl)
+    const organizationSchema = generateOrganizationSchema(organizationName, baseUrl)
+
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [organizationSchema, mainPromoSchema, itemListSchema]
+    }
+  }, [sortedAds, organizationName, baseUrl, siteTitle])
+
+  return (
+    <>
+      <Head>
+        <script
+          type='application/ld+json'
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(schemas, null, 2)
+          }}
+        />
+      </Head>
+
+      <section style={{overflow: 'hidden'}} className={styles.marketing}>
+        <h2 className={styles.visually_hidden}>{t('title')}</h2>
+        <div className={`${styles.container_full} container`}>
+          <DynamicSlider ads={sortedAds} isLoading={!isPageLoaded} />
+        </div>
+      </section>
+    </>
+  )
+}
+
+export default Promo
+
+export {
+  generateMainPromoSchema,
+  generateItemListSchema,
+  generateOrganizationSchema,
+  generateBreadcrumbSchema,
+  generateWebSiteSchema,
+  stripHtml
+}

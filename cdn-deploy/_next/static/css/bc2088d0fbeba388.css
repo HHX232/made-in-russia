@@ -1,0 +1,8 @@
+.toggleFavoritesButtonUI_button__b4sOL,
+.toggleFavoritesButtonUI_button__b4sOL:hover > svg {
+  transition: all 0.2s;
+}
+.toggleFavoritesButtonUI_button__b4sOL:hover > svg > path {
+  transition: all 0.2s;
+  stroke: #ac2525;
+}

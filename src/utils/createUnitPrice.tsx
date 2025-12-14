@@ -1,7 +1,8 @@
 const renderPriceUnit = (
   priceUnit: string,
   firstPartClassNames: string[] = [],
-  secondPartClassNames: string[] = []
+  secondPartClassNames: string[] = [],
+  shouldHaveBreak?: boolean
 ) => {
   const slashIndex = priceUnit.indexOf('/')
 
@@ -15,6 +16,7 @@ const renderPriceUnit = (
   return (
     <>
       <span className={firstPartClassNames.join(' ')}>{firstPart}</span>
+      {shouldHaveBreak ? <br /> : null}
       <span className={secondPartClassNames.join(' ')}>{secondPart}</span>
     </>
   )

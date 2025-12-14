@@ -1,0 +1,800 @@
+/* stylelint-disable no-duplicate-selectors */
+// .profile__inner {
+//    width: 100%;
+//    display: grid;
+//    grid-template-columns: minmax(400px, 1fr) 1.2fr;
+//    grid-template-rows: repeat(2, auto);
+//    gap: 30px;
+//    margin-top: 40px;
+// }
+.save__animation {
+  // width: 0;
+  position: absolute;
+
+  // margin-left: 30px;
+  top: 0;
+  right: 0;
+
+  /* Исходное состояние — полностью прозрачна */
+  animation: fadeIn 1.5s ease-in-out forwards;
+  opacity: 0;
+  transform: translateX(-30%);
+
+  /* Применяем анимацию */
+}
+
+/* Описание самой анимации */
+@keyframes fadeIn {
+  0% {
+    position: absolute;
+
+    // opacity: 0;
+    // width: 0px;
+    margin-left: 0;
+  }
+
+  10% {
+    position: relative;
+  }
+
+  100% {
+    // right: 0;
+    position: relative;
+    width: fit-content;
+    margin-left: 30px;
+    opacity: 1;
+
+    /* Конечное состояние — полностью непрозрачна */
+  }
+}
+
+.profile__user__box {
+  display: flex;
+  width: 100%;
+
+  // Предотвращаем сжатие содержимого
+  min-width: 0;
+  height: 100%;
+  max-height: 100%;
+  flex-direction: column;
+  padding: 25px 40px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+}
+
+.profile__shops__char__data {
+  min-height: 600px;
+  grid-column: 1 / -1;
+}
+
+.profile__shops__data {
+  display: flex;
+
+  // padding-bottom: 10px;
+  // position: sticky;
+  // top: 10px;
+  // padding-left: 5px;
+  overflow: visible;
+  width: 100%;
+
+  // Важно! Предотвращаем расширение за пределы колонки
+  min-width: 0;
+  max-height: fit-content;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.profile__data__mini {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.profile__user__box__inner {
+  display: flex;
+  width: 100%;
+  max-width: fit-content;
+  align-items: center;
+  margin-bottom: 23px;
+  gap: 25px;
+}
+
+.profile__user__box__inner__avatar {
+  width: 66px;
+  max-width: fit-content;
+  height: 66px;
+  border-radius: 50%;
+}
+
+.user__names__box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user__name {
+  color: #000;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.user__email {
+  color: #818181;
+  font-size: 15px;
+}
+
+.fast__buttons__box {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.fast__buttons__box__item__button {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid #2a2e46;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.fast__buttons__box__item {
+  max-width: 165px;
+}
+
+.create__box {
+  display: flex;
+  width: 330px;
+  flex-direction: column;
+  margin-top: 8px;
+}
+
+.region__box {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  gap: 4px;
+}
+
+.input__title {
+  color: #818181;
+  font-size: 14px;
+}
+
+.phone__input__box {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.profile__region__dropdown {
+  width: 100%;
+}
+
+.modal__sessions__list__item__button {
+  height: 100px;
+  max-height: 40px;
+  border-radius: 10px;
+  margin-left: 5px;
+  aspect-ratio: 1/1;
+  background-color: #ac2525;
+  color: #fff;
+  font-size: 23px;
+  line-height: 26px;
+}
+
+.region__box__input {
+  display: flex;
+  width: 100%;
+  padding: 11px 15px;
+  border: 2px solid #2a2e46;
+  border-radius: 10px;
+}
+
+// !EXTRA
+.extra__phone__class {
+  & > label {
+    border: 2px solid #2a2e46;
+    border-radius: 10px;
+    background-color: #f4f5f6 !important;
+
+    & > div {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border-top: 1.5px solid #2a2e46;
+      border-right: 2px solid #2a2e46;
+      border-bottom: 1.5px solid #2a2e46;
+      background-color: #81818120;
+    }
+
+    & > input {
+      min-height: 40px;
+    }
+  }
+}
+
+.buttons__logouts__box {
+  display: flex;
+  margin-top: 25px;
+  margin-bottom: 35px;
+  gap: 30px;
+}
+
+.buttons__logouts__box__item {
+  width: fit-content;
+}
+
+.buttons__logouts__box__button {
+  padding: 11px 18px;
+  border: 2px solid #ac2525;
+  border-radius: 10px;
+  font-size: 15px;
+
+  &:hover {
+    padding: 11px 17px;
+    color: #ac2525;
+    font-weight: 500;
+  }
+}
+
+.logout__button {
+  max-width: fit-content;
+  padding: 10px 60px;
+  border-radius: 10px;
+  margin: auto auto 0;
+  background-color: #ac2525;
+  color: #fff;
+  font-size: 15px;
+}
+
+.profile__data__favourite,
+.profile__data__basket {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding: 15px 25px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+}
+
+.profile__data__favourite__span {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.mini__link__info__title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.profile__data__favourite__subtitle {
+  color: #818181;
+}
+
+.profile__data__latest {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+
+  // Важно! Предотвращаем переполнение
+  min-width: 0;
+  flex-direction: column;
+  padding: 20px 25px 45px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+}
+
+.mini__link__info__title__latest {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.profile__inner {
+  display: grid;
+  width: 100%;
+  margin-top: 40px;
+  gap: 30px;
+
+  // Фиксируем первую колонку, вторая занимает оставшееся место
+  grid-template-columns: minmax(400px, 1fr) 1.22fr;
+  grid-template-rows: repeat(2, auto);
+}
+
+.modal__sessions__title {
+  margin: 0 50px 20px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.modal__sessions__list {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal__sessions__list__item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #f4f5f6;
+  gap: 35px;
+}
+
+.device__type,
+.browser,
+.os,
+.last__login__date {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.device__type,
+.sessions__item__title {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.profile__user__box {
+  display: flex;
+  width: 100%;
+
+  // Предотвращаем сжатие содержимого
+  min-width: 0;
+  height: 100%;
+  max-height: 100%;
+  flex-direction: column;
+  padding: 25px 40px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+}
+
+.profile__shops__data {
+  display: flex;
+  overflow: visible;
+  width: 100%;
+
+  // Важно! Предотвращаем расширение за пределы колонки
+  min-width: 0;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.profile__data__mini {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.profile__user__box__inner {
+  display: flex;
+  width: 100%;
+  max-width: fit-content;
+  align-items: center;
+  margin-bottom: 23px;
+  gap: 25px;
+}
+
+.profile__user__box__inner__avatar {
+  width: 66px;
+  max-width: fit-content;
+  height: 66px;
+  border-radius: 50%;
+}
+
+.user__names__box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user__name {
+  color: #000;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.user__email {
+  color: #818181;
+  font-size: 15px;
+}
+
+.fast__buttons__box {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.fast__buttons__box__item__button {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid #2a2e46;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.fast__buttons__box__item {
+  max-width: 165px;
+}
+
+.create__box {
+  display: flex;
+  width: 330px;
+  flex-direction: column;
+  margin-top: 8px;
+}
+
+.extra__input {
+  & > div:nth-child(2) {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background-color: transparent !important;
+  }
+}
+
+.region__box {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  gap: 4px;
+}
+
+.input__title {
+  color: #818181;
+  font-size: 14px;
+}
+
+.phone__input__box {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.profile__region__dropdown {
+  width: 100%;
+}
+
+.region__box__input {
+  display: flex;
+  width: 100%;
+  padding: 11px 15px;
+  border: 2px solid #2a2e46;
+  border-radius: 10px;
+}
+
+.buttons__box__save__logout {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  margin: auto auto 0;
+
+  // gap: 30px;
+
+  @media (max-width: 600px) {
+    flex-wrap: wrap;
+  }
+}
+
+// !EXTRA
+.extra__phone__class {
+  & > label {
+    border: 2px solid #2a2e46;
+    border-radius: 10px;
+    background-color: #f4f5f6 !important;
+
+    & > div {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border-top: 1.5px solid #2a2e46;
+      border-right: 2px solid #2a2e46;
+      border-bottom: 1.5px solid #2a2e46;
+      background-color: #81818120;
+    }
+
+    & > input {
+      min-height: 40px;
+    }
+  }
+}
+
+.buttons__logouts__box {
+  display: flex;
+  margin-top: 25px;
+  margin-bottom: 35px;
+  gap: 30px;
+}
+
+.buttons__logouts__box__item {
+  width: fit-content;
+}
+
+.buttons__logouts__box__button {
+  padding: 11px 18px;
+  border: 2px solid #ac2525;
+  border-radius: 10px;
+  font-size: 15px;
+
+  &:hover {
+    padding: 11px 17px;
+    color: #ac2525;
+    font-weight: 500;
+  }
+}
+
+// .save__button__left {
+//   position: absolute;
+//   top: 0;
+//   right: 0;
+//   transform: translateX(-30%);
+// }
+
+.logout__button {
+  // position: absolute;
+  // top: 0;
+  // left: 50%;
+  // transform: translateX(-50%);
+  min-width: 180px;
+  max-width: fit-content;
+  padding: 10px 60px;
+  border-radius: 10px;
+  margin: auto auto 0;
+  background-color: #ac2525;
+  color: #fff;
+  font-size: 15px;
+
+  // &__left {
+  //   transform: translateX(-90%);
+  // }
+}
+
+.save__button {
+  max-width: fit-content;
+  padding: 10px 45px;
+  border-radius: 10px;
+  margin: auto auto 0;
+  margin-left: 10px;
+  background-color: #2a2e46;
+  color: #fff;
+  font-size: 15px;
+
+  @media (max-width: 450px) {
+    margin: 10px auto 0 !important;
+  }
+}
+
+.profile__data__favourite,
+.profile__data__basket {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding: 15px 25px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+}
+
+.profile__data__favourite__span {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.mini__link__info__title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.profile__data__favourite__subtitle {
+  color: #818181;
+}
+
+.profile__data__latest {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+
+  // Важно! Предотвращаем переполнение
+  min-width: 0;
+  flex-direction: column;
+  padding: 20px 25px 45px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+}
+
+.mini__link__info__title__latest {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.latest__list {
+  display: flex;
+
+  // Убираем width: fit-content, который заставляет элемент растягиваться
+  width: 100%;
+  max-width: 100%;
+  margin-top: 30px;
+  gap: 20px;
+  overflow-x: auto; // Меняем на auto вместо scroll
+
+  // Стили для элементов внутри списка (карточек)
+  & > * {
+    min-width: 230px;
+    max-width: 250px;
+    flex: 0 0 200px; // Не растягиваться, не сжиматься, базовая ширина 200px
+  }
+}
+
+.latest__list {
+  padding-bottom: 5px;
+
+  & > a {
+    // box-shadow: none;
+    border: 1px solid #2a2e46;
+    margin-left: 2px;
+
+    &:hover {
+      border: 1px solid #2a2e46;
+    }
+  }
+}
+
+.empty__message {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: #818181;
+  font-size: 35px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.payments__methods__title {
+  margin-right: 30px;
+  margin-bottom: 15px;
+  font-size: 30px;
+  line-height: 36px;
+}
+
+.payments__methods__list {
+  display: flex;
+  width: max(30vw, 500px);
+  flex-direction: column;
+  gap: 15px;
+
+  @media (max-width: 650px) {
+    width: 90vw;
+  }
+}
+
+.payments__methods__list__item {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+  gap: 10px;
+}
+
+.payments__methods__list__item__title {
+  margin-bottom: 5px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.payments__methods__list__item__value {
+  font-size: 18px;
+}
+
+@media (max-width: 1010px) {
+  .profile__inner {
+    grid-template-columns: 1fr 1.22fr;
+
+    /* Сохраняем соотношение */
+    grid-template-rows: auto auto auto;
+
+    /* 3 строки */
+  }
+
+  /* 1 и 2 — в первой строке, с сохранением пропорций */
+  .profile__inner > :nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .profile__inner > :nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* 3 и 4 — растягиваем на всю ширину */
+  .profile__inner > :nth-child(3) {
+    grid-column: 1 / -1;
+
+    /* Занимает все колонки */
+    grid-row: 2;
+  }
+
+  .profile__inner > :nth-child(4) {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+@media (max-width: 1010px) {
+  .create__box {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .profile__inner {
+    grid-template-columns: 1fr;
+
+    /* Одна колонка */
+    grid-template-rows: repeat(4, auto);
+
+    /* 4 строки */
+  }
+
+  .profile__inner > :nth-child(1),
+  .profile__inner > :nth-child(2),
+  .profile__inner > :nth-child(3),
+  .profile__inner > :nth-child(4) {
+    grid-column: 1;
+
+    /* Все элементы занимают всю ширину */
+    grid-row: auto;
+
+    /* Автоматическое размещение (по порядку) */
+  }
+
+  .profile__user__box {
+    align-items: center;
+  }
+
+  .fast__buttons__box {
+    flex-flow: row wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile__data__mini {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 450px) {
+  .fast__buttons__box {
+    flex-direction: column;
+    margin: 0 auto;
+  }
+}

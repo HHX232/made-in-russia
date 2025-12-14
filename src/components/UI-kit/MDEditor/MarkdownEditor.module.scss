@@ -1,0 +1,152 @@
+.editorGrid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editorPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+.editorCard {
+  overflow: hidden;
+  border: 1px solid rgb(47 47 47 / 20%);
+  border-radius: 15px;
+  background: white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid rgb(47 47 47 / 20%);
+  background-color: #f9fafb;
+  gap: 4px;
+}
+
+.toolbarButton {
+  padding: 8px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #e5e7eb;
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  margin: 0 4px;
+  background-color: #d1d5db;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 400px;
+  padding: 16px;
+  border: none;
+
+  // font-family: 'Courier New', monospace;
+  font-size: 14px;
+  resize: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+}
+
+.previewCard {
+  min-height: fit-content;
+  padding: 16px;
+  border: 1px solid rgb(47 47 47 / 20%);
+  border-radius: 0;
+  background: white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.previewTitle {
+  margin-bottom: 16px;
+  color: #374151;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.preview {
+  color: #1f2937;
+
+  p {
+    margin-bottom: 8px;
+  }
+
+  strong,
+  b {
+    font-weight: bold;
+  }
+
+  em,
+  i {
+    font-style: italic;
+  }
+
+  u {
+    text-decoration: underline;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #d1d5db;
+    margin: 16px 0;
+  }
+
+  ul {
+    padding-left: 20px;
+    margin-bottom: 8px;
+    margin-left: 24px;
+    list-style: disc !important;
+
+    li {
+      display: list-item;
+      list-style: disc !important;
+    }
+  }
+
+  ol {
+    padding-left: 20px;
+    margin-bottom: 8px;
+    margin-left: 24px;
+    list-style: decimal !important;
+
+    li {
+      display: list-item;
+      list-style: decimal !important;
+    }
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+}
+
+.previewPlaceholder {
+  color: #9ca3af;
+  font-style: italic;
+}

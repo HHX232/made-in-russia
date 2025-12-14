@@ -1,6 +1,35 @@
-'use client'
 import RegisterPage from '@/components/pages/RegisterPage/RegisterPage'
+import {NO_INDEX_PAGE} from '@/constants/seo.constants'
+import {getTranslations} from 'next-intl/server'
+import {Suspense} from 'react'
+// import CategoriesService, {categoriesKeys} from '@/services/categoryes/categoryes.service'
+// import {dehydrate, HydrationBoundary, QueryClient} from '@tanstack/react-query'
 
-export default function Login() {
-  return <RegisterPage />
+export default function Register() {
+  // const locale = await getCurrentLocale()
+
+  // const queryClient = new QueryClient()
+
+  // await queryClient.prefetchQuery({
+  //   queryKey: categoriesKeys.list(locale),
+  //   queryFn: () => CategoriesService.getAll(locale)
+  // })
+
+  // const dehydratedState = dehydrate(queryClient)
+
+  return (
+    // <HydrationBoundary state={dehydratedState}>
+    <Suspense>
+      <RegisterPage />
+    </Suspense>
+    // {/* </HydrationBoundary> */}
+  )
+}
+
+export async function generateMetadata() {
+  const t = await getTranslations('metaTitles')
+  return {
+    title: t('register'),
+    ...NO_INDEX_PAGE
+  }
 }

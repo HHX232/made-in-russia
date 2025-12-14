@@ -1,18 +1,26 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Skeleton from 'react-loading-skeleton'
-import BasketButtonUI from '@/components/UI-kit/buttons/BasketButtonUI/BasketButtonUI'
 import CardSlider from '@/components/UI-kit/elements/CardSlider/CardSlider'
-import StarsCount from '@/components/UI-kit/Texts/StarsCount/StarsCount'
 import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
-import {Product} from '@/services/products/product.types'
-import {createPriceWithDot} from '@/utils/createPriceWithDot'
-import renderPriceUnit from '@/utils/createUnitPrice'
-import getDatesDifference from '@/utils/getDatesDifference'
 import Link from 'next/link'
+import Head from 'next/head'
 import styles from './CardPage.module.scss'
 import Image from 'next/image'
-import {ReactNode, useEffect, useState} from 'react'
+import {ReactNode, useEffect, useMemo, useRef, useState} from 'react'
+import useWindowWidth from '@/hooks/useWindoWidth'
+import ICardFull from '@/services/card/card.types'
+import {useLocale, useTranslations} from 'next-intl'
+import PurchaseModal from './PurchaseModal/PurchaseModal'
+import {axiosClassic} from '@/api/api.interceptor'
+import {toast} from 'sonner'
+import {useActions} from '@/hooks/useActions'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useUserQuery} from '@/hooks/useUserApi'
+import ServiceFavorites from '@/services/favorite/favorite.service'
+import {chatService} from '@/services/chat/chat.service'
+import {useRouter} from 'next/navigation'
+import {Heart} from 'lucide-react'
 
 interface IPriceItem {
   title: string | ReactNode
@@ -25,392 +33,476 @@ interface IPriceList {
   items: IPriceItem[]
   discountExpiration?: string | null
 }
-function isVideo(url: string) {
-  return url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')
-}
-const im1 = '/mini__comment1.jpg'
-const im2 = '/mini_comment2.jpg'
-const im4 = '/shop__test.svg'
-const im3 = '/mini_comment_3.jpg'
 
-const imArray = [
-  {item: im1, isVideo: true},
-  {item: im2, isVideo: isVideo(im2)},
-  {item: im3, isVideo: isVideo(im3)},
-  {item: im2, isVideo: isVideo(im2)},
-  {item: im1, isVideo: isVideo(im1)},
-  {item: im2, isVideo: isVideo(im2)},
-  {item: im1, isVideo: isVideo(im1)}
-]
+// Компонент микроразметки
+const ProductSchema = ({
+  cardData,
+  priceList,
+  shopName
+}: {
+  cardData: ICardFull | null
+  priceList: IPriceList
+  shopName: string
+}) => {
+  if (!cardData) return null
 
-const var1 = '/var1.jpg'
-const var2 = '/var2.jpg'
-const var3 = '/var3.jpg'
+  // Получаем минимальную и максимальную цены
+  const prices = priceList.items
+    .map((item) => parseFloat(item.currentPrice || item.originalPrice || '0'))
+    .filter((price) => price > 0)
 
-const ShopProfile = ({name, imageSrc, isLoading}: {name: string; imageSrc: string; isLoading: boolean}) => {
+  const minPrice = Math.min(...prices)
+  const maxPrice = Math.max(...prices)
+
+  console.log('priceList', priceList)
+  // Формируем массив предложений для AggregateOffer
+  const offers = priceList.items.map((item, index) => ({
+    '@type': 'Offer',
+    price: item.currentPrice || item.originalPrice,
+    priceCurrency: item?.priceUnit,
+    priceValidUntil: priceList.discountExpiration,
+    availability: 'https://schema.org/InStock',
+    eligibleQuantity: {
+      '@type': 'Quantitative-Value',
+      name: item.title,
+      unitCode: item.priceUnit
+    }
+  }))
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: cardData.title,
+    description: cardData.furtherDescription || cardData.title,
+    sku: cardData.article,
+    mpn: cardData.article,
+    image: cardData.media?.map((media) => media.url) || [],
+    brand: {
+      '@type': 'Organization',
+      name: shopName
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: cardData.rating,
+      reviewCount: cardData.reviewsCount,
+      bestRating: '5',
+      worstRating: '1'
+    },
+    offers: {
+      '@type': 'AggregateOffer',
+      offerCount: priceList.items.length,
+      lowPrice: minPrice,
+      highPrice: maxPrice,
+      priceCurrency: cardData.prices[0].currency,
+      availability: 'https://schema.org/InStock',
+      priceValidUntil: priceList.discountExpiration,
+      offers: offers
+    },
+    additionalProperty:
+      cardData.characteristics?.map((char) => ({
+        '@type': 'PropertyValue',
+        name: char.name,
+        value: char.value
+      })) || [],
+    shippingDetails: [
+      {
+        '@type': 'OfferShippingDetails',
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          currency: cardData.prices[0].currency
+        },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          transitTime: {
+            '@type': 'QuantitativeValue',
+            minValue:
+              Number(cardData?.deliveryMethodsDetails?.[0]?.value) - 2 <= 0
+                ? 0
+                : Number(cardData?.deliveryMethodsDetails?.[0]?.value) - 2 || 5,
+            maxValue: Number(cardData?.deliveryMethodsDetails?.[0]?.value) + 1 || 10,
+            unitCode: 'DAY'
+          }
+        }
+      },
+      {
+        '@type': 'OfferShippingDetails',
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          currency: cardData.prices[0].currency
+        },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          transitTime: {
+            '@type': 'QuantitativeValue',
+            minValue:
+              Number(cardData?.deliveryMethodsDetails?.[0]?.value) - 2 <= 0
+                ? 0
+                : Number(cardData?.deliveryMethodsDetails?.[0]?.value) - 2 || 5,
+            maxValue: Number(cardData?.deliveryMethodsDetails?.[0]?.value) + 1 || 10,
+            unitCode: 'DAY'
+          }
+        }
+      }
+    ]
+  }
+
   return (
-    <Link href={`#`} className={`${styles.shop__profile}`}>
-      {!isLoading ? (
-        <Image className={`${styles.profile__image}`} src={imageSrc} alt='mini__comment' width={60} height={60} />
-      ) : (
-        <Skeleton style={{width: 100000, maxWidth: '60px'}} height={60} width={60} />
-      )}
-      <div className={`${styles.name__profile__box}`}>
-        {!isLoading ? (
-          <p className={`${styles.shop__name__text}`}>{name}</p>
-        ) : (
-          <Skeleton style={{width: 100000, maxWidth: '180px'}} height={20} />
-        )}
-        {!isLoading ? (
-          <p className={`${styles.shop__name__subtext}`}>Компания</p>
-        ) : (
-          <Skeleton style={{width: 100000, maxWidth: '180px'}} height={20} />
-        )}
-      </div>
-    </Link>
+    <Head>
+      <script type='application/ld+json' dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData)}} />
+    </Head>
   )
 }
 
-const VariantsBox = ({imagesUrls = []}: {imagesUrls: string[]}) => {
-  return (
-    <div className={`${styles.variants__content__box}`}>
-      {imagesUrls.map((el, i) => {
-        return (
-          <Image
-            key={i}
-            className={`${styles.variants__content__box__item} ${i == 2 && styles.variants__content__box__item__active} `}
-            src={el}
-            alt='variant'
-            width={60}
-            height={60}
-          />
-        )
-      })}
-    </div>
-  )
-}
+export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData: ICardFull | null}) => {
+  const t = useTranslations('CardPage.CardTopPage')
+  const [cardMiniData, setCardMiniData] = useState<ICardFull | null>(cardData)
+  const [isMounted, setIsMounted] = useState(false)
 
-export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData: Product | null}) => {
-  const [cardMiniData, setCardMiniData] = useState<Product | null>(cardData)
+  const locale = useLocale()
+
+  const [purchaseModalOpen, setPurchaseModalOpen] = useState(false)
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
+  const [isCreatingChat, setIsCreatingChat] = useState(false)
+  const router = useRouter()
+  const tChat = useTranslations('chat')
+
+  const {toggleToFavorites} = useActions()
+  const {productInFavorites} = useTypedSelector((state) => state.favorites)
+  const {user} = useTypedSelector((state) => state.user)
+  const {isPending: isUserLoading} = useUserQuery()
+
+  const isOwner = user?.id !== undefined && cardData?.user?.id !== undefined && user.id === cardData.user.id
+  const showContactButton = !isUserLoading && !isOwner
+
+  const handleContactSeller = async () => {
+    if (isCreatingChat || !cardData) return
+
+    if (!user) {
+      toast.error('Необходимо авторизоваться')
+      router.push(`/${locale}/login`)
+      return
+    }
+
+    if (user.id === cardData.user.id) {
+      toast.error('Вы не можете написать самому себе')
+      return
+    }
+
+    setIsCreatingChat(true)
+    try {
+      const chat = await chatService.createChat(cardData.id)
+      router.push(`/chats?chatId=${chat.id}`)
+    } catch (error) {
+      console.error('Error creating chat:', error)
+      toast.error(tChat('sendError'))
+    } finally {
+      setIsCreatingChat(false)
+    }
+  }
 
   useEffect(() => {
+    console.log('productInFavorites', productInFavorites)
+  }, [productInFavorites])
+
+  const handleToggleFavorite = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    if (isTogglingFavorite || !cardData) return
+
+    setIsTogglingFavorite(true)
+
+    try {
+      // Сначала обновляем UI оптимистично
+      toggleToFavorites(cardData as any)
+
+      // Затем отправляем на сервер
+      await ServiceFavorites.toggleFavorite(cardData.id, locale)
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error)
+
+      // Откатываем изменения при ошибке
+      toggleToFavorites(cardData as any)
+
+      toast.error(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('error')}</strong>
+          <span>{t('errorUpdatingFavorites')}</span>
+        </div>,
+        {
+          style: {
+            background: '#AC2525'
+          }
+        }
+      )
+    } finally {
+      setIsTogglingFavorite(false)
+    }
+  }
+
+  const handlePurchaseSubmit = async (data: {
+    name: string
+    email: string
+    phone: string
+    quantity: number
+    selectedPrice: any
+    totalPrice: number
+  }) => {
+    console.log('Данные заказа:', data)
+    try {
+      const {data: orderData} = await axiosClassic.post(`/products/${cardData?.id}/create-order`, {
+        email: data?.email,
+        firstName: data?.name,
+        phoneNumber: data?.phone || '',
+        quantity: data?.quantity || 1
+      })
+      toast.success(
+        <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
+          <strong style={{display: 'block', marginBottom: 4, fontSize: '18px'}}>{t('successCreateOrder')}</strong>
+          <span>{t('successCreateBody')}</span>
+        </div>,
+        {
+          style: {background: '#2E7D32'}
+        }
+      )
+    } catch {
+      toast.error(
+        <div style={{lineHeight: 1.5}}>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('errorCreateOrder')}</strong>
+        </div>,
+        {
+          style: {background: '#AC2525'}
+        }
+      )
+    }
+  }
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    console.log('cardData', cardData)
     if (cardData) {
       setCardMiniData(cardData)
     }
   }, [cardData])
 
-  useEffect(() => {
-    console.log('cardMiniData', cardMiniData)
-  }, [cardMiniData])
-
-  const [priceList, setPriceList] = useState<IPriceList>({
-    items: [
-      {
-        title: '1-5 т.',
-        currentPrice: '900',
-        originalPrice: '1200',
-        priceUnit: 'USD/т'
-      },
-      {
-        title: '5-20 т.',
-        currentPrice: '1500',
-        originalPrice: '2000',
-        priceUnit: 'USD/т'
-      },
-      {
-        title: 'От 20т',
-        currentPrice: '700',
-        originalPrice: '700',
-        priceUnit: 'USD/т'
-      }
-    ],
-    discountExpiration: '2025-06-27'
-  })
-
   const isReallyLoading = isLoading || !cardMiniData
+
+  // Проверяем, находится ли товар в избранном
+  const isInFavorite = productInFavorites.some((product) => product.id?.toString() === cardData?.id?.toString())
+
+  const NewFullTopInfo = () => {
+    const t = useTranslations('CardTopPage')
+    const t2 = useTranslations('ReviewsToNumber')
+
+    const getMinimalValueText = () => {
+      const quantity = cardData?.minimumOrderQuantity || 1
+      const unitSlug = cardData?.prices[0]?.unitSlug
+
+      if (!unitSlug || quantity === 0) {
+        return quantity.toString()
+      }
+
+      try {
+        return t2(unitSlug, {count: quantity})
+      } catch (error) {
+        return `${quantity} ${unitSlug}`
+      }
+    }
+
+    return (
+      <div className={styles.full__info__box}>
+        <h1 className={styles.productTitle}>{cardData?.title}</h1>
+        <div className={styles.reviews}>
+          <p className={styles.ratingNumber}>{cardData?.rating}</p>
+          <svg width='16' height='16' viewBox='0 0 24 22' fill='none' xmlns='http://www.w3.org/2000/svg'>
+            <path
+              d='M12 0L15.1811 7.6216L23.4127 8.2918L17.1471 13.6724L19.0534 21.7082L12 17.412L4.94658 21.7082L6.85288 13.6724L0.587322 8.2918L8.81891 7.6216L12 0Z'
+              fill='#EEB611'
+            />
+          </svg>
+          <div className={styles.gray__dot}></div>
+          <a href='#reviews-title' className={styles.reviews__count}>
+            {/* {cardData?.reviewsCount} {t('revues')} */}
+            {t2('count', {count: cardData?.reviewsCount ?? 0})}
+          </a>
+        </div>
+        <div className={styles.prices__box__new}>
+          <p className={styles.main__price}>
+            {t('from')} {cardData?.prices[0].discountedPrice} {cardData?.prices[0].currency}/{cardData?.prices[0].unit}
+          </p>
+          {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
+            <p className={styles.original__price}>
+              {cardData?.prices[0].originalPrice} {cardData?.prices[0].currency}/{cardData?.prices[0].unit}
+            </p>
+          )}
+          {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
+            <p className={styles.disc__days}>
+              {cardData?.daysBeforeDiscountExpires} {t('daysBeforeDiscountExpires')}
+            </p>
+          )}
+        </div>
+        <div className={styles.buttons__box__new}>
+          <button className={styles.byNow} onClick={() => setPurchaseModalOpen(true)}>
+            {t('byNow')}
+          </button>
+          {/* Кнопка "Написать продавцу" - только если это не свой товар и пользователь загружен */}
+          {showContactButton && (
+            <button className={styles.contactSeller} onClick={handleContactSeller} disabled={isCreatingChat}>
+              <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <path
+                  d='M8.5 19H8C4 19 2 18 2 13V8C2 4 4 2 8 2H16C20 2 22 4 22 8V13C22 17 20 19 16 19H15.5C15.19 19 14.89 19.15 14.7 19.4L13.2 21.4C12.54 22.28 11.46 22.28 10.8 21.4L9.3 19.4C9.14 19.18 8.77 19 8.5 19Z'
+                  stroke='currentColor'
+                  strokeWidth='1.5'
+                  strokeMiterlimit='10'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+                <path
+                  d='M7 8H17'
+                  stroke='currentColor'
+                  strokeWidth='1.5'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+                <path
+                  d='M7 13H13'
+                  stroke='currentColor'
+                  strokeWidth='1.5'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+              </svg>
+              {isCreatingChat ? '...' : tChat('writeToSeller')}
+            </button>
+          )}
+          <button
+            onClick={handleToggleFavorite}
+            className={styles.fav__button}
+            disabled={isTogglingFavorite}
+            aria-label={isInFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
+          >
+            {/* <svg
+              className={!isInFavorite ? styles.active__star : ''}
+              width='28'
+              height='28'
+              viewBox='0 0 28 28'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M16.0187 4.09499L18.072 8.20165C18.352 8.77332 19.0987 9.32165 19.7287 9.42665L23.4504 10.045C25.8304 10.4417 26.3904 12.1683 24.6754 13.8717L21.782 16.765C21.292 17.255 21.0237 18.2 21.1754 18.8767L22.0037 22.4583C22.657 25.2933 21.152 26.39 18.6437 24.9083L15.1554 22.8433C14.5254 22.47 13.487 22.47 12.8454 22.8433L9.35705 24.9083C6.86038 26.39 5.34372 25.2817 5.99705 22.4583L6.82538 18.8767C6.97705 18.2 6.70872 17.255 6.21872 16.765L3.32538 13.8717C1.62205 12.1683 2.17038 10.4417 4.55038 10.045L8.27205 9.42665C8.89038 9.32165 9.63705 8.77332 9.91705 8.20165L11.9704 4.09499C13.0904 1.86665 14.9104 1.86665 16.0187 4.09499Z'
+                stroke={!isInFavorite ? '#FFFFFF' : 'transparent'}
+                fill={isInFavorite ? '#FF0000' : 'none'}
+                strokeWidth={!isInFavorite ? '1.5' : '0'}
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg> */}
+            <Heart className={isInFavorite ? styles.activeHeart : styles.inactiveHeart} />
+          </button>
+        </div>
+
+        <div className={styles.characteristics__list}>
+          <StringDescriptionGroup
+            extraBoxClass={`${styles.extra__group__class}`}
+            titleFontSize='16'
+            listGap='10'
+            items={[
+              {
+                title: t('minimalValue'),
+                value: getMinimalValueText()
+              },
+              {title: t('articul'), value: cardData?.article || ''},
+              ...(cardData?.characteristics?.map((el) => ({
+                title: el.name,
+                value: el.value
+              })) || [])
+            ]}
+            titleMain={t('technicalCharacteristics')}
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <>
-      <div className={`${styles.card__slider__box}`}>
-        <CardSlider isLoading={isReallyLoading} />
-      </div>
-      <div className={`${styles.card__mini__info}`}>
-        {!isReallyLoading ? (
-          <h1 className={`${styles.card__mini__info__title}`}>{cardMiniData!.title || 'Заголовок товара здесь'}</h1>
-        ) : (
-          <Skeleton style={{width: 100000, maxWidth: '350px'}} height={80} />
-        )}
-        <div className={`${styles.mini__counts}`}>
-          {!isReallyLoading ? (
-            <StarsCount count={4.9} />
-          ) : (
-            <Skeleton style={{width: 100000, maxWidth: '350px'}} height={20} />
-          )}
-          {!isReallyLoading ? <p className={`${styles.card__del__count}`}>3645 заказов</p> : <></>}
-          {!isReallyLoading ? <p className={`${styles.card__comments__count}`}>254 отзыва</p> : <></>}
-        </div>
-        {!isReallyLoading ? (
-          <div className={`${styles.images__comments__slider__box}`}>
-            {imArray.map((el, i) => {
-              if (imArray.length > 3) {
-                if (i === 3) {
-                  const moreCount = imArray.length - 3
-                  return (
-                    <span style={{width: '60px', height: '60px', position: 'relative'}} key={i}>
-                      <Image
-                        key={i}
-                        className={`${styles.images__comments__slider__box__item_img} ${styles.images__comments__slider__box__item_img__more}`}
-                        src={el.item}
-                        alt='mini__comment'
-                        width={60}
-                        height={60}
-                      />
-                      <div
-                        style={{content: `" ${moreCount}"`}}
-                        className={`${styles.images__comments__slider__box__item_img__more__count}`}
-                      >
-                        {`+ ${moreCount}`}
-                      </div>
-                    </span>
-                  )
-                }
-                if (i >= 4) {
-                  return null
-                }
+      {/* Микроразметка Schema.org */}
+      <ProductSchema
+        cardData={cardMiniData}
+        priceList={{
+          items:
+            cardData?.prices.map((el) => {
+              return {
+                title: el.from + '-' + el.to + ' ' + el.unit,
+                currentPrice: el.discountedPrice.toString(),
+                originalPrice: el.originalPrice.toString(),
+                priceUnit: el.currency + '/' + el.unit
               }
-              return (
-                <span style={{width: '60px', height: '60px', position: 'relative'}} key={i}>
-                  <Image
-                    key={i}
-                    className={`${styles.images__comments__slider__box__item_img}`}
-                    src={el.item}
-                    alt='mini__comment'
-                    width={60}
-                    height={60}
-                  />
-                  {el.isVideo ? (
-                    <svg
-                      className={`${styles.play__video__button}`}
-                      width='22'
-                      height='22'
-                      viewBox='0 0 22 22'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'
-                    >
-                      <path
-                        fillRule='evenodd'
-                        clipRule='evenodd'
-                        d='M11 21.4C13.7582 21.4 16.4035 20.3043 18.3539 18.3539C20.3043 16.4035 21.4 13.7582 21.4 11C21.4 8.24172 20.3043 5.59644 18.3539 3.64606C16.4035 1.69569 13.7582 0.599976 11 0.599976C8.24172 0.599976 5.59644 1.69569 3.64606 3.64606C1.69569 5.59644 0.599976 8.24172 0.599976 11C0.599976 13.7582 1.69569 16.4035 3.64606 18.3539C5.59644 20.3043 8.24172 21.4 11 21.4ZM10.4215 7.31838C10.2257 7.18775 9.99813 7.11273 9.76305 7.10131C9.52797 7.08989 9.2942 7.14251 9.08668 7.25354C8.87916 7.36457 8.70568 7.52986 8.58474 7.73176C8.4638 7.93367 8.39994 8.16462 8.39998 8.39998V13.6C8.39994 13.8353 8.4638 14.0663 8.58474 14.2682C8.70568 14.4701 8.87916 14.6354 9.08668 14.7464C9.2942 14.8574 9.52797 14.9101 9.76305 14.8986C9.99813 14.8872 10.2257 14.8122 10.4215 14.6816L14.3215 12.0816C14.4995 11.9629 14.6455 11.802 14.7465 11.6133C14.8474 11.4247 14.9003 11.214 14.9003 11C14.9003 10.786 14.8474 10.5753 14.7465 10.3866C14.6455 10.1979 14.4995 10.0371 14.3215 9.91838L10.4215 7.31838Z'
-                        fill='white'
-                      />
-                    </svg>
-                  ) : (
-                    <></>
-                  )}
-                </span>
-              )
-            })}
-          </div>
-        ) : (
-          <div className={`${styles.images__comments__slider__box}`}>
-            <Skeleton style={{width: 100000, maxWidth: '340px'}} count={1} height={60} width={60} />
-          </div>
-        )}
+            }) || []
+        }}
+        shopName={cardMiniData?.user.login || ''}
+      />
 
-        <ShopProfile isLoading={isReallyLoading} name={'Имя продавца'} imageSrc={im4} />
-
-        <div className={`${styles.variants__box}`}>
-          {!isReallyLoading ? (
-            <h2 className={`${styles.variants__title}`}>Варианты:</h2>
-          ) : (
-            <Skeleton height={24} width={100} />
-          )}
-          {!isReallyLoading ? (
-            <VariantsBox imagesUrls={[var1, var2, var3, var1, var2, var3]} />
-          ) : (
-            <div className={`${styles.variants__content__box}`}>
-              <Skeleton height={60} width={60} />
-              <Skeleton height={60} width={60} />
-              <Skeleton height={60} width={60} />
-            </div>
-          )}
-          {!isReallyLoading ? (
-            <StringDescriptionGroup
-              item__extra__class={`${styles.extra__descr__item__class__111}`}
-              listGap={'15'}
-              elementsFontSize={'15'}
-              titleMain=''
-              items={[
-                {title: 'Артикул ', value: 'DMSR-DL02'},
-                {title: 'Разновидность ', value: 'Европейский Дуб'},
-                {title: 'Лицевой шпон ', value: '4 мм'},
-                {title: 'Упаковка ', value: '23,3 квадратных фута на коробку'}
-              ]}
-            />
-          ) : (
-            <div>
-              <Skeleton height={16} width={200} />
-              <Skeleton height={16} width={180} />
-              <Skeleton height={16} width={160} />
-              <Skeleton height={16} width={220} />
-            </div>
-          )}
-          {!isReallyLoading ? (
-            <span className={`${styles.descr__more__info}`}>
-              <Link href={'#'}>Подробнее</Link>
-            </span>
-          ) : (
-            <Skeleton height={16} width={80} />
-          )}
-        </div>
+      <div className={`${styles.card__slider__box}`}>
+        <CardSlider
+          imagesCustom={cardMiniData?.media?.map((el) => {
+            return el.url
+          })}
+          isLoading={isReallyLoading}
+          extraClass={styles.card__slider__box__extra}
+        />
       </div>
-      <div className={`${styles.card__state}`}>
-        <div className={`${styles.card__state__big}`}>
-          <ul className={`${styles.prices__list}`}>
-            {priceList.items.map((el, i) => {
-              return (
-                <li className={`${styles.prices__list_item}`} key={i}>
-                  {!isReallyLoading ? (
-                    <p className={`${styles.price__list__title}`}>{el.title}</p>
-                  ) : (
-                    <Skeleton style={{width: 100000, maxWidth: '45px'}} height={30} />
-                  )}
-                  {!isReallyLoading ? (
-                    <p className={`${styles.price__list__value__start}`}>
-                      <span
-                        className={`${styles.price__original__price} ${el.currentPrice !== el.originalPrice && styles.price__original__with__discount}`}
-                      >
-                        {createPriceWithDot(el.originalPrice as string)}
-                      </span>
-                      {el.originalPrice !== el.currentPrice ? (
-                        <span className={`${styles.discount__price}`}>
-                          {createPriceWithDot(el.currentPrice as string)}
-                        </span>
-                      ) : (
-                        ''
-                      )}
-                      <span className={`${styles.price__unit}`}>
-                        {renderPriceUnit(
-                          el.priceUnit,
-                          [
-                            styles.price__currency__first,
-                            el.currentPrice !== el.originalPrice ? styles.price__currency__first__active : ''
-                          ],
-                          [styles.price__unitMeasure]
-                        )}
-                      </span>
-                    </p>
-                  ) : (
-                    <Skeleton style={{width: '100%', maxWidth: '150px'}} height={30} />
-                  )}
-                </li>
-              )
-            })}
-          </ul>
-          <div className={`${styles.discount__date__box}`}>
-            <span className={`${styles.date__count}`}>
-              {!isReallyLoading ? (
-                getDatesDifference({startDate: Date.now(), endDate: priceList.discountExpiration?.toString()}) + ' дней'
-              ) : (
-                <Skeleton style={{width: 100000, maxWidth: '45px'}} height={16} />
-              )}
-            </span>
-            <span className={`${styles.date__text__end}`}>
-              {!isReallyLoading ? (
-                ` до конца скидки`
-              ) : (
-                <Skeleton style={{width: 100000, maxWidth: '100%'}} height={16} />
-              )}
-            </span>
-          </div>
-          <div className={`${styles.min__weight}`}>
-            {!isReallyLoading ? (
-              `Минимальный объем заказа 1т.`
-            ) : (
-              <Skeleton style={{width: 100000, maxWidth: '100%'}} height={16} />
-            )}
-          </div>
 
-          <div className='styles.buttons__box'>
-            {!isReallyLoading && cardMiniData ? (
-              <BasketButtonUI
-                textColor='dark'
-                iconColor='dark'
-                extraClass={`${styles.extra__shop__button}`}
-                product={cardMiniData}
-              />
-            ) : (
-              <Skeleton height={48} width={150} />
-            )}
-            {!isReallyLoading ? (
-              <button
-                onClick={(event) => {
-                  event.preventDefault()
-                }}
-                className={`${styles.by__now__button}`}
-              >
-                Купить сейчас
-              </button>
-            ) : (
-              <Skeleton height={48} width={150} />
-            )}
+      {/* Первая секция */}
+      <span className={`${styles.card__row__info} ${styles.card__col__info__first}`}>
+        <NewFullTopInfo />
+        <Link
+          href={`/data-vendor/${cardData?.user?.id}`}
+          className={`${styles.about__vendor} ${styles.about__vendor_none}`}
+        >
+          <h3 className={styles.vendor__title}>{t('companyDescription')}</h3>
+          <div className={styles.vendor__box__info}>
+            <div className={styles.vendor__avatar}>
+              {!!cardData?.user.avatarUrl ? (
+                <Image
+                  className={styles.avatar__image}
+                  width={80}
+                  height={80}
+                  src={cardData.user.avatarUrl}
+                  alt='avatar'
+                />
+              ) : (
+                <div className={styles.char__box}>
+                  {' '}
+                  <p className={styles.avatar__char}>
+                    {!!cardData?.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                      ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                      : cardData?.user.login.charAt(0).toUpperCase()}
+                  </p>
+                </div>
+              )}
+              <p className={styles.vendor__name}>{cardData?.user.login}</p>
+            </div>
+            <p className={styles.vendor__inn}>
+              {t('INN')}: {cardData?.user.vendorDetails?.inn}
+            </p>
           </div>
-        </div>
-        <div className={`${styles.card__state__mini}`}>
-          {!isReallyLoading ? (
-            <h4 className={`${styles.state__mini__title}`}>Информация о доставке</h4>
-          ) : (
-            <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
-          )}
-          <ul className={`${styles.state__mini__list}`}>
-            <li className={`${styles.state__mini__list__item}`}>
-              {!isReallyLoading ? (
-                <p className={`${styles.state__mini__list__item__text}`}>по России</p>
-              ) : (
-                <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-              )}
-              {!isReallyLoading ? (
-                <p className={`${styles.state__mini__list__item__value}`}>1-3 недели</p>
-              ) : (
-                <Skeleton style={{width: 100000, maxWidth: '100px'}} height={16} />
-              )}
-            </li>
-            <li className={`${styles.state__mini__list__item}`}>
-              {!isReallyLoading ? (
-                <p className={`${styles.state__mini__list__item__text}`}>по Китаю </p>
-              ) : (
-                <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-              )}
-              {!isReallyLoading ? (
-                <p className={`${styles.state__mini__list__item__value}`}>2-6 недели</p>
-              ) : (
-                <Skeleton style={{width: 100000, maxWidth: '100px'}} height={16} />
-              )}
-            </li>
-          </ul>
-          {!isReallyLoading ? (
-            <h4 className={`${styles.state__mini__title}`}>Варианты упаковки</h4>
-          ) : (
-            <Skeleton style={{width: 100000, maxWidth: '100%', marginBottom: '16px'}} height={26} />
-          )}
-          <ul className={`${styles.state__mini__list}`}>
-            <li className={`${styles.state__mini__list__item}`}>
-              {!isReallyLoading ? (
-                <p className={`${styles.state__mini__list__item__text}`}>Паллеты</p>
-              ) : (
-                <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-              )}
-            </li>
-            <li className={`${styles.state__mini__list__item}`}>
-              {!isReallyLoading ? (
-                <p className={`${styles.state__mini__list__item__text}`}>Коробки</p>
-              ) : (
-                <Skeleton style={{width: 100000, maxWidth: '70px'}} height={16} />
-              )}
-            </li>
-          </ul>
-        </div>
-      </div>
+        </Link>
+      </span>
+
+      <PurchaseModal
+        useAbsoluteClose
+        isOpen={purchaseModalOpen}
+        onClose={() => setPurchaseModalOpen(false)}
+        productTitle={cardMiniData?.title || ''}
+        prices={cardMiniData?.prices || []}
+        minimumOrderQuantity={cardMiniData?.minimumOrderQuantity || 1}
+        onSubmit={handlePurchaseSubmit}
+      />
     </>
   )
 }

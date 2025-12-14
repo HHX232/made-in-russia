@@ -1,0 +1,183 @@
+.HelpPageComponent_formWrapper__odN4O {
+  display: flex;
+  align-items: flex-start;
+  gap: 3rem;
+}
+@media (max-width: 1000px) {
+  .HelpPageComponent_formWrapper__odN4O {
+    flex-direction: column;
+  }
+}
+.HelpPageComponent_formSection__5RrLx {
+  flex: 1;
+}
+.HelpPageComponent_divider__iTmCl {
+  width: 2px;
+  min-height: 500px;
+  border-radius: 1px;
+  margin: auto;
+  background-color: #e1e5e9;
+}
+@media (max-width: 1000px) {
+  .HelpPageComponent_divider__iTmCl {
+    width: 100%;
+    height: 2px;
+    min-height: auto;
+    order: -1;
+  }
+}
+.HelpPageComponent_infoSection__gGhMD {
+  display: flex;
+  flex: 0 0 200px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+@media (max-width: 1000px) {
+  .HelpPageComponent_infoSection__gGhMD {
+    order: -2;
+  }
+}
+.HelpPageComponent_qrCode__nh_Sx {
+  padding: 10px;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  background: #fff;
+}
+.HelpPageComponent_infoText__HuCMS {
+  color: #2a2e46;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: center;
+}
+.HelpPageComponent_imagesInput__OIpG9 {
+  max-width: 600px !important;
+  margin: 0 !important;
+}
+@media (max-width: 610px) {
+  .HelpPageComponent_imagesInput__OIpG9 {
+    display: flex !important;
+    flex-wrap: wrap;
+  }
+}
+.HelpPageComponent_helpPageComponent__xaeBd {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background-color: #f8f9fa;
+}
+.HelpPageComponent_content__vlA5e {
+  display: flex;
+  min-height: calc(100vh - 200px);
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.HelpPageComponent_formContainer__olQ4g {
+  width: 100%;
+  max-width: 900px;
+  padding: 3rem;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+.HelpPageComponent_title__R3H31 {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  color: #2a2e46;
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+}
+.HelpPageComponent_contactForm__uyWvp {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.HelpPageComponent_submitButton__HWHWI {
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: 6px;
+  margin-top: 1rem;
+  background-color: #ac2525;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.HelpPageComponent_submitButton__HWHWI:hover {
+  background-color: hsl(0, 64.5933014354%, 32.9803921569%);
+  box-shadow: 0 4px 12px rgba(172, 37, 37, 0.3);
+  transform: translateY(-1px);
+}
+.HelpPageComponent_submitButton__HWHWI:active {
+  box-shadow: 0 2px 6px rgba(172, 37, 37, 0.3);
+  transform: translateY(0);
+}
+.HelpPageComponent_submitButton__HWHWI:disabled {
+  cursor: not-allowed;
+}
+.HelpPageComponent_submitButton__HWHWI:disabled,
+.HelpPageComponent_submitButton__HWHWI:disabled:hover {
+  background-color: #ccc;
+  box-shadow: none;
+  transform: none;
+}
+.HelpPageComponent_successMessage__61csc {
+  padding: 0.75rem 1rem;
+  border: 1px solid #c3e6cb;
+  border-radius: 6px;
+  margin-top: 1rem;
+  background-color: #d4edda;
+  color: #155724;
+  font-size: 0.875rem;
+  text-align: center;
+}
+.HelpPageComponent_errorMessage__ybSjM {
+  padding: 0.75rem 1rem;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  margin-top: 1rem;
+  background-color: #f8d7da;
+  color: #721c24;
+  font-size: 0.875rem;
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .HelpPageComponent_content__vlA5e {
+    padding: 1rem;
+  }
+  .HelpPageComponent_formContainer__olQ4g {
+    max-width: 100%;
+    padding: 2rem;
+  }
+  .HelpPageComponent_formWrapper__odN4O {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .HelpPageComponent_infoSection__gGhMD {
+    flex: none;
+  }
+  .HelpPageComponent_title__R3H31 {
+    font-size: 1.5rem;
+  }
+}
+@media (max-width: 480px) {
+  .HelpPageComponent_formContainer__olQ4g {
+    padding: 1.5rem;
+  }
+  .HelpPageComponent_title__R3H31 {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+  }
+  .HelpPageComponent_contactForm__uyWvp {
+    gap: 1rem;
+  }
+  .HelpPageComponent_formWrapper__odN4O {
+    gap: 1.5rem;
+  }
+}

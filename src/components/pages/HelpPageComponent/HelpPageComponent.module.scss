@@ -1,0 +1,83 @@
+@import '@/scss/config/mixins';
+
+/* ------------------------------------------------------------------------------------------------------------------------------
+HELP PAGE COMPONENT
+-------------------------------------------------------------------------------------------------------------------------------- */
+.helpPageComponent {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+}
+
+.contacts {
+  padding-bottom: 35px;
+
+  @include sm {
+    padding-bottom: 30px;
+  }
+}
+
+.contacts_container {
+  // Контейнер для контактов
+}
+
+.contacts_layout {
+  padding: 50px 60px 40px 40px;
+  background: #f6f6f6;
+  border-radius:10px;
+
+  @include sm {
+    padding: 28px 20px 20px;
+  }
+}
+
+.breadcrumbs_wrapper {
+  margin-bottom: 22px;
+
+  @include sm {
+    margin-bottom: 8px;
+  }
+}
+
+nav.breadcrumbs {
+  margin-top: 6px;
+  margin-left: 0;
+
+  a {
+    font-size: 0.8rem;
+  }
+}
+
+.layout_grid {
+  display: grid;
+  gap: 40px;
+  grid-template-columns: repeat(12, 1fr);
+
+  @include md {
+    column-gap: 0;
+  }
+}
+
+.layout_col {
+  grid-column: span 6;
+
+  @include md {
+    grid-column: span 12;
+  }
+}
+
+.layout_col_order_1 {
+  order: 1;
+
+  @include md {
+    order: 2;
+  }
+}
+
+.layout_col_order_2 {
+  order: 2;
+
+  @include md {
+    order: 1;
+  }
+}

@@ -12,6 +12,7 @@
       "./node_modules/@types",
       "./@types"
     ],
+    "types": ["jest", "node"],     
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -27,7 +28,6 @@
       }
     ],
     "paths": {
-
       "@/*": [
         "./src/*"
       ]

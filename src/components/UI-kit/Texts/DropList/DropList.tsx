@@ -1,10 +1,8 @@
 'use client'
-import {FC, useState, useRef, useEffect, ReactNode, CSSProperties} from 'react'
-// import Image from 'next/image'
+import React, {FC, useState, useRef, useEffect, ReactNode, CSSProperties, useCallback, useId} from 'react'
 import styles from './DropList.module.scss'
 import cn from 'clsx'
-// const arrow = '/arrow-dark.svg'
-// Обновленный интерфейс для поддержки строк и компонентов
+
 type DropListItem = string | ReactNode
 
 interface ArrowIconProps {
@@ -43,6 +41,8 @@ export const ArrowIcon: FC<ArrowIconProps> = ({
       style={{
         transform: `rotate(${rotationMap[direction]}deg)`,
         transition: 'transform 0.2s ease, opacity 0.2s ease',
+        minWidth: width,
+        minHeight: height,
         ...style
       }}
     >
@@ -65,9 +65,21 @@ interface IDropListProps extends Pick<ArrowIconProps, 'color' | 'width' | 'heigh
   extraStyle?: React.CSSProperties
   extraListClass?: string
   positionIsAbsolute?: boolean
-  arrowClassName?: string // Новый проп для классов стрелки
-  isOpen?: boolean // Новый проп для внешнего управления состоянием
-  onOpenChange?: (isOpen: boolean) => void // Коллбэк для оповещения родителя об изменении состояния
+  arrowClassName?: string
+  isOpen?: boolean
+  onOpenChange?: (isOpen: boolean) => void
+  trigger?: 'click' | 'hover'
+  hoverDelay?: number
+  closeOnMouseLeave?: boolean
+  safeAreaEnabled?: boolean
+  safeAreaSize?: number
+  dropListId?: string
+  parentDropListId?: string
+  onChildHover?: (childId: string) => void
+  closeOnScroll?: boolean
+  scrollThreshold?: number
+  useNewTheme?: boolean
+  hideOnWindowScroll?: boolean
 }
 
 const DropList: FC<IDropListProps> = ({
@@ -84,23 +96,260 @@ const DropList: FC<IDropListProps> = ({
   height = 7,
   arrowClassName,
   style,
-  isOpen, // Внешнее состояние открытия/закрытия
-  onOpenChange // Коллбэк для оповещения родителя
+  isOpen,
+  onOpenChange,
+  trigger = 'click',
+  hoverDelay = 200,
+  closeOnMouseLeave = true,
+  safeAreaEnabled = true,
+  safeAreaSize = 10,
+  dropListId,
+  parentDropListId,
+  onChildHover,
+  closeOnScroll = true,
+  scrollThreshold = 200,
+  useNewTheme = true,
+  hideOnWindowScroll = false
 }) => {
-  // Используем внутреннее состояние только если внешнее не предоставлено
   const [internalOpenState, setInternalOpenState] = useState(false)
-
-  // Определяем, какое состояние использовать
   const openList = isOpen !== undefined ? isOpen : internalOpenState
 
-  // Функция для переключения состояния
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastMousePosRef = useRef({x: 0, y: 0})
+  const mouseTrajectoryRef = useRef<Array<{x: number; y: number; time: number}>>([])
+  const lastScrollPositionRef = useRef({x: 0, y: 0})
+
+  // Реф для отслеживания активного дочернего элемента
+  const activeChildRef = useRef<string | null>(null)
+
+  // Используем useId для генерации стабильного ID
+  const reactId = useId()
+  // Генерируем уникальный ID, используя либо переданный dropListId, либо стабильный ID из React
+  const listId = dropListId || `droplist-${reactId.replace(/:/g, '-')}`
+
+  // Проверка, является ли список особенным (categories-seo)
+  const isSpecialList = listId === 'categories-seo'
+
   const toggleList = () => {
     if (isOpen !== undefined) {
-      // Если управление внешнее, вызываем коллбэк
       onOpenChange?.(!isOpen)
     } else {
-      // Иначе используем внутреннее состояние
       setInternalOpenState(!internalOpenState)
+    }
+  }
+
+  const openDropList = () => {
+    if (isOpen !== undefined) {
+      onOpenChange?.(true)
+    } else {
+      setInternalOpenState(true)
+    }
+
+    // Сохраняем текущую позицию скролла при открытии
+    if (hideOnWindowScroll && typeof window !== 'undefined') {
+      lastScrollPositionRef.current = {
+        x: window.scrollX,
+        y: window.scrollY
+      }
+    }
+  }
+
+  const closeDropList = () => {
+    if (isOpen !== undefined) {
+      onOpenChange?.(false)
+    } else {
+      setInternalOpenState(false)
+    }
+    // Сбрасываем активный дочерний элемент при закрытии
+    activeChildRef.current = null
+  }
+
+  // Добавляем/убираем атрибут new-id-for-open-list при открытии/закрытии
+  useEffect(() => {
+    if (dropdownRef.current && !isSpecialList) {
+      if (openList) {
+        dropdownRef.current.setAttribute('new-id-for-open-list', '')
+      } else {
+        dropdownRef.current.removeAttribute('new-id-for-open-list')
+      }
+    }
+  }, [openList, isSpecialList])
+
+  const isPointInRect = (
+    x: number,
+    y: number,
+    rect: DOMRect | {left: number; top: number; right: number; bottom: number}
+  ) => {
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+  }
+
+  const isMouseMovingTowardsList = useCallback(
+    (currentX: number, currentY: number) => {
+      if (!safeAreaEnabled || !listRef.current || !titleRef.current) return false
+
+      const titleRect = titleRef.current.getBoundingClientRect()
+      const listRect = listRef.current.getBoundingClientRect()
+
+      if (isPointInRect(currentX, currentY, listRect) || isPointInRect(currentX, currentY, titleRect)) {
+        return true
+      }
+
+      let safeZone: DOMRect
+
+      switch (direction) {
+        case 'bottom':
+          safeZone = new DOMRect(
+            Math.min(titleRect.left, listRect.left) - safeAreaSize,
+            titleRect.bottom,
+            Math.max(titleRect.width, listRect.width) + safeAreaSize * 2,
+            listRect.top - titleRect.bottom + listRect.height + safeAreaSize
+          )
+          break
+        case 'top':
+          safeZone = new DOMRect(
+            Math.min(titleRect.left, listRect.left) - safeAreaSize,
+            listRect.top - safeAreaSize,
+            Math.max(titleRect.width, listRect.width) + safeAreaSize * 2,
+            titleRect.top - listRect.top + titleRect.height + safeAreaSize
+          )
+          break
+        case 'right':
+          const rightZoneWidth = Math.max(listRect.right - titleRect.right, safeAreaSize * 2)
+          safeZone = new DOMRect(
+            titleRect.right,
+            Math.min(titleRect.top, listRect.top) - safeAreaSize,
+            rightZoneWidth + listRect.width,
+            Math.max(titleRect.height, listRect.height) + safeAreaSize * 2
+          )
+          break
+        case 'left':
+          const leftZoneWidth = Math.max(titleRect.left - listRect.left, safeAreaSize * 2)
+          safeZone = new DOMRect(
+            listRect.left - safeAreaSize,
+            Math.min(titleRect.top, listRect.top) - safeAreaSize,
+            leftZoneWidth + titleRect.width + safeAreaSize,
+            Math.max(titleRect.height, listRect.height) + safeAreaSize * 2
+          )
+          break
+        default:
+          return false
+      }
+
+      return isPointInRect(currentX, currentY, safeZone)
+    },
+    [direction, safeAreaEnabled, safeAreaSize]
+  )
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!safeAreaEnabled || trigger !== 'hover') return
+
+      const currentTime = Date.now()
+      const newPoint = {x: e.clientX, y: e.clientY, time: currentTime}
+
+      lastMousePosRef.current = {x: e.clientX, y: e.clientY}
+
+      const filtered = mouseTrajectoryRef.current.filter((point) => currentTime - point.time < 200)
+      mouseTrajectoryRef.current = [...filtered, newPoint].slice(-5)
+    },
+    [safeAreaEnabled, trigger]
+  )
+
+  // Обработчик для дочерних элементов, которые сообщают о ховере на них
+  const handleChildHover = useCallback((childId: string) => {
+    activeChildRef.current = childId
+  }, [])
+
+  const handleMouseEnter = () => {
+    if (trigger !== 'hover') return
+
+    // Уведомляем родителя, что на нас навели
+    if (parentDropListId && onChildHover) {
+      onChildHover(listId)
+    }
+
+    if (leaveTimeoutRef.current) {
+      clearTimeout(leaveTimeoutRef.current)
+      leaveTimeoutRef.current = null
+    }
+
+    hoverTimeoutRef.current = setTimeout(() => {
+      openDropList()
+    }, hoverDelay)
+  }
+
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    if (trigger !== 'hover' || !closeOnMouseLeave) return
+
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+      hoverTimeoutRef.current = null
+    }
+
+    // Проверяем, куда ушла мышь
+    const relatedTarget = e.relatedTarget as HTMLElement
+
+    if (relatedTarget) {
+      try {
+        // Проверяем, что relatedTarget является валидным Node
+        if (!(relatedTarget instanceof Node)) {
+          // Если не Node, закрываем с задержкой
+          leaveTimeoutRef.current = setTimeout(() => {
+            closeDropList()
+          }, hoverDelay)
+          return
+        }
+
+        // Проверяем, не ушла ли мышь на элемент текущего списка
+        const isOwnElement = dropdownRef.current?.contains(relatedTarget)
+
+        // Проверяем data-атрибуты для определения связанности элементов
+        const targetDropListId = relatedTarget.closest('[data-droplist-id]')?.getAttribute('data-droplist-id')
+        const targetParentId = relatedTarget
+          .closest('[data-parent-droplist-id]')
+          ?.getAttribute('data-parent-droplist-id')
+
+        // Если мышь ушла на собственный элемент или на активный дочерний список
+        if (isOwnElement || (targetParentId === listId && targetDropListId === activeChildRef.current)) {
+          return
+        }
+
+        // Если мышь ушла на элемент того же уровня (соседний элемент в родительском списке)
+        const isSiblingElement = targetParentId === parentDropListId && targetDropListId !== listId
+
+        if (isSiblingElement) {
+          // Закрываем немедленно без задержки
+          closeDropList()
+          return
+        }
+      } catch (error) {
+        // В случае любой ошибки при работе с DOM, закрываем с задержкой
+        console.warn('Error in handleMouseLeave:', error)
+        leaveTimeoutRef.current = setTimeout(() => {
+          closeDropList()
+        }, hoverDelay)
+        return
+      }
+    }
+
+    // Стандартная логика с безопасной зоной
+    if (safeAreaEnabled && openList) {
+      const isMovingTowardsList = isMouseMovingTowardsList(e.clientX, e.clientY)
+
+      if (isMovingTowardsList) {
+        return
+      }
+    }
+
+    leaveTimeoutRef.current = setTimeout(() => {
+      closeDropList()
+    }, hoverDelay)
+  }
+
+  const handleClick = () => {
+    if (trigger === 'click') {
+      toggleList()
     }
   }
 
@@ -110,25 +359,98 @@ const DropList: FC<IDropListProps> = ({
   const [listPosition, setListPosition] = useState({top: 0, left: 0})
   const [isVisible, setIsVisible] = useState(true)
 
-  // Управление видимостью при скролле для fixed позиционирования
+  useEffect(() => {
+    if (safeAreaEnabled && trigger === 'hover' && openList) {
+      document.addEventListener('mousemove', handleMouseMove)
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove)
+      }
+    }
+  }, [safeAreaEnabled, trigger, openList, handleMouseMove])
+
+  // Обработчик для hideOnWindowScroll - закрывает меню при любом скролле окна
+  useEffect(() => {
+    if (!hideOnWindowScroll || !openList || isSpecialList) return
+
+    const handleWindowScroll = () => {
+      if (typeof window === 'undefined') return
+
+      const currentScrollX = window.scrollX
+      const currentScrollY = window.scrollY
+
+      // Проверяем, изменилась ли позиция скролла
+      if (currentScrollX !== lastScrollPositionRef.current.x || currentScrollY !== lastScrollPositionRef.current.y) {
+        closeDropList()
+      }
+    }
+
+    // Используем capture phase для более надежного отслеживания
+    window.addEventListener('scroll', handleWindowScroll, true)
+
+    return () => {
+      window.removeEventListener('scroll', handleWindowScroll, true)
+    }
+  }, [hideOnWindowScroll, openList, isSpecialList])
+
+  // Глобальный обработчик скролла для всех элементов с new-id-for-open-list
+  useEffect(() => {
+    if (!closeOnScroll || isSpecialList || hideOnWindowScroll) return
+
+    const handleScroll = () => {
+      // Находим все элементы с атрибутом new-id-for-open-list
+      const allOpenLists = document.querySelectorAll('[new-id-for-open-list]')
+
+      allOpenLists.forEach((element) => {
+        const rect = element.getBoundingClientRect()
+
+        // Проверяем, вышел ли элемент за пределы экрана с учетом порога
+        const isOutOfView =
+          rect.bottom < -scrollThreshold ||
+          rect.top > window.innerHeight + scrollThreshold ||
+          rect.right < -scrollThreshold ||
+          rect.left > window.innerWidth + scrollThreshold
+
+        if (isOutOfView) {
+          // Если это наш элемент, закрываем его
+          if (dropdownRef.current === element) {
+            closeDropList()
+          }
+        }
+      })
+    }
+
+    // Добавляем слушатель скролла на window и все родительские элементы
+    window.addEventListener('scroll', handleScroll, true)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true)
+    }
+  }, [closeOnScroll, scrollThreshold, isSpecialList, hideOnWindowScroll])
+
   useEffect(() => {
     if (!positionIsAbsolute && openList) {
       const checkVisibility = () => {
-        if (dropdownRef.current) {
-          const rect = dropdownRef.current.getBoundingClientRect()
-          // Если родительский контейнер вышел за пределы экрана, скрываем выпадающий список
-          if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
-            setIsVisible(false)
-          } else {
-            setIsVisible(true)
-            updateListPosition()
-          }
+        if (typeof window === 'undefined' || !dropdownRef.current) return
+
+        const rect = dropdownRef.current.getBoundingClientRect()
+        if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
+          setIsVisible(false)
+        } else {
+          setIsVisible(true)
+          updateListPosition()
         }
       }
 
-      window.addEventListener('scroll', checkVisibility)
-      return () => {
-        window.removeEventListener('scroll', checkVisibility)
+      // Проверяем доступность window перед добавлением слушателя
+      if (typeof window !== 'undefined') {
+        window.addEventListener('scroll', checkVisibility)
+
+        // Вызываем сразу для первоначальной проверки
+        checkVisibility()
+
+        return () => {
+          window.removeEventListener('scroll', checkVisibility)
+        }
       }
     }
   }, [positionIsAbsolute, openList])
@@ -136,11 +458,12 @@ const DropList: FC<IDropListProps> = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        // Закрываем список при клике вне его
-        if (isOpen !== undefined) {
-          onOpenChange?.(false)
-        } else {
-          setInternalOpenState(false)
+        if (trigger === 'click' || (trigger === 'hover' && !closeOnMouseLeave)) {
+          if (isOpen !== undefined) {
+            onOpenChange?.(false)
+          } else {
+            setInternalOpenState(false)
+          }
         }
       }
     }
@@ -155,9 +478,19 @@ const DropList: FC<IDropListProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [openList, positionIsAbsolute, isOpen, onOpenChange])
+  }, [openList, positionIsAbsolute, isOpen, onOpenChange, trigger, closeOnMouseLeave])
 
-  // Calculate position when dropdown opens
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current)
+      }
+      if (leaveTimeoutRef.current) {
+        clearTimeout(leaveTimeoutRef.current)
+      }
+    }
+  }, [])
+
   const updateListPosition = () => {
     if (!titleRef.current) return
 
@@ -191,16 +524,23 @@ const DropList: FC<IDropListProps> = ({
     setListPosition({top, left})
   }
 
-  // Функция для определения, является ли элемент строкой или компонентом
-  const renderItem = (item: DropListItem) => {
-    if (typeof item === 'string') {
-      return item
-    } else {
-      return item
+  const renderItem = (item: DropListItem, index: number) => {
+    if (React.isValidElement(item) && item.type === DropList) {
+      const typedItem = item as React.ReactElement<IDropListProps>
+
+      return React.cloneElement(typedItem, {
+        parentDropListId: listId,
+        onChildHover: handleChildHover,
+        dropListId: typedItem.props.dropListId || `${listId}-child-${index}`,
+        scrollThreshold: typedItem.props.scrollThreshold || scrollThreshold,
+        hideOnWindowScroll:
+          typedItem.props.hideOnWindowScroll !== undefined ? typedItem.props.hideOnWindowScroll : hideOnWindowScroll
+      } as Partial<IDropListProps>)
     }
+
+    return item
   }
 
-  // Определяем дополнительные стили для позиционирования, если используется fixed
   const fixedPositionStyle: React.CSSProperties = !positionIsAbsolute
     ? {
         position: 'fixed',
@@ -208,14 +548,90 @@ const DropList: FC<IDropListProps> = ({
         left: `${listPosition.left}px`,
         maxWidth: '300px',
         width: 'fit-content',
-        zIndex: 1000,
+        zIndex: 1000000,
         display: isVisible ? 'block' : 'none'
       }
     : {}
 
+  // Стили для невидимого моста между заголовком и списком
+  const getBridgeStyle = (): React.CSSProperties | null => {
+    if (!openList || trigger !== 'hover' || !titleRef.current || !listRef.current) return null
+
+    const titleRect = titleRef.current.getBoundingClientRect()
+    const gapSize = parseInt(gap, 10) || 0
+
+    // Создаем мост только если есть gap
+    if (gapSize === 0) return null
+
+    let bridgeStyle: React.CSSProperties = {
+      position: positionIsAbsolute ? 'absolute' : 'fixed',
+      pointerEvents: 'auto',
+      zIndex: 99999999999999
+      // Для отладки можно раскомментировать:
+      // backgroundColor: 'rgba(255, 0, 0, 0.2)'
+    }
+
+    switch (direction) {
+      case 'bottom':
+        bridgeStyle = {
+          ...bridgeStyle,
+          top: positionIsAbsolute ? '100%' : `${titleRect.bottom}px`,
+          left: positionIsAbsolute ? 0 : `${titleRect.left}px`,
+          width: titleRect.width,
+          height: gapSize
+        }
+        break
+      case 'top':
+        bridgeStyle = {
+          ...bridgeStyle,
+          bottom: positionIsAbsolute ? '100%' : undefined,
+          top: positionIsAbsolute ? undefined : `${titleRect.top - gapSize}px`,
+          left: positionIsAbsolute ? 0 : `${titleRect.left}px`,
+          width: titleRect.width,
+          height: gapSize
+        }
+        break
+      case 'right':
+        bridgeStyle = {
+          ...bridgeStyle,
+          left: positionIsAbsolute ? '100%' : `${titleRect.right}px`,
+          top: positionIsAbsolute ? 0 : `${titleRect.top}px`,
+          width: gapSize,
+          height: titleRect.height
+        }
+        break
+      case 'left':
+        bridgeStyle = {
+          ...bridgeStyle,
+          right: positionIsAbsolute ? '100%' : undefined,
+          left: positionIsAbsolute ? undefined : `${titleRect.left - gapSize}px`,
+          top: positionIsAbsolute ? 0 : `${titleRect.top}px`,
+          width: gapSize,
+          height: titleRect.height
+        }
+        break
+    }
+
+    return bridgeStyle
+  }
+
+  const bridgeStyle = getBridgeStyle()
+
   return (
-    <div ref={dropdownRef} className={cn(styles.list_box, extraClass)} style={extraStyle}>
-      <div ref={titleRef} onClick={toggleList} className={styles.list__title_box}>
+    <div
+      ref={dropdownRef}
+      className={cn(styles.list_box, useNewTheme ? styles.list_box_new : '', extraClass)}
+      style={extraStyle}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      data-droplist-id={listId}
+      data-parent-droplist-id={parentDropListId}
+    >
+      <div
+        ref={titleRef}
+        onClick={handleClick}
+        className={`${styles.list__title_box} ${useNewTheme ? styles.list__title_box_new : ''}`}
+      >
         {typeof title === 'string' ? <span>{title}</span> : title}
         <ArrowIcon
           color={color}
@@ -228,16 +644,31 @@ const DropList: FC<IDropListProps> = ({
         />
       </div>
 
+      {/* Невидимый мост между заголовком и списком */}
+      {openList && trigger === 'hover' && bridgeStyle && (
+        <div
+          style={bridgeStyle}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          data-droplist-id={listId}
+          data-parent-droplist-id={parentDropListId}
+        />
+      )}
+
       {openList && (
         <ul
           ref={listRef}
           className={cn(extraListClass, styles.items__list, styles[`direction_${direction}`], styles[`gap_${gap}`])}
           style={fixedPositionStyle}
+          onMouseEnter={trigger === 'hover' ? handleMouseEnter : undefined}
+          onMouseLeave={trigger === 'hover' ? handleMouseLeave : undefined}
+          data-droplist-id={listId}
+          data-parent-droplist-id={parentDropListId}
         >
           {items.map((item, i) => {
             return (
               <li key={i} className={styles.list__element}>
-                {renderItem(item)}
+                {renderItem(item, i)}
               </li>
             )
           })}

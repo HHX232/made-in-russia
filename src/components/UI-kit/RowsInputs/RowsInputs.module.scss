@@ -1,0 +1,594 @@
+/* stylelint-disable no-duplicate-selectors */
+.error__message {
+  margin-top: 20px;
+  color: #f44;
+  font-size: 16px;
+}
+
+.area__extra__min__height {
+  & > div:last-child > textarea {
+    min-height: 18px !important;
+  }
+}
+
+.newButtonCreateTheme {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 4px 12px 15px;
+
+  & > p {
+    color: #2f2f2fbe;
+  }
+}
+
+.rows__inputs {
+  width: 100%;
+
+  &__titles {
+    display: grid;
+
+    // Ширина должна совпадать с шириной блока инпутов (без кнопки)
+    padding-right: 59px; // 39px (ширина кнопки) + 20px (gap)
+    padding-left: 30px;
+    margin-bottom: 20px;
+    gap: 20px;
+
+    // Стили для случая без кнопки drag
+    &.no__drag {
+      padding-left: 0;
+    }
+  }
+
+  &__title {
+    margin: 0;
+    color: #818181;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; // Уменьшен gap до 10px
+  }
+
+  &__box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    // Стили для случая без кнопки drag
+    &.no__drag {
+      .rows__inputs__row {
+        margin-left: 0;
+      }
+    }
+  }
+
+  &__row {
+    display: grid;
+    flex: 1;
+    gap: 20px;
+  }
+
+  &__remove {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  .without__gap {
+    gap: 0 !important;
+  }
+
+  .newButtonTheme {
+    height: 48px;
+    padding: 0 4px;
+    background-color: #fff;
+  }
+
+  &__add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    margin: 20px auto 0;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  // Стили для серой линии
+  .gray__bottom__line {
+    display: none !important;
+    height: 1px;
+    margin-top: 10px;
+
+    // Ширина линии должна совпадать с шириной блока инпутов (без кнопки)
+    margin-right: 59px; // 39px (ширина кнопки) + 20px (gap)
+    background-color: #969696;
+
+    // Для случая без drag кнопки
+    .rows__inputs__box.no__drag + & {
+      margin-left: 0;
+    }
+  }
+
+  // Стили для ручки перетаскивания
+  &__drag {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: none;
+    background: none;
+    cursor: grab;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  // Адаптив для планшетов
+  @media (max-width: 768px) {
+    &__titles {
+      padding-right: 49px; // Для средних размеров кнопок
+      padding-left: 20px;
+      font-size: 12px;
+      gap: 15px;
+
+      &.no__drag {
+        padding-left: 0;
+      }
+    }
+
+    &__container {
+      gap: 8px;
+    }
+
+    &__row {
+      gap: 15px;
+    }
+
+    &__box {
+      gap: 15px;
+    }
+
+    &__drag {
+      padding: 6px;
+    }
+
+    .gray__bottom__line {
+      margin-right: 49px; // Для средних размеров кнопок
+
+      .rows__inputs__box.no__drag + & {
+        margin-left: 0;
+      }
+    }
+  }
+
+  // Адаптив для мобильных устройств
+  @media (max-width: 480px) {
+    &__titles {
+      display: none; // Скрываем заголовки на мобильных
+    }
+
+    &__container {
+      gap: 15px; // Увеличиваем gap на мобильных для лучшей читаемости
+    }
+
+    &__box {
+      // flex-direction: column;
+      // align-items: stretch;
+      gap: 10px;
+    }
+
+    &__row {
+      gap: 10px;
+
+      // Меняем на колонку для лучшей читаемости
+      grid-template-columns: 1fr;
+    }
+
+    &__remove {
+      align-self: center;
+
+      // margin-top: 5px;
+    }
+
+    &__drag {
+      padding: 4px;
+    }
+
+    .gray__bottom__line {
+      margin-right: 0; // На мобильных линия на всю ширину
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.dropdown__list {
+  max-height: 300px !important;
+
+  @media (max-width: 800px) {
+    min-width: 0 !important;
+    padding: 7px 6px !important;
+    overflow-x: clip;
+  }
+}
+
+.extraDropClass {
+  right: 0 !important;
+  left: auto !important;
+  min-width: 180px !important;
+}
+
+// Dropdown стили
+.dropdown {
+  position: relative;
+  width: 100%;
+
+  @media (max-width: 800px) {
+    min-width: 0 !important;
+    overflow-x: clip;
+  }
+
+  & > div {
+    @media (max-width: 800px) {
+      min-height: 48px !important;
+      padding: 14px 15px;
+      border-radius: 10px !important;
+    }
+  }
+
+  & > div > span {
+    @media (max-width: 800px) {
+      font-size: 15px !important;
+    }
+  }
+
+  &__trigger {
+    display: flex;
+    min-height: 46px; // Совпадает с высотой TextInputUI
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 21px;
+    border: 1px solid rgb(47 47 47 / 20%);
+    border-radius: 10px;
+    background-color: #fff;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+
+    // &:hover {
+    //   border-color: #1a1d35;
+    // }
+  }
+
+  &__value {
+    color: #2a2e46;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  &__placeholder {
+    color: #818181;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  &__arrow {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+
+    &__open {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__list {
+    position: absolute;
+    z-index: 1000;
+    top: 100%;
+    right: 0;
+    left: 0;
+    max-height: 200px;
+    border: 1px solid #2a2e46;
+    border-radius: 10px;
+    margin-top: 4px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+    overflow-y: auto;
+
+    // Стили для скроллбара
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      border-radius: 10px;
+      background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background: #c1c1c1;
+
+      &:hover {
+        background: #a8a8a8;
+      }
+    }
+  }
+
+  &__option {
+    padding: 12px 21px;
+    color: #2a2e46;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f3f6fa;
+    }
+
+    &:first-child {
+      // border-top-left-radius: 15px;
+      // border-top-right-radius: 15px;
+    }
+
+    &:last-child {
+      // border-bottom-left-radius: 15px;
+      // border-bottom-right-radius: 15px;
+    }
+
+    &__selected {
+      background-color: #d9dffb;
+      font-weight: 500;
+
+      &:hover {
+        background-color: #d9dffb;
+      }
+    }
+
+    &__create {
+      color: #4f46e5;
+      font-style: italic;
+      font-weight: 500;
+    }
+  }
+
+  &__separator {
+    height: 1px;
+    margin: 4px 0;
+    background-color: #e5e7eb;
+  }
+
+  &__custom {
+    &__input__wrapper {
+      padding: 12px 21px;
+    }
+
+    &__buttons {
+      display: flex;
+      margin-top: 8px;
+      gap: 8px;
+    }
+
+    &__button__confirm,
+    &__button__cancel {
+      display: flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+
+    &__button__confirm {
+      border-color: #10b981;
+      color: #10b981;
+
+      &:hover:not(:disabled) {
+        background-color: #10b981;
+        color: white;
+      }
+    }
+
+    &__button__cancel {
+      border-color: #ef4444;
+      color: #ef4444;
+
+      &:hover {
+        background-color: #ef4444;
+        color: white;
+      }
+    }
+  }
+}
+
+// Стили для ошибки dropdown
+.error__dropdown {
+  border: 2px solid #f44 !important;
+
+  .dropdown__placeholder {
+    color: #d61414;
+    font-weight: 500;
+  }
+}
+
+// Адаптивные стили для dropdown
+@media (max-width: 768px) {
+  .dropdown {
+    &__trigger {
+      min-height: 46px;
+      padding: 12px 18px;
+    }
+
+    &__value,
+    &__placeholder {
+      font-size: 14px;
+    }
+
+    &__with__clear {
+      padding-right: 10px; // Уменьшаем правый padding для размещения кнопки
+    }
+
+    &__clear__button {
+      flex-shrink: 0;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 5px;
+      margin-left: 8px;
+      background-color: transparent;
+      color: #818181;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      &:hover {
+        background-color: #f3f6fa;
+        color: #2a2e46;
+      }
+
+      &:active {
+        background-color: #e5e7eb;
+      }
+
+      // Адаптив для планшетов
+      @media (max-width: 768px) {
+        padding: 3px 6px;
+        font-size: 12px;
+      }
+
+      // Адаптив для мобильных
+      @media (max-width: 480px) {
+        padding: 2px 5px;
+        margin-left: 6px;
+        font-size: 11px;
+      }
+    }
+
+    &__option {
+      padding: 10px 18px;
+      font-size: 14px;
+    }
+
+    &__list {
+      max-height: 150px;
+    }
+
+    &__custom {
+      &__input__wrapper {
+        padding: 10px 18px;
+      }
+
+      &__button__confirm,
+      &__button__cancel {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.dropdown__readonly {
+  .dropdown__clear__button {
+    display: none; // Скрываем кнопку в readonly режиме
+  }
+}
+
+@media (max-width: 768px) {
+  .dropdown {
+    &__trigger {
+      &__with__clear {
+        padding-right: 8px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dropdown {
+    &__trigger {
+      &__with__clear {
+        padding-right: 6px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dropdown {
+    &__trigger {
+      min-height: 42px;
+      padding: 10px 15px;
+    }
+
+    &__value,
+    &__placeholder {
+      font-size: 12px;
+    }
+
+    &__option {
+      padding: 8px 15px;
+      font-size: 12px;
+    }
+
+    &__list {
+      max-height: 120px;
+    }
+
+    &__custom {
+      &__input__wrapper {
+        padding: 8px 15px;
+      }
+
+      &__button__confirm,
+      &__button__cancel {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+      }
+    }
+  }
+}

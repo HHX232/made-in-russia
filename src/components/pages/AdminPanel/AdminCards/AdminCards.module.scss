@@ -1,0 +1,29 @@
+.container__cards {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding: 10px 5px;
+  border-radius: 20px;
+  background-color: #f4f5f6;
+  box-shadow: -2px 4px 4px #00000015;
+}
+
+.admin__cards__title {
+  margin: 20px 10px;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 48px;
+}
+
+.extraButtonsBoxClass {
+  @media (max-width: 750px) {
+    display: flex;
+    flex-direction: column;
+    align-items: start !important;
+
+    & > button {
+      width: 36px !important;
+      height: 36px !important;
+    }
+  }
+}

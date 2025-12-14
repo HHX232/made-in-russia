@@ -1,0 +1,11 @@
+{
+   "storageZoneName": "exporteru-cache",
+   "storageZoneRegion": "de",
+   "storageZonePassword": "aebfead0-5fcf-498a-9f329d809b95-9ca7-45bc",
+   "pullZoneId": "exporteru",
+   "localDirectory": "./out",
+   "remoteDirectory": "/",
+   "concurrentUploads": 10,
+   "retryAttempts": 3,
+   "dryRun": false
+ }

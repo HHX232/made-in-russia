@@ -262,7 +262,7 @@ export const RangeInput: React.FC<RangeInputProps> = ({
             className={styles.sliderRange}
             style={{
               left: `${minPos}%`,
-              width: `${maxPos - minPos}%`
+              width: `${(maxPos >= 100 ? 100 : maxPos) - minPos}%`
             }}
           />
           <div
@@ -273,7 +273,7 @@ export const RangeInput: React.FC<RangeInputProps> = ({
           />
           <div
             className={styles.sliderHandle}
-            style={{left: `${maxPos}%`}}
+            style={{left: `${maxPos >= 100 ? 100 : maxPos}%`}}
             onMouseDown={handleMaxDrag}
             onTouchStart={handleMaxDrag}
           />

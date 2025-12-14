@@ -1,0 +1,232 @@
+/* stylelint-disable selector-pseudo-class-no-unknown */
+
+.second__drop__extra {
+  & > ul {
+    transform: translate(-100%, -8px) !important;
+  }
+}
+
+.editor__extra__text {
+  & > div:last-child {
+    max-width: 70vw;
+
+    & > textarea {
+      overflow-y: scroll !important;
+    }
+
+    @media (max-width: 900px) {
+      max-width: 90vw;
+      margin: 0 auto !important;
+    }
+  }
+}
+
+.editor__wrapper {
+  width: 100%;
+  border-radius: 8px;
+  transition: border 0.2s ease-in-out;
+
+  /* Стилизация изображений в превью */
+  .md-editor-preview img[src^='data:image'] {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Стилизация кода с base64 в редакторе */
+  .md-editor-input-wrapper {
+    .cm-string,
+    .cm-url {
+      &:has-text('data:image') {
+        display: inline-block;
+        overflow: hidden;
+        max-width: 200px;
+        text-overflow: ellipsis;
+        vertical-align: bottom;
+        white-space: nowrap;
+      }
+    }
+
+    .cm-line:has(.cm-string:contains('data:image')),
+    .cm-line:has(.cm-url:contains('data:image')) {
+      .cm-string,
+      .cm-url {
+        display: inline-block;
+        overflow: hidden;
+        max-width: 200px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .cm-editor {
+    .cm-line {
+      .cm-string {
+        &[class*='data:image'] {
+          display: inline-block;
+          overflow: hidden;
+          max-width: 200px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}
+
+// Стиль для ошибки редактора
+.editor__error {
+  // Оборачиваем редактор в контейнер с красной обводкой
+  position: relative;
+  border: 2px solid #f44 !important;
+  border-radius: 17px;
+
+  // Применяем обводку к самому редактору внутри
+  :global {
+    .md-editor {
+      border-color: #f44 !important;
+      box-shadow: 0 0 0 1px rgb(255 68 68 / 20%) !important;
+    }
+
+    .md-editor-input-wrapper,
+    .md-editor-preview {
+      border-color: #f44 !important;
+    }
+
+    // Для CodeMirror
+    .cm-editor {
+      border-color: #f44 !important;
+
+      &.cm-focused {
+        outline: 2px solid rgb(255 68 68 / 30%) !important;
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  // Анимация пульсации при первом показе ошибки
+  animation: errorPulse 0.5s ease-in-out;
+}
+
+@keyframes errorPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(255 68 68 / 40%);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgb(255 68 68 / 0%);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 68 68 / 0%);
+  }
+}
+
+.right {
+  display: flex;
+  min-width: 300px;
+  flex-shrink: 1;
+}
+
+.descr__el__title__right {
+  width: 100%;
+  max-height: fit-content;
+  justify-content: space-between;
+  gap: 20px !important;
+}
+
+.truncated__base64 {
+  display: inline-block;
+  overflow: hidden;
+  max-width: 200px;
+  color: #0969da;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.descr__el__title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 40px;
+}
+
+.descr__title {
+  position: relative;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.left {
+  width: 100%;
+}
+
+.left__top__descr,
+.left__bottom__descr {
+  margin-bottom: 35px;
+}
+
+.create__descriptions__box {
+  display: flex;
+  width: 100%;
+  margin-top: 50px;
+  gap: 20px;
+}
+
+.drop__extra > div > svg {
+  display: none !important;
+}
+
+.has__error {
+  .editor__wrapper {
+    position: relative;
+  }
+}
+
+.error__message {
+  padding: 0 8px;
+  margin: 8px 0 0;
+  animation: slideDown 0.3s ease-out;
+  color: #f44;
+  font-size: 14px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.required {
+  position: absolute;
+  top: -3px;
+  right: -13px;
+  color: #000;
+  font-size: 18px;
+  transition: color 0.2s ease-in-out;
+}
+
+.required__error {
+  margin-left: 4px;
+  color: #f44 !important;
+  font-weight: normal;
+}
+
+.optional {
+  margin-left: 8px;
+  color: #666;
+  font-size: 14px;
+  font-weight: normal;
+}

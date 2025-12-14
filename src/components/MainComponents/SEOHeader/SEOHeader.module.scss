@@ -1,0 +1,510 @@
+.header__top {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+   align-items: center;
+   padding: 16px 5px;
+}
+
+.header {
+   z-index: -100000;
+   opacity: 0;
+   position: absolute;
+   top: -400vh;
+   left: -400vw;
+}
+
+.header__top_image_insta {
+   width: 20px;
+   height: 20px;
+}
+
+.header__top_image_telegram {
+   width: 21px;
+   height: 18px;
+}
+
+.header__top_image_telephone {
+   width: 19px;
+   height: 19px;
+}
+
+.header__top_list {
+   display: flex;
+   gap: 50px;
+   align-items: center;
+}
+
+.header__top_item {
+   display: flex;
+   align-items: center;
+   gap: 5px;
+   font-size: 15px;
+   transition: all .15s;
+
+   &:hover {
+      color: #AC2525;
+   }
+}
+
+.middle__header,
+.header__middle_box {
+   width: 100%;
+   display: flex;
+   justify-content: space-between;
+   background-color: #2A2E46;
+   align-items: center;
+
+}
+
+.header__middle_box {
+   padding: 6px !important;
+}
+
+.header__logo_box {
+   display: flex;
+   align-items: center;
+   gap: 6px;
+
+}
+
+.main__middle_content {
+   display: flex;
+   align-items: center;
+   gap: 25px;
+}
+
+.searchBox {
+   width: 100%;
+   max-width: 370px;
+}
+
+.bottom_header {
+   width: 100%;
+   background-color: #EFF1F8;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.bottom__header__inner {
+   display: flex;
+   width: 100%;
+   align-items: center;
+   justify-content: center;
+   gap: 60px;
+   padding: 16px;
+}
+
+.extra_list {
+   width: 100%;
+}
+
+.mobile__top_contacts {
+   display: none;
+}
+
+.extra__mobile__list {
+   &>ul {
+      min-width: 200px;
+      gap: 10px;
+      display: flex;
+      flex-direction: column;
+   }
+
+
+
+}
+
+.drop__bottom_list {
+   display: none;
+}
+
+@media(max-width:820px) {
+   .bear__img_text {
+      display: none;
+   }
+
+   .main__middle_content {
+      min-width: 150px !important;
+   }
+
+   .searchBox {
+      padding: 0 10px;
+      z-index: 2000;
+   }
+
+   .bear__img {
+      min-width: 69px;
+      aspect-ratio: 1/1;
+   }
+}
+
+@media (max-width:670px) {
+   .header__top_item {
+      display: none;
+   }
+
+   .extra__mobile__list {
+      &>ul {
+         left: 40px;
+         top: 15px;
+      }
+   }
+
+   .mobile__top_contacts {
+      z-index: 10000;
+      display: block !important;
+
+      & .header__top_item {
+         display: flex !important;
+
+      }
+   }
+
+   .bottom__header__inner {
+      gap: 30px;
+      justify-content: space-evenly;
+      padding: 16px 0;
+   }
+
+
+   .drop__bottom_list {
+      display: block;
+   }
+
+   .spec__bottom_el {
+      display: none;
+   }
+
+   .extra__bottom__header__list {
+      &>ul {
+         left: -25px;
+      }
+   }
+}
+
+.burger__menu {
+   display: none;
+}
+
+.burger {
+   display: flex;
+   flex-direction: column;
+   width: 19px;
+   gap: 5px;
+   cursor: pointer;
+   margin-right: 15px;
+   margin-left: 5px;
+}
+
+.burger__item {
+   width: 100%;
+   background-color: #fff;
+   border-radius: 10px;
+   height: 2.5px;
+}
+
+@media (max-width:500px) {
+   .main__middle_content {
+      display: none;
+   }
+
+   .burger__menu {
+      display: block;
+   }
+}
+
+.burger__menu__list {
+   position: fixed;
+   align-items: center;
+   left: -110vw;
+   top: 0;
+   height: 100vh;
+   padding: 40px 20px;
+   background-color: #EFF1F8;
+   border: 1px solid #2A2E46;
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+   transition: all .3s;
+}
+
+.burger__menu__list__active {
+   left: 0 !important;
+   z-index: 1000000;
+}
+
+.burger__menu__item__first {
+   width: 100%;
+}
+
+.extra__profile__class {
+   width: 100% !important;
+   justify-content: space-evenly;
+
+   &>p {
+      display: block;
+   }
+}
+
+.burger__menu__item {
+   display: flex;
+   width: 100%;
+   cursor: pointer;
+   align-items: center;
+   gap: 15px;
+   justify-content: space-between;
+}
+
+.burger__item__text {
+   color: #2A2E46;
+}
+
+
+/* Добавьте в Header.module.scss */
+
+/* ✅ Стили для серверных заглушек */
+.language__placeholder {
+   padding: 8px 16px;
+   border: 1px solid #ddd;
+   border-radius: 4px;
+   color: #666;
+   font-size: 14px;
+}
+
+.search__form {
+   display: flex;
+   align-items: center;
+   width: 100%;
+   max-width: 400px;
+}
+
+.search__input__basic {
+   flex: 1;
+   padding: 12px 16px;
+   border: 1px solid #ddd;
+   border-radius: 8px 0 0 8px;
+   font-size: 14px;
+   outline: none;
+
+   &:focus {
+      border-color: #007bff;
+   }
+}
+
+.search__button__basic {
+   padding: 12px 16px;
+   background: #007bff;
+   border: 1px solid #007bff;
+   border-radius: 0 8px 8px 0;
+   color: white;
+   cursor: pointer;
+   font-size: 16px;
+
+   &:hover {
+      background: #0056b3;
+   }
+}
+
+.profile__link__basic,
+.cart__link__basic,
+.favorites__link__basic {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   padding: 8px 12px;
+   text-decoration: none;
+   color: #333;
+   border-radius: 4px;
+   transition: background 0.2s;
+
+   &:hover {
+      background: #f5f5f5;
+   }
+}
+
+.burger__menu__basic {
+   display: none;
+
+   @media (max-width: 768px) {
+      display: block;
+   }
+}
+
+.burger__summary {
+   font-size: 24px;
+   cursor: pointer;
+   list-style: none;
+   padding: 8px;
+}
+
+.burger__nav {
+   position: absolute;
+   top: 100%;
+   right: 0;
+   background: white;
+   border: 1px solid #ddd;
+   border-radius: 8px;
+   padding: 16px;
+   min-width: 200px;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+   a {
+      display: block;
+      padding: 8px 0;
+      text-decoration: none;
+      color: #333;
+      border-bottom: 1px solid #eee;
+
+      &:last-child {
+         border-bottom: none;
+      }
+
+      &:hover {
+         color: #007bff;
+      }
+   }
+}
+
+.mobile__contacts_details,
+.categories__details,
+.more__menu__details {
+   cursor: pointer;
+
+   summary {
+      list-style: none;
+      padding: 8px 12px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+         background: #e9ecef;
+      }
+   }
+}
+
+.mobile__contacts_dropdown,
+.categories__dropdown,
+.more__menu__dropdown {
+   position: absolute;
+   top: 100%;
+   left: 0;
+   background: white;
+   border: 1px solid #ddd;
+   border-radius: 8px;
+   padding: 12px;
+   min-width: 200px;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+   z-index: 1000;
+
+   a {
+      display: block;
+      padding: 8px 0;
+      text-decoration: none;
+      color: #333;
+
+      &:hover {
+         color: #007bff;
+      }
+   }
+}
+
+/* 📱 Интерактивные наложения */
+.interactive__header__overlay {
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   pointer-events: none;
+   /* Позволяем клики проходить через пустые области */
+   z-index: 10;
+}
+
+.language__button__overlay {
+   position: absolute;
+   top: 12px;
+   right: 20px;
+   pointer-events: auto;
+}
+
+.mobile__contacts__overlay {
+   position: absolute;
+   top: 12px;
+   right: 100px;
+   pointer-events: auto;
+
+   @media (min-width: 769px) {
+      display: none;
+   }
+}
+
+.search__overlay {
+   position: absolute;
+   top: 80px;
+   left: 50%;
+   transform: translateX(-50%);
+   pointer-events: auto;
+   width: 100%;
+   max-width: 400px;
+}
+
+.main__buttons__overlay {
+   position: absolute;
+   top: 80px;
+   right: 20px;
+   display: flex;
+   gap: 12px;
+   pointer-events: auto;
+}
+
+.burger__menu__overlay {
+   position: absolute;
+   top: 90px;
+   right: 20px;
+   pointer-events: auto;
+
+   @media (min-width: 769px) {
+      display: none;
+   }
+}
+
+.bottom__nav__overlay {
+   position: absolute;
+   top: 140px;
+   left: 0;
+   right: 0;
+   pointer-events: none;
+}
+
+.categories__dropdown__overlay {
+   position: absolute;
+   left: 20px;
+   pointer-events: auto;
+}
+
+.more__menu__overlay {
+   position: absolute;
+   right: 20px;
+   pointer-events: auto;
+
+   @media (min-width: 769px) {
+      display: none;
+   }
+}
+
+/* Скрываем базовые элементы когда интерактивные загружены */
+.interactive__header__overlay+* {
+
+   .language__placeholder,
+   .search__form,
+   .profile__link__basic,
+   .cart__link__basic,
+   .favorites__link__basic,
+   .burger__menu__basic,
+   .mobile__contacts_details,
+   .categories__details,
+   .more__menu__details {
+      opacity: 0;
+      pointer-events: none;
+   }
+}

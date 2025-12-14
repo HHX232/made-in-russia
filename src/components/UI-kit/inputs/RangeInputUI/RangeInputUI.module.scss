@@ -1,93 +1,106 @@
 .rangeContainer {
-   display: flex;
-   flex-direction: column;
-   width: 100%;
-   gap: 10px;
-   max-width: 180px;
-   margin: 0 auto;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding-right: 10px;
+
+  // max-width: 180px;
+  margin: 0 auto 0 12px;
+  gap: 10px;
 }
 
 .inputsContainer {
-   display: flex;
-   justify-content: space-between;
-   gap: 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .valueInput {
-   background-color: #2A2E46;
-   color: white;
-   border: 1px solid #3A3F59;
-   border-radius: 30px;
-   padding: 3px 13px;
-   width: 100%;
-   max-width: 180px;
-   font-size: 15px;
-   font-weight: 600;
-   max-width: fit-content;
+  width: 100%;
+  max-width: 100%;
+  padding: 10px;
+  border-radius: 0;
 
-   &:focus {
-      outline: none;
-      border-color: #4D5575;
-   }
+  /* Firefox */
+  appearance: textfield;
+  background-color: #dedede;
+  color: #2f2f2f9f;
 
-   // Скрыть стрелки у number input
-   &::-webkit-outer-spin-button,
-   &::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-   }
+  // max-width: 180px;
+  font-size: 15px;
+  font-weight: 400;
 
-   /* Firefox */
-   -moz-appearance: textfield;
+  &:focus {
+    border-color: #4d5575;
+    outline: none;
+  }
+
+  // Скрыть стрелки у number input
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    margin: 0;
+    appearance: none;
+  }
 }
 
 .sliderContainer {
-   position: relative;
-   height: 24px;
-   width: 100%;
+  position: relative;
+  width: 99%;
+  height: 24px;
 }
 
 .sliderTrack {
-   position: absolute;
-   height: 4px;
-   width: 100%;
-   background-color: #2A2E46;
-   border-radius: 6px;
-   top: 50%;
-   transform: translateY(-50%);
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 4px;
+  border-radius: 0;
+  background-color: #dedede;
+  transform: translateY(-50%);
 }
 
 .sliderRange {
-   position: absolute;
-   height: 4px;
-   background-color: #2A2E46;
-   border-radius: 6px;
-   top: 50%;
-   transform: translateY(-50%);
+  position: absolute;
+  top: 50%;
+  height: 4px;
+  border-radius: 6px;
+  background-color: #0047ba;
+  transform: translateY(-50%);
 }
 
 .sliderHandle {
-   position: absolute;
-   width: 18px;
-   height: 18px;
-   border-radius: 50%;
-   background-color: #2A2E46;
-   top: 50%;
-   transform: translate(-50%, -50%);
-   cursor: pointer;
+  position: absolute;
+  top: 50%;
+  display: flex;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #0047ba;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
 
-   &:hover {
-      box-shadow: 0 0 0 6px rgba(42, 46, 70, 0.2);
-   }
+  &:hover {
+    box-shadow: 0 0 0 6px rgb(42 46 70 / 20%);
+  }
 
-   &:active {
-      box-shadow: 0 0 0 8px rgba(42, 46, 70, 0.3);
-   }
+  &:active {
+    box-shadow: 0 0 0 8px rgb(42 46 70 / 30%);
+  }
+
+  &::after {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin: auto;
+    background-color: #fff;
+    content: '';
+  }
 }
 
 .rangeContainer_title {
-   font-weight: 600;
-   font-size: 15px;
-   color: #2A2E46;
-   margin-bottom: 20px;
+  margin-bottom: 20px;
+  color: #2a2e46;
+  font-size: 15px;
+  font-weight: 600;
 }

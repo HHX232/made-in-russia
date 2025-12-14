@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6949],{86949:(e,s,c)=>{c.d(s,{oA:()=>o}),c(8102),c(33284);var k=c(57383);c(87358);let o=e=>{k.A.set("accessToken",e.accessToken),k.A.set("refreshToken",e.refreshToken),console.log("\uD83D\uDD10 Токены сохранены на клиенте:",!!e.accessToken,!!e.refreshToken)}}}]);

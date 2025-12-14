@@ -1,93 +1,205 @@
 .descr__box {
-   display: flex;
-   flex-direction: column;
-   gap: 15px;
-   width: 100%;
-   max-height: fit-content;
+  display: flex;
+  width: 100%;
+  max-height: fit-content;
+  flex-direction: column;
+  margin-bottom: 40px;
+  gap: 15px;
 }
 
 .descr__title {
-   font-weight: 700;
+  color: rgb(47 47 47 / 70%); // 2F2F2F 70%
+  font-weight: 700;
 }
 
 .descr__list {
-   display: flex;
-   flex-direction: column;
-   width: 100%;
-   gap: 15px;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.element__value__right {
+  text-align: right !important;
 }
 
 .descr__list__item {
-   display: flex;
-   width: 100%;
-   justify-content: space-between;
-   padding-bottom: 5px;
-   border-bottom: .3px solid #818181;
-   align-items: center;
+  position: relative; // КЛЮЧЕВОЕ: для абсолютного позиционирования линии
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  color: rgb(47 47 47 / 70%); // 2F2F2F 70%
+  gap: 8px; // Минимальный отступ между элементами
+  overflow-x: clip;
+
+  & > p {
+    position: relative;
+    z-index: 2; // КЛЮЧЕВОЕ: текст поверх линии
+
+    // КЛЮЧЕВОЕ: фон для каждой строки отдельно
+    display: inline;
+    max-width: 45%;
+    padding: 0 4px;
+    background-color: #fff;
+    box-decoration-break: clone;
+    box-decoration-break: clone;
+    line-height: 1.4;
+    text-align: start;
+  }
+
+  & > p:first-child {
+    max-height: fit-content;
+
+    &::before {
+      position: absolute;
+      z-index: 1;
+      right: -100vw;
+      bottom: 4px;
+      width: 100vw;
+      height: 1px;
+      background-image: repeating-linear-gradient(
+        to right,
+        rgb(47 47 47 / 20%) 0,
+        rgb(47 47 47 / 20%) 4px,
+        transparent 4px,
+        transparent 8px
+      );
+      content: '';
+      pointer-events: none;
+    }
+  }
+}
+
+.element__title {
+  flex-shrink: 0;
+  padding-right: 4px !important; // Отступ справа
+  padding-left: 0 !important; // Без отступа слева
+  color: rgb(47 47 47 / 70%);
+}
+
+.dotted__line {
+  position: absolute; // КЛЮЧЕВОЕ: абсолютное позиционирование
+  z-index: 1; // КЛЮЧЕВОЕ: линия под текстом
+  right: 0;
+  bottom: 3px; // Выравнивание с базовой линией текста
+  left: 0;
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    to right,
+    rgb(47 47 47 / 20%) 0,
+    rgb(47 47 47 / 20%) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  pointer-events: none; // На всякий случай, чтобы не мешала кликам
 }
 
 .element__value {
-   max-width: 45%;
+  max-width: 45%;
+  flex-shrink: 0;
+  padding-right: 0 !important; // Без отступа справа
+  padding-left: 4px !important; // Отступ слева
+  color: rgb(47 47 47 / 70%);
 }
 
 // Font size classes
 .element__def__font,
 .titleFontSize {
-   &_14 {
+  &_14 {
+    font-size: 14px;
+
+    @media (max-width: 580px) {
+      font-size: 12px;
+    }
+  }
+
+  &_15 {
+    font-size: 15px;
+
+    @media (max-width: 580px) {
+      font-size: 13px;
+    }
+  }
+
+  &_16 {
+    font-size: 16px;
+
+    @media (max-width: 580px) {
       font-size: 14px;
-   }
+    }
+  }
 
-   &_15 {
+  &_17 {
+    font-size: 17px;
+
+    @media (max-width: 580px) {
       font-size: 15px;
-   }
+    }
+  }
 
-   &_16 {
+  &_18 {
+    font-size: 18px;
+
+    @media (max-width: 580px) {
       font-size: 16px;
-   }
+    }
+  }
 
-   &_17 {
-      font-size: 17px;
-   }
+  &_20 {
+    font-size: 20px;
 
-   &_18 {
+    @media (max-width: 580px) {
       font-size: 18px;
-   }
+    }
+  }
 
-   &_20 {
+  &_22 {
+    font-size: 22px;
+
+    @media (max-width: 580px) {
       font-size: 20px;
-   }
+    }
+  }
 
-   &_22 {
+  &_23 {
+    font-size: 23px;
+
+    @media (max-width: 580px) {
+      font-size: 21px;
+    }
+  }
+
+  &_24 {
+    font-size: 24px;
+
+    @media (max-width: 580px) {
       font-size: 22px;
-   }
+    }
+  }
 
-   &_23 {
+  &_25 {
+    font-size: 25px;
+
+    @media (max-width: 580px) {
       font-size: 23px;
-   }
-
-   &_24 {
-      font-size: 24px;
-   }
-
-   &_25 {
-      font-size: 25px;
-   }
+    }
+  }
 }
 
 .list__gap {
-   &_5 {
-      gap: 5px;
-   }
+  &_5 {
+    gap: 5px;
+  }
 
-   &_10 {
-      gap: 10px;
-   }
+  &_10 {
+    gap: 10px;
+  }
 
-   &_15 {
-      gap: 15px;
-   }
+  &_15 {
+    gap: 15px;
+  }
 
-   &_20 {
-      gap: 20px;
-   }
+  &_20 {
+    gap: 20px;
+  }
 }

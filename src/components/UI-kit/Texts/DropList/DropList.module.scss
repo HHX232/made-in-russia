@@ -1,311 +1,321 @@
 .list_box {
-   position: relative;
-   z-index: 1000;
+  position: relative;
+  z-index: 1000;
 }
 
 .list__title_box {
-   display: flex;
-   align-items: center;
-   gap: 5px;
-   font-size: 15px;
-   cursor: pointer;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 15px;
+  gap: 5px;
 
-   .arrow {
-      transition: transform 0.3s ease; // плавная анимация поворота
-   }
+  .arrow {
+    transition: transform 0.3s ease; // плавная анимация поворота
+  }
 
-   .arrow_bottom {
-      transform: rotate(0deg); // стрелка вниз (по умолчанию)
+  .arrow_bottom {
+    transform: rotate(0deg); // стрелка вниз (по умолчанию)
 
-      &.open {
-         transform: rotate(180deg); // стрелка вверх (когда открыто)
-      }
-   }
+    &.open {
+      transform: rotate(180deg); // стрелка вверх (когда открыто)
+    }
+  }
 
-   .arrow_top {
-      transform: rotate(180deg); // стрелка вверх
+  .arrow_top {
+    transform: rotate(180deg); // стрелка вверх
 
-      &.open {
-         transform: rotate(0deg); // стрелка вниз (когда открыто)
-      }
-   }
+    &.open {
+      transform: rotate(0deg); // стрелка вниз (когда открыто)
+    }
+  }
 
-   .arrow_right {
-      transform: rotate(-90deg); // стрелка вправо
+  .arrow_right {
+    transform: rotate(-90deg); // стрелка вправо
 
-      &.open {
-         transform: rotate(90deg); // стрелка влево (когда открыто)
-      }
-   }
+    &.open {
+      transform: rotate(90deg); // стрелка влево (когда открыто)
+    }
+  }
 
-   .arrow_left {
-      transform: rotate(90deg); // стрелка влево
+  .arrow_left {
+    transform: rotate(90deg); // стрелка влево
 
-      &.open {
-         transform: rotate(-90deg); // стрелка вправо (когда открыто)
-      }
-   }
+    &.open {
+      transform: rotate(-90deg); // стрелка вправо (когда открыто)
+    }
+  }
 }
 
 .items__list {
-   position: absolute;
-   content: '';
-   z-index: 1000;
-   // Dynamic positioning will be handled by direction and gap classes
-   border: 1px solid #2A2E46;
-   background-color: #EFF1F8;
-   padding: 18px 0;
-   width: 100%;
-   border-radius: 20px;
-   min-width: 145px;
-   z-index: 10;
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  min-width: 145px;
+  padding: 18px 0;
+
+  // Dynamic positioning will be handled by direction and gap classes
+  border: 1px solid rgb(47 47 47 / 20%);
+  border-radius: 20px;
+  background-color: #eff1f8;
+  content: '';
 }
 
 // Direction classes
 .direction_bottom {
-   left: 0;
-   transform: translateX(-15%);
+  left: 0;
+  transform: translateX(-15%);
 }
 
 .direction_top {
-   bottom: 100%;
-   left: 0;
-   transform: translateX(-15%);
+  bottom: 100%;
+  left: 0;
+  transform: translateX(-15%);
 }
 
 .direction_left {
-   right: 100%;
-   top: 0;
-   transform: translateY(-15%);
+  top: 0;
+  right: 100%;
+  transform: translateY(-15%);
 }
 
 .direction_right {
-   left: 100%;
-   top: 0;
-   transform: translateY(-15%);
+  top: 0;
+  left: 100%;
+  transform: translateY(-15%);
 }
 
 // Gap classes
 .gap_0 {
-   &.direction_bottom {
-      top: 100%;
-   }
+  &.direction_bottom {
+    top: 100%;
+  }
 
-   &.direction_top {
-      bottom: 100%;
-   }
+  &.direction_top {
+    bottom: 100%;
+  }
 
-   &.direction_left {
-      right: 100%;
-   }
+  &.direction_left {
+    right: 100%;
+  }
 
-   &.direction_right {
-      left: 100%;
-   }
+  &.direction_right {
+    left: 100%;
+  }
 }
 
 .gap_5 {
-   &.direction_bottom {
-      top: calc(100% + 5px);
-   }
+  &.direction_bottom {
+    top: calc(100% + 5px);
+  }
 
-   &.direction_top {
-      bottom: calc(100% + 5px);
-   }
+  &.direction_top {
+    bottom: calc(100% + 5px);
+  }
 
-   &.direction_left {
-      right: calc(100% + 5px);
-   }
+  &.direction_left {
+    right: calc(100% + 5px);
+  }
 
-   &.direction_right {
-      left: calc(100% + 5px);
-   }
+  &.direction_right {
+    left: calc(100% + 5px);
+  }
 }
 
 .gap_10 {
-   &.direction_bottom {
-      top: calc(100% + 10px);
-   }
+  &.direction_bottom {
+    top: calc(100% + 10px);
+  }
 
-   &.direction_top {
-      bottom: calc(100% + 10px);
-   }
+  &.direction_top {
+    bottom: calc(100% + 10px);
+  }
 
-   &.direction_left {
-      right: calc(100% + 10px);
-   }
+  &.direction_left {
+    right: calc(100% + 10px);
+  }
 
-   &.direction_right {
-      left: calc(100% + 10px);
-   }
+  &.direction_right {
+    left: calc(100% + 10px);
+  }
 }
 
 .gap_15 {
-   &.direction_bottom {
-      top: calc(100% + 15px);
-   }
+  &.direction_bottom {
+    top: calc(100% + 15px);
+  }
 
-   &.direction_top {
-      bottom: calc(100% + 15px);
-   }
+  &.direction_top {
+    bottom: calc(100% + 15px);
+  }
 
-   &.direction_left {
-      right: calc(100% + 15px);
-   }
+  &.direction_left {
+    right: calc(100% + 15px);
+  }
 
-   &.direction_right {
-      left: calc(100% + 15px);
-   }
+  &.direction_right {
+    left: calc(100% + 15px);
+  }
 }
 
 .gap_20 {
-   &.direction_bottom {
-      top: calc(100% + 20px);
-   }
+  &.direction_bottom {
+    top: calc(100% + 20px);
+  }
 
-   &.direction_top {
-      bottom: calc(100% + 20px);
-   }
+  &.direction_top {
+    bottom: calc(100% + 20px);
+  }
 
-   &.direction_left {
-      right: calc(100% + 20px);
-   }
+  &.direction_left {
+    right: calc(100% + 20px);
+  }
 
-   &.direction_right {
-      left: calc(100% + 20px);
-   }
+  &.direction_right {
+    left: calc(100% + 20px);
+  }
 }
 
 .gap_25 {
-   &.direction_bottom {
-      top: calc(100% + 25px);
-   }
+  &.direction_bottom {
+    top: calc(100% + 25px);
+  }
 
-   &.direction_top {
-      bottom: calc(100% + 25px);
-   }
+  &.direction_top {
+    bottom: calc(100% + 25px);
+  }
 
-   &.direction_left {
-      right: calc(100% + 25px);
-   }
+  &.direction_left {
+    right: calc(100% + 25px);
+  }
 
-   &.direction_right {
-      left: calc(100% + 25px);
-   }
+  &.direction_right {
+    left: calc(100% + 25px);
+  }
 }
 
 .gap_30 {
-   &.direction_bottom {
-      top: calc(100% + 30px);
-   }
+  &.direction_bottom {
+    top: calc(100% + 30px);
+  }
 
-   &.direction_top {
-      bottom: calc(100% + 30px);
-   }
+  &.direction_top {
+    bottom: calc(100% + 30px);
+  }
 
-   &.direction_left {
-      right: calc(100% + 30px);
-   }
+  &.direction_left {
+    right: calc(100% + 30px);
+  }
 
-   &.direction_right {
-      left: calc(100% + 30px);
-   }
+  &.direction_right {
+    left: calc(100% + 30px);
+  }
 }
 
 .gap_35 {
-   &.direction_bottom {
-      top: calc(100% + 35px);
-   }
+  &.direction_bottom {
+    top: calc(100% + 35px);
+  }
 
-   &.direction_top {
-      bottom: calc(100% + 35px);
-   }
+  &.direction_top {
+    bottom: calc(100% + 35px);
+  }
 
-   &.direction_left {
-      right: calc(100% + 35px);
-   }
+  &.direction_left {
+    right: calc(100% + 35px);
+  }
 
-   &.direction_right {
-      left: calc(100% + 35px);
-   }
+  &.direction_right {
+    left: calc(100% + 35px);
+  }
 }
 
 .gap_40 {
-   &.direction_bottom {
-      top: calc(100% + 40px);
-   }
+  &.direction_bottom {
+    top: calc(100% + 40px);
+  }
 
-   &.direction_top {
-      bottom: calc(100% + 40px);
-   }
+  &.direction_top {
+    bottom: calc(100% + 40px);
+  }
 
-   &.direction_left {
-      right: calc(100% + 40px);
-   }
+  &.direction_left {
+    right: calc(100% + 40px);
+  }
 
-   &.direction_right {
-      left: calc(100% + 40px);
-   }
+  &.direction_right {
+    left: calc(100% + 40px);
+  }
 }
 
 .gap_45 {
-   &.direction_bottom {
-      top: calc(100% + 45px);
-   }
+  &.direction_bottom {
+    top: calc(100% + 45px);
+  }
 
-   &.direction_top {
-      bottom: calc(100% + 45px);
-   }
+  &.direction_top {
+    bottom: calc(100% + 45px);
+  }
 
-   &.direction_left {
-      right: calc(100% + 45px);
-   }
+  &.direction_left {
+    right: calc(100% + 45px);
+  }
 
-   &.direction_right {
-      left: calc(100% + 45px);
-   }
+  &.direction_right {
+    left: calc(100% + 45px);
+  }
 }
 
 .gap_50 {
-   &.direction_bottom {
-      top: calc(100% + 50px);
-   }
+  &.direction_bottom {
+    top: calc(100% + 50px);
+  }
 
-   &.direction_top {
-      bottom: calc(100% + 50px);
-   }
+  &.direction_top {
+    bottom: calc(100% + 50px);
+  }
 
-   &.direction_left {
-      right: calc(100% + 50px);
-   }
+  &.direction_left {
+    right: calc(100% + 50px);
+  }
 
-   &.direction_right {
-      left: calc(100% + 50px);
-   }
+  &.direction_right {
+    left: calc(100% + 50px);
+  }
 }
 
 .list__element {
-   display: flex;
-   align-items: center;
-   gap: 10px;
-   padding: 5px 15px;
-   width: 100%;
-   cursor: pointer;
+  display: flex;
 
-   &:hover {
-      background-color: #D9DFFB;
-      border-radius: 20px;
-   }
+  // padding: 0px 15px;
+  width: 100%;
+  align-items: center;
+  cursor: pointer;
+  gap: 10px;
+
+  & > div,
+  & > p {
+    padding: 5px 15px;
+  }
+
+  & > a > div,
+  & > a > p {
+    padding: 5px 15px;
+  }
+
+  &:hover {
+    background-color: #dedede;
+  }
 }
 
 // Add these styles to your DropList.module.scss file
 
 .list__position_absolute {
-   position: absolute;
-   z-index: 10 !important;
+  position: absolute;
+  z-index: 10 !important;
 }
 
 .list__position_fixed {
-   position: fixed;
-   z-index: 100 !important;
+  position: fixed;
+  z-index: 100 !important;
 }

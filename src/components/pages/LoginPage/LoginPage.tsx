@@ -3,53 +3,75 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Image from 'next/image'
 import styles from './LoginPage.module.scss'
-import MinimalHeader from '@/components/MainComponents/MinimalHeader/MinimalHeader'
-import {SetStateAction, MouseEvent, useEffect, useState} from 'react'
+import {SetStateAction, MouseEvent, useEffect, useState, useRef, useId} from 'react'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
-import {axiosClassic} from '@/api/api.interceptor'
-import Link from 'next/link'
+import instance, {axiosClassic} from '@/api/api.interceptor'
 import {toast} from 'sonner'
 import {saveTokenStorage} from '@/services/auth/auth.helper'
+import Footer from '@/components/MainComponents/Footer/Footer'
+import ResetPasswordForm from './ResetPAsswordForm/ResetPasswordForm'
+import {Category} from '@/services/categoryes/categoryes.service'
+import {useTranslations} from 'next-intl'
+import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
+import TelegramLoginWidget from './TelegramLoginWidget/TelegramLoginWidget'
 import {useRouter} from 'next/navigation'
+import Link from 'next/link'
+import {useUserQuery} from '@/hooks/useUserApi'
+import LoginSlider from './LoginSlider/LoginSlider'
+import Header from '@/components/MainComponents/Header/Header'
 
-const google = '/google_registr.svg'
-const wechat = '/wechat_registr.svg'
-const weibo = '/weibo-svgrepo-com.svg'
-const tg = '/tg.svg'
+const tg = 'iconsNew/telegram.svg'
 
-const decorImage = '/login__image.jpg'
-const decorImage2 = '/new_login.webp'
-
-const LoginPage = () => {
+const LoginPage = ({categories}: {categories: Category[]}) => {
   const [name, setNameState] = useState('')
   const [password, setPasswordState] = useState('')
-  const [telText, setTelText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showResetForm, setShowResetForm] = useState(false)
   const router = useRouter()
-  // useEffect(() => {
-  //   console.log(telText)
-  // }, [telText])
+  const t = useTranslations('LoginPage')
+  const currentLang = useCurrentLanguage()
+  const id = useId()
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const url = new URL(window.location.href)
+    const accessToken = url.searchParams.get('accessToken')
+    const refreshToken = url.searchParams.get('refreshToken')
+    const resetPassword = url.searchParams.get('resetPassword')
+
+    if (accessToken && refreshToken) {
+      saveTokenStorage({accessToken, refreshToken})
+      router.push('/profile') // Перенаправляем на главную после авторизации
+      // Очистка query из URL
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+
+    // Если есть параметр resetPassword=true, показываем форму восстановления пароля
+    if (resetPassword === 'true') {
+      setShowResetForm(true)
+      // Очищаем параметр из URL
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [router])
 
   const handleNameChange = (value: SetStateAction<string>) => {
     setNameState(value)
     setError('')
   }
 
-  const isEmail = (value: string | string[]) => {
-    return value.includes('@') && value.includes('.')
-  }
-
+  const {refetch} = useUserQuery()
   const onSubmit = async (e: MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
 
     if (!name) {
-      setError('Пожалуйста, введите имя или почту')
+      setError(t('nicknameError'))
       return
     }
 
     if (password.length < 6) {
-      setError('Пароль должен быть не менее 6 символов')
+      setError(t('passwordError'))
       return
     }
 
@@ -57,31 +79,31 @@ const LoginPage = () => {
     setError('')
 
     try {
-      let response
-
-      if (isEmail(name)) {
-        response = await axiosClassic.post('/auth/login-with-email', {
+      const response = await axiosClassic.post(
+        '/auth/login-with-email',
+        {
           email: name,
           password: password
-        })
-      } else {
-        response = await axiosClassic.post('/auth/login-with-login', {
-          login: name,
-          password: password
-        })
-      }
+        },
+        {
+          headers: {
+            'Accept-Language': currentLang
+          }
+        }
+      )
 
       const {accessToken, refreshToken} = response.data as any
 
       saveTokenStorage({accessToken, refreshToken})
+      await refetch()
       console.log('Access Token:', accessToken, 'Refresh Token:', refreshToken)
-      router.push('/')
+      router.push('/profile')
     } catch (error: any) {
       console.error('Login error:', error)
 
       toast.error(
         <div style={{lineHeight: 1.5}}>
-          <strong style={{display: 'block', marginBottom: 4}}>Ошибка входа</strong>
+          <strong style={{display: 'block', marginBottom: 4}}>{t('autorithationError')}</strong>
           {/* <span>Пожалуйста, перепроверьте введенные данные</span> */}
         </div>,
         {
@@ -91,96 +113,188 @@ const LoginPage = () => {
         }
       )
 
-      setError(error.response?.data?.message || 'Ошибка авторизации')
+      setError(error.response?.data?.message || t('autorithationError'))
     } finally {
       setIsLoading(false)
     }
   }
 
+  const handleResetPassword = () => {
+    setShowResetForm(true)
+    setError('')
+    setNameState('')
+    setPasswordState('')
+  }
+
+  const handleBackToLogin = () => {
+    setShowResetForm(false)
+    setError('')
+  }
+
+  const handleTelegramAuth = async (user: any) => {
+    try {
+      console.log('user try tg', user)
+      const {first_name, last_name, username, photo_url, auth_date, ...userWithoutNames} = user
+      const updatedUser = {
+        ...userWithoutNames,
+        firstName: user.first_name,
+        lastName: user.last_name
+      }
+      const response = await axiosClassic.post('/auth/login-with-telegram', updatedUser, {
+        headers: {
+          'Accept-Language': currentLang
+        }
+      })
+
+      const {accessToken, refreshToken} = response.data
+
+      if (accessToken && refreshToken) {
+        // Пользователь уже зарегистрирован, сохраняем токены и перенаправляем
+        saveTokenStorage({accessToken, refreshToken})
+        router.push('/profile')
+      }
+    } catch (error: any) {
+      console.error('Telegram auth error:', error)
+
+      const {first_name, last_name, username, photo_url, auth_date, ...userWithoutNames} = user
+
+      const updatedUser = {
+        ...userWithoutNames,
+        photoUrl: user.photo_url,
+        authDate: user.auth_date,
+        firstName: user.first_name,
+        lastName: user.last_name
+      }
+
+      const data = await instance.post('/oauth2/telegram/callback', updatedUser)
+      console.log('data', data)
+      const {accessToken, refreshToken} = data.data
+
+      if (accessToken && refreshToken) {
+        saveTokenStorage({accessToken, refreshToken})
+        router.push('/profile')
+      } else {
+        // if (error.response?.status === 404) {
+        // Пользователь не найден, перенаправляем на регистрацию с данными Telegram
+        const queryParams = new URLSearchParams({
+          email: user.email || '',
+          picture: user.photo_url || '',
+          telegram_id: user.id?.toString() || '',
+          username: user.username || '',
+          firstName: user.first_name || '',
+          lastName: user.last_name || ''
+        })
+
+        router.push(`/register?${queryParams.toString()}`)
+        // } else {
+        // toast.error(t('autorithationErrorTelegram'))
+        // }
+      }
+    }
+  }
+
   return (
     <div className={`${styles.login__box}`}>
-      <MinimalHeader />
+      {/* <MinimalHeader categories={categories} /> */}
+      <Header categories={categories} />
       <div className={`${styles.login__container} container`}>
         <div className={`${styles.login__inner}`}>
-          <Image
-            className={styles.decor__image}
-            src={decorImage2}
-            width={580}
-            height={745}
-            alt='декоративное изображение "Большое количество материалов"'
-          />
-
-          <form className={`${styles.login__form__box}`}>
-            <h2 className={`${styles.login__title}`}>Войти в аккаунт</h2>
-            <div className={`${styles.inputs__box}`}>
-              {
-                <>
-                  {' '}
-                  <TextInputUI
-                    extraClass={` ${styles.inputs__text_extra} ${name.length !== 0 && name.length < 3 && styles.extra__name__class} ${error && styles.extra__name__class}`}
-                    isSecret={false}
-                    onSetValue={handleNameChange}
-                    currentValue={name}
-                    placeholder='Введите почту или имя'
-                    title={<p className={`${styles.input__title}`}>Аккаунт</p>}
-                  />
-                  <TextInputUI
-                    extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2} ${error && styles.extra__name__class}`}
-                    isSecret={true}
-                    onSetValue={setPasswordState}
-                    currentValue={password}
-                    errorValue={
-                      password.length < 6 && password.length !== 0 ? 'Пароль должен быть не менее 6 символов' : ''
-                    }
-                    placeholder='Введите пароль'
-                    title={<p className={`${styles.input__title}`}>Пароль</p>}
-                  />
-                  <button onClick={(e: any) => onSubmit(e)} className={`${styles.form__button}`} disabled={isLoading}>
-                    {isLoading ? 'Загрузка...' : 'Войти'}
-                  </button>
-                  <Link className={`${styles.form__button_register}`} href='/register'>
-                    Зарегистрироваться
-                  </Link>
-                  <div className={`${styles.apps__login}`}>
-                    <p className={`${styles.apps__text}`}>Войти через:</p>
-                    <div className={`${styles.apps__images}`}>
-                      <Image
-                        className={`${styles.registr__image}`}
-                        src={google}
-                        width={50}
-                        height={50}
-                        alt='registr with google'
-                      />
-                      <Image
-                        className={`${styles.registr__image}`}
-                        src={tg}
-                        width={50}
-                        height={50}
-                        alt='registr with telegram'
-                      />
-                      <Image
-                        className={`${styles.registr__image}`}
-                        src={wechat}
-                        width={50}
-                        height={50}
-                        alt='registr with telegram'
-                      />
-                      <Image
-                        className={`${styles.registr__image}`}
-                        src={weibo}
-                        width={50}
-                        height={50}
-                        alt='registr with telegram'
-                      />
+          {showResetForm ? (
+            <ResetPasswordForm onBack={handleBackToLogin} />
+          ) : (
+            <form className={`${styles.login__form__box}`}>
+              <h2 className={`${styles.login__title}`}>{t('loginTitle')}</h2>
+              <div className={`${styles.inputs__box}`}>
+                {
+                  <>
+                    {' '}
+                    <TextInputUI
+                      idForLabel='cy-email-input'
+                      extraClass={` ${styles.inputs__text_extra} ${name.length !== 0 && name.length < 3 && styles.extra__name__class} ${error && styles.extra__name__class}`}
+                      isSecret={false}
+                      theme='newGray'
+                      onSetValue={handleNameChange}
+                      currentValue={name}
+                      placeholder={t('writeEmailOrNickname')}
+                      title={<p className={`${styles.input__title}`}>{t('loginAccount')}</p>}
+                    />
+                    <TextInputUI
+                      idForLabel='cy-password-input'
+                      extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2} ${error && styles.extra__name__class}`}
+                      theme='newGray'
+                      isSecret={true}
+                      onSetValue={setPasswordState}
+                      currentValue={password}
+                      errorValue={password.length < 6 && password.length !== 0 ? t('passwordError') : ''}
+                      placeholder={t('writePassword')}
+                      title={<p className={`${styles.input__title}`}>{t('loginPassword')}</p>}
+                    />
+                    <button
+                      id='cy-login-button'
+                      onClick={(e: any) => onSubmit(e)}
+                      className={`${styles.form__button}`}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? t('loading') : t('loginButton')}
+                    </button>
+                    <Link className={`${styles.form__button_register}`} href='/register'>
+                      {t('loginRegister')}
+                    </Link>
+                    <div className={`${styles.form__reset__password__button}`} onClick={handleResetPassword}>
+                      {t('loginForgotPassword')}
                     </div>
-                  </div>
-                </>
-              }
-            </div>
-          </form>
+                    <div className={`${styles.apps__login}`}>
+                      <div className={`${styles.flex_soc}`}>
+                        <div className={styles.line_soc}></div>
+                        <p className={`${styles.apps__text}`}>{t('loginWithSocial')}</p>
+                        <div className={styles.line_soc}></div>
+                      </div>
+                      <div className={`${styles.apps__images}`}>
+                        {/* {currentLang === 'en' && (
+                          <Link
+                            className={`${styles.registr__image}`}
+                            href={`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/oauth2/google`}
+                          >
+                            <Image
+                              className={`${styles.registr__image}`}
+                              src={google}
+                              width={50}
+                              height={50}
+                              alt='registr with google'
+                            />
+                          </Link>
+                        )} */}
+
+                        <div className={styles.telegram__button__container}>
+                          <div className={`${styles.registr__image}`} style={{width: '28px', height: '23px'}} />
+                          <p className={styles.tg_text}>{t('loginWithTelegram')}</p>
+                          <TelegramLoginWidget
+                            onAuth={handleTelegramAuth}
+                            className={styles.telegram__widget__overlay}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                }
+              </div>
+            </form>
+          )}
+
+          {/* <div className={`${styles.decor__image}`}>
+            <Image
+              className={styles.decor__image}
+              src={decorImage2}
+              width={580}
+              height={745}
+              alt={t('decorationImage')}
+            />
+          </div> */}
+          <LoginSlider key={`${showResetForm} ${id}`} />
         </div>
         <div className={`${styles.margin__box}`}></div>
       </div>
+      <Footer useFixedFooter minMediaHeight={1044} extraClass={`${styles.extraFooter}`} />
     </div>
   )
 }

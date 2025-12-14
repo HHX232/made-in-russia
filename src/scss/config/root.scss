@@ -1,0 +1,28 @@
+/* ------------------------------------------------------------------------------------------------------------------------------
+ROOT
+-------------------------------------------------------------------------------------------------------------------------------- */
+:root {
+  --max-width: 1440px;
+  --norm-width: 1270px;
+  --container-padding-desktop: 85px;
+  --container-padding-large: 45px;
+  --container-padding-small: 20px;
+  --font-main: 'AvrileSans', sans-serif;
+  --font-title: 'AvrileSans', sans-serif;
+  --white: #fff;
+  --black: #000;
+  --accent: rgb(0 71 186);
+  --red: #e1251b;
+  --text: #2f2f2f;
+  --gray: #2b2b2b;
+  --vk: #07f;
+  --tg: #08c;
+  --wechat: #2bc100;
+  --whatsapp: #25d366;
+  --max: url('../../../public/imagesNew/max-bg.webp');
+  --scrollbar: gray;
+  --scrollbar-track: gray;
+  --scrollbar-thumb: var(--accent);
+  --filter: brightness(1.5);
+  --transition: all 0.2s ease-in-out;
+}

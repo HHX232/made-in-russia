@@ -1,10 +1,15 @@
 'use client'
-import {CSSProperties, FC, useEffect, useState, useMemo} from 'react'
+import {CSSProperties, FC, useEffect, useState, useMemo, useCallback, useRef} from 'react'
 import styles from './profileButtonUI.module.scss'
 import Image from 'next/image'
-import {getAccessToken, getRefreshToken, removeFromStorage, saveTokenStorage} from '@/services/auth/auth.helper'
-import instance, {axiosClassic} from '@/api/api.interceptor'
 import {useRouter} from 'next/navigation'
+import {useTranslations} from 'next-intl'
+import {useNProgress} from '@/hooks/useProgress'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useUserCache, useUserQuery} from '@/hooks/useUserApi'
+import {getAccessToken} from '@/services/auth/auth.helper'
+import {useActions} from '@/hooks/useActions'
+import {saveTokenStorage} from '@/middleware'
 
 const ava = '/avatars/avatar-v.svg'
 const ava1 = '/avatars/avatar-v-1.svg'
@@ -16,124 +21,173 @@ const ava6 = '/avatars/avatar-v-6.svg'
 const ava7 = '/avatars/avatar-v-7.svg'
 const ava8 = '/avatars/avatar-v-8.svg'
 const ava9 = '/avatars/avatar-v-9.svg'
-const userLogin = '/man_login.svg'
+// const userLogin2 = '/iconsNew/userNew.svg'
 const avatarsArray = [ava, ava1, ava2, ava3, ava4, ava5, ava6, ava7, ava8, ava9]
-
-interface User {
-  id: number
-  role: string
-  email: string
-  login: string
-  phoneNumber: string
-  region: string
-  registrationDate: string
-  lastModificationDate: string
-  avatar: string
-}
 
 interface IProfileProps {
   extraClass?: string
   extraStyles?: CSSProperties
+  specialUnloginLabel?: string
+  useDarkText?: boolean
 }
 
-const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles}) => {
-  const [userData, setUserData] = useState<User>()
+const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnloginLabel, useDarkText = false}) => {
+  const {user} = useTypedSelector((state) => state.user)
+  const {clearUser} = useActions()
+  const {removeUserFromCache} = useUserCache()
+  const {data: queryUser, isLoading, error, isError} = useUserQuery()
+  const didRun = useRef(false)
+
   const [randomAvatar, setRandomAvatar] = useState<string>(ava)
-  const [userName, setUserName] = useState<null | string>(null)
+  const [isMounted, setIsMounted] = useState(false)
+
   const router = useRouter()
+  const t = useTranslations('HomePage')
+  const {start} = useNProgress()
 
+  // читаем токены из query при монтировании
   useEffect(() => {
-    setRandomAvatar(avatarsArray[Math.floor(Math.random() * avatarsArray.length)])
+    if (typeof window === 'undefined') return
+
+    const url = new URL(window.location.href)
+    const accessFromQuery = url.searchParams.get('accessToken')
+    const refreshFromQuery = url.searchParams.get('refreshToken')
+
+    if (!!accessFromQuery && !!refreshFromQuery) {
+      console.log('найден access token в ProfileButtonUI')
+      saveTokenStorage({accessToken: accessFromQuery, refreshToken: refreshFromQuery})
+      window.history.replaceState({}, '', window.location.pathname)
+    }
   }, [])
 
   useEffect(() => {
-    const controller = new AbortController()
-    const getData = async () => {
-      const accessToken = getAccessToken()
-      const refreshToken = getRefreshToken()
+    setIsMounted(true)
 
-      if (!refreshToken) {
-        console.log('Нет гребанного рефреш токена')
-        return
-      }
-      if (!accessToken) {
-        console.log('Нет гребанного рефреш токена')
-        return
-      }
+    if (didRun.current) return
+    didRun.current = true
 
-      try {
-        console.log('accessToken', accessToken, 'refreshToken', refreshToken)
-        const response = await instance.get<User>('/me')
-        setUserData(response.data)
-      } catch (error) {
-        console.error('Failed to fetch user data:', error)
+    setRandomAvatar(avatarsArray[0])
 
-        if (!refreshToken) {
-          removeFromStorage()
-          return
-        }
-
-        try {
-          const {data: tokenData} = await axiosClassic.patch<{
-            accessToken: string
-          }>('/me/current-session/refresh', {refreshToken})
-
-          console.log('NEW tokenData', tokenData)
-          saveTokenStorage({
-            accessToken: tokenData.accessToken,
-            refreshToken: refreshToken
-          })
-
-          const response = await instance.get<User>('/me')
-          setUserData(response.data)
-          console.log('мы сохранили новые токены')
-        } catch (e) {
-          console.error('Failed to refresh token:', e)
-          console.log('сейчас мы удалили токены')
-          // removeFromStorage()
-        }
+    const accessToken = getAccessToken()
+    if (!accessToken) {
+      console.log('не найден access token в ProfileButtonUI')
+      if (typeof window !== 'undefined') {
+        console.log('удаляем юзера и токены')
+        removeUserFromCache()
+        clearUser()
       }
     }
+  }, [removeUserFromCache, clearUser])
 
-    getData()
+  // Используем данные из React Query если есть, иначе из Redux
+  const currentUser = queryUser || user
 
-    return () => controller.abort()
-  }, [])
-
-  useEffect(() => {
-    if (!!userData?.login) {
-      if (userData?.login?.length > 13) {
-        const truncatedLogin = userData.login.substring(0, 12) + '...'
-        setUserName(truncatedLogin)
-      } else if (userData?.login) {
-        setUserName(userData.login)
-      }
+  const userName = useMemo(() => {
+    if (!currentUser?.login) return null
+    if (currentUser.login.length > 13) {
+      return currentUser.login.substring(0, 12) + '...'
     }
-  }, [userData?.login])
-  const imageSrc = useMemo(() => {
-    return userData?.avatar?.trim() ? userData.avatar : randomAvatar
-  }, [userData?.avatar, randomAvatar])
+    return currentUser.login
+  }, [currentUser?.login])
+
+  // КРИТИЧНО: Токен - источник истины. Если токена нет, игнорируем Redux state
+  const accessToken = getAccessToken()
+  const hasValidToken = !!accessToken
+
+  // Пользователь залогинен только если:
+
+  const isUserLoggedIn = isMounted && hasValidToken && (isLoading || !!currentUser?.login)
+
+  const handleClick = useCallback(() => {
+    start()
+    // КРИТИЧНО: Проверяем токен ПРЯМО СЕЙЧАС, игнорируя любой state
+    const currentToken = getAccessToken()
+
+    if (!currentToken) {
+      // Нет токена = точно не залогинен
+      router.push('/login')
+    } else {
+      router.push('/profile')
+    }
+  }, [router, start])
+
+  if (isMounted && isLoading && hasValidToken) {
+    return (
+      <div className={`${styles.profile_box} ${extraClass}`} style={extraStyles}>
+        <div className={styles.loading}>
+          <div className={styles.skeleton_avatar} />
+          <div className={styles.skeleton_text} />
+        </div>
+      </div>
+    )
+  }
+
+  if (isError && error) {
+    console.error('User data loading error:', error)
+  }
 
   return (
     <div
-      onClick={() => {
-        if (!userData?.login) {
-          router.push('/login')
-        }
-      }}
-      style={{...extraStyles}}
+      id='cy-profile-button'
+      onClick={handleClick}
+      style={extraStyles}
       className={`${styles.profile_box} ${extraClass}`}
     >
-      {userData?.login && (
+      {isUserLoggedIn ? (
         <>
-          <Image className={styles.image} src={imageSrc} alt='Profile' width={28} height={28} priority />
-          <p className={styles.profile_text}>{userName || 'User'}</p>
+          <Image
+            style={{borderRadius: '50%', aspectRatio: '1/1'}}
+            className={styles.image}
+            src={currentUser?.avatarUrl || randomAvatar}
+            alt='Profile'
+            width={28}
+            height={28}
+            priority
+          />
+          <p style={{color: useDarkText ? '#4b5563' : '#ffffff'}} className={styles.profile_text}>
+            {userName || 'User'}
+          </p>
         </>
-      )}
-      {!userData?.login && (
+      ) : (
         <>
-          <Image className={styles.image} src={userLogin} alt='Please login' width={28} height={28} />
-          <p className={styles.profile_text}>Войти</p>
+          {/* <Image
+            className={`${styles.image} ${styles.back_transparent}`}
+            src={userLogin2}
+            alt='Please login'
+            width={28}
+            height={28}
+          /> */}
+          <svg
+            className={`${styles.image} ${styles.back_transparent}`}
+            width='28'
+            height='28'
+            viewBox='0 0 26 26'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              d='M13 13C15.9916 13 18.4167 10.5749 18.4167 7.58333C18.4167 4.59179 15.9916 2.16667 13 2.16667C10.0085 2.16667 7.58337 4.59179 7.58337 7.58333C7.58337 10.5749 10.0085 13 13 13Z'
+              stroke={useDarkText ? '#4b5563' : 'white'}
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
+            <path
+              d='M22.3059 23.8333C22.3059 19.6408 18.135 16.25 13 16.25C7.86504 16.25 3.69421 19.6408 3.69421 23.8333'
+              stroke={useDarkText ? '#4b5563' : 'white'}
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
+          </svg>
+
+          <p
+            style={{color: useDarkText ? '#4b5563' : '#ffffff'}}
+            className={`${styles.profile_text} ${useDarkText ? styles.dark : ''}`}
+            dangerouslySetInnerHTML={{__html: specialUnloginLabel || t('login')}}
+          >
+            {/* {specialUnloginLabel || t('login')} */}
+          </p>
         </>
       )}
     </div>
