@@ -1,0 +1,104 @@
+.messageItem {
+  display: flex;
+  margin-bottom: 16px;
+  gap: 8px;
+
+  &.own {
+    flex-direction: row-reverse;
+
+    .messageContent {
+      align-items: flex-end;
+      background-color: #007bff;
+      color: white;
+    }
+  }
+
+  &.other {
+    .messageContent {
+      background-color: #f1f3f4;
+      color: #202124;
+    }
+  }
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.messageContent {
+  display: flex;
+  max-width: 70%;
+  flex-direction: column;
+  padding: 12px;
+  border-radius: 12px;
+  gap: 4px;
+}
+
+.senderName {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.text {
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.messageFooter {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  gap: 6px;
+}
+
+.time {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.readStatus {
+  color: #4caf50; // Зеленый для прочитано
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.sentStatus {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.attachments {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  gap: 4px;
+}
+
+.attachment {
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: underline;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.systemMessage {
+  padding: 8px;
+  border-radius: 8px;
+  margin: 16px 0;
+  background-color: #f0f0f0;
+  text-align: center;
+}
+
+.systemMessageText {
+  color: #5f6368 !important;
+  font-size: 12px;
+  font-style: italic;
+}

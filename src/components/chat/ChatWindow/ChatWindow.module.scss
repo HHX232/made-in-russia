@@ -1,0 +1,35 @@
+.chatWindow {
+  display: flex;
+  overflow: hidden;
+  height: 600px;
+  flex-direction: column;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 10%);
+}
+
+.messagesContainer {
+  flex: 1;
+  background-color: #f8f9fa;
+  overflow-y: auto;
+}
+
+.loading {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  color: #5f6368;
+  font-size: 14px;
+}
+
+.noChat {
+  display: flex;
+  height: 600px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background-color: #f8f9fa;
+  color: #5f6368;
+  font-size: 16px;
+}

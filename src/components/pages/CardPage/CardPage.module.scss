@@ -586,6 +586,42 @@
   }
 }
 
+.contactSeller {
+  display: flex;
+  height: 54px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  border: 2px solid #0047ba;
+  border-radius: 5px;
+  background: transparent;
+  color: #0047ba;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  gap: 8px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: #0047ba;
+    color: white;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
 .fav__button {
   display: flex;
   width: 54px;

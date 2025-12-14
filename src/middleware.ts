@@ -115,7 +115,7 @@ const setLocaleInResponse = (
   return response
 }
 
-const protectedRoutes = ['/basket', '/profile', '/vendor', '/create-card']
+const protectedRoutes = ['/basket', '/profile', '/vendor', '/create-card', '/chats']
 const protectedAdminRoutes = ['/admin']
 const publicRoutes = ['/login', '/register']
 
@@ -148,6 +148,8 @@ export async function middleware(request: NextRequest) {
 
   try {
     const {pathname} = request.nextUrl
+
+    const pathnameWithoutLocale = pathname.replace(/^\/(ru|en|zh|hi)/, '') || '/'
 
     console.log('🌐 Реальный hostname из headers:', hostnameFromHeaders)
     // Определяем локаль по поддомену
@@ -182,7 +184,7 @@ export async function middleware(request: NextRequest) {
 
     // Обработка маршрутов create-card
     // Исправленная часть для обработки маршрутов create-card
-    if (pathname === '/create-card' || pathname.startsWith('/create-card/')) {
+    if (pathnameWithoutLocale === '/create-card' || pathnameWithoutLocale.startsWith('/create-card/')) {
       console.log('🎨 Обнаружен маршрут create-card:', pathname)
 
       // Проверка наличия refresh токена
@@ -367,7 +369,7 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    if (protectedAdminRoutes.some((route) => pathname.startsWith(route))) {
+    if (protectedAdminRoutes.some((route) => pathnameWithoutLocale.startsWith(route))) {
       console.log('🛡️ Обнаружен admin маршрут:', pathname)
 
       // Проверка наличия refresh токена
@@ -504,7 +506,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Обработка защищенных маршрутов
-    if (protectedRoutes.some((route) => pathname.startsWith(route))) {
+    if (protectedRoutes.some((route) => pathnameWithoutLocale.startsWith(route))) {
       console.log('🛡️ Обнаружен защищенный маршрут:', pathname)
 
       // Проверка наличия refresh токена
@@ -662,7 +664,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Обработка публичных маршрутов (login, register)
-    if (publicRoutes.some((route) => pathname.startsWith(route))) {
+    if (publicRoutes.some((route) => pathnameWithoutLocale.startsWith(route))) {
       console.log('🌐 Обнаружен публичный маршрут:', pathname)
 
       // Если нет токенов, разрешаем доступ к публичным маршрутам

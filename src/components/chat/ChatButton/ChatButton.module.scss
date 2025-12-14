@@ -1,0 +1,27 @@
+.chatButton {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgb(0 123 255 / 30%);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}

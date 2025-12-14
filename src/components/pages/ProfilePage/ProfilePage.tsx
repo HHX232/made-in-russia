@@ -227,7 +227,7 @@ const Sidebar: FC<{
   sidebarShow: boolean
   setShowSidebar: (val: boolean) => void
   currentTab: string
-  onTabChange: (tab: 'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions') => void
+  onTabChange: (tab: 'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions' | 'chats') => void
   onLogout: () => void
   onDeleteAccount: () => void
   isForOwner?: boolean
@@ -305,6 +305,61 @@ const Sidebar: FC<{
                 >
                   <Heart className={sidebarShow ? styles.defaultColor : styles.accentColor} width={24} height={24} />
                   <span>{t('favorites')}</span>
+                </a>
+              </li>
+            )}
+
+            {/* CHATS */}
+            {isForOwner && (
+              <li
+                onClick={() => {
+                  setShowSidebar(false)
+                }}
+                className={currentTab === 'chats' ? styles.active : ''}
+              >
+                <a
+                  href='#'
+                  className={sidebarShow ? styles.defaultColor : styles.accentColor}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    onTabChange('chats')
+                  }}
+                >
+                  <svg
+                    className={sidebarShow ? styles.defaultColor : styles.accentColor}
+                    width='24'
+                    height='24'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M8.5 19H8C4 19 2 18 2 13V8C2 4 4 2 8 2H16C20 2 22 4 22 8V13C22 17 20 19 16 19H15.5C15.19 19 14.89 19.15 14.7 19.4L13.2 21.4C12.54 22.28 11.46 22.28 10.8 21.4L9.3 19.4C9.14 19.18 8.77 19 8.5 19Z'
+                      stroke={currentTab === 'chats' ? '#0047BA' : '#2F2F2F'}
+                      strokeOpacity={currentTab === 'chats' ? (sidebarShow ? '1' : '0.5') : '0.5'}
+                      strokeWidth='1.5'
+                      strokeMiterlimit='10'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M7 8H17'
+                      stroke={currentTab === 'chats' ? '#0047BA' : '#2F2F2F'}
+                      strokeOpacity={currentTab === 'chats' ? (sidebarShow ? '1' : '0.5') : '0.5'}
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M7 13H13'
+                      stroke={currentTab === 'chats' ? '#0047BA' : '#2F2F2F'}
+                      strokeOpacity={currentTab === 'chats' ? (sidebarShow ? '1' : '0.5') : '0.5'}
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                  <span>{t('myChats')}</span>
                 </a>
               </li>
             )}
@@ -905,9 +960,9 @@ const ProfilePage: FC<{firstUserData?: User; isForOwner?: boolean}> = ({firstUse
   const {mutate: logout, isPending: isLogoutPending} = useLogout()
   const [wantQuite, setWantQuite] = useState(false)
   const [sidebarShow, setSidebarShow] = useState(true)
-  const [currentTab, setCurrentTab] = useState<'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions'>(
-    'profile'
-  )
+  const [currentTab, setCurrentTab] = useState<
+    'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions' | 'chats'
+  >('profile')
   const currentLang = useCurrentLanguage()
   const searchParams = useSearchParams()
   const activeTabParam = useMemo(() => searchParams.get('activeTab'), [searchParams])
@@ -920,9 +975,9 @@ const ProfilePage: FC<{firstUserData?: User; isForOwner?: boolean}> = ({firstUse
     const activeTab = searchParams.get('activeTab')
     console.log('activeTab value:', activeTab)
 
-    if (activeTab && ['profile', 'recentlyView', 'favorites', 'comments', 'sessions'].includes(activeTab)) {
+    if (activeTab && ['profile', 'recentlyView', 'favorites', 'comments', 'sessions', 'chats'].includes(activeTab)) {
       console.log('Condition passed, setting tab to:', activeTab)
-      setCurrentTab(activeTab as 'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions')
+      setCurrentTab(activeTab as 'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions' | 'chats')
       setSidebarShow(false)
       console.log('закрыли сайдбар')
     } else {
@@ -931,12 +986,21 @@ const ProfilePage: FC<{firstUserData?: User; isForOwner?: boolean}> = ({firstUse
   }, [searchParams.toString()])
 
   useEffect(() => {
-    if (activeTabParam && ['profile', 'recentlyView', 'favorites', 'comments', 'sessions'].includes(activeTabParam)) {
-      setCurrentTab(activeTabParam as 'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions')
+    if (
+      activeTabParam &&
+      ['profile', 'recentlyView', 'favorites', 'comments', 'sessions', 'chats'].includes(activeTabParam)
+    ) {
+      setCurrentTab(activeTabParam as 'profile' | 'recentlyView' | 'favorites' | 'comments' | 'sessions' | 'chats')
       setSidebarShow(false)
       console.log('закрыли сайдбар', activeTabParam)
     }
   }, [activeTabParam])
+
+  useEffect(() => {
+    if (currentTab === 'chats') {
+      router.push('/chats')
+    }
+  }, [currentTab, router])
 
   const handleLogout = () => {
     if (isLogoutPending) return

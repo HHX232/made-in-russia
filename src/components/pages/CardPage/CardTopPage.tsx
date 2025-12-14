@@ -16,7 +16,10 @@ import {axiosClassic} from '@/api/api.interceptor'
 import {toast} from 'sonner'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useUserQuery} from '@/hooks/useUserApi'
 import ServiceFavorites from '@/services/favorite/favorite.service'
+import {chatService} from '@/services/chat/chat.service'
+import {useRouter} from 'next/navigation'
 import {Heart} from 'lucide-react'
 
 interface IPriceItem {
@@ -159,9 +162,43 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
   const [purchaseModalOpen, setPurchaseModalOpen] = useState(false)
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
+  const [isCreatingChat, setIsCreatingChat] = useState(false)
+  const router = useRouter()
+  const tChat = useTranslations('chat')
 
   const {toggleToFavorites} = useActions()
   const {productInFavorites} = useTypedSelector((state) => state.favorites)
+  const {user} = useTypedSelector((state) => state.user)
+  const {isPending: isUserLoading} = useUserQuery()
+
+  const isOwner = user?.id !== undefined && cardData?.user?.id !== undefined && user.id === cardData.user.id
+  const showContactButton = !isUserLoading && !isOwner
+
+  const handleContactSeller = async () => {
+    if (isCreatingChat || !cardData) return
+
+    if (!user) {
+      toast.error('Необходимо авторизоваться')
+      router.push(`/${locale}/login`)
+      return
+    }
+
+    if (user.id === cardData.user.id) {
+      toast.error('Вы не можете написать самому себе')
+      return
+    }
+
+    setIsCreatingChat(true)
+    try {
+      const chat = await chatService.createChat(cardData.id)
+      router.push(`/chats?chatId=${chat.id}`)
+    } catch (error) {
+      console.error('Error creating chat:', error)
+      toast.error(tChat('sendError'))
+    } finally {
+      setIsCreatingChat(false)
+    }
+  }
 
   useEffect(() => {
     console.log('productInFavorites', productInFavorites)
@@ -311,6 +348,36 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
           <button className={styles.byNow} onClick={() => setPurchaseModalOpen(true)}>
             {t('byNow')}
           </button>
+          {/* Кнопка "Написать продавцу" - только если это не свой товар и пользователь загружен */}
+          {showContactButton && (
+            <button className={styles.contactSeller} onClick={handleContactSeller} disabled={isCreatingChat}>
+              <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <path
+                  d='M8.5 19H8C4 19 2 18 2 13V8C2 4 4 2 8 2H16C20 2 22 4 22 8V13C22 17 20 19 16 19H15.5C15.19 19 14.89 19.15 14.7 19.4L13.2 21.4C12.54 22.28 11.46 22.28 10.8 21.4L9.3 19.4C9.14 19.18 8.77 19 8.5 19Z'
+                  stroke='currentColor'
+                  strokeWidth='1.5'
+                  strokeMiterlimit='10'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+                <path
+                  d='M7 8H17'
+                  stroke='currentColor'
+                  strokeWidth='1.5'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+                <path
+                  d='M7 13H13'
+                  stroke='currentColor'
+                  strokeWidth='1.5'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+              </svg>
+              {isCreatingChat ? '...' : tChat('writeToSeller')}
+            </button>
+          )}
           <button
             onClick={handleToggleFavorite}
             className={styles.fav__button}

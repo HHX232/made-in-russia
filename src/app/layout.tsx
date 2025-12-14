@@ -21,6 +21,7 @@ import ClientStyleLoader from '@/components/ClientStyleLoader'
 import {getMessages} from 'next-intl/server'
 import {getCurrentLocale} from '@/lib/locale-detection'
 import FavoritesProvider from '@/providers/FavoritesProvider'
+import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
 
 // import GoogleRecaptchaProviderComponent from '@/providers/GoogleRecaptchaProviderComponent'
@@ -38,9 +39,11 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           <DefaultProvider>
             <NextIntlClientProvider messages={messages}>
               {/* <GoogleRecaptchaProviderComponent> */}
-              <FavoritesProvider>
-                <LatestViewsProvider>{children}</LatestViewsProvider>
-              </FavoritesProvider>
+              <WebSocketProvider>
+                <FavoritesProvider>
+                  <LatestViewsProvider>{children}</LatestViewsProvider>
+                </FavoritesProvider>
+              </WebSocketProvider>
               {/* </GoogleRecaptchaProviderComponent> */}
               <ClientStyleLoader />
               <Toaster

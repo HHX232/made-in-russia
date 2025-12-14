@@ -39,6 +39,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnl
   const didRun = useRef(false)
 
   const [randomAvatar, setRandomAvatar] = useState<string>(ava)
+  const [isMounted, setIsMounted] = useState(false)
 
   const router = useRouter()
   const t = useTranslations('HomePage')
@@ -60,6 +61,8 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnl
   }, [])
 
   useEffect(() => {
+    setIsMounted(true)
+
     if (didRun.current) return
     didRun.current = true
 
@@ -92,9 +95,8 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnl
   const hasValidToken = !!accessToken
 
   // Пользователь залогинен только если:
-  // 1. Есть токен
-  // 2. И (данные загружаются ИЛИ уже есть данные пользователя)
-  const isUserLoggedIn = hasValidToken && (isLoading || !!currentUser?.login)
+
+  const isUserLoggedIn = isMounted && hasValidToken && (isLoading || !!currentUser?.login)
 
   const handleClick = useCallback(() => {
     start()
@@ -109,8 +111,7 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnl
     }
   }, [router, start])
 
-  // Показываем loading state только если есть токен и идёт загрузка
-  if (isLoading && hasValidToken) {
+  if (isMounted && isLoading && hasValidToken) {
     return (
       <div className={`${styles.profile_box} ${extraClass}`} style={extraStyles}>
         <div className={styles.loading}>
@@ -167,16 +168,16 @@ const ProfileButtonUI: FC<IProfileProps> = ({extraClass, extraStyles, specialUnl
             <path
               d='M13 13C15.9916 13 18.4167 10.5749 18.4167 7.58333C18.4167 4.59179 15.9916 2.16667 13 2.16667C10.0085 2.16667 7.58337 4.59179 7.58337 7.58333C7.58337 10.5749 10.0085 13 13 13Z'
               stroke={useDarkText ? '#4b5563' : 'white'}
-              stroke-width='2'
-              stroke-linecap='round'
-              stroke-linejoin='round'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
             />
             <path
               d='M22.3059 23.8333C22.3059 19.6408 18.135 16.25 13 16.25C7.86504 16.25 3.69421 19.6408 3.69421 23.8333'
               stroke={useDarkText ? '#4b5563' : 'white'}
-              stroke-width='2'
-              stroke-linecap='round'
-              stroke-linejoin='round'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
             />
           </svg>
 

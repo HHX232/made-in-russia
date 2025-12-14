@@ -4,6 +4,30 @@ import {routing} from './routing'
 import {axiosClassic} from '@/api/api.interceptor'
 import {getCurrentLocale} from '@/lib/locale-detection'
 
+function deepMerge<T extends Record<string, unknown>>(target: T, source: Record<string, unknown>): T {
+  const result = {...target} as Record<string, unknown>
+
+  for (const key of Object.keys(source)) {
+    const sourceValue = source[key]
+    const targetValue = result[key]
+
+    if (
+      sourceValue &&
+      typeof sourceValue === 'object' &&
+      !Array.isArray(sourceValue) &&
+      targetValue &&
+      typeof targetValue === 'object' &&
+      !Array.isArray(targetValue)
+    ) {
+      result[key] = deepMerge(targetValue as Record<string, unknown>, sourceValue as Record<string, unknown>)
+    } else {
+      result[key] = sourceValue
+    }
+  }
+
+  return result as T
+}
+
 export default getRequestConfig(async ({requestLocale}) => {
   let locale = await getCurrentLocale()
 
@@ -33,14 +57,11 @@ export default getRequestConfig(async ({requestLocale}) => {
       }
     })
 
-    const serverMessages = response.data as Record<string, string>
+    const serverMessages = response.data as Record<string, unknown>
 
     return {
       locale,
-      messages: {
-        ...localMessages,
-        ...serverMessages
-      }
+      messages: deepMerge(localMessages, serverMessages)
     }
   } catch (error) {
     console.warn(`Failed to load server messages for ${locale}, using local fallback:`, error)

@@ -141,7 +141,7 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://exporteru.b-cdn.net https://telegram.org https://www.google.com https://www.gstatic.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: https://exporteru.b-cdn.net https://telegram.org",
-              "connect-src 'self' https://exporteru.com https://en.exporteru.com https://cn.exporteru.com https://exporteru.b-cdn.net https://www.google.com https://www.gstatic.com",
+              "connect-src 'self' http://localhost:8080 ws://localhost:8080 https://exporteru.com https://en.exporteru.com https://cn.exporteru.com https://exporteru.b-cdn.net https://www.google.com https://www.gstatic.com",
               "frame-src 'self' https://telegram.org https://oauth.telegram.org https://www.google.com https://www.gstatic.com",
               "font-src 'self' https://fonts.gstatic.com"
             ].join('; ')

@@ -35,10 +35,10 @@ import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
 import Catalog from '@/components/screens/Catalog/Catalog'
 import MarkdownEditor from '@/components/UI-kit/MDEditor/MarkdownEditor'
 import FavoritesForProfile from '../FavoritesPage/FavoritesForProfile/FavoritesForProfile'
-import {useSearchParams} from 'next/navigation'
+import {useSearchParams, useRouter} from 'next/navigation'
 import {Heart} from 'lucide-react'
 
-type TCurrentTab = 'personalData' | 'contacts' | 'sessions' | 'reviews' | 'faq' | 'favorites'
+type TCurrentTab = 'personalData' | 'contacts' | 'sessions' | 'reviews' | 'faq' | 'favorites' | 'chats'
 
 export interface IVendorData {
   id: number
@@ -315,6 +315,53 @@ const Sidebar: FC<{
                     }
                   />
                   <span>{t('favorites')}</span>
+                </a>
+              </li>
+            )}
+
+            {/* Мои чаты */}
+            {isPageForVendor && (
+              <li
+                onClick={() => {
+                  setShowSidebar(false)
+                }}
+                className={currentTab === 'chats' ? styles.active : ''}
+              >
+                <a
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    onTabChange('chats')
+                  }}
+                >
+                  <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M8.5 19H8C4 19 2 18 2 13V8C2 4 4 2 8 2H16C20 2 22 4 22 8V13C22 17 20 19 16 19H15.5C15.19 19 14.89 19.15 14.7 19.4L13.2 21.4C12.54 22.28 11.46 22.28 10.8 21.4L9.3 19.4C9.14 19.18 8.77 19 8.5 19Z'
+                      stroke={currentTab === 'chats' ? '#0047BA' : '#2F2F2F'}
+                      strokeOpacity={currentTab === 'chats' ? (sidebarShow ? '1' : '0.5') : '0.5'}
+                      strokeWidth='1.5'
+                      strokeMiterlimit='10'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M7 8H17'
+                      stroke={currentTab === 'chats' ? '#0047BA' : '#2F2F2F'}
+                      strokeOpacity={currentTab === 'chats' ? (sidebarShow ? '1' : '0.5') : '0.5'}
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M7 13H13'
+                      stroke={currentTab === 'chats' ? '#0047BA' : '#2F2F2F'}
+                      strokeOpacity={currentTab === 'chats' ? (sidebarShow ? '1' : '0.5') : '0.5'}
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                  <span>{t('myChats')}</span>
                 </a>
               </li>
             )}
@@ -645,18 +692,25 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const [vendorData, setVendorData] = useState(initialVendorData)
 
   const searchParams = useSearchParams()
+  const router = useRouter()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     const activeTab = searchParams.get('activeTab')
-    const validTabs: TCurrentTab[] = ['personalData', 'contacts', 'sessions', 'reviews', 'faq', 'favorites']
+    const validTabs: TCurrentTab[] = ['personalData', 'contacts', 'sessions', 'reviews', 'faq', 'favorites', 'chats']
 
     if (activeTab && validTabs.includes(activeTab as TCurrentTab)) {
       setCurrentTab(activeTab as TCurrentTab)
       setSidebarShow(false)
     }
   }, [searchParams.toString()])
+
+  useEffect(() => {
+    if (currentTab === 'chats') {
+      router.push('/chats')
+    }
+  }, [currentTab, router])
 
   useEffect(() => {
     const fetchVendorData = async () => {

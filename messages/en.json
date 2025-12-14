@@ -148,6 +148,7 @@
     "personalData": "Personal data",
     "registrationDate": "Registration date",
     "myReviews": "My reviews",
+    "myChats": "My Chats",
     "belarus": "Belarus",
     "беларусь": "Belarus",
     "kazakhstan": "Kazakhstan",
@@ -1123,8 +1124,8 @@
   },
 
   "ReviewsToNumber":{
-  "count":"{count, plural, one {{count} review} other {{count} reviews}}",
-  "mg": "{count, plural, one {{count} milligram} other {{count} milligrams}}",
+    "count":"{count, plural, one {{count} review} other {{count} reviews}}",
+    "mg": "{count, plural, one {{count} milligram} other {{count} milligrams}}",
     "g": "{count, plural, one {{count} gram} other {{count} grams}}",
     "kg": "{count, plural, one {{count} kilogram} other {{count} kilograms}}",
     "c": "{count, plural, one {{count} centner} other {{count} centners}}",
@@ -1143,6 +1144,33 @@
     "set": "{count, plural, one {{count} set} other {{count} sets}}",
     "box": "{count, plural, one {{count} box} other {{count} boxes}}",
     "bag": "{count, plural, one {{count} bag} other {{count} bags}}"
+  },
+  "chat": {
+    "myChats": "My Chats",
+    "loading": "Loading...",
+    "noChats": "No chats yet",
+    "noChatsHint": "Start a chat by clicking 'Contact Seller' on a product page",
+    "yesterday": "Yesterday",
+    "daysAgo": "days ago",
+    "chatStartedForProduct": "Chat started for product: {productName}",
+    "noMessages": "No messages",
+    "backToList": "Back to list",
+    "selectChat": "Select a chat to start messaging",
+    "writeToSeller": "Contact Seller",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "attach": "Attach file",
+    "typing": "typing...",
+    "unreadMessages": "{count} unread messages",
+    "you": "You",
+    "seller": "Seller",
+    "buyer": "Buyer",
+    "admin": "Admin",
+    "sendError": "Error sending message",
+    "connectionError": "Connection error",
+    "reconnecting": "Reconnecting...",
+    "online": "Online",
+    "offline": "Offline"
   }
 
 }

@@ -150,6 +150,7 @@
     "personalData": "Личные данные",
     "registrationDate": "Дата регистрации",
     "myReviews": "Мои отзывы",
+    "myChats": "Мои чаты",
     "noFavorites": "Нет избранных товаров",
 
     "belarus": "Беларусь",
@@ -1157,5 +1158,32 @@
     "set": "{count, plural, one {{count} комплект} few {{count} комплекта} many {{count} комплектов} other {{count} комплекта}}",
     "box": "{count, plural, one {{count} коробка} few {{count} коробки} many {{count} коробок} other {{count} коробки}}",
     "bag": "{count, plural, one {{count} мешок} few {{count} мешка} many {{count} мешков} other {{count} мешка}}"
+  },
+  "chat": {
+    "myChats": "Мои чаты",
+    "loading": "Загрузка...",
+    "noChats": "Чатов пока нет",
+    "noChatsHint": "Начните чат, нажав 'Написать продавцу' на странице товара",
+    "yesterday": "Вчера",
+    "daysAgo": "дней назад",
+    "chatStartedForProduct": "Чат начат по товару: {productName}",
+    "noMessages": "Нет сообщений",
+    "backToList": "К списку чатов",
+    "selectChat": "Выберите чат для начала общения",
+    "writeToSeller": "Написать продавцу",
+    "typeMessage": "Введите сообщение...",
+    "send": "Отправить",
+    "attach": "Прикрепить файл",
+    "typing": "печатает...",
+    "unreadMessages": "{count} непрочитанных сообщений",
+    "you": "Вы",
+    "seller": "Продавец",
+    "buyer": "Покупатель",
+    "admin": "Администратор",
+    "sendError": "Ошибка отправки сообщения",
+    "connectionError": "Ошибка соединения",
+    "reconnecting": "Переподключение...",
+    "online": "В сети",
+    "offline": "Не в сети"
   }
 }
