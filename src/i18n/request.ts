@@ -3,6 +3,7 @@ import {hasLocale} from 'next-intl'
 import {routing} from './routing'
 import {axiosClassic} from '@/api/api.interceptor'
 import {getCurrentLocale} from '@/lib/locale-detection'
+import {messages as allMessages} from './messages'
 
 function deepMerge<T extends Record<string, unknown>>(target: T, source: Record<string, unknown>): T {
   const result = {...target} as Record<string, unknown>
@@ -40,14 +41,8 @@ export default getRequestConfig(async ({requestLocale}) => {
     locale = routing.defaultLocale
   }
 
-  // Добавляем поддержку hi
-  const localMessages = (
-    await import(
-      `../../messages/${
-        locale === 'en' ? 'en' : locale === 'ru' ? 'ru' : locale === 'zh' ? 'zh' : locale === 'hi' ? 'hi' : 'en' //
-      }.json`
-    )
-  ).default
+  // Статический импорт сообщений
+  const localMessages = allMessages[locale as keyof typeof allMessages] || allMessages.en
 
   try {
     const response = await axiosClassic.get(`localization/${locale}`, {
