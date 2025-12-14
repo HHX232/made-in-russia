@@ -359,7 +359,7 @@ const AdminCategoriesPage: FC = () => {
             )}
             {category.okved && category.okved.length > 0 && (
               <div style={{fontSize: '13px'}} className={styles.category__okved}>
-                ОКВЭД: {category.okved.join(', ')}
+                ТН ВЭД: {category.okved.join(', ')}
               </div>
             )}
             {category.iconUrl && (
@@ -494,12 +494,12 @@ const AdminCategoriesPage: FC = () => {
           </div>
 
           <div className={styles.form__field}>
-            <label className={styles.form__label}>ОКВЭД коды (через запятую)</label>
+            <label className={styles.form__label}>Код ТН ВЭД (через запятую)</label>
             <TextInputUI
               inputType='text'
               currentValue={okvedValue}
               onSetValue={(e) => handleOkvedChange(e)}
-              placeholder='Введите ОКВЭД коды через запятую (например: 01.11, 01.12, 47.19)'
+              placeholder='Введите код ТН ВЭД через запятую (например: 01.11, 01.12, 47.19)'
               theme='superWhite'
               disabled={isLoading}
             />

@@ -80,6 +80,7 @@ export interface ValidationErrors {
   descriptionMatrix: string
   deliveryTerms: string
   selectedCategory: string
+  minimalVolume: string
   // faqMatrix: string
 }
 

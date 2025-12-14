@@ -182,7 +182,8 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     descriptionImages: '',
     descriptionMatrix: '',
     deliveryTerms: '',
-    selectedCategory: ''
+    selectedCategory: '',
+    minimalVolume: ''
   })
 
   const handleCategoryChange = useCallback(
@@ -201,6 +202,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
       submitAttempted: true,
       similarProducts,
       selectedCategory,
+      minimalVolume: multyLangObjectForPrices?.[currentLangState]?.priceInfo?.minimalVolume,
       saleDate: multyLangObjectForPrices?.[currentLangState]?.priceInfo?.daysBeforeSale,
       currentLangState,
       cardTitle,
@@ -508,7 +510,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               </div>
               <TextInputUI
                 errorValue={errors.cardTitle}
-                extraClass={`${styles.create__input__title}`}
+                extraClass={`${styles.create__input__title} ${!!errors.cardTitle && styles.extra__name__input}`}
                 idForLabel='cy-title-create-input'
                 placeholder={t('name')}
                 maxLength={65}
@@ -632,6 +634,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
               ]}
               canCreateNewOption={[false, true]}
               currentLanguage={currentLangState}
+              minVolumeError={errors.minimalVolume}
               onSetPricesArray={handlePricesArrayChange}
               pricesError={errors.pricesArray}
               charMatrixError={errors.descriptionMatrix}

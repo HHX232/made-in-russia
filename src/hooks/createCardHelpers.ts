@@ -39,39 +39,31 @@ export const validateField = (
 ): string => {
   switch (fieldName) {
     case 'cardTitle':
-      if (!cardTitle.trim()) return 'Название товара обязательно для заполнения'
-      if (cardTitle.trim().length < 3) return 'Название должно содержать минимум 3 символа'
+      if (!cardTitle.trim()) return 'Необходимо указать наименование товара'
+      if (cardTitle.trim().length < 3) return 'Необходимо указать наименование товара'
       return ''
 
     case 'uploadedFiles':
       const totalImages = uploadedFiles.length + remainingInitialImages.length
-      if (totalImages < 3) return `Необходимо минимум 3 изображения (текущее количество: ${totalImages})`
+      if (totalImages < 3) return 'Необходимо добавить минимум 1 изображение товара'
       return ''
 
     case 'pricesArray':
-      if (pricesArray.length === 0) return 'Необходимо добавить хотя бы одну цену'
+      if (pricesArray.length === 0) return 'Необходимо указать стоимость товара, валюту, единицу измерения'
       const invalidPrices = pricesArray.filter((price) => !price.value || price.value <= 0)
-      if (invalidPrices.length > 0) return 'Все цены должны быть больше нуля'
+      if (invalidPrices.length > 0) return 'Необходимо указать стоимость товара, валюту, единицу измерения'
       return ''
 
     case 'description':
       const cleanDescription = description.replace('## Основное описание', '').trim()
-      if (!cleanDescription) return 'Основное описание обязательно для заполнения'
-      if (cleanDescription.length < 10) return 'Основное описание должно содержать минимум 10 символов'
+      if (!cleanDescription) return 'Необходимо добавить описание товара'
+      if (cleanDescription.length < 10) return 'Необходимо добавить описание товара'
       return ''
 
     case 'descriptionMatrix':
       const filledRows = descriptionMatrix.filter((row) => row.some((cell) => cell.trim()))
-      if (filledRows.length === 0) return 'Необходимо заполнить хотя бы одну строку в таблице характеристик'
+      if (filledRows.length === 0) return 'Необходимо добавить минимум 1 характеристику'
       return ''
-    // case 'faqMatrix':
-    //   const filledFaqRows = faqMatrix.filter((row) => row[0].trim() || row[1].trim())
-    //   if (filledFaqRows.length === 0) return 'Необходимо добавить хотя бы один вопрос и ответ'
-    //   const incompleteRows = filledFaqRows.filter(
-    //     (row) => (row[0].trim() && !row[1].trim()) || (!row[0].trim() && row[1].trim())
-    //   )
-    //   if (incompleteRows.length > 0) return 'Каждый вопрос должен иметь ответ и наоборот'
-    //   return ''
 
     default:
       return ''

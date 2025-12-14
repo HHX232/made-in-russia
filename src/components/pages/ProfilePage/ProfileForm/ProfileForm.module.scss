@@ -55,6 +55,8 @@
 // !EXTRA
 .extra_extraDropListClass {
   left: 0 !important;
+  max-height: 700px !important;
+  overflow-y: scroll;
   transform: none !important;
 
   & > li:hover {

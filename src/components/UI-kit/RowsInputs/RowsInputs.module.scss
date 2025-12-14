@@ -1,7 +1,7 @@
 /* stylelint-disable no-duplicate-selectors */
 .error__message {
   margin-top: 20px;
-  color: #ac2525;
+  color: #f44;
   font-size: 16px;
 }
 
@@ -445,7 +445,7 @@
 
 // Стили для ошибки dropdown
 .error__dropdown {
-  border: 2px solid #ac2525 !important;
+  border: 2px solid #f44 !important;
 
   .dropdown__placeholder {
     color: #d61414;

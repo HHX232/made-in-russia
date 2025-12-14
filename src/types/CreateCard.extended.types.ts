@@ -13,6 +13,7 @@ export interface FormState {
   currentLangState: ICurrentLanguage
   cardTitle: string
   uploadedFiles: File[]
+  minimalVolume?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cardObjectForOthers: any
   remainingInitialImages: string[]

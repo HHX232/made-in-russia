@@ -29,6 +29,7 @@ interface CreateCardPriceElementsProps {
   canCreateNewOption?: boolean[]
   extra__rows__grid?: string
   charMatrixError?: string
+  minVolumeError?: string
 }
 
 const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
@@ -41,6 +42,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     dropdownPricesOptions = [],
     canCreateNewOption = [],
     extra__rows__grid,
+    minVolumeError = '',
     charMatrixError
   }) => {
     const {
@@ -66,8 +68,23 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     const currentErrors = useTypedSelector((state) => state.multiLanguageCardPriceData.errors[currentLanguage])
     const storeCurrentLanguage = useTypedSelector((state) => state.multiLanguageCardPriceData.currentLanguage)
 
+    // Функция для определения начального значения цены со скидкой
+    const getInitialDiscountPrice = () => {
+      if (pricesArray && pricesArray.length > 0) {
+        const originalPrice = pricesArray[0][1]
+        const discountPriceFromArray = pricesArray[0][2]
+
+        // Если цены равны, возвращаем пустую строку
+        if (originalPrice === discountPriceFromArray) {
+          return ''
+        }
+        return discountPriceFromArray || ''
+      }
+      return ''
+    }
+
     // Состояние для цены со скидкой (отдельный инпут)
-    const [discountPrice, setDiscountPrice] = useState('')
+    const [discountPrice, setDiscountPrice] = useState(getInitialDiscountPrice())
 
     // Локальное состояние для списка цен (БЕЗ quantity - только price, currency, unit)
     const [pricesMatrix, setPricesMatrix] = useState<string[][]>(
@@ -80,15 +97,32 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     const [characteristicsKey, setCharacteristicsKey] = useState(0)
     const [deliveryKey, setDeliveryKey] = useState(0)
     const [packagingKey, setPackagingKey] = useState(0)
+    const [isInitialized, setIsInitialized] = useState(false)
 
     const t = useTranslations('CreateCardPriceElementsText')
 
-    // Инициализация цены со скидкой из pricesArray
+    // Инициализация цены со скидкой и срока акции при монтировании
     useEffect(() => {
-      if (pricesArray && pricesArray.length > 0 && pricesArray[0][2]) {
-        setDiscountPrice(pricesArray[0][2])
+      if (!isInitialized && pricesArray && pricesArray.length > 0) {
+        const originalPrice = pricesArray[0][1]
+        const discountPriceFromArray = pricesArray[0][2]
+
+        // Если цены равны, очищаем цену со скидкой и срок акции
+        if (originalPrice === discountPriceFromArray) {
+          setDiscountPrice('')
+          // Очищаем срок акции в store
+          updatePriceInfo({
+            language: currentLanguage,
+            field: 'daysBeforeSale',
+            value: ''
+          })
+        } else {
+          setDiscountPrice(discountPriceFromArray || '')
+        }
+
+        setIsInitialized(true)
       }
-    }, [])
+    }, [pricesArray, isInitialized, currentLanguage, updatePriceInfo])
 
     const prepareDropdownOptions = () => {
       if (!inputType || dropdownPricesOptions.length === 0) {
@@ -349,12 +383,26 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
         // Преобразуем с учетом новой структуры (без quantity, берем только price, currency, unit)
         const newMatrix = pricesArray.map((row) => [row[1], row[3], row[4]])
         setPricesMatrix(newMatrix)
-        // Обновляем discountPrice из первой строки
-        if (pricesArray.length > 0 && pricesArray[0][2]) {
-          setDiscountPrice(pricesArray[0][2])
+
+        // Проверяем, равны ли цены, и обновляем discountPrice и daysBeforeSale
+        if (pricesArray.length > 0) {
+          const originalPrice = pricesArray[0][1]
+          const discountPriceFromArray = pricesArray[0][2]
+
+          if (originalPrice === discountPriceFromArray) {
+            setDiscountPrice('')
+            // Также очищаем срок акции
+            updatePriceInfo({
+              language: currentLanguage,
+              field: 'daysBeforeSale',
+              value: ''
+            })
+          } else {
+            setDiscountPrice(discountPriceFromArray || '')
+          }
         }
       }
-    }, [pricesArray])
+    }, [pricesArray, currentLanguage, updatePriceInfo])
 
     const characteristicsMatrix = currentData.characteristics.map((item) => [item.title, item.characteristic])
     const deliveryMatrix = currentData.delivery.map((item) => [item.title])
@@ -428,12 +476,14 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 <TextInputUI
                   idForLabel='cy-minimalVolume'
                   inputType='number'
+                  extraClass={minVolumeError && styles.extra__error_class}
                   currentValue={currentData.priceInfo.minimalVolume}
                   onSetValue={handleMinVolumeChange}
                   theme='newWhite'
                   placeholder={t('minimalVolumePlaceholder')}
-                  errorValue={currentErrors.minVolumeError}
+                  errorValue={minVolumeError}
                 />
+                <p className={styles.seller__date__box__inner__date__text}>{pricesMatrix?.[0]?.[2]}</p>
               </div>
             </div>
             <div className={styles.seller__date__box}>
@@ -452,6 +502,17 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               </div>
               <div className={styles.seller__date__box__inner}>
                 <div className={styles.seller__date__box__inner__date}>
+                  <p className={styles.seller__date__box__inner__date__text}>{t('priceWithDiscount')}</p>
+                  <TextInputUI
+                    idForLabel='cy-priceWithDiscount'
+                    inputType='number'
+                    currentValue={discountPrice}
+                    onSetValue={handleDiscountPriceChange}
+                    theme='newWhite'
+                    placeholder={t('priceWithDiscount')}
+                  />
+                </div>
+                <div className={styles.seller__date__box__inner__date}>
                   <p className={styles.seller__date__box__inner__date__text}>{t('daysCountBeforeSale')}</p>
                   <TextInputUI
                     idForLabel='cy-daysBeforeSale'
@@ -461,17 +522,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                     theme='newWhite'
                     placeholder={t('daysCountBeforeSalePlaceholder')}
                     errorValue={currentErrors.saleDateError}
-                  />
-                </div>
-                <div className={styles.seller__date__box__inner__date}>
-                  <p className={styles.seller__date__box__inner__date__text}>{t('priceWithDiscount')}</p>
-                  <TextInputUI
-                    idForLabel='cy-priceWithDiscount'
-                    inputType='number'
-                    currentValue={discountPrice}
-                    onSetValue={handleDiscountPriceChange}
-                    theme='newWhite'
-                    placeholder={t('priceWithDiscount')}
                   />
                 </div>
               </div>
@@ -495,6 +545,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
               maxRows={6}
               extraButtonPlusClass={styles.extra__plus__button__class}
               useNewTheme
+              maxLength={50}
               inputType={['text', 'textarea']}
               extraTextareaClass={styles.textarea__extra__padding}
               textAreaProps={{
