@@ -517,6 +517,10 @@
     "publishing": "प्रकाशित हो रहा है..."
   },
   "createCard": {
+    "priceValueRequired": "उत्पाद की कीमत खाली नहीं हो सकती",
+    "priceUnitRequired": "उत्पाद की माप इकाई खाली नहीं हो सकती",
+    "priceCurrencyRequired": "उत्पाद की मुद्रा खाली नहीं हो सकती",
+    "priceFieldsRequired": "सभी मूल्य फ़ील्ड भरना आवश्यक है",
     "deliveryTermsError": "कम से कम 1 डिलीवरी विकल्प जोड़ा जाना चाहिए",
     "titleError": "उत्पाद का नाम निर्दिष्ट किया जाना चाहिए",
     "categoryError": "उत्पाद श्रेणी का चयन किया जाना चाहिए",

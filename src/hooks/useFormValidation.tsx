@@ -162,7 +162,7 @@ export const useFormValidation = (
       translations,
       formState.selectedDeliveryIds,
       formState.selectedCategory,
-      formState.minimalVolume // Добавлено в зависимости
+      formState.minimalVolume
     ]
   )
 

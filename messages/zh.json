@@ -515,6 +515,10 @@
     "publishing": "发布中..."
   },
   "createCard": {
+    "priceValueRequired": "商品价格不能为空",
+  "priceUnitRequired": "商品计量单位不能为空",
+  "priceCurrencyRequired": "商品货币不能为空",
+  "priceFieldsRequired": "必须填写所有价格字段",
     "deliveryTermsError": "必须添加至少1种交付选项",
     "titleError": "必须指定商品名称",
     "categoryError": "必须选择商品类别",

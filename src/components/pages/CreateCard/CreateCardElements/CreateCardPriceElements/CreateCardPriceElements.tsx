@@ -292,27 +292,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       })
     }
 
-    const handlePackagingSetValue = (rowIndex: number, inputIndex: number, value: string) => {
-      const field = inputIndex === 0 ? 'title' : 'price'
-      updatePackaging({
-        language: currentLanguage,
-        index: rowIndex,
-        field: field as 'title' | 'price',
-        value
-      })
-    }
-
-    const handlePackagingRowsChange = (newRows: string[][]) => {
-      const packaging = newRows.map((row) => ({
-        title: row[0] || '',
-        price: row[1] || ''
-      }))
-      setPackaging({
-        language: currentLanguage,
-        packaging
-      })
-    }
-
     const validateSaleDate = (value: string) => {
       if (!value.trim()) {
         setError({
@@ -380,18 +359,15 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
 
     useEffect(() => {
       if (pricesArray && JSON.stringify(pricesArray) !== JSON.stringify(pricesMatrix)) {
-        // Преобразуем с учетом новой структуры (без quantity, берем только price, currency, unit)
         const newMatrix = pricesArray.map((row) => [row[1], row[3], row[4]])
         setPricesMatrix(newMatrix)
 
-        // Проверяем, равны ли цены, и обновляем discountPrice и daysBeforeSale
         if (pricesArray.length > 0) {
           const originalPrice = pricesArray[0][1]
           const discountPriceFromArray = pricesArray[0][2]
 
           if (originalPrice === discountPriceFromArray) {
             setDiscountPrice('')
-            // Также очищаем срок акции
             updatePriceInfo({
               language: currentLanguage,
               field: 'daysBeforeSale',
@@ -406,10 +382,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
 
     const characteristicsMatrix = currentData.characteristics.map((item) => [item.title, item.characteristic])
     const deliveryMatrix = currentData.delivery.map((item) => [item.title])
-    const packagingMatrix = currentData.packaging.map((item) => [item.title, item.price])
 
     const {modalImage, isModalOpen, openModal, closeModal} = useImageModal()
-    const windowWidth = useWindowWidth()
 
     useEffect(() => {
       console.log('currentData', currentData)
@@ -418,7 +392,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
     const preparedDropdownOptions = prepareDropdownOptions()
     const preparedCanCreateNewOption = prepareCanCreateNewOption()
 
-    // Корректируем inputType для 3 полей: price, currency, unit
     const adjustedInputType: TInputType[] | undefined = inputType
       ? [inputType[1], inputType[3], inputType[4]]
       : undefined
@@ -476,7 +449,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 <TextInputUI
                   idForLabel='cy-minimalVolume'
                   inputType='number'
-                  extraClass={minVolumeError && styles.extra__error_class}
+                  extraClass={`${minVolumeError && styles.extra__error_class} ${styles.center_text}`}
                   currentValue={currentData.priceInfo.minimalVolume}
                   onSetValue={handleMinVolumeChange}
                   theme='newWhite'

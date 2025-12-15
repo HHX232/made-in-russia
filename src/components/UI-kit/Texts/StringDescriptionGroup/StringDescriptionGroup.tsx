@@ -44,13 +44,17 @@ const StringDescriptionGroup: FC<IStringDescriptionGroupProps> = ({
       >
         {items.map((el, i) => (
           <li className={`${styles.descr__list__item} ${item__extra__class}`} key={i}>
-            <p className={`${styles.element__title} ${styles[`element__def__font_${elementsFontSize}`]}`}>{el.title}</p>
-            {/* <span className={styles.dotted__line}></span> */}
-            <p
-              className={`${styles.element__value} ${styles.element__value__right} ${styles[`element__def__font_${elementsFontSize}`]}`}
-            >
-              {el.value}
-            </p>
+            <div className={styles.item__content}>
+              <p className={`${styles.element__title} ${styles[`element__def__font_${elementsFontSize}`]}`}>
+                {el.title}
+              </p>
+              <p
+                className={`${styles.element__value} ${styles.element__value__right} ${styles[`element__def__font_${elementsFontSize}`]}`}
+              >
+                {el.value}
+              </p>
+            </div>
+            {i < items.length - 1 && <span className={styles.dotted__line}></span>}
           </li>
         ))}
       </ul>

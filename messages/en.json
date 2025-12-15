@@ -439,6 +439,7 @@
       "publishing": "Publishing..."
     }
   },
+
   "NotFoundPage": {
     "goBack": "Return to home",
     "mainText": "Page not found or deleted. Check the URL or return to home."
@@ -515,6 +516,10 @@
     "publishing": "Publishing..."
   },
   "createCard": {
+    "priceValueRequired": "Product price cannot be empty",
+  "priceUnitRequired": "Product unit of measurement cannot be empty",
+  "priceCurrencyRequired": "Product currency cannot be empty",
+  "priceFieldsRequired": "All price fields must be filled",
     "deliveryTermsError": "At least 1 delivery option must be added",
     "titleError": "Product name must be specified",
     "categoryError": "Product category must be selected",
