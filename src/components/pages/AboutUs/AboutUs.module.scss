@@ -186,6 +186,7 @@ ABOUT EXPORTERU SECTION
     background-color: #f6f6f6;
     padding-block: 64px 62px;
     padding-inline: 85px;
+    border-radius:10px;
 
     @include md {
       padding: 0;
@@ -214,6 +215,7 @@ ABOUT EXPORTERU SECTION
       inset-block-start: 0;
       inset-inline-start: 0;
       object-fit: cover;
+      border-radius:10px;
     }
 
     &::after {
@@ -281,6 +283,7 @@ ABOUT EXPORTERU SECTION
   line-height: 1.2233;
   padding-inline: rem(46);
   transition: var(--transition);
+  border-radius:10px;
 
   &__max493 {
     display: flex;
