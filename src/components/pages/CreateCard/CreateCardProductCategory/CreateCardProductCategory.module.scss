@@ -20,7 +20,8 @@
     border: 1px solid #f5c6cb;
     border-radius: 15px;
     background-color: #f8d7da;
-    color: #dc3545;
+    color: #f44;
+    font-size: 16px;
   }
 
   &__selected {
@@ -41,19 +42,21 @@
 
       // background-color: #fff5f5;
       box-shadow: 0 0 0 3px rgb(255 68 68 / 10%);
+      font-size: 16px;
     }
   }
 
   &__empty {
     margin: 0;
     color: #6c757d;
-    font-size: 14px;
+    font-size: 16px;
     text-align: center;
     transition: color 0.3s ease;
 
     &__error {
       color: #f44;
-      font-weight: 500;
+      font-size: 16px;
+      font-weight: 400;
     }
   }
 

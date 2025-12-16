@@ -8,7 +8,6 @@ import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {HELP_IMAGES} from '../../CreateCard'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
 import {useImageModal} from '@/hooks/useImageModal'
-import useWindowWidth from '@/hooks/useWindoWidth'
 import {useTranslations} from 'next-intl'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
@@ -429,7 +428,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 useNewTheme
                 inputsInRowCount={3}
                 maxRows={1}
-                extra__rows__grid={styles.extra__rows__grid}
+                extra__rows__grid={`${styles.extra__rows__grid} ${!!pricesError && styles.extra_error_class}`}
                 extraButtonPlusClass={styles.extra__plus__button__class}
                 extraGlobalClass={styles.delete__minus__button}
                 dropdownOptions={preparedDropdownOptions}
@@ -526,7 +525,8 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 maxRows: 5,
                 autoResize: true
               }}
-              extra__rows__grid={styles.extra__rows__grid__descr}
+              // extraGlobalClass={}
+              extra__rows__grid={`${styles.extra__rows__grid__descr} ${!!charMatrixError ? styles.extra_descr_error_class : ''}`}
               extraClasses={[
                 styles.rows__inputs__box__inner__description__extra,
                 styles.rows__inputs__box__inner__description__extra,

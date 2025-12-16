@@ -38,6 +38,7 @@
 
 .delete__minus__button {
   z-index: 444444;
+  max-width: 755px;
 
   & > div > div:first-child {
     padding-right: 14px !important;
@@ -130,11 +131,27 @@
   font-weight: 500;
 }
 
+.extra_descr_error_class {
+  & > label > div:nth-child(2) > input::placeholder,
+  & > label > div:nth-child(2) > textarea::placeholder {
+    color: #f44;
+    font-size: 16px;
+    font-weight: 400;
+  }
+}
+
 .extra__error_class {
+  & > div:nth-child(2) > input::placeholder {
+    color: #f44;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
   & > div:last-child {
     margin-top: 10px;
     color: #f44;
     font-size: 16px;
+    font-weight: 400;
   }
 }
 
@@ -145,6 +162,20 @@
   justify-content: space-between;
   gap: 20px;
   grid-template-columns: 1fr 1fr 1fr;
+}
+
+.extra_error_class {
+  & > label > div:nth-child(2) > input::placeholder {
+    color: #f44 !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+  }
+
+  & > div > div > span {
+    color: #f44 !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+  }
 }
 
 .center_text {

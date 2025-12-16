@@ -519,7 +519,6 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 theme='newWhite'
               />
             </span>
-
             <div className={`${styles.create__input__box__span__category}`}>
               <div className={`${styles.label__title__box}`}>
                 <p className={`${styles.create__label__title}`}>{t('categoryTitle')}</p>
