@@ -6,7 +6,7 @@ export function GET() {
   const robotsTxt = `User-agent: *
 
 
-
+Disallow: /
 Disallow: /data-vendor
 Disallow: /profile
 Disallow: /register
