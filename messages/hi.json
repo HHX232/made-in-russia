@@ -333,17 +333,21 @@
     "PurchaseModal": {
       "title": "ऑर्डर दें",
       "fields": {
-        "name": "नाम",
-        "email": "ईमेल",
-        "phone": "फ़ोन नंबर",
-        "quantity": "मात्रा"
-      },
-      "placeholders": {
-        "name": "अपना नाम दर्ज करें",
-        "email": "example@email.com",
-        "phone": "+7 (999) 123-45-67",
-        "quantity": "न्यूनतम {minimum}"
-      },
+      "name": "नाम",
+      "email": "ईमेल",
+      "firstName": "अपना नाम दर्ज करें",
+      "comment": "आर्डर टिप्पणी",
+      "phone": "फ़ोन नंबर",
+      "quantity": "मात्रा"
+    },
+    "placeholders": {
+      "name": "अपना नाम दर्ज करें",
+      "firstName": "अपना नाम दर्ज करें",
+      "comment": "आर्डर टिप्पणी",
+      "email": "example@email.com",
+      "phone": "+7 (999) 123-45-67",
+      "quantity": "न्यूनतम {minimum}"
+    },
       "errors": {
         "nameRequired": "नाम आवश्यक है",
         "emailRequired": "ईमेल आवश्यक है",

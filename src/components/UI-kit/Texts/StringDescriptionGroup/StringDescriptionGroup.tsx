@@ -54,7 +54,7 @@ const StringDescriptionGroup: FC<IStringDescriptionGroupProps> = ({
                 {el.value}
               </p>
             </div>
-            {i < items.length - 1 && <span className={styles.dotted__line}></span>}
+            <span className={styles.dotted__line}></span>
           </li>
         ))}
       </ul>

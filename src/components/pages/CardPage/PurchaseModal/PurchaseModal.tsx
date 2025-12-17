@@ -4,6 +4,8 @@ import styles from './PurchaseModal.module.scss'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useTranslations} from 'next-intl'
+import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
+import Image from 'next/image'
 
 interface DiscountPriceRange {
   from: number
@@ -18,13 +20,14 @@ interface IPurchaseModalProps {
   isOpen: boolean
   onClose: () => void
   productTitle: string
+  productImageUrl: string
   prices: DiscountPriceRange[]
   minimumOrderQuantity: number
   useAbsoluteClose?: boolean
   onSubmit: (data: {
-    name: string
-    email: string
-    phone: string
+    firstName: string
+    // phoneNumber: string
+    comment: string
     quantity: number
     selectedPrice: DiscountPriceRange
     totalPrice: number
@@ -35,6 +38,7 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
   isOpen,
   onClose,
   productTitle,
+  productImageUrl,
   prices,
   minimumOrderQuantity,
   onSubmit,
@@ -64,7 +68,6 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
     // После нормализации проверяем дублирование
     for (const code of countryCodes) {
       const digits = code.slice(1) // например '375'
-
       if (clean.startsWith(code)) {
         // Если дальше идут такие же цифры → удаляем повторение
         if (clean.slice(code.length, code.length + digits.length) === digits) {
@@ -83,28 +86,29 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
         user,
         phoneNumber: user?.phoneNumber,
         productTitle,
+        productImageUrl,
         prices,
         minimumOrderQuantity
       })
     }
-  }, [isOpen, productTitle, prices, minimumOrderQuantity, user])
+  }, [isOpen, productTitle, productImageUrl, prices, minimumOrderQuantity, user])
 
   const [formData, setFormData] = useState({
-    name: user?.login || '',
-    email: user?.email || '',
-    phone: cleanPhoneNumber(user?.phoneNumber || ''),
+    firstName: user?.login || '',
+    phoneNumber: cleanPhoneNumber(user?.phoneNumber || ''),
+    comment: '',
     quantity: minimumOrderQuantity.toString()
   })
 
   const [errors, setErrors] = useState({
-    name: '',
-    email: '',
+    firstName: '',
+    // phoneNumber: '',
     quantity: ''
   })
 
   const [touched, setTouched] = useState({
-    name: false,
-    email: false,
+    firstName: false,
+    phoneNumber: false,
     quantity: false
   })
 
@@ -113,9 +117,8 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
     if (isOpen && user) {
       setFormData((prev) => ({
         ...prev,
-        name: user.login || prev.name,
-        email: user.email || prev.email,
-        phone: cleanPhoneNumber(user.phoneNumber || prev.phone)
+        firstName: user.login || prev.firstName,
+        phoneNumber: cleanPhoneNumber(user.phoneNumber || prev.phoneNumber)
       }))
     }
   }, [isOpen, user])
@@ -171,23 +174,20 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
 
   const validateForm = () => {
     const newErrors = {
-      name: '',
-      email: '',
+      firstName: '',
+      phoneNumber: '',
       quantity: ''
     }
 
     let isValid = true
 
-    if (!formData.name.trim()) {
-      newErrors.name = t('errors.nameRequired')
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = t('errors.firstNameRequired')
       isValid = false
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = t('errors.emailRequired')
-      isValid = false
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = t('errors.emailInvalid')
+    if (!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = t('errors.phoneRequired')
       isValid = false
     }
 
@@ -199,19 +199,20 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
 
     setErrors(newErrors)
     setTouched({
-      name: true,
-      email: true,
+      firstName: true,
+      phoneNumber: true,
       quantity: true
     })
+
     return isValid
   }
 
   const handleSubmit = () => {
     if (validateForm() && priceCalculation.selectedPrice) {
       onSubmit({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
+        firstName: formData.firstName,
+        // phoneNumber: formData.phoneNumber,
+        comment: formData.comment,
         quantity: parseInt(formData.quantity),
         selectedPrice: priceCalculation.selectedPrice,
         totalPrice: priceCalculation.totalPrice
@@ -222,6 +223,7 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({...prev, [field]: value}))
+
     // Очистить ошибку при изменении поля
     if (errors[field as keyof typeof errors]) {
       setErrors((prev) => ({...prev, [field]: ''}))
@@ -239,57 +241,57 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
 
   return (
     <ModalWindowDefault
-      useAbsoluteClose={useAbsoluteClose}
       isOpen={isOpen}
       onClose={onClose}
       extraClass={styles.purchaseModal}
+      useAbsoluteClose={useAbsoluteClose}
     >
       <div className={styles.modalContent}>
         <h2 className={styles.modalTitle}>{t('title')}</h2>
 
         <div className={styles.productInfo}>
+          <Image width={600} height={600} src={productImageUrl} alt={productTitle} className={styles.productImage} />
           <h3 className={styles.productTitle}>{productTitle}</h3>
         </div>
 
         <div className={styles.formSection}>
           <div className={styles.inputGroup}>
             <label className={styles.label}>
-              {t('fields.name')} <span className={styles.required}>*</span>
+              {t('fields.firstName')} <span className={styles.required}>*</span>
             </label>
             <TextInputUI
-              currentValue={formData.name}
-              placeholder={t('placeholders.name')}
-              onSetValue={(value) => handleInputChange('name', value)}
-              onBlur={() => handleInputBlur('name')}
+              currentValue={formData.firstName}
+              placeholder={t('placeholders.firstName')}
+              onSetValue={(value) => handleInputChange('firstName', value)}
+              onBlur={() => handleInputBlur('firstName')}
               theme='newWhite'
               inputType='text'
-              errorValue={getFieldError('name')}
+              errorValue={getFieldError('firstName')}
             />
           </div>
 
-          <div className={styles.inputGroup}>
+          {/* <div className={styles.inputGroup}>
             <label className={styles.label}>
-              {t('fields.email')} <span className={styles.required}>*</span>
+              {t('fields.phoneNumber')} <span className={styles.required}>*</span>
             </label>
             <TextInputUI
-              currentValue={formData.email}
-              placeholder={t('placeholders.email')}
-              onSetValue={(value) => handleInputChange('email', value)}
-              onBlur={() => handleInputBlur('email')}
-              theme='newWhite'
-              inputType='email'
-              errorValue={getFieldError('email')}
-            />
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label className={styles.label}>{t('fields.phone')}</label>
-            <TextInputUI
-              currentValue={formData.phone}
-              placeholder={t('placeholders.phone')}
-              onSetValue={(value) => handleInputChange('phone', value)}
+              currentValue={formData.phoneNumber}
+              placeholder={t('placeholders.phoneNumber')}
+              onSetValue={(value) => handleInputChange('phoneNumber', value)}
+              onBlur={() => handleInputBlur('phoneNumber')}
               theme='newWhite'
               inputType='text'
+              errorValue={getFieldError('phoneNumber')}
+            />
+          </div> */}
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>{t('fields.comment')}</label>
+            <TextAreaUI
+              currentValue={formData.comment}
+              placeholder={t('placeholders.comment')}
+              onSetValue={(value) => handleInputChange('comment', value)}
+              theme='newWhite'
             />
           </div>
 
@@ -312,15 +314,14 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
         {priceCalculation.selectedPrice && (
           <div className={styles.priceSection}>
             <div className={styles.priceInfo}>
-              <div className={styles.priceRange}>
-                {t('priceInfo.range')}: {priceCalculation.selectedPrice.from}
-                {priceCalculation.selectedPrice.to === 999999
-                  ? '+'
-                  : priceCalculation?.selectedPrice?.to
-                    ? `-${priceCalculation.selectedPrice.to}`
-                    : ''}{' '}
-                {priceCalculation.selectedPrice.unit}
-              </div>
+              {/* Показываем диапазон только если from !== to */}
+              {priceCalculation.selectedPrice.from !== priceCalculation.selectedPrice.to && (
+                <div className={styles.priceRange}>
+                  {t('priceInfo.range')}: {priceCalculation.selectedPrice.from}
+                  {priceCalculation.selectedPrice.to === 999999 ? '+' : `-${priceCalculation.selectedPrice.to}`}{' '}
+                  {priceCalculation.selectedPrice.unit}
+                </div>
+              )}
 
               <div className={styles.unitPrice}>
                 <span className={styles.priceLabel}>{t('priceInfo.unitPrice')}:</span>

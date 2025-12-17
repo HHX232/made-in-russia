@@ -333,17 +333,21 @@
     "PurchaseModal": {
       "title": "下订单",
       "fields": {
-        "name": "姓名",
-        "email": "邮箱",
-        "phone": "电话号码",
-        "quantity": "数量"
-      },
-      "placeholders": {
-        "name": "输入您的姓名",
-        "email": "example@email.com",
-        "phone": "+7 (999) 123-45-67",
-        "quantity": "最少 {minimum}"
-      },
+      "name": "姓名",
+      "email": "电子邮件",
+      "firstName": "请输入您的姓名",
+      "comment": "订单备注",
+      "phone": "电话号码",
+      "quantity": "数量"
+    },
+    "placeholders": {
+      "name": "请输入您的姓名",
+      "firstName": "请输入您的姓名",
+      "comment": "订单备注",
+      "email": "example@email.com",
+      "phone": "+7 (999) 123-45-67",
+      "quantity": "最低 {minimum}"
+    },
       "errors": {
         "nameRequired": "姓名为必填项",
         "emailRequired": "邮箱为必填项",

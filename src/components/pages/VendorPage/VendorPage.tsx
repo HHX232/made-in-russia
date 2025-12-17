@@ -14,7 +14,6 @@ import {useProductReviews} from '@/hooks/useMyProductsReviews'
 
 import {Product} from '@/services/products/product.types'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
-import Footer from '@/components/MainComponents/Footer/Footer'
 import {Country} from '@/services/users.types'
 import {Category} from '@/services/categoryes/categoryes.service'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
@@ -32,7 +31,6 @@ import {useSaveVendorMedia} from '@/utils/saveVendorDescriptionWithMedia'
 import {useUserQuery, useLogout} from '@/hooks/useUserApi'
 import DeleteAccountButton from '@/components/UI-kit/buttons/DeleteAccountButton/DeleteAccountButton'
 import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
-import Catalog from '@/components/screens/Catalog/Catalog'
 import MarkdownEditor from '@/components/UI-kit/MDEditor/MarkdownEditor'
 import FavoritesForProfile from '../FavoritesPage/FavoritesForProfile/FavoritesForProfile'
 import {useSearchParams, useRouter} from 'next/navigation'
@@ -144,8 +142,6 @@ const formatDateLocalized = (dateString: string, currentLang: string = 'ru'): st
   }
 }
 
-// Компонент Sidebar
-// Компонент Sidebar для VendorPage с добавленным пунктом "Избранное"
 const Sidebar: FC<{
   currentTab: TCurrentTab
   onTabChange: (tab: TCurrentTab) => void
@@ -160,7 +156,6 @@ const Sidebar: FC<{
   const t = useTranslations('VendorPage')
   const {updateUserAvatar} = useActions()
   const {user} = useTypedSelector((state) => state.user)
-  const {updateVendorDetails} = useActions()
   const {mutate: updateVendorDetailsAPI} = useUpdateVendorDetails()
   const handleAvatarChange = useCallback(
     (newAvatarUrl: string | null) => {
@@ -219,7 +214,7 @@ const Sidebar: FC<{
               )}
               {!isPageForVendor && <span className={styles.acc_compavatar__name}>{userData?.login}</span>}
             </span>
-            <span className={styles.acc_compavatar__email}>{userData?.email}</span>
+            {isPageForVendor && <span className={styles.acc_compavatar__email}>{userData?.email}</span>}
           </div>
         </div>
 
@@ -262,7 +257,7 @@ const Sidebar: FC<{
             </li>
 
             {/* Контакты */}
-            <li
+            {/* <li
               onClick={() => {
                 setShowSidebar(false)
               }}
@@ -286,7 +281,7 @@ const Sidebar: FC<{
                 </svg>
                 <span>{t('contacts')}</span>
               </a>
-            </li>
+            </li> */}
 
             {/* Избранное - НОВЫЙ ПУНКТ */}
             {isPageForVendor && (
@@ -1414,14 +1409,18 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                       theme='newWhite'
                       placeholder={t('descriptionPlaceholder')}
                     /> */}
-                    <MarkdownEditor
-                      initialValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
-                      onValueChange={(val) => {
-                        updateVendorDetails({...user?.vendorDetails, description: val})
-                        canUpdateVendorMedia.current = true
-                      }}
-                      readOnly={!isPageForVendor}
-                    />
+                    {isPageForVendor || (!isPageForVendor && onlyShowDescr) ? (
+                      <MarkdownEditor
+                        initialValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
+                        onValueChange={(val) => {
+                          updateVendorDetails({...user?.vendorDetails, description: val})
+                          canUpdateVendorMedia.current = true
+                        }}
+                        readOnly={!isPageForVendor}
+                      />
+                    ) : (
+                      <p>Not have</p>
+                    )}
                     <div className={styles.vendor__description__photos}>
                       <div
                         style={{marginTop: '30px'}}

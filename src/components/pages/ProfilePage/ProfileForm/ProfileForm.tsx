@@ -133,7 +133,6 @@ const ProfileForm: FC<ProfileFormProps> = ({
   isShowForOwner = true,
   userData,
   regions,
-  isLoading,
   setNeedToSave,
   onUserDataChange,
   onVendorDataChange
@@ -735,7 +734,7 @@ const ProfileForm: FC<ProfileFormProps> = ({
         </div>
       )}
 
-      <div className={`${styles.form_row} ${styles.form_row_grid}`}>
+      <div style={{display: !isShowForOwner ? 'none' : ''}} className={`${styles.form_row} ${styles.form_row_grid}`}>
         <div className={styles.form_col_half}>
           <div className={styles.editable}>
             <span className={styles.editable_text}>{t('phoneNumber')}</span>

@@ -347,11 +347,15 @@
       "fields": {
         "name": "Имя",
         "email": "Email",
+         "firstName": "Введите ваше имя",
+        "comment": "Комментарий к заказу",
         "phone": "Номер телефона",
         "quantity": "Количество"
       },
       "placeholders": {
         "name": "Введите ваше имя",
+        "firstName": "Введите ваше имя",
+        "comment": "Комментарий к заказу",
         "email": "example@email.com",
         "phone": "+7 (999) 123-45-67",
         "quantity": "Минимум {minimum}"

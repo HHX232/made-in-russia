@@ -25,6 +25,8 @@ export const getContentType = (overrideLang?: string) => {
 
   const currentLang = overrideLang || getCurrentLanguage()
   headers['Accept-Language'] = currentLang
+  headers['X-Requested-With'] = 'XMLHttpRequest'
+  headers['Accept'] = 'application/json'
 
   return headers
 }

@@ -7,8 +7,7 @@ import Link from 'next/link'
 import Head from 'next/head'
 import styles from './CardPage.module.scss'
 import Image from 'next/image'
-import {ReactNode, useEffect, useMemo, useRef, useState} from 'react'
-import useWindowWidth from '@/hooks/useWindoWidth'
+import {ReactNode, useEffect, useState} from 'react'
 import ICardFull from '@/services/card/card.types'
 import {useLocale, useTranslations} from 'next-intl'
 import PurchaseModal from './PurchaseModal/PurchaseModal'
@@ -241,9 +240,9 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   }
 
   const handlePurchaseSubmit = async (data: {
-    name: string
-    email: string
-    phone: string
+    firstName: string
+    // phoneNumber: string
+    comment: string
     quantity: number
     selectedPrice: any
     totalPrice: number
@@ -251,10 +250,10 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     console.log('Данные заказа:', data)
     try {
       const {data: orderData} = await axiosClassic.post(`/products/${cardData?.id}/create-order`, {
-        email: data?.email,
-        firstName: data?.name,
-        phoneNumber: data?.phone || '',
-        quantity: data?.quantity || 1
+        firstName: data.firstName,
+        // phoneNumber: data.phoneNumber,
+        comment: data.comment,
+        quantity: data.quantity || 1
       })
       toast.success(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
@@ -495,6 +494,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
       </span>
 
       <PurchaseModal
+        productImageUrl={cardMiniData?.media?.[0].url || ''}
         useAbsoluteClose
         isOpen={purchaseModalOpen}
         onClose={() => setPurchaseModalOpen(false)}

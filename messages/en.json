@@ -333,17 +333,21 @@
     "PurchaseModal": {
       "title": "Place order",
       "fields": {
-        "name": "Name",
-        "email": "Email",
-        "phone": "Phone number",
-        "quantity": "Quantity"
-      },
-      "placeholders": {
-        "name": "Enter your name",
-        "email": "example@email.com",
-        "phone": "+7 (999) 123-45-67",
-        "quantity": "Minimum {minimum}"
-      },
+      "name": "Name",
+      "email": "Email",
+      "firstName": "Enter your name",
+      "comment": "Order comment",
+      "phone": "Phone number",
+      "quantity": "Quantity"
+    },
+    "placeholders": {
+      "name": "Enter your name",
+      "firstName": "Enter your name",
+      "comment": "Order comment",
+      "email": "example@email.com",
+      "phone": "+7 (999) 123-45-67",
+      "quantity": "Minimum {minimum}"
+    },
       "errors": {
         "nameRequired": "Name is required",
         "emailRequired": "Email is required",
