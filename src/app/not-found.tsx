@@ -248,9 +248,6 @@ export default function NotFound() {
         <Header />
         <main className={styles.mainContent}>
           <div className={styles.contentWrapper}>
-            {/* <div style={{height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-              Loading...
-            </div> */}
             <p className={styles.description}>{t('mainText')}</p>
             <Link href='/' className={styles.homeButton}>
               {t('goBack')}{' '}
