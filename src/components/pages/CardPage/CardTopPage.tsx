@@ -459,38 +459,42 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
       {/* Первая секция */}
       <span className={`${styles.card__row__info} ${styles.card__col__info__first}`}>
         <NewFullTopInfo />
-        <Link
-          href={`/data-vendor/${cardData?.user?.id}`}
-          className={`${styles.about__vendor} ${styles.about__vendor_none}`}
-        >
+        <div className={`${styles.about__vendor} ${styles.about__vendor_none}`}>
           <h3 className={styles.vendor__title}>{t('companyDescription')}</h3>
           <div className={styles.vendor__box__info}>
-            <div className={styles.vendor__avatar}>
-              {!!cardData?.user.avatarUrl ? (
-                <Image
-                  className={styles.avatar__image}
-                  width={80}
-                  height={80}
-                  src={cardData.user.avatarUrl}
-                  alt='avatar'
-                />
-              ) : (
-                <div className={styles.char__box}>
-                  {' '}
-                  <p className={styles.avatar__char}>
-                    {!!cardData?.user.login.split('"')[1]?.charAt(0).toUpperCase()
-                      ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
-                      : cardData?.user.login.charAt(0).toUpperCase()}
-                  </p>
-                </div>
-              )}
-              <p className={styles.vendor__name}>{cardData?.user.login}</p>
-            </div>
-            <p className={styles.vendor__inn}>
-              {t('INN')}: {cardData?.user.vendorDetails?.inn}
-            </p>
+            <Link href={`/data-vendor/${cardData?.user?.id}`} className={styles.vendor__link}>
+              <div className={styles.vendor__avatar}>
+                {!!cardData?.user.avatarUrl ? (
+                  <Image
+                    className={styles.avatar__image}
+                    width={80}
+                    height={80}
+                    src={cardData.user.avatarUrl}
+                    alt='avatar'
+                  />
+                ) : (
+                  <div className={styles.char__box}>
+                    {' '}
+                    <p className={styles.avatar__char}>
+                      {!!cardData?.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                        ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                        : cardData?.user.login.charAt(0).toUpperCase()}
+                    </p>
+                  </div>
+                )}
+                <p className={styles.vendor__name}>{cardData?.user.login}</p>
+              </div>
+              <p className={styles.vendor__inn}>
+                {t('INN')}: {cardData?.user.vendorDetails?.inn}
+              </p>
+            </Link>
+            {showContactButton && (
+              <button className={styles.chat__button} onClick={handleContactSeller} disabled={isCreatingChat}>
+                {isCreatingChat ? tChat('creating') : tChat('startChat')}
+              </button>
+            )}
           </div>
-        </Link>
+        </div>
       </span>
 
       <PurchaseModal

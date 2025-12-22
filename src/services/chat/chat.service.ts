@@ -14,6 +14,13 @@ export const chatService = {
     return data
   },
 
+  async createVendorChat(vendorId: number): Promise<Chat> {
+    console.log('createVendorChat called with vendorId:', vendorId)
+    const {data} = await instance.post<Chat>('/chats/vendor', {vendorId})
+    console.log('createVendorChat response:', data)
+    return data
+  },
+
   async getUserChats(page = 0, size = 20): Promise<ChatListResponse> {
     const {data} = await instance.get<ChatListResponse>('/chats', {
       params: {page, size}

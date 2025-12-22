@@ -1169,6 +1169,8 @@
     "backToList": "Back to list",
     "selectChat": "Select a chat to start messaging",
     "writeToSeller": "Contact Seller",
+    "startChat": "Start Chat",
+    "creating": "Creating...",
     "typeMessage": "Type a message...",
     "send": "Send",
     "attach": "Attach file",
