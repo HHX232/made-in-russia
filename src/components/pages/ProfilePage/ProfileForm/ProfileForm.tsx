@@ -21,19 +21,8 @@ import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 import {useActions} from '@/hooks/useActions'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {shallowEqual} from 'react-redux'
+import {countryFlags, countryNames} from '@/constants/flags'
 
-const belarusSvg = '/countries/belarus.svg'
-const kazakhstanSvg = '/countries/kazakhstan.svg'
-const chinaSvg = '/countries/china.svg'
-const russiaSvg = '/countries/russia.svg'
-
-interface PhoneInputSectionProps {
-  telText: string
-  isValidNumber: boolean
-  selectedRegion: RegionType
-  onChangeTelNumber: (value: string) => void
-  isShowForVendor?: boolean
-}
 interface RegionType {
   imageSrc: string
   title: string
@@ -103,29 +92,29 @@ const getSafeNumberStart = (regionAltName: string): TNumberStart => {
   return 'other'
 }
 
-const PhoneInputSection: FC<PhoneInputSectionProps> = ({
-  telText,
-  isShowForVendor,
-  isValidNumber,
-  selectedRegion,
-  onChangeTelNumber
-}) => {
-  const numberStartWith = getSafeNumberStart(selectedRegion.altName)
-  const t = useTranslations('ProfilePage.ProfileForm')
-  return (
-    <div className={styles.phone__input__box}>
-      <p className={styles.input__title}>{t('phoneNumber')}</p>
-      <TelephoneInputUI
-        isOnlyShow={!isShowForVendor}
-        currentValue={telText}
-        extraClass={styles.extra__phone__class}
-        error={!isValidNumber ? 'error' : ''}
-        onSetValue={onChangeTelNumber}
-        // numberStartWith={numberStartWith}
-      />
-    </div>
-  )
-}
+// const PhoneInputSection: FC<PhoneInputSectionProps> = ({
+//   telText,
+//   isShowForVendor,
+//   isValidNumber,
+//   selectedRegion,
+//   onChangeTelNumber
+// }) => {
+//   const numberStartWith = getSafeNumberStart(selectedRegion.altName)
+//   const t = useTranslations('ProfilePage.ProfileForm')
+//   return (
+//     <div className={styles.phone__input__box}>
+//       <p className={styles.input__title}>{t('phoneNumber')}</p>
+//       <TelephoneInputUI
+//         isOnlyShow={!isShowForVendor}
+//         currentValue={telText}
+//         extraClass={styles.extra__phone__class}
+//         error={!isValidNumber ? 'error' : ''}
+//         onSetValue={onChangeTelNumber}
+//         // numberStartWith={numberStartWith}
+//       />
+//     </div>
+//   )
+// }
 
 const ProfileForm: FC<ProfileFormProps> = ({
   isVendor = false,
@@ -185,26 +174,56 @@ const ProfileForm: FC<ProfileFormProps> = ({
 
     if (cleaned.startsWith('375')) return 'Belarus'
     if (cleaned.startsWith('86')) return 'China'
-    if (cleaned.startsWith('7')) {
-      return 'Russia'
-    }
+    if (cleaned.startsWith('7')) return 'Russia'
+    if (cleaned.startsWith('91')) return 'India'
+    if (cleaned.startsWith('998')) return 'Uzbekistan'
+    if (cleaned.startsWith('994')) return 'Azerbaijan'
+    if (cleaned.startsWith('374')) return 'Armenia'
+    if (cleaned.startsWith('20')) return 'Egypt'
+    if (cleaned.startsWith('98')) return 'Iran'
+    if (cleaned.startsWith('996')) return 'Kyrgyzstan'
+    if (cleaned.startsWith('373')) return 'Moldova'
+    if (cleaned.startsWith('971')) return 'UAE'
+    if (cleaned.startsWith('992')) return 'Tajikistan'
+    if (cleaned.startsWith('993')) return 'Turkmenistan'
+    if (cleaned.startsWith('90')) return 'Turkey'
+    if (cleaned.startsWith('27')) return 'SouthAfrica'
 
     return 'other'
   }
 
   const getOtherRegion = (regions: RegionType[]): RegionType => {
     return (
-      regions.find((r) => r.altName === 'other') || {
-        imageSrc: '',
-        title: 'other',
+      regions.find((r) => r.altName.toLowerCase() === 'other') ||
+      regions.find((r) => r.title.toLowerCase() === 'other') || {
+        imageSrc: countryFlags['other'],
+        title: 'Other',
         altName: 'other'
       }
     )
   }
 
-  useEffect(() => {
-    console.log('userData', userData)
-  }, [userData])
+  const findRegionByName = (regionName: string | undefined, regions: RegionType[]): RegionType | undefined => {
+    if (!regionName) return undefined
+
+    const normalized = regionName.toLowerCase().trim()
+
+    // Ищем точное совпадение по altName
+    let found = regions.find((r) => r.altName.toLowerCase() === normalized)
+    if (found) return found
+
+    // Ищем по title
+    found = regions.find((r) => r.title.toLowerCase() === normalized)
+    if (found) return found
+
+    // Ищем по частичному совпадению
+    found = regions.find(
+      (r) => r.altName.toLowerCase().includes(normalized) || r.title.toLowerCase().includes(normalized)
+    )
+
+    return found
+  }
+
   const [selectedRegion, setSelectedRegion] = useState<RegionType>(() => {
     if (isVendor && userData?.vendorDetails?.countries) {
       const countries = userData.vendorDetails.countries
@@ -291,21 +310,16 @@ const ProfileForm: FC<ProfileFormProps> = ({
     }
 
     if (userData?.vendorDetails?.countries) {
-      const countryOptions = userData?.vendorDetails?.countries.map((country) => ({
-        id: country.id,
-        label: country.name,
-        value: country.value,
-        icon:
-          country.value.toLowerCase() === 'belarus'
-            ? belarusSvg
-            : country.value.toLowerCase() === 'china'
-              ? chinaSvg
-              : country.value.toLowerCase() === 'russia'
-                ? russiaSvg
-                : country.value.toLowerCase() === 'kazakhstan'
-                  ? kazakhstanSvg
-                  : ''
-      }))
+      const countryOptions = userData?.vendorDetails?.countries.map((country) => {
+        const key = country.value as keyof typeof countryFlags
+        return {
+          id: country.id,
+          label: country.name,
+          value: country.value,
+          icon: countryFlags[key] ?? ''
+        }
+      })
+
       setSelectedCountries(countryOptions)
     }
 
@@ -561,12 +575,12 @@ const ProfileForm: FC<ProfileFormProps> = ({
     }
   }
 
-  const countryOptions: MultiSelectOption[] = [
-    {id: 'belarus', label: t('belarus'), value: 'Belarus', icon: belarusSvg},
-    {id: 'kazakhstan', label: t('kazakhstan'), value: 'Kazakhstan', icon: kazakhstanSvg},
-    {id: 'china', label: t('china'), value: 'China', icon: chinaSvg},
-    {id: 'russia', label: t('russia'), value: 'Russia', icon: russiaSvg}
-  ]
+  const countryOptions: MultiSelectOption[] = countryNames.map((country) => ({
+    id: country.toLowerCase(),
+    label: t(country),
+    value: country,
+    icon: countryFlags[country]
+  }))
 
   const determineSelectedRegion = (selectedCountries: MultiSelectOption[], regions: RegionType[]): RegionType => {
     if (selectedCountries.length !== 1) {

@@ -17,40 +17,48 @@ function cleanSlug(slug: string): string {
   return slug.replace(/^l[123]_/g, '').replace(/^l[123]-/g, '')
 }
 
-function buildCategoryPath(category: Category, parentPath: string = ''): string {
+function buildCategoryPath(category: Category): string {
   const cleanedSlug = cleanSlug(category.slug)
-  return parentPath ? `${parentPath}/${cleanedSlug}` : cleanedSlug
+  return cleanedSlug
 }
 
 function flattenCategories(
   categories: Category[],
-  baseUrl: string,
-  parentPath: string = ''
+  baseUrl: string
 ): Array<{url: string; lastModified: string; changeFrequency: string; priority: number}> {
   const urls: Array<{url: string; lastModified: string; changeFrequency: string; priority: number}> = []
 
-  for (const category of categories) {
-    const categoryPath = buildCategoryPath(category, parentPath)
-    const fullUrl = `${baseUrl}/categories/${categoryPath}`
+  const traverse = (cats: Category[]) => {
+    for (const category of cats) {
+      const categoryPath = buildCategoryPath(category)
+      const hasChildren = category.children && category.children.length > 0
 
-    // Определяем приоритет в зависимости от уровня вложенности
-    const depth = categoryPath.split('/').length
-    let priority = 0.7
-    if (depth === 1) priority = 0.9
-    else if (depth === 2) priority = 0.8
-    else if (depth === 3) priority = 0.7
+      // Если нет детей и нет товаров — пропускаем
+      if (!hasChildren && (!category.productsCount || category.productsCount === 0)) {
+        continue
+      }
 
-    urls.push({
-      url: fullUrl,
-      lastModified: new Date(category.lastModificationDate).toISOString(),
-      changeFrequency: 'weekly',
-      priority: priority
-    })
+      // Если в категории есть товары — добавляем URL
+      if (category.productsCount && category.productsCount > 0) {
+        const fullUrl = `${baseUrl}/categories/${categoryPath}`
 
-    if (category.children && category.children.length > 0) {
-      urls.push(...flattenCategories(category.children, baseUrl, categoryPath))
+        const priority = 0.7
+
+        urls.push({
+          url: fullUrl,
+          lastModified: new Date(category.lastModificationDate).toISOString(),
+          changeFrequency: 'weekly',
+          priority
+        })
+      }
+
+      if (hasChildren) {
+        traverse(category.children as Category[])
+      }
     }
   }
+
+  traverse(categories)
 
   return urls
 }

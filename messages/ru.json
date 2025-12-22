@@ -121,7 +121,25 @@
       "selectRoleDescription": "Выберите подходящую роль для регистрации",
       "buyerDescription": "Ищу товары  для покупки",
       "vendorDescription": "Предлагаю товары для продажи",
-      "canChangeType": "Вы сможете изменить тип аккаунта позже в настройках"
+      "canChangeType": "Вы сможете изменить тип аккаунта позже в настройках",
+       "Azerbaijan": "Азербайджан",
+  "Armenia": "Армения",
+
+  "Egypt": "Египет",
+  "India": "Индия",
+  "Iran": "Иран",
+
+  "Kyrgyzstan": "Киргизия",
+
+  "Moldova": "Молдавия",
+  "UAE": "ОАЭ",
+
+  "Tajikistan": "Таджикистан",
+  "Turkmenistan": "Туркменистан",
+  "Turkey": "Турция",
+  "Uzbekistan": "Узбекистан",
+  "SouthAfrica": "ЮАР",
+  "Other": "Другое"
   },
   "MinimalHeader": {
     "category": "Категории",
@@ -146,6 +164,42 @@
     "becomePartner": "Стать партнером"
   },
   "ProfilePage": {
+    
+  "azerbaijan": "Азербайджан",
+  "Azerbaijan": "Азербайджан",
+  "armenia": "Армения",
+  "Armenia": "Армения",
+
+  "Belarus": "Беларусь",
+  "egypt": "Египет",
+  "Egypt": "Египет",
+  "india": "Индия",
+  "India": "Индия",
+  "iran": "Иран",
+  "Iran": "Иран",
+  "Kazakhstan": "Казахстан",
+  "kyrgyzstan": "Киргизия",
+  "Kyrgyzstan": "Киргизия",
+  "China": "Китай",
+  "moldova": "Молдавия",
+  "Moldova": "Молдавия",
+  "uae": "ОАЭ",
+  "UAE": "ОАЭ",
+  "Uae": "ОАЭ",
+  "Russia": "Россия",
+  "tajikistan": "Таджикистан",
+  "Tajikistan": "Таджикистан",
+  "turkmenistan": "Туркменистан",
+  "Turkmenistan": "Туркменистан",
+  "turkey": "Турция",
+  "Turkey": "Турция",
+  "uzbekistan": "Узбекистан",
+  "Uzbekistan": "Узбекистан",
+  "southafrica": "ЮАР",
+  "SouthAfrica": "ЮАР",
+  "other": "Другое",
+  "Other": "Другое",
+
     "personalCabinet": "Личный кабинет",
     "personalData": "Личные данные",
     "registrationDate": "Дата регистрации",

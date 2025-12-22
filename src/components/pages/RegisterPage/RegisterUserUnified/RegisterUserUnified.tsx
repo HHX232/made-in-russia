@@ -9,11 +9,7 @@ import {useTranslations} from 'next-intl'
 import {useGoogleReCaptcha} from 'react-google-recaptcha-v3'
 import axios from 'axios'
 import Link from 'next/link'
-
-const belarusSvg = '/countries/belarus.svg'
-const kazakhstanSvg = '/countries/kazakhstan.svg'
-const chinaSvg = '/countries/china.svg'
-const russiaSvg = '/countries/russia.svg'
+import {countryFlags, countryNames} from '@/constants/flags'
 
 interface RegionType {
   imageSrc: string
@@ -83,12 +79,15 @@ const RegisterUserUnified: React.FC<RegisterUserUnifiedProps> = ({
   const {executeRecaptcha} = useGoogleReCaptcha()
   const [isLoading, setIsLoading] = useState(false)
 
-  const regions = [
-    {imageSrc: belarusSvg, title: t('Belarus'), altName: 'Belarus'},
-    {imageSrc: kazakhstanSvg, title: t('Kazakhstan'), altName: 'Kazakhstan'},
-    {imageSrc: chinaSvg, title: t('China'), altName: 'China'},
-    {imageSrc: russiaSvg, title: t('Russia'), altName: 'Russia'}
-  ]
+  const regions: {
+    imageSrc: string
+    title: string
+    altName: string
+  }[] = countryNames.map((countryName) => ({
+    imageSrc: countryFlags[countryName],
+    title: t(countryName),
+    altName: countryName
+  }))
 
   const handleRegionSelect = (region: RegionType) => {
     setSelectedRegion(region)
