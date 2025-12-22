@@ -17,7 +17,6 @@ function cleanSlug(slug: string): string {
   return slug.replace(/^l[123]_/g, '').replace(/^l[123]-/g, '')
 }
 
-// В этой версии путь категории основан только на её собственном slug
 function buildCategoryPath(category: Category): string {
   const cleanedSlug = cleanSlug(category.slug)
   return cleanedSlug

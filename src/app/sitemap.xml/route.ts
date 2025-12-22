@@ -27,27 +27,39 @@ function escapeXml(text: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;')
 }
+function cleanSlug(slug: string): string {
+  return slug.replace(/^l[1234]_/g, '').replace(/^l[1234]-/g, '')
+}
 
-// Рекурсивный сбор URL для категорий с productsCount > 0
-function collectCategoryUrls(categories: ICategory[], baseUrl: string) {
-  const result: {
+function collectCategoryUrls(
+  categories: ICategory[],
+  baseUrl: string
+): Array<{
+  url: string
+  lastModified: string
+  changeFrequency: string
+  priority: number
+}> {
+  const result: Array<{
     url: string
     lastModified: string
     changeFrequency: string
     priority: number
-  }[] = []
+  }> = []
 
-  const traverse = (cats: ICategory[]) => {
+  const traverse = (cats: ICategory[]): void => {
     for (const cat of cats) {
+      // Только категории с товарами (productsCount > 0)
       if ((cat?.productsCount || 0) > 0) {
         result.push({
-          url: `${baseUrl}/categories/${cat.slug}`,
+          url: `${baseUrl}/categories/${cleanSlug(cat.slug)}`,
           lastModified: new Date(cat.lastModificationDate).toISOString(),
           changeFrequency: 'weekly',
           priority: 0.7
         })
       }
 
+      // Рекурсивно обходим дочерние категории
       if (cat.children && cat.children.length > 0) {
         traverse(cat.children as ICategory[])
       }

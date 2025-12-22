@@ -6,16 +6,21 @@ function cleanSlug(slug: string): string {
   return slug.replace(/^l[123]_/g, '').replace(/^l[123]-/g, '')
 }
 
-function collectEmptyCategorySlugs(categories: Category[]): string[] {
-  const result: string[] = []
+function collectCategorySlugs(categories: Category[]) {
+  const empty: string[] = []
+  const nonEmpty: string[] = []
 
   const traverse = (cats: Category[]) => {
     for (const cat of cats) {
       const hasChildren = cat.children && cat.children.length > 0
       const isEmpty = !cat.productsCount || cat.productsCount === 0
 
+      const slug = cleanSlug(cat.slug)
+
       if (isEmpty) {
-        result.push(cleanSlug(cat.slug))
+        empty.push(slug)
+      } else {
+        nonEmpty.push(slug)
       }
 
       if (hasChildren) {
@@ -25,30 +30,35 @@ function collectEmptyCategorySlugs(categories: Category[]): string[] {
   }
 
   traverse(categories)
-  return result
+
+  return {empty, nonEmpty}
 }
 
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL_SECOND || 'https://exporteru.com'
 
   let categoryDisallowLines = ''
+  let categoryAllowLines = ''
 
   try {
     const response = await axiosClassic.get('/all-categories')
     const categories: Category[] = response.data
 
-    const emptySlugs = collectEmptyCategorySlugs(categories)
+    const {empty, nonEmpty} = collectCategorySlugs(categories)
 
-    categoryDisallowLines = emptySlugs.map((slug) => `Disallow: /categories/${slug}`).join('\n')
+    categoryDisallowLines = empty.map((slug) => `Disallow: /categories/${slug}`).join('\n')
+
+    categoryAllowLines = nonEmpty.map((slug) => `Allow: /categories/${slug}`).join('\n')
   } catch (e) {
     console.error('Error loading categories for robots.txt', e)
   }
 
   const robotsTxt = `User-agent: *
 
-${categoryDisallowLines ? categoryDisallowLines + '\n' : ''}
 
-Disallow: /data-vendor
+${categoryAllowLines ? categoryAllowLines + '\n\n' : ''}${
+    categoryDisallowLines ? categoryDisallowLines + '\n\n' : ''
+  }Disallow: /data-vendor
 Disallow: /profile
 Disallow: /register
 Disallow: /favorites
@@ -58,6 +68,7 @@ Disallow: /backend/*
 Disallow: /admin/*
 Disallow: /api/*
 Disallow: /?
+
 
 Sitemap: ${baseUrl}/sitemap.xml`
 
