@@ -23,6 +23,7 @@ import Image from 'next/image'
 import FavoritesForProfile from '../FavoritesPage/FavoritesForProfile/FavoritesForProfile'
 import {useSearchParams} from 'next/navigation'
 import {Heart} from 'lucide-react'
+import {countryNames, countryFlags} from '@/constants/flags'
 
 // Константы
 export const ASSETS_COUNTRIES = {
@@ -1038,12 +1039,11 @@ const ProfilePage: FC<{firstUserData?: User; isForOwner?: boolean}> = ({firstUse
     title: string
     altName: string
   }
-  const REGIONS: RegionType[] = [
-    {imageSrc: ASSETS_COUNTRIES.belarusSvg, title: t('belarus'), altName: 'Belarus'},
-    {imageSrc: ASSETS_COUNTRIES.kazakhstanSvg, title: t('kazakhstan'), altName: 'Kazakhstan'},
-    {imageSrc: ASSETS_COUNTRIES.chinaSvg, title: t('china'), altName: 'China'},
-    {imageSrc: ASSETS_COUNTRIES.russiaSvg, title: t('russia'), altName: 'Russia'}
-  ]
+  const REGIONS: RegionType[] = countryNames.map((countryName) => ({
+    imageSrc: countryFlags[countryName] ?? '',
+    title: t(countryName.toLowerCase()),
+    altName: countryName
+  }))
 
   if (error) {
     router.push('/login')
