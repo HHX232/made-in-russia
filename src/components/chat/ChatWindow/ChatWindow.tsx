@@ -26,6 +26,55 @@ export const ChatWindow: React.FC = () => {
   const messages = useAppSelector((state) => (activeChat ? state.chat.messages[activeChat.id] || [] : []))
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const lastMessageIdRef = useRef<number | null>(null)
+
+  // Функция для fallback polling (когда WebSocket не работает)
+  const pollForNewMessages = async (chatId: number) => {
+    try {
+      const response = await chatService.getChatMessages(chatId, 0, 10)
+      const newMessages = response.messages.reverse()
+
+      // Проверяем, есть ли новые сообщения
+      if (newMessages.length > 0) {
+        const latestMessage = newMessages[newMessages.length - 1]
+        if (lastMessageIdRef.current !== latestMessage.id) {
+          // Есть новые сообщения - добавляем их
+          newMessages.forEach((msg) => {
+            dispatch(addMessage(msg))
+          })
+          lastMessageIdRef.current = latestMessage.id
+        }
+      }
+    } catch (error) {
+      console.error('[Polling] Failed to fetch messages:', error)
+    }
+  }
+
+  // Запуск fallback polling
+  const startPolling = (chatId: number) => {
+    if (pollingIntervalRef.current) return
+
+    console.log('[Polling] Starting fallback polling for chat', chatId)
+    pollingIntervalRef.current = setInterval(() => {
+      // Проверяем, подключен ли WebSocket
+      if (webSocketClient.isConnected()) {
+        // WebSocket подключен - останавливаем polling
+        console.log('[Polling] WebSocket connected, stopping polling')
+        stopPolling()
+        return
+      }
+      pollForNewMessages(chatId)
+    }, 5000) // Каждые 5 секунд
+  }
+
+  const stopPolling = () => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current)
+      pollingIntervalRef.current = null
+    }
+  }
 
   useEffect(() => {
     if (!activeChat) return
@@ -34,14 +83,26 @@ export const ChatWindow: React.FC = () => {
 
     // Ждем подключения WebSocket перед подпиской
     let retryTimeout: NodeJS.Timeout
+    let wsRetryCount = 0
+    const maxWsRetries = 10
     let readStatusSubscription: StompSubscription | null = null
 
     const subscribeToChat = () => {
       if (!webSocketClient.client || !webSocketClient.client.connected) {
+        wsRetryCount++
+        if (wsRetryCount >= maxWsRetries) {
+          // WebSocket не подключился - запускаем fallback polling
+          console.log('[WebSocket] Max retries reached, starting fallback polling')
+          startPolling(activeChat.id)
+          return
+        }
         // Если WebSocket еще не подключен, ждем 500ms и пробуем снова
         retryTimeout = setTimeout(subscribeToChat, 500)
         return
       }
+
+      // WebSocket подключен - останавливаем polling если он был запущен
+      stopPolling()
 
       console.log(`Subscribing to chat ${activeChat.id}`)
 
@@ -49,7 +110,6 @@ export const ChatWindow: React.FC = () => {
       webSocketClient.subscribeToChat(activeChat.id, (message) => {
         console.log('Received message via WebSocket:', message)
         dispatch(addMessage(message))
-        scrollToBottom()
 
         if (message.id && currentUserId && message.senderId !== currentUserId) {
           chatService.markAsRead(message.id).catch((err) => {
@@ -86,29 +146,32 @@ export const ChatWindow: React.FC = () => {
 
       // Подписываемся на общий топик для событий прочитанности в этом чате
       // Это позволит получать уведомления о прочтении любых сообщений
-      readStatusSubscription = webSocketClient.client!.subscribe(
-        `/topic/chat/${activeChat.id}/read`,
-        (statusMessage) => {
-          const data = JSON.parse(statusMessage.body)
-          console.log('Message read status update:', data)
+      if (webSocketClient.client?.connected) {
+        readStatusSubscription = webSocketClient.client.subscribe(
+          `/topic/chat/${activeChat.id}/read`,
+          (statusMessage) => {
+            const data = JSON.parse(statusMessage.body)
+            console.log('Message read status update:', data)
 
-          // Обновляем статус сообщения
-          if (data.messageId) {
-            dispatch(
-              markMessageAsRead({
-                messageId: data.messageId,
-                chatId: activeChat.id
-              })
-            )
+            // Обновляем статус сообщения
+            if (data.messageId) {
+              dispatch(
+                markMessageAsRead({
+                  messageId: data.messageId,
+                  chatId: activeChat.id
+                })
+              )
+            }
           }
-        }
-      )
+        )
+      }
     }
 
     subscribeToChat()
 
     return () => {
       clearTimeout(retryTimeout)
+      stopPolling()
       if (activeChat) {
         console.log(`Unsubscribing from chat ${activeChat.id}`)
         webSocketClient.unsubscribeFromChat(activeChat.id)
@@ -156,9 +219,10 @@ export const ChatWindow: React.FC = () => {
     try {
       const response = await chatService.getChatMessages(activeChat.id)
       dispatch(setMessages({chatId: activeChat.id, messages: response.messages.reverse()}))
-      // Помечаем чат как прочитанный только после успешной загрузки сообщений
       dispatch(markChatAsRead(activeChat.id))
-      scrollToBottom()
+      setTimeout(() => {
+        scrollToBottomInstant()
+      }, 100)
     } catch (error) {
       console.error('Failed to load messages:', error)
     } finally {
@@ -166,8 +230,14 @@ export const ChatWindow: React.FC = () => {
     }
   }
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({behavior: 'smooth'})
+  const scrollToBottomInstant = () => {
+    const container = messagesContainerRef.current
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      })
+    }
   }
 
   if (!activeChat) {
@@ -178,7 +248,7 @@ export const ChatWindow: React.FC = () => {
     <div className={styles.chatWindow}>
       <ChatHeader chat={activeChat} />
 
-      <div className={styles.messagesContainer}>
+      <div className={styles.messagesContainer} ref={messagesContainerRef}>
         {isLoading ? (
           <div className={styles.loading}>Загрузка...</div>
         ) : (
@@ -190,7 +260,7 @@ export const ChatWindow: React.FC = () => {
         )}
       </div>
 
-      <MessageInput chatId={activeChat.id} />
+      <MessageInput chatId={activeChat.id} onMessageSent={scrollToBottomInstant} />
     </div>
   )
 }

@@ -15,7 +15,27 @@ import MultiDropSelect from '@/components/UI-kit/Texts/MultiDropSelect/MultiDrop
 import {toast} from 'sonner'
 import formatDateToDayMonth from '@/utils/formatedDateToMonth'
 
-const REGION_OPTIONS = ['Belarus', 'Russia', 'China', 'Kazakhstan']
+const REGION_OPTIONS = [
+  'Azerbaijan',
+  'Armenia',
+  'Belarus',
+  'Egypt',
+  'India',
+  'Iran',
+  'Kazakhstan',
+  'Kyrgyzstan',
+  'China',
+  'Moldova',
+  'UAE',
+  'Russia',
+  'Tajikistan',
+  'Turkmenistan',
+  'Turkey',
+  'Uzbekistan',
+  'SouthAfrica',
+  'Other'
+]
+
 const trashImage = '/admin/trash.svg'
 const editImage = '/admin/edit.svg'
 const assets_avatar = '/avatars/avatar-v.svg'

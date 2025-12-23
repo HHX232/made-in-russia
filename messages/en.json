@@ -52,6 +52,20 @@
     "loading": "Loading..."
   },
   "RegisterUserPage": {
+    "Azerbaijan": "Azerbaijan",
+  "Armenia": "Armenia",
+  "Egypt": "Egypt",
+  "India": "India",
+  "Iran": "Iran",
+  "Kyrgyzstan": "Kyrgyzstan",
+  "Moldova": "Moldova",
+  "UAE": "United Arab Emirates",
+  "Tajikistan": "Tajikistan",
+  "Turkmenistan": "Turkmenistan",
+  "Turkey": "Turkey",
+  "Uzbekistan": "Uzbekistan",
+  "SouthAfrica": "South Africa",
+  "Other": "Other",
      "chooseAccountType": "Choose account type",
       "selectRoleDescription": "Select the appropriate role for registration",
       "buyerDescription": "Looking for products to buy",
@@ -143,6 +157,38 @@
     "becomePartner": "Become a partner"
   },
   "ProfilePage": {
+  "azerbaijan": "Azerbaijan",
+  "Azerbaijan": "Azerbaijan",
+  "armenia": "Armenia",
+  "Armenia": "Armenia",
+  "Belarus": "Belarus",
+  "egypt": "Egypt",
+  "Egypt": "Egypt",
+  "india": "India",
+  "India": "India",
+  "iran": "Iran",
+  "Iran": "Iran",
+  "Kazakhstan": "Kazakhstan",
+  "kyrgyzstan": "Kyrgyzstan",
+  "Kyrgyzstan": "Kyrgyzstan",
+  "China": "China",
+  "moldova": "Moldova",
+  "Moldova": "Moldova",
+  "uae": "United Arab Emirates",
+  "UAE": "United Arab Emirates",
+  "Russia": "Russia",
+  "tajikistan": "Tajikistan",
+  "Tajikistan": "Tajikistan",
+  "turkmenistan": "Turkmenistan",
+  "Turkmenistan": "Turkmenistan",
+  "turkey": "Turkey",
+  "Turkey": "Turkey",
+  "uzbekistan": "Uzbekistan",
+  "Uzbekistan": "Uzbekistan",
+  "southafrica": "South Africa",
+  "SouthAfrica": "South Africa",
+  "other": "Other",
+  "Other": "Other",
     "noFavorites": "No favorite products",
     "personalCabinet": "Personal Account",
     "personalData": "Personal data",
@@ -264,6 +310,7 @@
     "registrationDate": "Registration date",
     "enterLogin": "Login",
     "myChats": "My Chats",
+    "writeToChat": "Write to Chat",
     "noFaqYet": "No FAQ created yet",
     "failedToSaveMedia": "Failed to save media",
     "writeSite": "Enter website",
@@ -333,17 +380,21 @@
     "PurchaseModal": {
       "title": "Place order",
       "fields": {
-        "name": "Name",
-        "email": "Email",
-        "phone": "Phone number",
-        "quantity": "Quantity"
-      },
-      "placeholders": {
-        "name": "Enter your name",
-        "email": "example@email.com",
-        "phone": "+7 (999) 123-45-67",
-        "quantity": "Minimum {minimum}"
-      },
+      "name": "Name",
+      "email": "Email",
+      "firstName": "Enter your name",
+      "comment": "Order comment",
+      "phone": "Phone number",
+      "quantity": "Quantity"
+    },
+    "placeholders": {
+      "name": "Enter your name",
+      "firstName": "Enter your name",
+      "comment": "Order comment",
+      "email": "example@email.com",
+      "phone": "+7 (999) 123-45-67",
+      "quantity": "Minimum {minimum}"
+    },
       "errors": {
         "nameRequired": "Name is required",
         "emailRequired": "Email is required",
@@ -439,6 +490,7 @@
       "publishing": "Publishing..."
     }
   },
+
   "NotFoundPage": {
     "goBack": "Return to home",
     "mainText": "Page not found or deleted. Check the URL or return to home."
@@ -515,6 +567,10 @@
     "publishing": "Publishing..."
   },
   "createCard": {
+    "priceValueRequired": "Product price cannot be empty",
+  "priceUnitRequired": "Product unit of measurement cannot be empty",
+  "priceCurrencyRequired": "Product currency cannot be empty",
+  "priceFieldsRequired": "All price fields must be filled",
     "deliveryTermsError": "At least 1 delivery option must be added",
     "titleError": "Product name must be specified",
     "categoryError": "Product category must be selected",
@@ -1160,6 +1216,9 @@
     "backToList": "Back to list",
     "selectChat": "Select a chat to start messaging",
     "writeToSeller": "Contact Seller",
+    "writeToChat": "Write to Chat",
+    "startChat": "Start Chat",
+    "creating": "Creating...",
     "typeMessage": "Type a message...",
     "send": "Send",
     "attach": "Attach file",
@@ -1173,7 +1232,9 @@
     "connectionError": "Connection error",
     "reconnecting": "Reconnecting...",
     "online": "Online",
-    "offline": "Offline"
+    "offline": "Offline",
+    "vendorChat": "Chat with vendor",
+    "priceNotSpecified": "Price not specified"
   }
 
 }

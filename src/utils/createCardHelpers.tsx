@@ -57,8 +57,33 @@ export const validateField = (
       return filesError
 
     case 'pricesArray':
-      const pricesError = !pricesArray || pricesArray.length === 0 ? translations('onePriceError') : ''
-      return pricesError
+      console.log('pricesArray', pricesArray)
+
+      if (!pricesArray || pricesArray.length === 0) {
+        return translations('onePriceError')
+      }
+
+      const maxEmptyFields = Math.max(
+        ...pricesArray.map((price) => {
+          let emptyCount = 0
+          if (!price.value) emptyCount++
+          if (!price.unit?.trim()) emptyCount++
+          if (!price.currency?.trim()) emptyCount++
+          return emptyCount
+        })
+      )
+
+      if (maxEmptyFields === 0) {
+        return ''
+      } else if (maxEmptyFields === 1) {
+        const emptyField = pricesArray.find((p) => !p.value || !p.unit?.trim() || !p.currency?.trim())
+
+        if (!emptyField?.value) return translations('priceValueRequired')
+        if (!emptyField?.unit?.trim()) return translations('priceUnitRequired')
+        if (!emptyField?.currency?.trim()) return translations('priceCurrencyRequired')
+      } else {
+        return translations('priceFieldsRequired')
+      }
 
     case 'description':
       const descError = !description || description?.trim().length === 0 ? translations('descriptionError') : ''

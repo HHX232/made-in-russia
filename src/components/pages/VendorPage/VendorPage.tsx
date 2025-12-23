@@ -14,7 +14,6 @@ import {useProductReviews} from '@/hooks/useMyProductsReviews'
 
 import {Product} from '@/services/products/product.types'
 import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/ModalWindowDefault'
-import Footer from '@/components/MainComponents/Footer/Footer'
 import {Country} from '@/services/users.types'
 import {Category} from '@/services/categoryes/categoryes.service'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
@@ -26,13 +25,13 @@ import {VendorAdditionalContacts} from './VendorAdditionalContacts/VendorAdditio
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useActions} from '@/hooks/useActions'
+import {chatService} from '@/services/chat/chat.service'
 import {useUpdateVendorDetails} from '@/api/useVendorApi'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import {useSaveVendorMedia} from '@/utils/saveVendorDescriptionWithMedia'
 import {useUserQuery, useLogout} from '@/hooks/useUserApi'
 import DeleteAccountButton from '@/components/UI-kit/buttons/DeleteAccountButton/DeleteAccountButton'
 import Avatar from '@/components/UI-kit/inputs/Avatar/Avatar'
-import Catalog from '@/components/screens/Catalog/Catalog'
 import MarkdownEditor from '@/components/UI-kit/MDEditor/MarkdownEditor'
 import FavoritesForProfile from '../FavoritesPage/FavoritesForProfile/FavoritesForProfile'
 import {useSearchParams, useRouter} from 'next/navigation'
@@ -144,8 +143,6 @@ const formatDateLocalized = (dateString: string, currentLang: string = 'ru'): st
   }
 }
 
-// Компонент Sidebar
-// Компонент Sidebar для VendorPage с добавленным пунктом "Избранное"
 const Sidebar: FC<{
   currentTab: TCurrentTab
   onTabChange: (tab: TCurrentTab) => void
@@ -156,11 +153,25 @@ const Sidebar: FC<{
   sidebarShow: boolean
   onLoginChange?: (newLogin: string) => void
   setShowSidebar: (val: boolean) => void
-}> = ({currentTab, onTabChange, onLogout, userData, isPageForVendor, sidebarShow, setShowSidebar, onLoginChange}) => {
+  unreadChatsCount?: number
+  onStartChat?: () => void
+  isCreatingChat?: boolean
+}> = ({
+  currentTab,
+  onTabChange,
+  onLogout,
+  userData,
+  isPageForVendor,
+  sidebarShow,
+  setShowSidebar,
+  onLoginChange,
+  unreadChatsCount,
+  onStartChat,
+  isCreatingChat
+}) => {
   const t = useTranslations('VendorPage')
   const {updateUserAvatar} = useActions()
   const {user} = useTypedSelector((state) => state.user)
-  const {updateVendorDetails} = useActions()
   const {mutate: updateVendorDetailsAPI} = useUpdateVendorDetails()
   const handleAvatarChange = useCallback(
     (newAvatarUrl: string | null) => {
@@ -219,7 +230,7 @@ const Sidebar: FC<{
               )}
               {!isPageForVendor && <span className={styles.acc_compavatar__name}>{userData?.login}</span>}
             </span>
-            <span className={styles.acc_compavatar__email}>{userData?.email}</span>
+            {isPageForVendor && <span className={styles.acc_compavatar__email}>{userData?.email}</span>}
           </div>
         </div>
 
@@ -261,8 +272,56 @@ const Sidebar: FC<{
               </a>
             </li>
 
+            {/* Написать в чат - для посетителей */}
+            {!isPageForVendor && onStartChat && (
+              <li
+                onClick={() => {
+                  if (!isCreatingChat) {
+                    onStartChat()
+                  }
+                }}
+                className={isCreatingChat ? styles.disabled : ''}
+              >
+                <a
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault()
+                  }}
+                >
+                  <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M8.5 19H8C4 19 2 18 2 13V8C2 4 4 2 8 2H16C20 2 22 4 22 8V13C22 17 20 19 16 19H15.5C15.19 19 14.89 19.15 14.7 19.4L13.2 21.4C12.54 22.28 11.46 22.28 10.8 21.4L9.3 19.4C9.14 19.18 8.77 19 8.5 19Z'
+                      stroke='#2F2F2F'
+                      strokeOpacity='0.5'
+                      strokeWidth='1.5'
+                      strokeMiterlimit='10'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M7 8H17'
+                      stroke='#2F2F2F'
+                      strokeOpacity='0.5'
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M7 13H13'
+                      stroke='#2F2F2F'
+                      strokeOpacity='0.5'
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                  <span>{t('writeToChat') || 'Написать в чат'}</span>
+                </a>
+              </li>
+            )}
+
             {/* Контакты */}
-            <li
+            {/* <li
               onClick={() => {
                 setShowSidebar(false)
               }}
@@ -286,7 +345,7 @@ const Sidebar: FC<{
                 </svg>
                 <span>{t('contacts')}</span>
               </a>
-            </li>
+            </li> */}
 
             {/* Избранное - НОВЫЙ ПУНКТ */}
             {isPageForVendor && (
@@ -361,7 +420,27 @@ const Sidebar: FC<{
                       strokeLinejoin='round'
                     />
                   </svg>
-                  <span>{t('myChats')}</span>
+                  <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    {t('myChats')}
+                    {unreadChatsCount !== undefined && unreadChatsCount > 0 && (
+                      <span
+                        style={{
+                          backgroundColor: '#E1251B',
+                          color: '#fff',
+                          borderRadius: '50%',
+                          width: '20px',
+                          height: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        {unreadChatsCount > 99 ? '99+' : unreadChatsCount}
+                      </span>
+                    )}
+                  </span>
                 </a>
               </li>
             )}
@@ -686,13 +765,59 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const [wantQuite, setWantQuite] = useState(false)
   const [currentReviewPage, setCurrentReviewPage] = useState(1)
   const [openFaqId, setOpenFaqId] = useState<number | null>(null)
+  const [isCreatingChat, setIsCreatingChat] = useState(false)
   const {data: userData, isLoading: loading} = useUserQuery()
   const {mutate: logout, isPending: isLogoutPending} = useLogout()
   const currentLang = useCurrentLanguage()
   const [vendorData, setVendorData] = useState(initialVendorData)
+  const {unreadTotal} = useTypedSelector((state) => state.chat)
+  const {setUnreadTotal} = useActions()
+  const tChat = useTranslations('chat')
 
   const searchParams = useSearchParams()
   const router = useRouter()
+
+  // Создание чата с вендором
+  const handleStartVendorChat = async () => {
+    if (isCreatingChat || !initialVendorData?.id) return
+
+    const currentUser = userData as any
+    if (!currentUser) {
+      toast.error(tChat('needAuth') || 'Необходимо авторизоваться')
+      router.push('/login')
+      return
+    }
+
+    if (currentUser.id === initialVendorData.id) {
+      toast.error(tChat('cantWriteYourself') || 'Вы не можете написать самому себе')
+      return
+    }
+
+    setIsCreatingChat(true)
+    try {
+      const chat = await chatService.createVendorChat(initialVendorData.id)
+      router.push(`/chats?chatId=${chat.id}`)
+    } catch (error) {
+      console.error('Error creating vendor chat:', error)
+      toast.error(tChat('sendError') || 'Ошибка при создании чата')
+    } finally {
+      setIsCreatingChat(false)
+    }
+  }
+
+  // Загружаем количество непрочитанных сообщений при монтировании
+  useEffect(() => {
+    if (isPageForVendor) {
+      chatService
+        .getTotalUnreadCount()
+        .then((count) => {
+          setUnreadTotal(count)
+        })
+        .catch((error) => {
+          console.error('Error fetching unread count:', error)
+        })
+    }
+  }, [isPageForVendor, setUnreadTotal])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -1198,6 +1323,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 setUserLogin(newLogin)
                 safeSetNeedToSave(true)
               }}
+              unreadChatsCount={unreadTotal}
+              onStartChat={!isPageForVendor ? handleStartVendorChat : undefined}
+              isCreatingChat={isCreatingChat}
             />
 
             {/* Mobile header */}
@@ -1414,14 +1542,18 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                       theme='newWhite'
                       placeholder={t('descriptionPlaceholder')}
                     /> */}
-                    <MarkdownEditor
-                      initialValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
-                      onValueChange={(val) => {
-                        updateVendorDetails({...user?.vendorDetails, description: val})
-                        canUpdateVendorMedia.current = true
-                      }}
-                      readOnly={!isPageForVendor}
-                    />
+                    {isPageForVendor || (!isPageForVendor && onlyShowDescr) ? (
+                      <MarkdownEditor
+                        initialValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
+                        onValueChange={(val) => {
+                          updateVendorDetails({...user?.vendorDetails, description: val})
+                          canUpdateVendorMedia.current = true
+                        }}
+                        readOnly={!isPageForVendor}
+                      />
+                    ) : (
+                      <p>Not have</p>
+                    )}
                     <div className={styles.vendor__description__photos}>
                       <div
                         style={{marginTop: '30px'}}

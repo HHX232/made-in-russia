@@ -14,6 +14,13 @@ export const chatService = {
     return data
   },
 
+  async createVendorChat(vendorId: number): Promise<Chat> {
+    console.log('createVendorChat called with vendorId:', vendorId)
+    const {data} = await instance.post<Chat>('/chats/vendor', {vendorId})
+    console.log('createVendorChat response:', data)
+    return data
+  },
+
   async getUserChats(page = 0, size = 20): Promise<ChatListResponse> {
     const {data} = await instance.get<ChatListResponse>('/chats', {
       params: {page, size}
@@ -56,8 +63,8 @@ export const chatService = {
     await instance.post(`/chats/messages/${messageId}/read`)
   },
 
-  async getUnreadCount(chatId: number): Promise<number> {
-    const {data} = await instance.get<{unreadCount: number}>(`/chats/${chatId}/unread-count`)
+  async getTotalUnreadCount(): Promise<number> {
+    const {data} = await instance.get<{unreadCount: number}>('/chats/unread-count')
     return data.unreadCount
   }
 }

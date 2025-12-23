@@ -132,6 +132,10 @@ const chatSlice = createSlice({
           message.isRead = true
         }
       }
+    },
+
+    setUnreadTotal(state, action: PayloadAction<number>) {
+      state.unreadTotal = action.payload
     }
   }
 })
@@ -145,7 +149,8 @@ export const {
   markChatAsRead,
   setUserTyping,
   removeUserTyping,
-  markMessageAsRead
+  markMessageAsRead,
+  setUnreadTotal
 } = chatSlice.actions
 
 export default chatSlice.reducer

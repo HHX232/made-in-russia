@@ -7,8 +7,7 @@ import Link from 'next/link'
 import Head from 'next/head'
 import styles from './CardPage.module.scss'
 import Image from 'next/image'
-import {ReactNode, useEffect, useMemo, useRef, useState} from 'react'
-import useWindowWidth from '@/hooks/useWindoWidth'
+import {ReactNode, useEffect, useState} from 'react'
 import ICardFull from '@/services/card/card.types'
 import {useLocale, useTranslations} from 'next-intl'
 import PurchaseModal from './PurchaseModal/PurchaseModal'
@@ -200,6 +199,32 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     }
   }
 
+  const handleStartVendorChat = async () => {
+    if (isCreatingChat || !cardData) return
+
+    if (!user) {
+      toast.error('Необходимо авторизоваться')
+      router.push(`/${locale}/login`)
+      return
+    }
+
+    if (user.id === cardData.user.id) {
+      toast.error('Вы не можете написать самому себе')
+      return
+    }
+
+    setIsCreatingChat(true)
+    try {
+      const chat = await chatService.createVendorChat(cardData.user.id)
+      router.push(`/chats?chatId=${chat.id}`)
+    } catch (error) {
+      console.error('Error creating vendor chat:', error)
+      toast.error(tChat('sendError'))
+    } finally {
+      setIsCreatingChat(false)
+    }
+  }
+
   useEffect(() => {
     console.log('productInFavorites', productInFavorites)
   }, [productInFavorites])
@@ -213,15 +238,12 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     setIsTogglingFavorite(true)
 
     try {
-      // Сначала обновляем UI оптимистично
       toggleToFavorites(cardData as any)
 
-      // Затем отправляем на сервер
       await ServiceFavorites.toggleFavorite(cardData.id, locale)
     } catch (error) {
       console.error('Failed to toggle favorite:', error)
 
-      // Откатываем изменения при ошибке
       toggleToFavorites(cardData as any)
 
       toast.error(
@@ -241,9 +263,9 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   }
 
   const handlePurchaseSubmit = async (data: {
-    name: string
-    email: string
-    phone: string
+    firstName: string
+    // phoneNumber: string
+    comment: string
     quantity: number
     selectedPrice: any
     totalPrice: number
@@ -251,10 +273,10 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     console.log('Данные заказа:', data)
     try {
       const {data: orderData} = await axiosClassic.post(`/products/${cardData?.id}/create-order`, {
-        email: data?.email,
-        firstName: data?.name,
-        phoneNumber: data?.phone || '',
-        quantity: data?.quantity || 1
+        firstName: data.firstName,
+        // phoneNumber: data.phoneNumber,
+        comment: data.comment,
+        quantity: data.quantity || 1
       })
       toast.success(
         <div style={{lineHeight: 1.5, marginLeft: '10px'}}>
@@ -348,36 +370,26 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
           <button className={styles.byNow} onClick={() => setPurchaseModalOpen(true)}>
             {t('byNow')}
           </button>
-          {/* Кнопка "Написать продавцу" - только если это не свой товар и пользователь загружен */}
-          {showContactButton && (
-            <button className={styles.contactSeller} onClick={handleContactSeller} disabled={isCreatingChat}>
-              <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                <path
-                  d='M8.5 19H8C4 19 2 18 2 13V8C2 4 4 2 8 2H16C20 2 22 4 22 8V13C22 17 20 19 16 19H15.5C15.19 19 14.89 19.15 14.7 19.4L13.2 21.4C12.54 22.28 11.46 22.28 10.8 21.4L9.3 19.4C9.14 19.18 8.77 19 8.5 19Z'
-                  stroke='currentColor'
-                  strokeWidth='1.5'
-                  strokeMiterlimit='10'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-                <path
-                  d='M7 8H17'
-                  stroke='currentColor'
-                  strokeWidth='1.5'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-                <path
-                  d='M7 13H13'
-                  stroke='currentColor'
-                  strokeWidth='1.5'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-              </svg>
-              {isCreatingChat ? '...' : tChat('writeToSeller')}
-            </button>
-          )}
+          {/* Кнопка "Написать продавцу" - скрыта для владельца товара, но занимает место чтобы не прыгали кнопки */}
+          <button
+            className={`${styles.contactSeller} ${!showContactButton ? styles.contactSellerHidden : ''}`}
+            onClick={handleContactSeller}
+            disabled={isCreatingChat || !showContactButton}
+          >
+            <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+              <path
+                d='M8.5 19H8C4 19 2 18 2 13V8C2 4 4 2 8 2H16C20 2 22 4 22 8V13C22 17 20 19 16 19H15.5C15.19 19 14.89 19.15 14.7 19.4L13.2 21.4C12.54 22.28 11.46 22.28 10.8 21.4L9.3 19.4C9.14 19.18 8.77 19 8.5 19Z'
+                stroke='currentColor'
+                strokeWidth='1.5'
+                strokeMiterlimit='10'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+              <path d='M7 8H17' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
+              <path d='M7 13H13' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
+            </svg>
+            {tChat('writeToSeller')}
+          </button>
           <button
             onClick={handleToggleFavorite}
             className={styles.fav__button}
@@ -460,41 +472,46 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
       {/* Первая секция */}
       <span className={`${styles.card__row__info} ${styles.card__col__info__first}`}>
         <NewFullTopInfo />
-        <Link
-          href={`/data-vendor/${cardData?.user?.id}`}
-          className={`${styles.about__vendor} ${styles.about__vendor_none}`}
-        >
+        <div className={`${styles.about__vendor} ${styles.about__vendor_none}`}>
           <h3 className={styles.vendor__title}>{t('companyDescription')}</h3>
           <div className={styles.vendor__box__info}>
-            <div className={styles.vendor__avatar}>
-              {!!cardData?.user.avatarUrl ? (
-                <Image
-                  className={styles.avatar__image}
-                  width={80}
-                  height={80}
-                  src={cardData.user.avatarUrl}
-                  alt='avatar'
-                />
-              ) : (
-                <div className={styles.char__box}>
-                  {' '}
-                  <p className={styles.avatar__char}>
-                    {!!cardData?.user.login.split('"')[1]?.charAt(0).toUpperCase()
-                      ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
-                      : cardData?.user.login.charAt(0).toUpperCase()}
-                  </p>
-                </div>
-              )}
-              <p className={styles.vendor__name}>{cardData?.user.login}</p>
-            </div>
-            <p className={styles.vendor__inn}>
-              {t('INN')}: {cardData?.user.vendorDetails?.inn}
-            </p>
+            <Link href={`/data-vendor/${cardData?.user?.id}`} className={styles.vendor__link}>
+              <div className={styles.vendor__avatar}>
+                {!!cardData?.user.avatarUrl ? (
+                  <Image
+                    className={styles.avatar__image}
+                    width={80}
+                    height={80}
+                    src={cardData.user.avatarUrl}
+                    alt='avatar'
+                  />
+                ) : (
+                  <div className={styles.char__box}>
+                    {' '}
+                    <p className={styles.avatar__char}>
+                      {!!cardData?.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                        ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                        : cardData?.user.login.charAt(0).toUpperCase()}
+                    </p>
+                  </div>
+                )}
+                <p className={styles.vendor__name}>{cardData?.user.login}</p>
+              </div>
+              <p className={styles.vendor__inn}>
+                {t('INN')}: {cardData?.user.vendorDetails?.inn}
+              </p>
+            </Link>
+            {showContactButton && (
+              <button className={styles.chat__button} onClick={handleStartVendorChat} disabled={isCreatingChat}>
+                {tChat('startChat')}
+              </button>
+            )}
           </div>
-        </Link>
+        </div>
       </span>
 
       <PurchaseModal
+        productImageUrl={cardMiniData?.media?.[0].url || ''}
         useAbsoluteClose
         isOpen={purchaseModalOpen}
         onClose={() => setPurchaseModalOpen(false)}

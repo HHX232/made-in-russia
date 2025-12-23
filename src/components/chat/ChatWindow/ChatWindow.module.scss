@@ -1,3 +1,5 @@
+@import '@/scss/config/mixins';
+
 .chatWindow {
   display: flex;
   overflow: hidden;
@@ -6,9 +8,18 @@
   border-radius: 12px;
   background-color: white;
   box-shadow: 0 2px 12px rgb(0 0 0 / 10%);
+
+  @include mobile {
+    height: auto;
+    min-height: 0;
+    flex: 1;
+    border-radius: 0;
+    box-shadow: none;
+  }
 }
 
 .messagesContainer {
+  min-height: 0;
   flex: 1;
   background-color: #f8f9fa;
   overflow-y: auto;

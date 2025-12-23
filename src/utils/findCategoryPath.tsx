@@ -64,20 +64,22 @@ export function findCategoryBySlug(categories: any[], slug: string): any | null 
 /**
  * Строит breadcrumbs по одному slug (находит путь автоматически)
  */
+/**
+ * Строит breadcrumbs по одному slug с плоскими ссылками
+ * Например: /categories/dolomite вместо /categories/minerals/construction-materials/dolomite
+ */
 export function buildBreadcrumbs(allCategories: any[], slug: string) {
   const path = findCategoryPath(allCategories, slug)
 
   if (!path) return []
 
-  let accumulatedPath = '/categories'
   const breadcrumbs = [
     {title: 'home', link: '/'},
     {title: 'categories', link: '/categories'},
     ...path.map((cat) => {
-      accumulatedPath += `/${cat.slug}`
       return {
-        title: cat.label || cat.name, // Используем label, если есть, иначе name
-        link: accumulatedPath
+        title: cat.label || cat.name,
+        link: `/categories/${cat.slug}` // Плоская ссылка
       }
     })
   ]
@@ -86,13 +88,12 @@ export function buildBreadcrumbs(allCategories: any[], slug: string) {
 }
 
 /**
- * Строит breadcrumbs по массиву slugs (точный путь)
- * Используйте эту функцию для правильной работы с вложенными категориями
+ * Строит breadcrumbs по массиву slugs с плоскими ссылками
+ * Например: /categories/dolomite вместо /categories/minerals/construction-materials/dolomite
  */
 export function buildBreadcrumbsByPath(allCategories: any[], slugPath: string[]) {
   if (slugPath.length === 0) return []
 
-  let accumulatedPath = '/categories'
   const breadcrumbs = [
     {title: 'home', link: '/'},
     {title: 'categories', link: '/categories'}
@@ -104,10 +105,9 @@ export function buildBreadcrumbsByPath(allCategories: any[], slugPath: string[])
     const category = currentCategories.find((cat) => cat.slug === slug)
     if (!category) break
 
-    accumulatedPath += `/${slug}`
     breadcrumbs.push({
-      title: category.label || category.name, // label для breadcrumbs, fallback на name
-      link: accumulatedPath
+      title: category.label || category.name,
+      link: `/categories/${slug}` // Плоская ссылка
     })
 
     if (category.children && category.children.length > 0) {
@@ -125,25 +125,20 @@ export function buildBreadcrumbsByPath(allCategories: any[], slugPath: string[])
  */
 export function buildBreadcrumbsForCard(allCategories: any[], slug: string, cardTitle: string) {
   const path = findCategoryPath(allCategories, slug)
+  if (!path || path.length === 0) return []
 
-  if (!path) return []
-
-  // Собираем полный путь до последней категории
-  let accumulatedPath = '/categories'
-  for (const cat of path) {
-    accumulatedPath += `/${cat.slug}`
-  }
+  const lastCategory = path[path.length - 1]
 
   const breadcrumbs = [
     {title: 'home', link: '/'},
     {title: 'categories', link: '/categories'},
     {
-      title: path[path.length - 1].name,
-      link: accumulatedPath
+      title: lastCategory.label || lastCategory.name,
+      link: `/categories/${lastCategory.slug}`
     },
     {
       title: cardTitle,
-      link: '' // название товара — обычно без ссылки
+      link: '' // товар без ссылки
     }
   ]
 

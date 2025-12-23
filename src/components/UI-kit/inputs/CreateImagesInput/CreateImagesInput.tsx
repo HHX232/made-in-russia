@@ -74,8 +74,10 @@ const ImagePreview = memo<{
 
   if (isExternalUrl) {
     return (
-      <img
+      <Image
         src={url}
+        width={200}
+        height={200}
         alt={`Preview ${index}`}
         className={`${styles.preview} ${isOnlyShow ? styles.clickable : ''}`}
         onError={handleError}
@@ -114,6 +116,7 @@ const ImageUploadItem = memo<{
   acceptString: string
   showBigFirstItem: boolean
   isOnlyShow: boolean
+  error?: string
   onFileChange: (index: number, file: File) => void
   onMultipleFilesChange: (index: number, files: FileList) => void
   onRemove: (index: number) => void
@@ -133,6 +136,7 @@ const ImageUploadItem = memo<{
     acceptString,
     showBigFirstItem,
     isOnlyShow,
+    error,
     onFileChange,
     onMultipleFilesChange,
     onRemove,
@@ -340,7 +344,7 @@ const ImageUploadItem = memo<{
       <label
         className={`${styles.create__images__input__label} ${
           isBig ? styles.create__images__input__label__big : ''
-        } ${hasContent ? styles.has__file : ''} ${isOnlyShow ? styles.readonly : ''}`}
+        } ${hasContent ? styles.has__file : ''} ${isOnlyShow ? styles.readonly : ''} ${isBig && !!error ? styles.big_error : ''}`}
         htmlFor={isOnlyShow ? undefined : inputId}
         id={`label-${inputId}`}
         onMouseEnter={handleMouseEnter}
@@ -811,6 +815,7 @@ const CreateImagesInput: FC<CreateImagesInputProps> = ({
       <ImageUploadItem
         key={index}
         index={index}
+        error={index === 0 ? errorValue : ''}
         maxFiles={maxFiles}
         inputIdPrefix={inputIdPrefix}
         previewUrl={previewUrls[index] || null}

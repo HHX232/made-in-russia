@@ -121,7 +121,25 @@
       "selectRoleDescription": "Выберите подходящую роль для регистрации",
       "buyerDescription": "Ищу товары  для покупки",
       "vendorDescription": "Предлагаю товары для продажи",
-      "canChangeType": "Вы сможете изменить тип аккаунта позже в настройках"
+      "canChangeType": "Вы сможете изменить тип аккаунта позже в настройках",
+       "Azerbaijan": "Азербайджан",
+  "Armenia": "Армения",
+
+  "Egypt": "Египет",
+  "India": "Индия",
+  "Iran": "Иран",
+
+  "Kyrgyzstan": "Киргизия",
+
+  "Moldova": "Молдавия",
+  "UAE": "ОАЭ",
+
+  "Tajikistan": "Таджикистан",
+  "Turkmenistan": "Туркменистан",
+  "Turkey": "Турция",
+  "Uzbekistan": "Узбекистан",
+  "SouthAfrica": "ЮАР",
+  "Other": "Другое"
   },
   "MinimalHeader": {
     "category": "Категории",
@@ -146,6 +164,42 @@
     "becomePartner": "Стать партнером"
   },
   "ProfilePage": {
+    
+  "azerbaijan": "Азербайджан",
+  "Azerbaijan": "Азербайджан",
+  "armenia": "Армения",
+  "Armenia": "Армения",
+
+  "Belarus": "Беларусь",
+  "egypt": "Египет",
+  "Egypt": "Египет",
+  "india": "Индия",
+  "India": "Индия",
+  "iran": "Иран",
+  "Iran": "Иран",
+  "Kazakhstan": "Казахстан",
+  "kyrgyzstan": "Киргизия",
+  "Kyrgyzstan": "Киргизия",
+  "China": "Китай",
+  "moldova": "Молдавия",
+  "Moldova": "Молдавия",
+  "uae": "ОАЭ",
+  "UAE": "ОАЭ",
+  "Uae": "ОАЭ",
+  "Russia": "Россия",
+  "tajikistan": "Таджикистан",
+  "Tajikistan": "Таджикистан",
+  "turkmenistan": "Туркменистан",
+  "Turkmenistan": "Туркменистан",
+  "turkey": "Турция",
+  "Turkey": "Турция",
+  "uzbekistan": "Узбекистан",
+  "Uzbekistan": "Узбекистан",
+  "southafrica": "ЮАР",
+  "SouthAfrica": "ЮАР",
+  "other": "Другое",
+  "Other": "Другое",
+
     "personalCabinet": "Личный кабинет",
     "personalData": "Личные данные",
     "registrationDate": "Дата регистрации",
@@ -274,6 +328,7 @@
     "registrationDate": "Дата регистрации",
     "enterLogin": "Логин",
     "myChats": "Мои чаты",
+    "writeToChat": "Написать в чат",
     "noFaqYet": "FAQ еще не создан",
     "writeSite": "Введите сайт",
     "writeEmail": "Введите email",
@@ -347,11 +402,15 @@
       "fields": {
         "name": "Имя",
         "email": "Email",
+         "firstName": "Введите ваше имя",
+        "comment": "Комментарий к заказу",
         "phone": "Номер телефона",
         "quantity": "Количество"
       },
       "placeholders": {
         "name": "Введите ваше имя",
+        "firstName": "Введите ваше имя",
+        "comment": "Комментарий к заказу",
         "email": "example@email.com",
         "phone": "+7 (999) 123-45-67",
         "quantity": "Минимум {minimum}"
@@ -538,6 +597,10 @@
   "onePriceError": "Необходимо указать стоимость товара, валюту, единицу измерения",
   "characteristicError": "Необходимо добавить минимум 1 характеристику",
   "descriptionError": "Необходимо добавить описание товара",
+  "priceValueRequired": "Цена товара не может быть пустой",
+  "priceUnitRequired": "Единица измерения товара не может быть пустой",
+  "priceCurrencyRequired": "Валюта товара не может быть пустой",
+  "priceFieldsRequired": "Необходимо заполнить все поля цены",
     "mg": "миллиграмм",
     "g": "грамм",
     "kg": "килограмм",
@@ -1174,6 +1237,9 @@
     "backToList": "К списку чатов",
     "selectChat": "Выберите чат для начала общения",
     "writeToSeller": "Написать продавцу",
+    "writeToChat": "Написать в чат",
+    "startChat": "Начать чат",
+    "creating": "Создание...",
     "typeMessage": "Введите сообщение...",
     "send": "Отправить",
     "attach": "Прикрепить файл",
@@ -1187,6 +1253,8 @@
     "connectionError": "Ошибка соединения",
     "reconnecting": "Переподключение...",
     "online": "В сети",
-    "offline": "Не в сети"
+    "offline": "Не в сети",
+    "vendorChat": "Чат с поставщиком",
+    "priceNotSpecified": "Цена не указана"
   }
 }

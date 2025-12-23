@@ -324,12 +324,9 @@ const CategoryPage = ({
 
   const categoriesToDisplay = sortedCategories
 
+  // Всегда строим плоскую ссылку: /categories/{slug}
   const buildHref = (category: Category) => {
-    if (level === 1) {
-      return `/categories/${categoryName}/${category.slug.toLowerCase()}`
-    } else {
-      return `${pathname}/${category.slug.toLowerCase()}`
-    }
+    return `/categories/${category.slug.toLowerCase()}`
   }
 
   const handleFilterClick = (category: Category) => {
@@ -403,13 +400,8 @@ const CategoryPage = ({
                         <ul className={styles.category_in_card__list}>
                           {category.children.map((child) => (
                             <li key={child.id || child.slug}>
-                              {level === 2 ? (
-                                <Link href={`${buildHref(category)}?lastFilterName=${child.slug.toLowerCase()}`}>
-                                  {child.name}
-                                </Link>
-                              ) : (
-                                <Link href={`${buildHref(category)}/${child.slug.toLowerCase()}`}>{child.name}</Link>
-                              )}
+                              {/* Всегда плоская ссылка /categories/{slug} */}
+                              <Link href={`/categories/${child.slug.toLowerCase()}`}>{child.name}</Link>
                             </li>
                           ))}
                         </ul>
@@ -439,13 +431,8 @@ const CategoryPage = ({
                         <ul className={styles.category_in_card__list}>
                           {category.children.map((child) => (
                             <li key={child.id || child.slug}>
-                              {level === 2 ? (
-                                <Link href={`${buildHref(category)}?lastFilterName=${child.slug.toLowerCase()}`}>
-                                  {child.name}
-                                </Link>
-                              ) : (
-                                <Link href={`${buildHref(category)}/${child.slug.toLowerCase()}`}>{child.name}</Link>
-                              )}
+                              {/* Всегда плоская ссылка /categories/{slug} */}
+                              <Link href={`/categories/${child.slug.toLowerCase()}`}>{child.name}</Link>
                             </li>
                           ))}
                         </ul>

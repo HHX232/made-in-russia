@@ -11,6 +11,12 @@ export interface ProductInfo {
   imageUrl: string
 }
 
+export interface VendorInfo {
+  id: number
+  name: string
+  avatarUrl?: string
+}
+
 export interface ChatParticipant {
   id: number
   userId: number
@@ -46,6 +52,8 @@ export interface ChatMessage {
 export interface Chat {
   id: number
   product: ProductInfo
+  vendorInfo?: VendorInfo
+  isVendorChat?: boolean
   participants: ChatParticipant[]
   lastMessage?: ChatMessage
   unreadCount: number

@@ -1,10 +1,17 @@
+@import '@/scss/config/mixins';
+
 .chatHeader {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
   border-bottom: 1px solid #e0e0e0;
   background-color: white;
+
+  @include mobile {
+    padding: 12px;
+  }
 }
 
 .productInfo {
@@ -18,6 +25,22 @@
   height: 48px;
   border-radius: 8px;
   object-fit: cover;
+}
+
+.vendorAvatarPlaceholder {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: #0047ba;
+}
+
+.vendorInitial {
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .productDetails {
@@ -42,6 +65,10 @@
 .participants {
   display: flex;
   gap: 8px;
+
+  @include mobile {
+    display: none;
+  }
 }
 
 .participant {

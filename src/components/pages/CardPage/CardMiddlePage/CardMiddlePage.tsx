@@ -1,18 +1,70 @@
 'use client'
-import {FC} from 'react'
+import {FC, useState} from 'react'
 import styles from './CardMiddlePage.module.scss'
 // import StringDescriptionGroup from '@/components/UI-kit/Texts/StringDescriptionGroup/StringDescriptionGroup'
 // import Image from 'next/image'
 import Skeleton from 'react-loading-skeleton'
 import ICardFull from '@/services/card/card.types'
-import {useTranslations} from 'next-intl'
+import {useLocale, useTranslations} from 'next-intl'
 import ShowMarkdown from '@/components/UI-kit/Texts/ShowMarkdown/ShowMarkdown'
 import MarkdownEditor from '@/components/UI-kit/MDEditor/MarkdownEditor'
 import Link from 'next/link'
 import Image from 'next/image'
+import {chatService} from '@/services/chat/chat.service'
+import {useRouter} from 'next/navigation'
+import {toast} from 'sonner'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {useUserQuery} from '@/hooks/useUserApi'
 
 const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoading, cardData}) => {
   const t = useTranslations('CardMiddlePage')
+  const tChat = useTranslations('chat')
+  const router = useRouter()
+  const [isCreatingChat, setIsCreatingChat] = useState(false)
+  const {user} = useTypedSelector((state) => state.user)
+  const {isPending: isUserLoading} = useUserQuery()
+  const locale = useLocale()
+
+  const isOwner = user?.id !== undefined && cardData?.user?.id !== undefined && user.id === cardData.user.id
+  const showContactButton = !isUserLoading && !isOwner
+
+  const handleStartChat = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    console.log('=== VENDOR CHAT: Starting ===')
+    console.log('Vendor ID:', cardData?.user?.id)
+
+    if (isCreatingChat || !cardData) {
+      console.log('Early return: isCreatingChat or no cardData')
+      return
+    }
+
+    if (!user) {
+      toast.error('Необходимо авторизоваться')
+      router.push(`/${locale}/login`)
+      return
+    }
+
+    if (user.id === cardData.user.id) {
+      toast.error('Вы не можете написать самому себе')
+      return
+    }
+
+    setIsCreatingChat(true)
+    try {
+      console.log('Calling createVendorChat with ID:', cardData.user.id)
+      const chat = await chatService.createVendorChat(cardData.user.id)
+      console.log('Vendor chat created:', chat)
+      router.push(`/chats?chatId=${chat.id}`)
+    } catch (error) {
+      console.error('Error creating vendor chat:', error)
+      toast.error(tChat('sendError'))
+    } finally {
+      setIsCreatingChat(false)
+    }
+  }
+
   return (
     <div className={`${styles.card__middle__box}`}>
       <div className={`${styles.descr__box}`}>
@@ -69,38 +121,42 @@ const CardMiddlePage: FC<{isLoading: boolean; cardData: ICardFull}> = ({isLoadin
           {!isLoading ? <ShowMarkdown markValue={cardData.furtherDescription} /> : <></>}
         </div>
         <div className={styles.all__info__box}>
-          <Link
-            href={`/data-vendor/${cardData?.user?.id}`}
-            className={`${styles.about__vendor} ${styles.about__vendor_none}`}
-          >
+          <div className={`${styles.about__vendor} ${styles.about__vendor_none}`}>
             <h3 className={styles.vendor__title}>{t('companyDescription')}</h3>
             <div className={styles.vendor__box__info}>
-              <div className={styles.vendor__avatar}>
-                {!!cardData?.user.avatarUrl ? (
-                  <Image
-                    className={styles.avatar__image}
-                    width={80}
-                    height={80}
-                    src={cardData.user.avatarUrl}
-                    alt='avatar'
-                  />
-                ) : (
-                  <div className={styles.char__box}>
-                    {' '}
-                    <p className={styles.avatar__char}>
-                      {!!cardData?.user.login.split('"')[1]?.charAt(0).toUpperCase()
-                        ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
-                        : cardData?.user.login.charAt(0).toUpperCase()}
-                    </p>
-                  </div>
-                )}
-                <p className={styles.vendor__name}>{cardData?.user.login}</p>
-              </div>
-              <p className={styles.vendor__inn}>
-                {t('INN')}: {cardData?.user.vendorDetails?.inn}
-              </p>
+              <Link href={`/data-vendor/${cardData?.user?.id}`} className={styles.vendor__link}>
+                <div className={styles.vendor__avatar}>
+                  {!!cardData?.user.avatarUrl ? (
+                    <Image
+                      className={styles.avatar__image}
+                      width={80}
+                      height={80}
+                      src={cardData.user.avatarUrl}
+                      alt='avatar'
+                    />
+                  ) : (
+                    <div className={styles.char__box}>
+                      {' '}
+                      <p className={styles.avatar__char}>
+                        {!!cardData?.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                          ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                          : cardData?.user.login.charAt(0).toUpperCase()}
+                      </p>
+                    </div>
+                  )}
+                  <p className={styles.vendor__name}>{cardData?.user.login}</p>
+                </div>
+                <p className={styles.vendor__inn}>
+                  {t('INN')}: {cardData?.user.vendorDetails?.inn}
+                </p>
+              </Link>
+              {showContactButton && (
+                <button className={styles.chat__button} onClick={handleStartChat} disabled={isCreatingChat}>
+                  {tChat('startChat')}
+                </button>
+              )}
             </div>
-          </Link>
+          </div>
           <div className={styles.about__vendor}>
             <h3 className={styles.vendor__title}>{t('locationInfo')}</h3>
             <div className={styles.vendor__box__location}>

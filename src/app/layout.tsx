@@ -47,7 +47,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
               {/* </GoogleRecaptchaProviderComponent> */}
               <ClientStyleLoader />
               <Toaster
-                visibleToasts={10}
+                visibleToasts={20}
                 style={{zIndex: '10100009999'}}
                 theme={'dark'}
                 position={'top-right'}

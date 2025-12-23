@@ -23,6 +23,7 @@
   font-size: 14px;
   outline: none;
   transition: all 0.2s ease;
+  border-radius:10px;
 
   &:focus {
     border-color: #007bff;
@@ -262,6 +263,7 @@
 
 // Стили для категорий
 .categoryGroup {
+  width: 100%;
   margin-bottom: 2px;
 }
 

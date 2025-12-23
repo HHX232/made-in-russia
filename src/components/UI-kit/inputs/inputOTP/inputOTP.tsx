@@ -6,9 +6,16 @@ interface InputOtpProps {
   onComplete: (value: string) => void
   disabled?: boolean
   className?: string
+  autoFocus?: boolean
 }
 
-const InputOtp: React.FC<InputOtpProps> = ({length = 4, onComplete, disabled = false, className = ''}) => {
+const InputOtp: React.FC<InputOtpProps> = ({
+  length = 4,
+  onComplete,
+  disabled = false,
+  className = '',
+  autoFocus = true
+}) => {
   const [otpValues, setOtpValues] = useState<string[]>(Array(length).fill(''))
   const [isCompleted, setIsCompleted] = useState(false)
   const inputRefs = useRef<HTMLInputElement[]>([])
@@ -19,6 +26,12 @@ const InputOtp: React.FC<InputOtpProps> = ({length = 4, onComplete, disabled = f
       inputRefs.current[index] = el
     }
   }
+
+  useEffect(() => {
+    if (autoFocus && !disabled && inputRefs.current[0]) {
+      inputRefs.current[0].focus()
+    }
+  }, [autoFocus, disabled])
 
   useEffect(() => {
     const otpValue = otpValues.join('')

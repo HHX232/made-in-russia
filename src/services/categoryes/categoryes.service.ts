@@ -16,6 +16,7 @@ export interface Category {
   okved?: string[]
   iconUrl?: string | null
   children: Category[]
+  productsCount?: number
   creationDate: string
   lastModificationDate: string
   okvedCategories: string[]

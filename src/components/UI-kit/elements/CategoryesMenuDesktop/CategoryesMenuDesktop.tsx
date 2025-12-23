@@ -255,7 +255,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({categories, set
             selectedCategory.children.map((subcategory) => (
               <li key={subcategory.id} className={styles.mobile_menu_item}>
                 <Link
-                  href={`/categories/${selectedCategory.slug}/${subcategory.slug}`}
+                  href={`/categories/${subcategory.slug}`}
                   className={styles.mobile_menu_item_content}
                   onClick={() => handleCloseMenu()}
                 >
@@ -296,7 +296,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({categories, set
             selectedSubcategory.children.map((item) => (
               <li key={item.id} className={styles.mobile_menu_item}>
                 <Link
-                  href={`/categories/${selectedCategory?.slug}/${selectedSubcategory.slug}/${item.slug}`}
+                  href={`/categories/${item.slug}`}
                   className={styles.mobile_menu_item_full}
                   onClick={() => handleCloseMenu()}
                 >
@@ -372,10 +372,7 @@ const CategoryesMenuDesktop: FC<ICategoryesMenuDesktopProps> = ({categories, set
                     el.children.map((child) => {
                       return (
                         <li key={child.id}>
-                          <Link
-                            href={`/categories/${el.slug}/${child.slug}`}
-                            className={`${styles.exp_catalog__subcats_link}`}
-                          >
+                          <Link href={`/categories/${child.slug}`} className={`${styles.exp_catalog__subcats_link}`}>
                             {child.iconUrl && (
                               <Image
                                 src={child.iconUrl}
