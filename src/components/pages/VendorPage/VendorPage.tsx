@@ -25,6 +25,7 @@ import {VendorAdditionalContacts} from './VendorAdditionalContacts/VendorAdditio
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useActions} from '@/hooks/useActions'
+import {chatService} from '@/services/chat/chat.service'
 import {useUpdateVendorDetails} from '@/api/useVendorApi'
 import CreateImagesInput from '@/components/UI-kit/inputs/CreateImagesInput/CreateImagesInput'
 import {useSaveVendorMedia} from '@/utils/saveVendorDescriptionWithMedia'
@@ -152,7 +153,22 @@ const Sidebar: FC<{
   sidebarShow: boolean
   onLoginChange?: (newLogin: string) => void
   setShowSidebar: (val: boolean) => void
-}> = ({currentTab, onTabChange, onLogout, userData, isPageForVendor, sidebarShow, setShowSidebar, onLoginChange}) => {
+  unreadChatsCount?: number
+  onStartChat?: () => void
+  isCreatingChat?: boolean
+}> = ({
+  currentTab,
+  onTabChange,
+  onLogout,
+  userData,
+  isPageForVendor,
+  sidebarShow,
+  setShowSidebar,
+  onLoginChange,
+  unreadChatsCount,
+  onStartChat,
+  isCreatingChat
+}) => {
   const t = useTranslations('VendorPage')
   const {updateUserAvatar} = useActions()
   const {user} = useTypedSelector((state) => state.user)
@@ -256,6 +272,54 @@ const Sidebar: FC<{
               </a>
             </li>
 
+            {/* Написать в чат - для посетителей */}
+            {!isPageForVendor && onStartChat && (
+              <li
+                onClick={() => {
+                  if (!isCreatingChat) {
+                    onStartChat()
+                  }
+                }}
+                className={isCreatingChat ? styles.disabled : ''}
+              >
+                <a
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault()
+                  }}
+                >
+                  <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M8.5 19H8C4 19 2 18 2 13V8C2 4 4 2 8 2H16C20 2 22 4 22 8V13C22 17 20 19 16 19H15.5C15.19 19 14.89 19.15 14.7 19.4L13.2 21.4C12.54 22.28 11.46 22.28 10.8 21.4L9.3 19.4C9.14 19.18 8.77 19 8.5 19Z'
+                      stroke='#2F2F2F'
+                      strokeOpacity='0.5'
+                      strokeWidth='1.5'
+                      strokeMiterlimit='10'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M7 8H17'
+                      stroke='#2F2F2F'
+                      strokeOpacity='0.5'
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M7 13H13'
+                      stroke='#2F2F2F'
+                      strokeOpacity='0.5'
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                  <span>{t('writeToChat') || 'Написать в чат'}</span>
+                </a>
+              </li>
+            )}
+
             {/* Контакты */}
             {/* <li
               onClick={() => {
@@ -356,7 +420,27 @@ const Sidebar: FC<{
                       strokeLinejoin='round'
                     />
                   </svg>
-                  <span>{t('myChats')}</span>
+                  <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    {t('myChats')}
+                    {unreadChatsCount !== undefined && unreadChatsCount > 0 && (
+                      <span
+                        style={{
+                          backgroundColor: '#E1251B',
+                          color: '#fff',
+                          borderRadius: '50%',
+                          width: '20px',
+                          height: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        {unreadChatsCount > 99 ? '99+' : unreadChatsCount}
+                      </span>
+                    )}
+                  </span>
                 </a>
               </li>
             )}
@@ -681,13 +765,59 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
   const [wantQuite, setWantQuite] = useState(false)
   const [currentReviewPage, setCurrentReviewPage] = useState(1)
   const [openFaqId, setOpenFaqId] = useState<number | null>(null)
+  const [isCreatingChat, setIsCreatingChat] = useState(false)
   const {data: userData, isLoading: loading} = useUserQuery()
   const {mutate: logout, isPending: isLogoutPending} = useLogout()
   const currentLang = useCurrentLanguage()
   const [vendorData, setVendorData] = useState(initialVendorData)
+  const {unreadTotal} = useTypedSelector((state) => state.chat)
+  const {setUnreadTotal} = useActions()
+  const tChat = useTranslations('chat')
 
   const searchParams = useSearchParams()
   const router = useRouter()
+
+  // Создание чата с вендором
+  const handleStartVendorChat = async () => {
+    if (isCreatingChat || !initialVendorData?.id) return
+
+    const currentUser = userData as any
+    if (!currentUser) {
+      toast.error(tChat('needAuth') || 'Необходимо авторизоваться')
+      router.push('/login')
+      return
+    }
+
+    if (currentUser.id === initialVendorData.id) {
+      toast.error(tChat('cantWriteYourself') || 'Вы не можете написать самому себе')
+      return
+    }
+
+    setIsCreatingChat(true)
+    try {
+      const chat = await chatService.createVendorChat(initialVendorData.id)
+      router.push(`/chats?chatId=${chat.id}`)
+    } catch (error) {
+      console.error('Error creating vendor chat:', error)
+      toast.error(tChat('sendError') || 'Ошибка при создании чата')
+    } finally {
+      setIsCreatingChat(false)
+    }
+  }
+
+  // Загружаем количество непрочитанных сообщений при монтировании
+  useEffect(() => {
+    if (isPageForVendor) {
+      chatService
+        .getTotalUnreadCount()
+        .then((count) => {
+          setUnreadTotal(count)
+        })
+        .catch((error) => {
+          console.error('Error fetching unread count:', error)
+        })
+    }
+  }, [isPageForVendor, setUnreadTotal])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -1193,6 +1323,9 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                 setUserLogin(newLogin)
                 safeSetNeedToSave(true)
               }}
+              unreadChatsCount={unreadTotal}
+              onStartChat={!isPageForVendor ? handleStartVendorChat : undefined}
+              isCreatingChat={isCreatingChat}
             />
 
             {/* Mobile header */}

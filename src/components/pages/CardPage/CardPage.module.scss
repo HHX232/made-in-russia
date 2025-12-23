@@ -649,12 +649,12 @@
     flex-shrink: 0;
   }
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: #0047ba;
     color: white;
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: scale(0.98);
   }
 
@@ -662,6 +662,10 @@
     cursor: not-allowed;
     opacity: 0.6;
   }
+}
+
+.contactSellerHidden {
+  display: none;
 }
 
 .fav__button {

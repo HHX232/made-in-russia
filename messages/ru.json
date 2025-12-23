@@ -328,6 +328,7 @@
     "registrationDate": "Дата регистрации",
     "enterLogin": "Логин",
     "myChats": "Мои чаты",
+    "writeToChat": "Написать в чат",
     "noFaqYet": "FAQ еще не создан",
     "writeSite": "Введите сайт",
     "writeEmail": "Введите email",
@@ -1236,6 +1237,7 @@
     "backToList": "К списку чатов",
     "selectChat": "Выберите чат для начала общения",
     "writeToSeller": "Написать продавцу",
+    "writeToChat": "Написать в чат",
     "startChat": "Начать чат",
     "creating": "Создание...",
     "typeMessage": "Введите сообщение...",
@@ -1251,6 +1253,8 @@
     "connectionError": "Ошибка соединения",
     "reconnecting": "Переподключение...",
     "online": "В сети",
-    "offline": "Не в сети"
+    "offline": "Не в сети",
+    "vendorChat": "Чат с поставщиком",
+    "priceNotSpecified": "Цена не указана"
   }
 }

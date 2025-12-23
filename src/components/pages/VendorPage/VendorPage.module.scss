@@ -331,7 +331,6 @@
       flex-shrink: 0;
       align-items: center;
       border-radius: 10px;
-      
 
       &.warn a {
         color: var(--red, #ac2525) !important;
@@ -428,6 +427,13 @@
     color: #818181;
     font-size: 15px;
   }
+}
+
+/* Disabled state for menu items */
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 /* Account header */
@@ -541,7 +547,7 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 15px;
-  border-radius: 10xp;
+  border-radius: 10px;
   background-color: #fff;
 
   @media (max-width: 768px) {

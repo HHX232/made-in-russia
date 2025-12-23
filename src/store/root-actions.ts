@@ -8,6 +8,7 @@ import {registrationSlice} from './registerUser/registerUser.slice'
 import sliderHomeSlice from './sliderHomeSlice/sliderHomeSlice'
 import userSlice from './User/user.slice'
 import currentLangSlice from './сurrentLangStore/сurrentLangStore.slice'
+import * as chatActions from './slices/chatSlice'
 
 export const rootActions = {
   ...filtersSlice.actions,
@@ -19,5 +20,6 @@ export const rootActions = {
   ...multiLanguageCardPriceDataSlice.actions,
   ...userSlice.actions,
   ...currentLangSlice.actions,
-  ...sliderHomeSlice.actions
+  ...sliderHomeSlice.actions,
+  setUnreadTotal: chatActions.setUnreadTotal
 }

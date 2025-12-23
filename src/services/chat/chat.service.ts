@@ -63,8 +63,8 @@ export const chatService = {
     await instance.post(`/chats/messages/${messageId}/read`)
   },
 
-  async getUnreadCount(chatId: number): Promise<number> {
-    const {data} = await instance.get<{unreadCount: number}>(`/chats/${chatId}/unread-count`)
+  async getTotalUnreadCount(): Promise<number> {
+    const {data} = await instance.get<{unreadCount: number}>('/chats/unread-count')
     return data.unreadCount
   }
 }

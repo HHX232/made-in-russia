@@ -31,31 +31,39 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({chat}) => {
   }
 
   const getParticipantsWithLabels = () => {
-    let adminCount = 0
-    const admins = chat.participants.filter((p) => p.role === 'ADMIN')
-    const hasMultipleAdmins = admins.length > 1
-
-    return chat.participants.map((p) => {
-      if (p.role === 'ADMIN') {
-        adminCount++
-        const label = hasMultipleAdmins ? `${getRoleLabel(p.role)} ${adminCount}` : getRoleLabel(p.role)
-        return {...p, label}
-      }
-      return {...p, label: getRoleLabel(p.role)}
-    })
+    return chat.participants.filter((p) => p.role !== 'ADMIN').map((p) => ({...p, label: getRoleLabel(p.role)}))
   }
 
   const participantsWithLabels = getParticipantsWithLabels()
 
+  const isVendorChat = chat.isVendorChat && chat.vendorInfo
+  const displayImage = isVendorChat ? chat.vendorInfo?.avatarUrl : chat.product.imageUrl
+  const capitalizeFirstLetter = (str: string | undefined) => {
+    if (!str) return str
+    return str.charAt(0).toUpperCase() + str.slice(1)
+  }
+  const displayName = isVendorChat ? capitalizeFirstLetter(chat.vendorInfo?.name) : chat.product.name
+  const displaySubtitle = isVendorChat ? t('vendorChat') : formatPrice(chat.product.price)
+
+  const getInitial = (name: string | undefined) => {
+    if (!name) return '?'
+    const cleanName = name.split('"')[1] || name
+    return cleanName.charAt(0).toUpperCase()
+  }
+
   return (
     <div className={styles.chatHeader}>
       <div className={styles.productInfo}>
-        {chat.product.imageUrl && (
-          <img src={chat.product.imageUrl} alt={chat.product.name} className={styles.productImage} />
-        )}
+        {displayImage ? (
+          <img src={displayImage} alt={displayName || ''} className={styles.productImage} />
+        ) : isVendorChat ? (
+          <div className={styles.vendorAvatarPlaceholder}>
+            <span className={styles.vendorInitial}>{getInitial(displayName)}</span>
+          </div>
+        ) : null}
         <div className={styles.productDetails}>
-          <h3 className={styles.productName}>{chat.product.name}</h3>
-          <p className={styles.productPrice}>{formatPrice(chat.product.price)}</p>
+          <h3 className={styles.productName}>{displayName}</h3>
+          <p className={styles.productPrice}>{displaySubtitle}</p>
         </div>
       </div>
       <div className={styles.participants}>

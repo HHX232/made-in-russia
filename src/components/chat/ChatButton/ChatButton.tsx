@@ -25,7 +25,7 @@ export const ChatButton: React.FC<ChatButtonProps> = ({productId, className}) =>
       dispatch(addChat(chat))
       dispatch(setActiveChat(chat))
 
-      router.push('/chats')
+      router.push(`/chats?chatId=${chat.id}`)
     } catch (error) {
       console.error('Failed to create chat:', error)
       toast.error('Ошибка при создании чата', {

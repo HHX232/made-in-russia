@@ -310,6 +310,7 @@
     "registrationDate": "Registration date",
     "enterLogin": "Login",
     "myChats": "My Chats",
+    "writeToChat": "Write to Chat",
     "noFaqYet": "No FAQ created yet",
     "failedToSaveMedia": "Failed to save media",
     "writeSite": "Enter website",
@@ -1215,6 +1216,7 @@
     "backToList": "Back to list",
     "selectChat": "Select a chat to start messaging",
     "writeToSeller": "Contact Seller",
+    "writeToChat": "Write to Chat",
     "startChat": "Start Chat",
     "creating": "Creating...",
     "typeMessage": "Type a message...",
@@ -1230,7 +1232,9 @@
     "connectionError": "Connection error",
     "reconnecting": "Reconnecting...",
     "online": "Online",
-    "offline": "Offline"
+    "offline": "Offline",
+    "vendorChat": "Chat with vendor",
+    "priceNotSpecified": "Price not specified"
   }
 
 }

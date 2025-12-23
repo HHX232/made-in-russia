@@ -1,16 +1,20 @@
 'use client'
 
 import {useState, useRef, useCallback} from 'react'
+import {useDispatch} from 'react-redux'
 import {chatService} from '@/services/chat/chat.service'
 import {webSocketClient} from '@/lib/websocket-client'
+import {addMessage} from '@/store/slices/chatSlice'
 import {toast} from 'sonner'
 import styles from './MessageInput.module.scss'
 
 interface MessageInputProps {
   chatId: number
+  onMessageSent?: () => void
 }
 
-export const MessageInput: React.FC<MessageInputProps> = ({chatId}) => {
+export const MessageInput: React.FC<MessageInputProps> = ({chatId, onMessageSent}) => {
+  const dispatch = useDispatch()
   const [content, setContent] = useState('')
   const [attachments, setAttachments] = useState<File[]>([])
   const [isSending, setIsSending] = useState(false)
@@ -25,9 +29,15 @@ export const MessageInput: React.FC<MessageInputProps> = ({chatId}) => {
 
     setIsSending(true)
     try {
-      await chatService.sendMessage({chatId, content, attachments})
+      // Отправляем сообщение и сразу добавляем в стор (оптимистичное обновление)
+      const sentMessage = await chatService.sendMessage({chatId, content, attachments})
+      // Добавляем сообщение в стор сразу после ответа от сервера
+      // Это гарантирует отображение даже если WebSocket не работает
+      dispatch(addMessage(sentMessage))
       setContent('')
       setAttachments([])
+      // Прокручиваем вниз после отправки сообщения
+      setTimeout(() => onMessageSent?.(), 50)
     } catch (error) {
       console.error('Failed to send message:', error)
       toast.error('Ошибка при отправке сообщения', {

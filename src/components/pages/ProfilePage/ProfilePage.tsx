@@ -5,6 +5,7 @@ import Header from '@/components/MainComponents/Header/Header'
 import instance from '@/api/api.interceptor'
 import {getAccessToken} from '@/services/auth/auth.helper'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
+import {chatService} from '@/services/chat/chat.service'
 import Card from '@/components/UI-kit/elements/card/card'
 import ProfilePageBottomDelivery from './ProfilePageBottom/ProfilePageBottomDelivery'
 import ProfileForm from './ProfileForm/ProfileForm'
@@ -232,7 +233,8 @@ const Sidebar: FC<{
   onLogout: () => void
   onDeleteAccount: () => void
   isForOwner?: boolean
-}> = ({currentTab, onTabChange, onLogout, extraClass, setShowSidebar, sidebarShow, isForOwner}) => {
+  unreadChatsCount?: number
+}> = ({currentTab, onTabChange, onLogout, extraClass, setShowSidebar, sidebarShow, isForOwner, unreadChatsCount}) => {
   const t = useTranslations('ProfilePage')
 
   return (
@@ -360,7 +362,27 @@ const Sidebar: FC<{
                       strokeLinejoin='round'
                     />
                   </svg>
-                  <span>{t('myChats')}</span>
+                  <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    {t('myChats')}
+                    {unreadChatsCount !== undefined && unreadChatsCount > 0 && (
+                      <span
+                        style={{
+                          backgroundColor: '#E1251B',
+                          color: '#fff',
+                          borderRadius: '50%',
+                          width: '20px',
+                          height: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        {unreadChatsCount > 99 ? '99+' : unreadChatsCount}
+                      </span>
+                    )}
+                  </span>
                 </a>
               </li>
             )}
@@ -955,6 +977,8 @@ const SessionsTab: FC = () => {
 const ProfilePage: FC<{firstUserData?: User; isForOwner?: boolean}> = ({firstUserData, isForOwner}) => {
   const {userData, loading, error} = useUserData()
   const {latestViews, isEmpty} = useTypedSelector((state) => state.latestViews)
+  const {unreadTotal} = useTypedSelector((state) => state.chat)
+  const {setUnreadTotal} = useActions()
   const [needToSave, setNeedToSave] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const router = useRouter()
@@ -967,6 +991,19 @@ const ProfilePage: FC<{firstUserData?: User; isForOwner?: boolean}> = ({firstUse
   const currentLang = useCurrentLanguage()
   const searchParams = useSearchParams()
   const activeTabParam = useMemo(() => searchParams.get('activeTab'), [searchParams])
+
+  useEffect(() => {
+    if (isForOwner) {
+      chatService
+        .getTotalUnreadCount()
+        .then((count) => {
+          setUnreadTotal(count)
+        })
+        .catch((error) => {
+          console.error('Error fetching unread count:', error)
+        })
+    }
+  }, [isForOwner, setUnreadTotal])
 
   useEffect(() => {
     console.log('useEffect triggered')
@@ -1086,6 +1123,7 @@ const ProfilePage: FC<{firstUserData?: User; isForOwner?: boolean}> = ({firstUse
               isForOwner={isForOwner}
               sidebarShow={sidebarShow}
               onDeleteAccount={handleDeleteAccount}
+              unreadChatsCount={unreadTotal}
             />
 
             <div

@@ -199,6 +199,32 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     }
   }
 
+  const handleStartVendorChat = async () => {
+    if (isCreatingChat || !cardData) return
+
+    if (!user) {
+      toast.error('Необходимо авторизоваться')
+      router.push(`/${locale}/login`)
+      return
+    }
+
+    if (user.id === cardData.user.id) {
+      toast.error('Вы не можете написать самому себе')
+      return
+    }
+
+    setIsCreatingChat(true)
+    try {
+      const chat = await chatService.createVendorChat(cardData.user.id)
+      router.push(`/chats?chatId=${chat.id}`)
+    } catch (error) {
+      console.error('Error creating vendor chat:', error)
+      toast.error(tChat('sendError'))
+    } finally {
+      setIsCreatingChat(false)
+    }
+  }
+
   useEffect(() => {
     console.log('productInFavorites', productInFavorites)
   }, [productInFavorites])
@@ -212,15 +238,12 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     setIsTogglingFavorite(true)
 
     try {
-      // Сначала обновляем UI оптимистично
       toggleToFavorites(cardData as any)
 
-      // Затем отправляем на сервер
       await ServiceFavorites.toggleFavorite(cardData.id, locale)
     } catch (error) {
       console.error('Failed to toggle favorite:', error)
 
-      // Откатываем изменения при ошибке
       toggleToFavorites(cardData as any)
 
       toast.error(
@@ -347,36 +370,26 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
           <button className={styles.byNow} onClick={() => setPurchaseModalOpen(true)}>
             {t('byNow')}
           </button>
-          {/* Кнопка "Написать продавцу" - только если это не свой товар и пользователь загружен */}
-          {showContactButton && (
-            <button className={styles.contactSeller} onClick={handleContactSeller} disabled={isCreatingChat}>
-              <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                <path
-                  d='M8.5 19H8C4 19 2 18 2 13V8C2 4 4 2 8 2H16C20 2 22 4 22 8V13C22 17 20 19 16 19H15.5C15.19 19 14.89 19.15 14.7 19.4L13.2 21.4C12.54 22.28 11.46 22.28 10.8 21.4L9.3 19.4C9.14 19.18 8.77 19 8.5 19Z'
-                  stroke='currentColor'
-                  strokeWidth='1.5'
-                  strokeMiterlimit='10'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-                <path
-                  d='M7 8H17'
-                  stroke='currentColor'
-                  strokeWidth='1.5'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-                <path
-                  d='M7 13H13'
-                  stroke='currentColor'
-                  strokeWidth='1.5'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-              </svg>
-              {isCreatingChat ? '...' : tChat('writeToSeller')}
-            </button>
-          )}
+          {/* Кнопка "Написать продавцу" - скрыта для владельца товара, но занимает место чтобы не прыгали кнопки */}
+          <button
+            className={`${styles.contactSeller} ${!showContactButton ? styles.contactSellerHidden : ''}`}
+            onClick={handleContactSeller}
+            disabled={isCreatingChat || !showContactButton}
+          >
+            <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+              <path
+                d='M8.5 19H8C4 19 2 18 2 13V8C2 4 4 2 8 2H16C20 2 22 4 22 8V13C22 17 20 19 16 19H15.5C15.19 19 14.89 19.15 14.7 19.4L13.2 21.4C12.54 22.28 11.46 22.28 10.8 21.4L9.3 19.4C9.14 19.18 8.77 19 8.5 19Z'
+                stroke='currentColor'
+                strokeWidth='1.5'
+                strokeMiterlimit='10'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+              <path d='M7 8H17' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
+              <path d='M7 13H13' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
+            </svg>
+            {tChat('writeToSeller')}
+          </button>
           <button
             onClick={handleToggleFavorite}
             className={styles.fav__button}
@@ -489,8 +502,8 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
               </p>
             </Link>
             {showContactButton && (
-              <button className={styles.chat__button} onClick={handleContactSeller} disabled={isCreatingChat}>
-                {isCreatingChat ? tChat('creating') : tChat('startChat')}
+              <button className={styles.chat__button} onClick={handleStartVendorChat} disabled={isCreatingChat}>
+                {tChat('startChat')}
               </button>
             )}
           </div>
