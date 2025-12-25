@@ -1299,6 +1299,22 @@
   }
 }
 
+// Стиль для badge непрочитанных сообщений - всегда яркий
+.unreadBadge {
+  display: flex;
+  min-width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border-radius: 50%;
+  background-color: #e1251b !important;
+  color: #fff !important;
+  font-size: 12px;
+  font-weight: bold;
+  opacity: 1 !important;
+}
+
 /* Desktop sidebar hover states */
 @media (min-width: 1025px) {
   .menu_company__list li {
@@ -1311,7 +1327,7 @@
           stroke-opacity 0.2s ease;
       }
 
-      span {
+      span:not([class*='unreadBadge']) {
         color: #2f2f2f;
         opacity: 0.5;
         transition:
@@ -1325,7 +1341,7 @@
           stroke-opacity: 1;
         }
 
-        span {
+        span:not([class*='unreadBadge']) {
           color: #2b2b2b;
           opacity: 1;
         }

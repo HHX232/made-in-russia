@@ -3,6 +3,7 @@
 import {Chat} from '@/types/chat.types'
 import styles from './ChatHeader.module.scss'
 import {useTranslations} from 'next-intl'
+import Link from 'next/link'
 
 interface ChatHeaderProps {
   chat: Chat
@@ -45,6 +46,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({chat}) => {
   const displayName = isVendorChat ? capitalizeFirstLetter(chat.vendorInfo?.name) : chat.product.name
   const displaySubtitle = isVendorChat ? t('vendorChat') : formatPrice(chat.product.price)
 
+  const targetLink = isVendorChat ? `/data-vendor/${chat.vendorInfo?.id}` : `/card/${chat.product.id}`
+
   const getInitial = (name: string | undefined) => {
     if (!name) return '?'
     const cleanName = name.split('"')[1] || name
@@ -53,7 +56,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({chat}) => {
 
   return (
     <div className={styles.chatHeader}>
-      <div className={styles.productInfo}>
+      <Link href={targetLink} className={styles.productInfo}>
         {displayImage ? (
           <img src={displayImage} alt={displayName || ''} className={styles.productImage} />
         ) : isVendorChat ? (
@@ -65,7 +68,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({chat}) => {
           <h3 className={styles.productName}>{displayName}</h3>
           <p className={styles.productPrice}>{displaySubtitle}</p>
         </div>
-      </div>
+      </Link>
       <div className={styles.participants}>
         {participantsWithLabels.map((p) => (
           <span key={p.id} className={styles.participant} title={p.userName}>
