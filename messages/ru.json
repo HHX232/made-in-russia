@@ -1235,6 +1235,7 @@
     "chatStartedForProduct": "Чат начат по товару: {productName}",
     "noMessages": "Нет сообщений",
     "backToList": "К списку чатов",
+    "backToAccount": "В личный кабинет",
     "selectChat": "Выберите чат для начала общения",
     "writeToSeller": "Написать продавцу",
     "writeToChat": "Написать в чат",

@@ -1214,6 +1214,7 @@
     "chatStartedForProduct": "Chat started for product: {productName}",
     "noMessages": "No messages",
     "backToList": "Back to list",
+    "backToAccount": "Back to account",
     "selectChat": "Select a chat to start messaging",
     "writeToSeller": "Contact Seller",
     "writeToChat": "Write to Chat",

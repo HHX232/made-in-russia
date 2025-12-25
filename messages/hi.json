@@ -1213,6 +1213,7 @@
     "chatStartedForProduct": "उत्पाद के लिए चैट शुरू: {productName}",
     "noMessages": "कोई संदेश नहीं",
     "backToList": "सूची पर वापस",
+    "backToAccount": "खाते पर वापस",
     "selectChat": "संदेश भेजने के लिए चैट चुनें",
     "writeToSeller": "विक्रेता से संपर्क करें",
     "writeToChat": "चैट में लिखें",

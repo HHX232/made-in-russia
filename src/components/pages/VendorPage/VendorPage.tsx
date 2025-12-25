@@ -816,7 +816,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
 
   useEffect(() => {
     if (currentTab === 'chats') {
-      router.push('/chats')
+      router.push('/chats?from=vendor')
     }
   }, [currentTab, router])
 

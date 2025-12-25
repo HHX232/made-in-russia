@@ -1,9 +1,10 @@
 'use client'
 
-import {useEffect, useState, useRef} from 'react'
+import {useEffect, useState, useRef, useMemo} from 'react'
 import {useDispatch} from 'react-redux'
 import {useTranslations} from 'next-intl'
 import {useSearchParams} from 'next/navigation'
+import Link from 'next/link'
 import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {ChatWindow} from '@/components/chat/ChatWindow/ChatWindow'
@@ -25,6 +26,14 @@ export const ChatsPage = () => {
   useEffect(() => {
     activeChatIdRef.current = activeChat?.id
   }, [activeChat])
+
+  const backToAccountUrl = useMemo(() => {
+    const from = searchParams.get('from')
+    if (from === 'vendor') {
+      return '/vendor'
+    }
+    return '/profile'
+  }, [searchParams])
 
   const translateSystemMessage = (content: string) => {
     const chatStartedPattern = /^Chat started for product:\s*(.+)$/
@@ -123,7 +132,12 @@ export const ChatsPage = () => {
     <>
       <Header />
       <div className={`container ${styles.chats__container}`}>
-        <h1 className={styles.title}>{t('myChats')}</h1>
+        <div className={styles.header__row}>
+          <h1 className={styles.title}>{t('myChats')}</h1>
+          <Link href={backToAccountUrl} className={styles.back__to__account}>
+            ← {t('backToAccount')}
+          </Link>
+        </div>
 
         <div className={styles.chats__layout}>
           <div className={styles.chats__list}>
@@ -208,9 +222,14 @@ export const ChatsPage = () => {
           <div className={`${styles.chat__window__container} ${activeChat ? styles.chat__window__mobile__open : ''}`}>
             {activeChat ? (
               <div className={styles.chat__window__wrapper}>
-                <button className={styles.close__chat} onClick={handleCloseChat}>
-                  ← {t('backToList')}
-                </button>
+                <div className={styles.mobile__nav__bar}>
+                  <button className={styles.close__chat} onClick={handleCloseChat}>
+                    ← {t('backToList')}
+                  </button>
+                  <Link href={backToAccountUrl} className={styles.back__to__account__mobile}>
+                    {t('backToAccount')} →
+                  </Link>
+                </div>
                 <ChatWindow />
               </div>
             ) : (
