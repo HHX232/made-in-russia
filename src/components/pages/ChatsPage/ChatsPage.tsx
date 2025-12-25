@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useRef} from 'react'
 import {useDispatch} from 'react-redux'
 import {useTranslations} from 'next-intl'
 import {useSearchParams} from 'next/navigation'
@@ -20,6 +20,11 @@ export const ChatsPage = () => {
   const searchParams = useSearchParams()
   const {chats, activeChat} = useTypedSelector((state) => state.chat)
   const [isLoading, setIsLoading] = useState(true)
+  const activeChatIdRef = useRef<number | undefined>(undefined)
+
+  useEffect(() => {
+    activeChatIdRef.current = activeChat?.id
+  }, [activeChat])
 
   const translateSystemMessage = (content: string) => {
     const chatStartedPattern = /^Chat started for product:\s*(.+)$/
@@ -54,9 +59,9 @@ export const ChatsPage = () => {
               chatId: notification.chatId
             })
           )
-          loadChats()
+          loadChats(activeChatIdRef.current)
         } else if (notification.type === 'NEW_MESSAGE') {
-          loadChats()
+          loadChats(activeChatIdRef.current)
         }
       })
     }
@@ -67,16 +72,17 @@ export const ChatsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const loadChats = async () => {
+  const loadChats = async (preserveActiveChatId?: number) => {
     try {
       setIsLoading(true)
       const chatListResponse = await chatService.getUserChats()
       dispatch(setChats(chatListResponse.chats))
 
       const chatIdParam = searchParams.get('chatId')
-      if (chatIdParam) {
-        const chatId = parseInt(chatIdParam)
-        const targetChat = chatListResponse.chats.find((chat) => chat.id === chatId)
+      const targetChatId = chatIdParam ? parseInt(chatIdParam) : preserveActiveChatId
+
+      if (targetChatId) {
+        const targetChat = chatListResponse.chats.find((chat) => chat.id === targetChatId)
         if (targetChat) {
           dispatch(setActiveChat(targetChat))
         }

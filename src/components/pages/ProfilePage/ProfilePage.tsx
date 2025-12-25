@@ -362,27 +362,10 @@ const Sidebar: FC<{
                       strokeLinejoin='round'
                     />
                   </svg>
-                  <span style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    {t('myChats')}
-                    {unreadChatsCount !== undefined && unreadChatsCount > 0 && (
-                      <span
-                        style={{
-                          backgroundColor: '#E1251B',
-                          color: '#fff',
-                          borderRadius: '50%',
-                          width: '20px',
-                          height: '20px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '12px',
-                          fontWeight: 'bold'
-                        }}
-                      >
-                        {unreadChatsCount > 99 ? '99+' : unreadChatsCount}
-                      </span>
-                    )}
-                  </span>
+                  <span>{t('myChats')}</span>
+                  {unreadChatsCount !== undefined && unreadChatsCount > 0 && (
+                    <span className={styles.unreadBadge}>{unreadChatsCount > 99 ? '99+' : unreadChatsCount}</span>
+                  )}
                 </a>
               </li>
             )}
