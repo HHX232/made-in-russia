@@ -23,9 +23,7 @@ import {getCurrentLocale} from '@/lib/locale-detection'
 import FavoritesProvider from '@/providers/FavoritesProvider'
 import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
-
-// import GoogleRecaptchaProviderComponent from '@/providers/GoogleRecaptchaProviderComponent'
-// import {NextIntlClientProvider} from 'next-intl'
+import {Viewport} from 'next'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const locale = await getCurrentLocale()
@@ -38,13 +36,11 @@ export default async function RootLayout({children}: {children: React.ReactNode}
 
           <DefaultProvider>
             <NextIntlClientProvider messages={messages}>
-              {/* <GoogleRecaptchaProviderComponent> */}
               <WebSocketProvider>
                 <FavoritesProvider>
                   <LatestViewsProvider>{children}</LatestViewsProvider>
                 </FavoritesProvider>
               </WebSocketProvider>
-              {/* </GoogleRecaptchaProviderComponent> */}
               <ClientStyleLoader />
               <Toaster
                 visibleToasts={20}
@@ -61,6 +57,14 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       </html>
     </>
   )
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false
 }
 
 export async function generateMetadata() {

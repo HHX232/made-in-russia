@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useRef} from 'react'
+import {useState, useRef, useEffect} from 'react'
 import Link from 'next/link'
 import {Heart, MessageCircle} from 'lucide-react'
 import styles from './MobileNavigation.module.scss'
@@ -15,6 +15,20 @@ const MobileNavigation = () => {
   const navRef = useRef<HTMLDivElement>(null)
   const {user} = useTypedSelector((state) => state.user)
   const t = useTranslations('MobileNavigation')
+
+  useEffect(() => {
+    if (navRef.current) {
+      navRef.current.style.transform = 'translateZ(0)'
+      void navRef.current.offsetHeight
+
+      requestAnimationFrame(() => {
+        if (navRef.current) {
+          navRef.current.style.transform = isVisible ? 'translateY(0)' : 'translateY(100%)'
+        }
+      })
+    }
+  }, [user, isVisible])
+
   const handleTouchStart = (e: React.TouchEvent) => {
     setStartY(e.touches[0].clientY)
   }
@@ -26,12 +40,9 @@ const MobileNavigation = () => {
   const handleTouchEnd = () => {
     const diff = startY - currentY
 
-    // Уменьшенный порог - если свайп вверх (больше 20px) - показываем меню
     if (diff > 20) {
       setIsVisible(true)
-    }
-    // Если свайп вниз (больше 20px) - скрываем меню
-    else if (diff < -20) {
+    } else if (diff < -20) {
       setIsVisible(false)
     }
 
@@ -41,7 +52,6 @@ const MobileNavigation = () => {
 
   return (
     <>
-      {/* Полоска для свайпа */}
       <div
         className={`${styles.swipeHandle} ${isVisible ? styles.handleVisible : styles.handleHidden}`}
         onTouchStart={handleTouchStart}
@@ -51,7 +61,6 @@ const MobileNavigation = () => {
         <div className={styles.handleBar} />
       </div>
 
-      {/* Навигационное меню */}
       <nav
         ref={navRef}
         className={`${styles.mobileNav} ${isVisible ? styles.visible : styles.hidden}`}
@@ -60,22 +69,17 @@ const MobileNavigation = () => {
         onTouchEnd={handleTouchEnd}
       >
         <div className={styles.navContent}>
-          {/* Избранное */}
           <Link
             href={user?.role.toLowerCase() === 'user' ? '/profile?activeTab=favorites' : '/vendor?activeTab=favorites'}
             className={styles.navItem}
           >
             <Heart className={styles.navIcon} />
-            {/* <span className={styles.navLabel}>Избранное</span> */}
           </Link>
 
-          {/* Чат */}
-          <button className={styles.navItem}>
+          <Link href={'/chats'} className={styles.navItem}>
             <MessageCircle className={styles.navIcon} />
-            {/* <span className={styles.navLabel}>Чат</span> */}
-          </button>
+          </Link>
 
-          {/* Профиль */}
           <div className={styles.navItem}>
             <ProfileButtonUI useDarkText={true} specialUnloginLabel={t('login')} />
           </div>
