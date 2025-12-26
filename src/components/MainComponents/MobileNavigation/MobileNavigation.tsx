@@ -46,12 +46,9 @@ const MobileNavigation = () => {
   const handleTouchEnd = () => {
     const diff = startY - currentY
 
-    // Уменьшенный порог - если свайп вверх (больше 20px) - показываем меню
     if (diff > 20) {
       setIsVisible(true)
-    }
-    // Если свайп вниз (больше 20px) - скрываем меню
-    else if (diff < -20) {
+    } else if (diff < -20) {
       setIsVisible(false)
     }
 
@@ -61,7 +58,6 @@ const MobileNavigation = () => {
 
   return (
     <>
-      {/* Полоска для свайпа */}
       <div
         className={`${styles.swipeHandle} ${isVisible ? styles.handleVisible : styles.handleHidden}`}
         onTouchStart={handleTouchStart}
@@ -71,7 +67,6 @@ const MobileNavigation = () => {
         <div className={styles.handleBar} />
       </div>
 
-      {/* Навигационное меню */}
       <nav
         ref={navRef}
         className={`${styles.mobileNav} ${isVisible ? styles.visible : styles.hidden}`}
@@ -80,13 +75,11 @@ const MobileNavigation = () => {
         onTouchEnd={handleTouchEnd}
       >
         <div className={styles.navContent}>
-          {/* Избранное */}
           <Link
             href={user?.role.toLowerCase() === 'user' ? '/profile?activeTab=favorites' : '/vendor?activeTab=favorites'}
             className={styles.navItem}
           >
             <Heart className={styles.navIcon} />
-            {/* <span className={styles.navLabel}>Избранное</span> */}
           </Link>
 
           {/* Чат */}
@@ -97,7 +90,6 @@ const MobileNavigation = () => {
             </div>
           </Link>
 
-          {/* Профиль */}
           <div className={styles.navItem}>
             <ProfileButtonUI useDarkText={true} specialUnloginLabel={t('login')} />
           </div>
