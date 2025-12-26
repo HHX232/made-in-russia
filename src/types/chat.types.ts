@@ -85,3 +85,14 @@ export interface SendMessageRequest {
   content: string
   attachments?: File[]
 }
+
+export interface TranslateMessageRequest {
+  text: string
+  targetLanguage: 'en' | 'ru' | 'zh' | 'hi'
+}
+
+export interface TranslateMessageResponse {
+  translatedText: string
+  targetLanguage: string
+  detectedSourceLanguage: string
+}

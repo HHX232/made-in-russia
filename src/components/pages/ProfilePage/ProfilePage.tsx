@@ -1019,7 +1019,7 @@ const ProfilePage: FC<{firstUserData?: User; isForOwner?: boolean}> = ({firstUse
 
   useEffect(() => {
     if (currentTab === 'chats') {
-      router.push('/chats')
+      router.push('/chats?from=profile')
     }
   }, [currentTab, router])
 

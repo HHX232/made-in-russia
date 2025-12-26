@@ -1213,6 +1213,7 @@
     "chatStartedForProduct": "उत्पाद के लिए चैट शुरू: {productName}",
     "noMessages": "कोई संदेश नहीं",
     "backToList": "सूची पर वापस",
+    "backToAccount": "खाते पर वापस",
     "selectChat": "संदेश भेजने के लिए चैट चुनें",
     "writeToSeller": "विक्रेता से संपर्क करें",
     "writeToChat": "चैट में लिखें",
@@ -1231,7 +1232,11 @@
     "connectionError": "कनेक्शन त्रुटि",
     "reconnecting": "पुन: कनेक्ट हो रहा है...",
     "online": "ऑनलाइन",
-    "offline": "ऑफ़लाइन"
+    "offline": "ऑफ़लाइन",
+    "translate": "अनुवाद करें",
+    "showTranslation": "अनुवाद दिखाएं",
+    "showOriginal": "मूल दिखाएं",
+    "translatedText": "अनुवादित"
   }
 
 }

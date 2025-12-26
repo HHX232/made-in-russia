@@ -1,8 +1,11 @@
 'use client'
 
+import {useState} from 'react'
 import {ChatMessage} from '@/types/chat.types'
+import {chatService} from '@/services/chat/chat.service'
 import styles from './MessageItem.module.scss'
 import {useTranslations} from 'next-intl'
+import {useLocale} from 'next-intl'
 
 interface MessageItemProps {
   message: ChatMessage
@@ -11,6 +14,10 @@ interface MessageItemProps {
 
 export const MessageItem: React.FC<MessageItemProps> = ({message, isOwnMessage}) => {
   const t = useTranslations('chat')
+  const locale = useLocale()
+  const [translatedText, setTranslatedText] = useState<string | null>(null)
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [showOriginal, setShowOriginal] = useState(true)
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString)
@@ -46,6 +53,28 @@ export const MessageItem: React.FC<MessageItemProps> = ({message, isOwnMessage})
     return content
   }
 
+  const handleTranslate = async () => {
+    if (translatedText) {
+      setShowOriginal(!showOriginal)
+      return
+    }
+
+    setIsTranslating(true)
+    try {
+      const targetLanguage = (locale as 'en' | 'ru' | 'zh' | 'hi') || 'ru'
+      const response = await chatService.translateMessage({
+        text: message.content,
+        targetLanguage
+      })
+      setTranslatedText(response.translatedText)
+      setShowOriginal(false)
+    } catch (error) {
+      console.error('Translation error:', error)
+    } finally {
+      setIsTranslating(false)
+    }
+  }
+
   if (message.isSystem) {
     return (
       <div className={styles.systemMessage}>
@@ -54,6 +83,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({message, isOwnMessage})
     )
   }
 
+  const displayText = showOriginal ? message.content : translatedText || message.content
+
   return (
     <div className={`${styles.messageItem} ${isOwnMessage ? styles.own : styles.other}`}>
       {!isOwnMessage && message.senderAvatar && (
@@ -61,7 +92,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({message, isOwnMessage})
       )}
       <div className={styles.messageContent}>
         {!isOwnMessage && <div className={styles.senderName}>{message.senderName}</div>}
-        <div className={styles.text}>{message.content}</div>
+        <div className={styles.text}>{displayText}</div>
         {message.attachments && message.attachments.length > 0 && (
           <div className={styles.attachments}>
             {message.attachments.map((attachment) => (
@@ -80,7 +111,18 @@ export const MessageItem: React.FC<MessageItemProps> = ({message, isOwnMessage})
         <div className={styles.messageFooter}>
           <span className={styles.time}>{formatTime(message.createdAt)}</span>
           {getReadStatus()}
+          {message.content && (
+            <button
+              className={styles.translateButton}
+              onClick={handleTranslate}
+              disabled={isTranslating}
+              title={translatedText ? (showOriginal ? t('showTranslation') : t('showOriginal')) : t('translate')}
+            >
+              {isTranslating ? '...' : translatedText ? (showOriginal ? '🌐' : '↩️') : '🌐'}
+            </button>
+          )}
         </div>
+        {translatedText && !showOriginal && <div className={styles.translationNote}>{t('translatedText')}</div>}
       </div>
     </div>
   )

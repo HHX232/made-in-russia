@@ -1217,6 +1217,7 @@
     "chatStartedForProduct": "关于商品的聊天已开始：{productName}",
     "noMessages": "暂无消息",
     "backToList": "返回列表",
+    "backToAccount": "返回账户",
     "selectChat": "选择一个聊天开始对话",
     "writeToSeller": "联系卖家",
     "writeToChat": "发送消息",
@@ -1235,6 +1236,10 @@
     "connectionError": "连接错误",
     "reconnecting": "重新连接中...",
     "online": "在线",
-    "offline": "离线"
+    "offline": "离线",
+    "translate": "翻译",
+    "showTranslation": "显示翻译",
+    "showOriginal": "显示原文",
+    "translatedText": "已翻译"
   }
 }

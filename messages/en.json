@@ -1214,6 +1214,7 @@
     "chatStartedForProduct": "Chat started for product: {productName}",
     "noMessages": "No messages",
     "backToList": "Back to list",
+    "backToAccount": "Back to account",
     "selectChat": "Select a chat to start messaging",
     "writeToSeller": "Contact Seller",
     "writeToChat": "Write to Chat",
@@ -1234,7 +1235,11 @@
     "online": "Online",
     "offline": "Offline",
     "vendorChat": "Chat with vendor",
-    "priceNotSpecified": "Price not specified"
+    "priceNotSpecified": "Price not specified",
+    "translate": "Translate",
+    "showTranslation": "Show translation",
+    "showOriginal": "Show original",
+    "translatedText": "Translated"
   }
 
 }

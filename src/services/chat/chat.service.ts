@@ -5,7 +5,9 @@ import {
   ChatMessage,
   CreateChatRequest,
   MessageListResponse,
-  SendMessageRequest
+  SendMessageRequest,
+  TranslateMessageRequest,
+  TranslateMessageResponse
 } from '@/types/chat.types'
 
 export const chatService = {
@@ -66,5 +68,10 @@ export const chatService = {
   async getTotalUnreadCount(): Promise<number> {
     const {data} = await instance.get<{unreadCount: number}>('/chats/unread-count')
     return data.unreadCount
+  },
+
+  async translateMessage(request: TranslateMessageRequest): Promise<TranslateMessageResponse> {
+    const {data} = await instance.post<TranslateMessageResponse>('/chats/messages/translate', request)
+    return data
   }
 }
