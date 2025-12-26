@@ -7,7 +7,6 @@ import '@/scss/config/functions.scss'
 import '@/scss/config/keyframes.scss'
 import '@/scss/config/mixins.scss'
 import '@/scss/config/placeholders.scss'
-
 import '@/scss/config/root.scss'
 import '@/scss/config/typography.scss'
 import '@/scss/main.scss'
@@ -24,14 +23,18 @@ import FavoritesProvider from '@/providers/FavoritesProvider'
 import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
 import {Viewport} from 'next'
+import PreventIOSZoom from '@/components/MainComponents/PreventIOSZoom/PreventIOSZoom'
+import IOSInputZoomDisabler from '@/components/MainComponents/PreventIOSZoom/IOSInputZoomDisabler'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const locale = await getCurrentLocale()
   const messages = await getMessages()
   return (
     <>
+      <PreventIOSZoom />
+      <IOSInputZoomDisabler />
       <html lang={locale}>
-        <body>
+        <body style={{overflowY: 'auto', height: '100%', position: 'relative'}}>
           <NProgressProvider />
 
           <DefaultProvider>
@@ -64,7 +67,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   minimumScale: 1,
-  userScalable: false
+  userScalable: false,
+  viewportFit: 'cover'
 }
 
 export async function generateMetadata() {
