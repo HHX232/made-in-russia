@@ -32,7 +32,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       {/* <PreventIOSZoom />
       <IOSInputZoomDisabler /> */}
       <html lang={locale}>
-        <body>
+        <body style={{overflowY: 'auto', height: '100%', position: 'relative'}}>
           <NProgressProvider />
 
           <DefaultProvider>
