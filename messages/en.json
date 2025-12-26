@@ -1235,7 +1235,11 @@
     "online": "Online",
     "offline": "Offline",
     "vendorChat": "Chat with vendor",
-    "priceNotSpecified": "Price not specified"
+    "priceNotSpecified": "Price not specified",
+    "translate": "Translate",
+    "showTranslation": "Show translation",
+    "showOriginal": "Show original",
+    "translatedText": "Translated"
   }
 
 }

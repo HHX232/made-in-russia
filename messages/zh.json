@@ -1236,6 +1236,10 @@
     "connectionError": "连接错误",
     "reconnecting": "重新连接中...",
     "online": "在线",
-    "offline": "离线"
+    "offline": "离线",
+    "translate": "翻译",
+    "showTranslation": "显示翻译",
+    "showOriginal": "显示原文",
+    "translatedText": "已翻译"
   }
 }

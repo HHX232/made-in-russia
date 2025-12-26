@@ -1232,7 +1232,11 @@
     "connectionError": "कनेक्शन त्रुटि",
     "reconnecting": "पुन: कनेक्ट हो रहा है...",
     "online": "ऑनलाइन",
-    "offline": "ऑफ़लाइन"
+    "offline": "ऑफ़लाइन",
+    "translate": "अनुवाद करें",
+    "showTranslation": "अनुवाद दिखाएं",
+    "showOriginal": "मूल दिखाएं",
+    "translatedText": "अनुवादित"
   }
 
 }

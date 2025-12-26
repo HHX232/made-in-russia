@@ -1256,6 +1256,10 @@
     "online": "В сети",
     "offline": "Не в сети",
     "vendorChat": "Чат с поставщиком",
-    "priceNotSpecified": "Цена не указана"
+    "priceNotSpecified": "Цена не указана",
+    "translate": "Перевести",
+    "showTranslation": "Показать перевод",
+    "showOriginal": "Показать оригинал",
+    "translatedText": "Переведено"
   }
 }
