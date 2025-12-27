@@ -171,14 +171,14 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   const {isPending: isUserLoading} = useUserQuery()
 
   const isOwner = user?.id !== undefined && cardData?.user?.id !== undefined && user.id === cardData.user.id
-  const showContactButton = !isUserLoading && !isOwner
+  const hideContactButton = !isUserLoading && isOwner
 
   const handleContactSeller = async () => {
     if (isCreatingChat || !cardData) return
 
     if (!user) {
       toast.error('Необходимо авторизоваться')
-      router.push(`/${locale}/login`)
+      router.push('/login')
       return
     }
 
@@ -204,7 +204,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
 
     if (!user) {
       toast.error('Необходимо авторизоваться')
-      router.push(`/${locale}/login`)
+      router.push('/login')
       return
     }
 
@@ -316,7 +316,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
   const isInFavorite = productInFavorites.some((product) => product.id?.toString() === cardData?.id?.toString())
 
   const NewFullTopInfo = () => {
-    const t = useTranslations('CardTopPage')
+    const tTop = useTranslations('CardTopPage')
     const t2 = useTranslations('ReviewsToNumber')
 
     const getMinimalValueText = () => {
@@ -353,7 +353,8 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
         </div>
         <div className={styles.prices__box__new}>
           <p className={styles.main__price}>
-            {t('from')} {cardData?.prices[0].discountedPrice} {cardData?.prices[0].currency}/{cardData?.prices[0].unit}
+            {tTop('from')} {cardData?.prices[0].discountedPrice} {cardData?.prices[0].currency}/
+            {cardData?.prices[0].unit}
           </p>
           {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
             <p className={styles.original__price}>
@@ -362,19 +363,19 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
           )}
           {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
             <p className={styles.disc__days}>
-              {cardData?.daysBeforeDiscountExpires} {t('daysBeforeDiscountExpires')}
+              {cardData?.daysBeforeDiscountExpires} {tTop('daysBeforeDiscountExpires')}
             </p>
           )}
         </div>
         <div className={styles.buttons__box__new}>
           <button className={styles.byNow} onClick={() => setPurchaseModalOpen(true)}>
-            {t('byNow')}
+            {tTop('byNow')}
           </button>
-          {/* Кнопка "Написать продавцу" - скрыта для владельца товара, но занимает место чтобы не прыгали кнопки */}
+          {/* Кнопка "Написать продавцу" - скрыта только для владельца товара */}
           <button
-            className={`${styles.contactSeller} ${!showContactButton ? styles.contactSellerHidden : ''}`}
+            className={`${styles.contactSeller} ${hideContactButton ? styles.contactSellerHidden : ''}`}
             onClick={handleContactSeller}
-            disabled={isCreatingChat || !showContactButton}
+            disabled={isCreatingChat || hideContactButton}
           >
             <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
               <path
@@ -396,23 +397,6 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             disabled={isTogglingFavorite}
             aria-label={isInFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
           >
-            {/* <svg
-              className={!isInFavorite ? styles.active__star : ''}
-              width='28'
-              height='28'
-              viewBox='0 0 28 28'
-              fill='none'
-              xmlns='http://www.w3.org/2000/svg'
-            >
-              <path
-                d='M16.0187 4.09499L18.072 8.20165C18.352 8.77332 19.0987 9.32165 19.7287 9.42665L23.4504 10.045C25.8304 10.4417 26.3904 12.1683 24.6754 13.8717L21.782 16.765C21.292 17.255 21.0237 18.2 21.1754 18.8767L22.0037 22.4583C22.657 25.2933 21.152 26.39 18.6437 24.9083L15.1554 22.8433C14.5254 22.47 13.487 22.47 12.8454 22.8433L9.35705 24.9083C6.86038 26.39 5.34372 25.2817 5.99705 22.4583L6.82538 18.8767C6.97705 18.2 6.70872 17.255 6.21872 16.765L3.32538 13.8717C1.62205 12.1683 2.17038 10.4417 4.55038 10.045L8.27205 9.42665C8.89038 9.32165 9.63705 8.77332 9.91705 8.20165L11.9704 4.09499C13.0904 1.86665 14.9104 1.86665 16.0187 4.09499Z'
-                stroke={!isInFavorite ? '#FFFFFF' : 'transparent'}
-                fill={isInFavorite ? '#FF0000' : 'none'}
-                strokeWidth={!isInFavorite ? '1.5' : '0'}
-                strokeLinecap='round'
-                strokeLinejoin='round'
-              />
-            </svg> */}
             <Heart className={isInFavorite ? styles.activeHeart : styles.inactiveHeart} />
           </button>
         </div>
@@ -424,18 +408,52 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             listGap='10'
             items={[
               {
-                title: t('minimalValue'),
+                title: tTop('minimalValue'),
                 value: getMinimalValueText()
               },
-              {title: t('articul'), value: cardData?.article || ''},
+              {title: tTop('articul'), value: cardData?.article || ''},
               ...(cardData?.characteristics?.map((el) => ({
                 title: el.name,
                 value: el.value
               })) || [])
             ]}
-            titleMain={t('technicalCharacteristics')}
+            titleMain={tTop('technicalCharacteristics')}
           />
         </div>
+
+        {/* Мобильный блок информации о поставщике с кнопкой "Начать чат" */}
+        {!hideContactButton && (
+          <div className={styles.about__vendor__mobile}>
+            <h3 className={styles.vendor__title__mobile}>{t('companyDescription')}</h3>
+            <div className={styles.vendor__box__info__mobile}>
+              <Link href={`/data-vendor/${cardData?.user?.id}`} className={styles.vendor__link}>
+                <div className={styles.vendor__avatar}>
+                  {!!cardData?.user.avatarUrl ? (
+                    <Image
+                      className={styles.avatar__image}
+                      width={60}
+                      height={60}
+                      src={cardData.user.avatarUrl}
+                      alt='avatar'
+                    />
+                  ) : (
+                    <div className={styles.char__box__mobile}>
+                      <p className={styles.avatar__char__mobile}>
+                        {!!cardData?.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                          ? cardData.user.login.split('"')[1]?.charAt(0).toUpperCase()
+                          : cardData?.user.login.charAt(0).toUpperCase()}
+                      </p>
+                    </div>
+                  )}
+                  <p className={styles.vendor__name}>{cardData?.user.login}</p>
+                </div>
+              </Link>
+              <button className={styles.chat__button__mobile} onClick={handleStartVendorChat} disabled={isCreatingChat}>
+                {tChat('startChat')}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
@@ -501,7 +519,7 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
                 {t('INN')}: {cardData?.user.vendorDetails?.inn}
               </p>
             </Link>
-            {showContactButton && (
+            {!hideContactButton && (
               <button className={styles.chat__button} onClick={handleStartVendorChat} disabled={isCreatingChat}>
                 {tChat('startChat')}
               </button>

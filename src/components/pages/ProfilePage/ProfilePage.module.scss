@@ -1024,7 +1024,7 @@
       stroke: #939393 !important;
     }
 
-    & > span {
+    & > span:not(.unreadBadge) {
       color: #939393 !important;
     }
   }
@@ -1034,7 +1034,7 @@
       stroke: #0047ba !important;
     }
 
-    & > span {
+    & > span:not(.unreadBadge) {
       color: #0047ba !important;
     }
   }

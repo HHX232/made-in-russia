@@ -7,7 +7,6 @@ import '@/scss/config/functions.scss'
 import '@/scss/config/keyframes.scss'
 import '@/scss/config/mixins.scss'
 import '@/scss/config/placeholders.scss'
-
 import '@/scss/config/root.scss'
 import '@/scss/config/typography.scss'
 import '@/scss/main.scss'
@@ -30,6 +29,8 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   const messages = await getMessages()
   return (
     <>
+      {/* <PreventIOSZoom />
+      <IOSInputZoomDisabler /> */}
       <html lang={locale}>
         <body>
           <NProgressProvider />
@@ -64,8 +65,9 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   minimumScale: 1,
-  userScalable: false
-}
+  userScalable: false,
+  viewportFit: 'cover'
+} as const
 
 export async function generateMetadata() {
   return {
@@ -73,14 +75,11 @@ export async function generateMetadata() {
       absolute: 'Exporteru',
       template: `%s | Exporteru`
     },
-
     openGraph: {
       title: 'Exporteru'
     },
     icons: {
       icon: '/mstile-c-144x144.png',
-
-      // Альтернативные иконки
       shortcut: '/favicon-c-32x32.png',
       apple: [
         {

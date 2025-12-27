@@ -3,6 +3,7 @@
 import {useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {useAppDispatch} from '@/hooks/redux'
+import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {chatService} from '@/services/chat/chat.service'
 import {setActiveChat, addChat} from '@/store/slices/chatSlice'
 import {toast} from 'sonner'
@@ -16,9 +17,16 @@ interface ChatButtonProps {
 export const ChatButton: React.FC<ChatButtonProps> = ({productId, className}) => {
   const dispatch = useAppDispatch()
   const router = useRouter()
+  const {user} = useTypedSelector((state) => state.user)
   const [isLoading, setIsLoading] = useState(false)
 
   const handleClick = async () => {
+    if (!user) {
+      toast.error('Необходимо авторизоваться')
+      router.push('/login')
+      return
+    }
+
     setIsLoading(true)
     try {
       const chat = await chatService.createChat(productId)

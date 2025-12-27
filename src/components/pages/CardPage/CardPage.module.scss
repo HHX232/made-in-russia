@@ -605,6 +605,10 @@
   display: flex;
   margin-bottom: 20px;
   gap: 12px;
+
+  @media (max-width: 580px) {
+    flex-wrap: wrap;
+  }
 }
 
 .byNow {
@@ -625,6 +629,13 @@
 
   &:active {
     transform: scale(0.98);
+  }
+
+  @media (max-width: 580px) {
+    min-width: 0;
+    height: 48px;
+    flex: 1;
+    font-size: 14px;
   }
 }
 
@@ -662,10 +673,86 @@
     cursor: not-allowed;
     opacity: 0.6;
   }
+
+  @media (max-width: 580px) {
+    min-width: 0;
+    height: 48px;
+    flex: 1;
+    padding: 0 12px;
+    font-size: 13px;
+    line-height: 1.1;
+    white-space: normal;
+  }
 }
 
 .contactSellerHidden {
   display: none;
+}
+
+// Мобильный блок информации о поставщике
+.about__vendor__mobile {
+  display: none;
+  flex-direction: column;
+  padding: 15px;
+  border: 1px solid rgb(47 47 47 / 10%);
+  border-radius: 10px;
+  margin-top: 20px;
+
+  @media (max-width: 860px) {
+    display: flex;
+  }
+}
+
+.vendor__title__mobile {
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.vendor__box__info__mobile {
+  display: flex;
+  flex-direction: column;
+}
+
+.char__box__mobile {
+  display: flex;
+  width: 50px;
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #f4f5f6;
+}
+
+.avatar__char__mobile {
+  color: #0047ba;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.chat__button__mobile {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 12px;
+  background-color: #0047ba;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+  transition: background-color 0.3s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #003a95;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 }
 
 .fav__button {
@@ -697,6 +784,12 @@
 
   &:active {
     transform: scale(0.95);
+  }
+
+  @media (max-width: 580px) {
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
   }
 }
 

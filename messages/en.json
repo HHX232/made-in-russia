@@ -301,6 +301,7 @@
     "addRow": "Add row"
   },
   "VendorPage": {
+    "notHave": "Description not added",
     "errorCreatingQuestion": "Error creating question",
     "saving": "Save",
      "mediaSavedSuccessfully": "Media saved successfully",

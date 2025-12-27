@@ -7,9 +7,6 @@ import styles from './MobileNavigation.module.scss'
 import ProfileButtonUI from '@/components/UI-kit/buttons/profileButtonUI/profileButtonUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
 import {useTranslations} from 'next-intl'
-import {chatService} from '@/services/chat/chat.service'
-import {useDispatch} from 'react-redux'
-import {setUnreadTotal} from '@/store/slices/chatSlice'
 
 const MobileNavigation = () => {
   const [isVisible, setIsVisible] = useState(true)
@@ -17,23 +14,20 @@ const MobileNavigation = () => {
   const [currentY, setCurrentY] = useState(0)
   const navRef = useRef<HTMLDivElement>(null)
   const {user} = useTypedSelector((state) => state.user)
-  const {unreadTotal} = useTypedSelector((state) => state.chat)
-  const dispatch = useDispatch()
   const t = useTranslations('MobileNavigation')
 
   useEffect(() => {
-    const fetchUnreadCount = async () => {
-      if (user) {
-        try {
-          const count = await chatService.getTotalUnreadCount()
-          dispatch(setUnreadTotal(count))
-        } catch (error) {
-          console.error('Failed to fetch unread count:', error)
+    if (navRef.current) {
+      navRef.current.style.transform = 'translateZ(0)'
+      void navRef.current.offsetHeight
+
+      requestAnimationFrame(() => {
+        if (navRef.current) {
+          navRef.current.style.transform = isVisible ? 'translateY(0)' : 'translateY(100%)'
         }
-      }
+      })
     }
-    fetchUnreadCount()
-  }, [user, dispatch])
+  }, [user, isVisible])
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setStartY(e.touches[0].clientY)
@@ -82,12 +76,8 @@ const MobileNavigation = () => {
             <Heart className={styles.navIcon} />
           </Link>
 
-          {/* Чат */}
-          <Link href='/chats' className={`${styles.navItem} ${unreadTotal > 0 ? styles.hasUnread : ''}`}>
-            <div className={styles.chatIconWrapper}>
-              <MessageCircle className={styles.navIcon} />
-              {unreadTotal > 0 && <span className={styles.unreadBadge}>{unreadTotal > 99 ? '99+' : unreadTotal}</span>}
-            </div>
+          <Link href={'/chats'} className={styles.navItem}>
+            <MessageCircle className={styles.navIcon} />
           </Link>
 
           <div className={styles.navItem}>

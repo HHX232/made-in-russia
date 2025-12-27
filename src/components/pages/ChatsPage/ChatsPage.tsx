@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState, useRef, useMemo} from 'react'
+import {useEffect, useState, useRef, useMemo, useCallback} from 'react'
 import {useDispatch} from 'react-redux'
 import {useTranslations} from 'next-intl'
 import {useSearchParams} from 'next/navigation'
@@ -9,7 +9,7 @@ import Header from '@/components/MainComponents/Header/Header'
 import Footer from '@/components/MainComponents/Footer/Footer'
 import {ChatWindow} from '@/components/chat/ChatWindow/ChatWindow'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-import {setChats, setActiveChat, markMessageAsRead} from '@/store/slices/chatSlice'
+import {setChats, addChats, setActiveChat, markMessageAsRead} from '@/store/slices/chatSlice'
 import {chatService} from '@/services/chat/chat.service'
 import {webSocketClient} from '@/lib/websocket-client'
 import type {Chat} from '@/types/chat.types'
@@ -21,7 +21,11 @@ export const ChatsPage = () => {
   const searchParams = useSearchParams()
   const {chats, activeChat} = useTypedSelector((state) => state.chat)
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
   const activeChatIdRef = useRef<number | undefined>(undefined)
+  const chatsListRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     activeChatIdRef.current = activeChat?.id
@@ -48,6 +52,11 @@ export const ChatsPage = () => {
   }
 
   useEffect(() => {
+    const chatIdParam = searchParams.get('chatId')
+    if (!chatIdParam) {
+      dispatch(setActiveChat(null))
+    }
+
     loadChats()
 
     const subscribeToNotifications = () => {
@@ -84,8 +93,10 @@ export const ChatsPage = () => {
   const loadChats = async (preserveActiveChatId?: number) => {
     try {
       setIsLoading(true)
-      const chatListResponse = await chatService.getUserChats()
+      setCurrentPage(0)
+      const chatListResponse = await chatService.getUserChats(0, 20)
       dispatch(setChats(chatListResponse.chats))
+      setHasMore(chatListResponse.hasMore ?? chatListResponse.chats.length === 20)
 
       const chatIdParam = searchParams.get('chatId')
       const targetChatId = chatIdParam ? parseInt(chatIdParam) : preserveActiveChatId
@@ -102,6 +113,46 @@ export const ChatsPage = () => {
       setIsLoading(false)
     }
   }
+
+  const loadMoreChats = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return
+
+    try {
+      setIsLoadingMore(true)
+      const nextPage = currentPage + 1
+      const chatListResponse = await chatService.getUserChats(nextPage, 20)
+
+      if (chatListResponse.chats.length > 0) {
+        dispatch(addChats(chatListResponse.chats))
+        setCurrentPage(nextPage)
+        setHasMore(chatListResponse.hasMore ?? chatListResponse.chats.length === 20)
+      } else {
+        setHasMore(false)
+      }
+    } catch (error) {
+      console.error('Failed to load more chats:', error)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }, [currentPage, hasMore, isLoadingMore, dispatch])
+
+  const handleChatsScroll = useCallback(() => {
+    const container = chatsListRef.current
+    if (!container || isLoadingMore || !hasMore) return
+
+    const {scrollTop, scrollHeight, clientHeight} = container
+    if (scrollHeight - scrollTop - clientHeight < 100) {
+      loadMoreChats()
+    }
+  }, [loadMoreChats, isLoadingMore, hasMore])
+
+  useEffect(() => {
+    const container = chatsListRef.current
+    if (!container) return
+
+    container.addEventListener('scroll', handleChatsScroll)
+    return () => container.removeEventListener('scroll', handleChatsScroll)
+  }, [handleChatsScroll])
 
   const handleChatSelect = (chat: Chat) => {
     dispatch(setActiveChat(chat))
@@ -140,7 +191,7 @@ export const ChatsPage = () => {
         </div>
 
         <div className={styles.chats__layout}>
-          <div className={styles.chats__list}>
+          <div className={styles.chats__list} ref={chatsListRef}>
             {isLoading ? (
               <div className={styles.loading}>{t('loading')}</div>
             ) : chats.length === 0 ? (
@@ -149,73 +200,76 @@ export const ChatsPage = () => {
                 <p className={styles.empty__hint}>{t('noChatsHint')}</p>
               </div>
             ) : (
-              chats.map((chat) => {
-                const isVendorChat = chat.isVendorChat && chat.vendorInfo
-                const displayImage = isVendorChat ? chat.vendorInfo?.avatarUrl : chat.product.imageUrl
-                const capitalizeFirstLetter = (str: string | undefined) => {
-                  if (!str) return str
-                  return str.charAt(0).toUpperCase() + str.slice(1)
-                }
-                const displayName = isVendorChat ? capitalizeFirstLetter(chat.vendorInfo?.name) : chat.product.name
+              <>
+                {chats.map((chat) => {
+                  const isVendorChat = chat.isVendorChat && chat.vendorInfo
+                  const displayImage = isVendorChat ? chat.vendorInfo?.avatarUrl : chat.product.imageUrl
+                  const capitalizeFirstLetter = (str: string | undefined) => {
+                    if (!str) return str
+                    return str.charAt(0).toUpperCase() + str.slice(1)
+                  }
+                  const displayName = isVendorChat ? capitalizeFirstLetter(chat.vendorInfo?.name) : chat.product.name
 
-                const getInitial = (name: string | undefined) => {
-                  if (!name) return '?'
-                  const cleanName = name.includes('"') ? name.split('"')[1] || name : name
-                  return cleanName.charAt(0).toUpperCase()
-                }
+                  const getInitial = (name: string | undefined) => {
+                    if (!name) return '?'
+                    const cleanName = name.includes('"') ? name.split('"')[1] || name : name
+                    return cleanName.charAt(0).toUpperCase()
+                  }
 
-                return (
-                  <div
-                    key={chat.id}
-                    className={`${styles.chat__item} ${activeChat?.id === chat.id ? styles.active : ''} ${
-                      chat.unreadCount > 0 ? styles.unread : ''
-                    }`}
-                    onClick={() => handleChatSelect(chat)}
-                  >
-                    <div className={styles.chat__avatar}>
-                      {displayImage ? (
-                        <img src={displayImage} alt={displayName || ''} />
-                      ) : (
-                        <div className={`${styles.placeholder} ${isVendorChat ? styles.vendor__placeholder : ''}`}>
-                          {getInitial(displayName)}
+                  return (
+                    <div
+                      key={chat.id}
+                      className={`${styles.chat__item} ${activeChat?.id === chat.id ? styles.active : ''} ${
+                        chat.unreadCount > 0 ? styles.unread : ''
+                      }`}
+                      onClick={() => handleChatSelect(chat)}
+                    >
+                      <div className={styles.chat__avatar}>
+                        {displayImage ? (
+                          <img src={displayImage} alt={displayName || ''} />
+                        ) : (
+                          <div className={`${styles.placeholder} ${isVendorChat ? styles.vendor__placeholder : ''}`}>
+                            {getInitial(displayName)}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className={styles.chat__info}>
+                        <div className={styles.chat__header}>
+                          <h3 className={styles.chat__title}>
+                            {displayName}{' '}
+                            {isVendorChat && <span className={styles.vendor__badge}>{t('vendorChat')}</span>}
+                          </h3>
+                          <span className={styles.chat__time}>
+                            {formatDate(chat.lastMessage?.createdAt || chat.createdAt)}
+                          </span>
                         </div>
-                      )}
-                    </div>
 
-                    <div className={styles.chat__info}>
-                      <div className={styles.chat__header}>
-                        <h3 className={styles.chat__title}>
-                          {displayName}{' '}
-                          {isVendorChat && <span className={styles.vendor__badge}>{t('vendorChat')}</span>}
-                        </h3>
-                        <span className={styles.chat__time}>
-                          {formatDate(chat.lastMessage?.createdAt || chat.createdAt)}
-                        </span>
-                      </div>
-
-                      <div className={styles.chat__preview}>
-                        <p className={styles.last__message}>
-                          {chat.lastMessage ? (
-                            chat.lastMessage.isSystem ? (
-                              <span className={styles.system__message}>
-                                {translateSystemMessage(chat.lastMessage.content)}
-                              </span>
+                        <div className={styles.chat__preview}>
+                          <p className={styles.last__message}>
+                            {chat.lastMessage ? (
+                              chat.lastMessage.isSystem ? (
+                                <span className={styles.system__message}>
+                                  {translateSystemMessage(chat.lastMessage.content)}
+                                </span>
+                              ) : (
+                                <>
+                                  <span className={styles.sender__name}>{chat.lastMessage.senderName}:</span>{' '}
+                                  {chat.lastMessage.content}
+                                </>
+                              )
                             ) : (
-                              <>
-                                <span className={styles.sender__name}>{chat.lastMessage.senderName}:</span>{' '}
-                                {chat.lastMessage.content}
-                              </>
-                            )
-                          ) : (
-                            <span className={styles.no__messages}>{t('noMessages')}</span>
-                          )}
-                        </p>
-                        {chat.unreadCount > 0 && <span className={styles.unread__badge}>{chat.unreadCount}</span>}
+                              <span className={styles.no__messages}>{t('noMessages')}</span>
+                            )}
+                          </p>
+                          {chat.unreadCount > 0 && <span className={styles.unread__badge}>{chat.unreadCount}</span>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
-              })
+                  )
+                })}
+                {isLoadingMore && <div className={styles.loading__more}>{t('loading')}</div>}
+              </>
             )}
           </div>
 
