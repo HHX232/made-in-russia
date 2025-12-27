@@ -22,15 +22,21 @@ import {getCurrentLocale} from '@/lib/locale-detection'
 import FavoritesProvider from '@/providers/FavoritesProvider'
 import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
-import {Viewport} from 'next'
 import PreventIOSZoom from '@/components/MainComponents/PreventIOSZoom/PreventIOSZoom'
 import IOSInputZoomDisabler from '@/components/MainComponents/PreventIOSZoom/IOSInputZoomDisabler'
+import Head from 'next/head'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const locale = await getCurrentLocale()
   const messages = await getMessages()
   return (
     <>
+      <Head>
+        <meta
+          name='viewport'
+          content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no'
+        />
+      </Head>
       <PreventIOSZoom />
       <IOSInputZoomDisabler />
       <html lang={locale}>
@@ -62,20 +68,19 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   )
 }
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-  minimumScale: 1,
-  userScalable: false,
-  viewportFit: 'cover'
-}
-
 export async function generateMetadata() {
   return {
     title: {
       absolute: 'Exporteru',
       template: `%s | Exporteru`
+    },
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
+      maximumScale: 1,
+      minimumScale: 1,
+      userScalable: false,
+      viewportFit: 'cover'
     },
 
     openGraph: {
