@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState, useCallback} from 'react'
 import {useAppDispatch, useAppSelector} from '@/hooks/redux'
 import {chatService} from '@/services/chat/chat.service'
 import {webSocketClient} from '@/lib/websocket-client'
@@ -10,7 +10,8 @@ import {
   markChatAsRead,
   setUserTyping,
   removeUserTyping,
-  markMessageAsRead
+  markMessageAsRead,
+  prependMessages
 } from '@/store/slices/chatSlice'
 import {ChatHeader} from '../ChatHeader/ChatHeader'
 import {MessageList} from '../MessageList/MessageList'
@@ -25,6 +26,9 @@ export const ChatWindow: React.FC = () => {
   const currentUserId = useAppSelector((state) => state.user.user?.id)
   const messages = useAppSelector((state) => (activeChat ? state.chat.messages[activeChat.id] || [] : []))
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -216,10 +220,12 @@ export const ChatWindow: React.FC = () => {
     if (!activeChat) return
 
     setIsLoading(true)
+    setCurrentPage(0)
     try {
-      const response = await chatService.getChatMessages(activeChat.id)
+      const response = await chatService.getChatMessages(activeChat.id, 0, 50)
       dispatch(setMessages({chatId: activeChat.id, messages: response.messages.reverse()}))
       dispatch(markChatAsRead(activeChat.id))
+      setHasMore(response.hasMore)
       setTimeout(() => {
         scrollToBottomInstant()
       }, 100)
@@ -229,6 +235,56 @@ export const ChatWindow: React.FC = () => {
       setIsLoading(false)
     }
   }
+
+  const loadMoreMessages = useCallback(async () => {
+    if (!activeChat || isLoadingMore || !hasMore) return
+
+    const container = messagesContainerRef.current
+    if (!container) return
+
+    const previousScrollHeight = container.scrollHeight
+
+    setIsLoadingMore(true)
+    try {
+      const nextPage = currentPage + 1
+      const response = await chatService.getChatMessages(activeChat.id, nextPage, 50)
+
+      if (response.messages.length > 0) {
+        // Добавляем старые сообщения в начало
+        dispatch(prependMessages({chatId: activeChat.id, messages: response.messages.reverse()}))
+        setCurrentPage(nextPage)
+        setHasMore(response.hasMore)
+
+        // Восстанавливаем позицию скролла после добавления сообщений
+        requestAnimationFrame(() => {
+          const newScrollHeight = container.scrollHeight
+          container.scrollTop = newScrollHeight - previousScrollHeight
+        })
+      } else {
+        setHasMore(false)
+      }
+    } catch (error) {
+      console.error('Failed to load more messages:', error)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }, [activeChat, currentPage, hasMore, isLoadingMore, dispatch])
+
+  const handleMessagesScroll = useCallback(() => {
+    const container = messagesContainerRef.current
+    if (!container || isLoadingMore || !hasMore) return
+    if (container.scrollTop < 50) {
+      loadMoreMessages()
+    }
+  }, [loadMoreMessages, isLoadingMore, hasMore])
+
+  useEffect(() => {
+    const container = messagesContainerRef.current
+    if (!container) return
+
+    container.addEventListener('scroll', handleMessagesScroll)
+    return () => container.removeEventListener('scroll', handleMessagesScroll)
+  }, [handleMessagesScroll])
 
   const scrollToBottomInstant = () => {
     const container = messagesContainerRef.current
@@ -253,6 +309,7 @@ export const ChatWindow: React.FC = () => {
           <div className={styles.loading}>Загрузка...</div>
         ) : (
           <>
+            {isLoadingMore && <div className={styles.loadingMore}>Загрузка истории...</div>}
             <MessageList messages={messages} />
             <TypingIndicator chatId={activeChat.id} />
             <div ref={messagesEndRef} />

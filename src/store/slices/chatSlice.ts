@@ -48,6 +48,12 @@ const chatSlice = createSlice({
       }
     },
 
+    addChats(state, action: PayloadAction<Chat[]>) {
+      const newChats = action.payload.filter((newChat) => !state.chats.some((existing) => existing.id === newChat.id))
+      state.chats = [...state.chats, ...newChats]
+      state.unreadTotal = state.chats.reduce((sum, chat) => sum + chat.unreadCount, 0)
+    },
+
     setMessages(state, action: PayloadAction<{chatId: number; messages: ChatMessage[]}>) {
       state.messages[action.payload.chatId] = action.payload.messages
     },
@@ -144,9 +150,11 @@ export const {
   setChats,
   setActiveChat,
   addChat,
+  addChats,
   setMessages,
   addMessage,
   markChatAsRead,
+  prependMessages,
   setUserTyping,
   removeUserTyping,
   markMessageAsRead,

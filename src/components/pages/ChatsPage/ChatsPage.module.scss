@@ -327,3 +327,23 @@
     font-size: 13px;
   }
 }
+
+.loading__more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  color: #6c757d;
+  font-size: 13px;
+}
+
+.vendor__badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  background: #e3f2fd;
+  color: #0047ba;
+  font-size: 10px;
+  font-weight: 500;
+}
