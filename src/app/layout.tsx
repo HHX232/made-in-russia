@@ -7,7 +7,6 @@ import '@/scss/config/functions.scss'
 import '@/scss/config/keyframes.scss'
 import '@/scss/config/mixins.scss'
 import '@/scss/config/placeholders.scss'
-
 import '@/scss/config/root.scss'
 import '@/scss/config/typography.scss'
 import '@/scss/main.scss'
@@ -23,28 +22,34 @@ import {getCurrentLocale} from '@/lib/locale-detection'
 import FavoritesProvider from '@/providers/FavoritesProvider'
 import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
-
-// import GoogleRecaptchaProviderComponent from '@/providers/GoogleRecaptchaProviderComponent'
-// import {NextIntlClientProvider} from 'next-intl'
+import PreventIOSZoom from '@/components/MainComponents/PreventIOSZoom/PreventIOSZoom'
+import IOSInputZoomDisabler from '@/components/MainComponents/PreventIOSZoom/IOSInputZoomDisabler'
+import Head from 'next/head'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const locale = await getCurrentLocale()
   const messages = await getMessages()
   return (
     <>
+      <Head>
+        <meta
+          name='viewport'
+          content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no'
+        />
+      </Head>
+      <PreventIOSZoom />
+      <IOSInputZoomDisabler />
       <html lang={locale}>
-        <body>
+        <body style={{overflowY: 'auto', height: '100%', position: 'relative'}}>
           <NProgressProvider />
 
           <DefaultProvider>
             <NextIntlClientProvider messages={messages}>
-              {/* <GoogleRecaptchaProviderComponent> */}
               <WebSocketProvider>
                 <FavoritesProvider>
                   <LatestViewsProvider>{children}</LatestViewsProvider>
                 </FavoritesProvider>
               </WebSocketProvider>
-              {/* </GoogleRecaptchaProviderComponent> */}
               <ClientStyleLoader />
               <Toaster
                 visibleToasts={20}
@@ -68,6 +73,14 @@ export async function generateMetadata() {
     title: {
       absolute: 'Exporteru',
       template: `%s | Exporteru`
+    },
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
+      maximumScale: 1,
+      minimumScale: 1,
+      userScalable: false,
+      viewportFit: 'cover'
     },
 
     openGraph: {

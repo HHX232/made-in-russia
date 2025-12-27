@@ -301,6 +301,7 @@
     "addRow": "पंक्ति जोड़ें"
   },
   "VendorPage": {
+    "notHave": "विवरण नहीं जोड़ा गया",
     "errorCreatingQuestion": "प्रश्न बनाते समय त्रुटि",
     "saving": "सेव करें",
     "mediaSavedSuccessfully": "मीडिया सफलतापूर्वक सहेजा गया",
