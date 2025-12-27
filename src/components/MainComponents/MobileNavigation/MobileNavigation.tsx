@@ -76,7 +76,7 @@ const MobileNavigation = () => {
           >
             <Heart className={styles.navIcon} />
           </Link>
-
+          {/* without 123 */}
           <Link href={'/chats'} className={styles.navItem}>
             <MessageCircle className={styles.navIcon} />
           </Link>
