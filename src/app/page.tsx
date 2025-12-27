@@ -4,7 +4,6 @@ import HomePage from '@/components/pages/HomePage/HomePage'
 import {getCurrentLocale} from '@/lib/locale-detection'
 import {Product} from '@/services/products/product.types'
 import {getTranslations} from 'next-intl/server'
-import Head from 'next/head'
 
 export interface IPromoFromServer {
   id: number
@@ -36,31 +35,20 @@ async function getInitialData(locale: string) {
       'x-locale': locale
     }
   })
-
   return data
 }
 
 export default async function Home() {
   const locale = await getCurrentLocale()
   const {products, categories, advertisements} = await getInitialData(locale)
-
   return (
-    <>
-      {' '}
-      <Head>
-        <meta
-          name='viewport'
-          content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no'
-        />
-      </Head>
-      <HomePage
-        ads={advertisements ?? []}
-        initialProducts={products.content}
-        initialHasMore={!products.last}
-        categories={categories}
-        isShowFilters={false}
-      />
-    </>
+    <HomePage
+      ads={advertisements ?? []}
+      initialProducts={products.content}
+      initialHasMore={!products.last}
+      categories={categories}
+      isShowFilters={false}
+    />
   )
 }
 
@@ -71,14 +59,6 @@ export async function generateMetadata() {
       title: {
         absolute: `${t('title')} | Exporteru`,
         template: `%s | Exporteru`
-      },
-      viewport: {
-        width: 'device-width',
-        initialScale: 1,
-        maximumScale: 1,
-        minimumScale: 1,
-        userScalable: false,
-        viewportFit: 'cover'
       },
       description: `${t('firstText')}.`,
       openGraph: {

@@ -68,6 +68,7 @@ const MobileNavigation = () => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
+        123
         <div className={styles.navContent}>
           <Link
             href={user?.role.toLowerCase() === 'user' ? '/profile?activeTab=favorites' : '/vendor?activeTab=favorites'}

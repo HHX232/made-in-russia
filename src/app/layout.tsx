@@ -22,25 +22,17 @@ import {getCurrentLocale} from '@/lib/locale-detection'
 import FavoritesProvider from '@/providers/FavoritesProvider'
 import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
-import PreventIOSZoom from '@/components/MainComponents/PreventIOSZoom/PreventIOSZoom'
-import IOSInputZoomDisabler from '@/components/MainComponents/PreventIOSZoom/IOSInputZoomDisabler'
-import Head from 'next/head'
+import {Viewport} from 'next'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const locale = await getCurrentLocale()
   const messages = await getMessages()
   return (
     <>
-      <Head>
-        <meta
-          name='viewport'
-          content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no'
-        />
-      </Head>
-      <PreventIOSZoom />
-      <IOSInputZoomDisabler />
+      {/* <PreventIOSZoom />
+      <IOSInputZoomDisabler /> */}
       <html lang={locale}>
-        <body style={{overflowY: 'auto', height: '100%', position: 'relative'}}>
+        <body>
           <NProgressProvider />
 
           <DefaultProvider>
@@ -68,28 +60,26 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   )
 }
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover'
+} as const
+
 export async function generateMetadata() {
   return {
     title: {
       absolute: 'Exporteru',
       template: `%s | Exporteru`
     },
-    viewport: {
-      width: 'device-width',
-      initialScale: 1,
-      maximumScale: 1,
-      minimumScale: 1,
-      userScalable: false,
-      viewportFit: 'cover'
-    },
-
     openGraph: {
       title: 'Exporteru'
     },
     icons: {
       icon: '/mstile-c-144x144.png',
-
-      // Альтернативные иконки
       shortcut: '/favicon-c-32x32.png',
       apple: [
         {
