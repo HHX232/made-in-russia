@@ -29,8 +29,6 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   const messages = await getMessages()
   return (
     <>
-      {/* <PreventIOSZoom />
-      <IOSInputZoomDisabler /> */}
       <html lang={locale}>
         <body style={{overflowY: 'auto', height: '100%', position: 'relative'}}>
           <NProgressProvider />
