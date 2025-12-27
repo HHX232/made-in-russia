@@ -202,7 +202,7 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
           {showResetForm ? (
             <ResetPasswordForm onBack={handleBackToLogin} />
           ) : (
-            <form className={`${styles.login__form__box}`}>
+            <form className={`${styles.login__form__box}`} autoComplete='off'>
               <h2 className={`${styles.login__title}`}>{t('loginTitle')}</h2>
               <div className={`${styles.inputs__box}`}>
                 {
@@ -215,12 +215,14 @@ const LoginPage = ({categories}: {categories: Category[]}) => {
                       theme='newGray'
                       onSetValue={handleNameChange}
                       currentValue={name}
+                      autoComplete='username'
                       placeholder={t('writeEmailOrNickname')}
                       title={<p className={`${styles.input__title}`}>{t('loginAccount')}</p>}
                     />
                     <TextInputUI
                       idForLabel='cy-password-input'
                       extraClass={`${styles.inputs__text_extra} ${styles.inputs__text_extra_2} ${error && styles.extra__name__class}`}
+                      autoComplete='current-password'
                       theme='newGray'
                       isSecret={true}
                       onSetValue={setPasswordState}

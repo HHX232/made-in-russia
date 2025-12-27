@@ -23,11 +23,13 @@
 // }
 
 body {
-  overflow: overlay;
+  position: relative !important;
+  // overflow: overlay;
   max-width: 100vw !important;
+  height: 100% !important;
   font-family: AvrileSans, $font-inter !important;
   line-height: 1.2;
-  overflow-x: hidden !important;
+  overflow: hidden auto !important;
 }
 
 // ! NEW SLIDER
@@ -398,7 +400,7 @@ video {
   margin: 0;
   font-family: var(--font-main);
   font-size: 15px;
-    vertical-align: baseline;
+  vertical-align: baseline;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -509,9 +511,9 @@ a {
 
 button {
   border: unset;
+  border-radius: 5px;
   background: transparent;
   cursor: pointer;
-  border-radius: 5px;
 }
 
 input {

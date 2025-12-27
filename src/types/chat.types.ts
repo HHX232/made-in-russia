@@ -66,6 +66,7 @@ export interface ChatListResponse {
   totalPages?: number
   totalElements: number
   currentPage: number
+  hasMore?: boolean
 }
 
 export interface MessageListResponse {

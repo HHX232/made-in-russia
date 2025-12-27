@@ -319,6 +319,7 @@
     "addRow": "Добавить строку"
   },
   "VendorPage": {
+    "notHave":"Описание не добавлено",
     "errorCreatingQuestion":"Ошибка создания вопроса",
     "saving":"Сохранить",
     "mediaSavedSuccessfully":"Медиа успешно сохранен",

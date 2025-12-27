@@ -35,14 +35,12 @@ async function getInitialData(locale: string) {
       'x-locale': locale
     }
   })
-
   return data
 }
 
 export default async function Home() {
   const locale = await getCurrentLocale()
   const {products, categories, advertisements} = await getInitialData(locale)
-
   return (
     <HomePage
       ads={advertisements ?? []}

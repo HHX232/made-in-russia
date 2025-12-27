@@ -7,7 +7,6 @@ import '@/scss/config/functions.scss'
 import '@/scss/config/keyframes.scss'
 import '@/scss/config/mixins.scss'
 import '@/scss/config/placeholders.scss'
-
 import '@/scss/config/root.scss'
 import '@/scss/config/typography.scss'
 import '@/scss/main.scss'
@@ -23,28 +22,26 @@ import {getCurrentLocale} from '@/lib/locale-detection'
 import FavoritesProvider from '@/providers/FavoritesProvider'
 import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
-
-// import GoogleRecaptchaProviderComponent from '@/providers/GoogleRecaptchaProviderComponent'
-// import {NextIntlClientProvider} from 'next-intl'
+import {Viewport} from 'next'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const locale = await getCurrentLocale()
   const messages = await getMessages()
   return (
     <>
+      {/* <PreventIOSZoom />
+      <IOSInputZoomDisabler /> */}
       <html lang={locale}>
         <body>
           <NProgressProvider />
 
           <DefaultProvider>
             <NextIntlClientProvider messages={messages}>
-              {/* <GoogleRecaptchaProviderComponent> */}
               <WebSocketProvider>
                 <FavoritesProvider>
                   <LatestViewsProvider>{children}</LatestViewsProvider>
                 </FavoritesProvider>
               </WebSocketProvider>
-              {/* </GoogleRecaptchaProviderComponent> */}
               <ClientStyleLoader />
               <Toaster
                 visibleToasts={20}
@@ -63,20 +60,26 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   )
 }
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover'
+} as const
+
 export async function generateMetadata() {
   return {
     title: {
       absolute: 'Exporteru',
       template: `%s | Exporteru`
     },
-
     openGraph: {
       title: 'Exporteru'
     },
     icons: {
       icon: '/mstile-c-144x144.png',
-
-      // Альтернативные иконки
       shortcut: '/favicon-c-32x32.png',
       apple: [
         {
