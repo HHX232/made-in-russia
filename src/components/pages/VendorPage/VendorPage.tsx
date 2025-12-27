@@ -1511,20 +1511,6 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                   {/* Описание и фото */}
                   <div className={styles.vendor__description__section}>
                     <div className={styles.vendor__description__label}>{t('description')}</div>
-
-                    {/* <TextAreaUI
-                      autoResize
-                      minRows={10}
-                      maxRows={25}
-                      readOnly={!isPageForVendor}
-                      currentValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
-                      onSetValue={(val) => {
-                        updateVendorDetails({...user?.vendorDetails, description: val})
-                        canUpdateVendorMedia.current = true
-                      }}
-                      theme='newWhite'
-                      placeholder={t('descriptionPlaceholder')}
-                    /> */}
                     {isPageForVendor || (!isPageForVendor && onlyShowDescr) ? (
                       <MarkdownEditor
                         initialValue={!isPageForVendor ? onlyShowDescr || '' : user?.vendorDetails?.description || ''}
