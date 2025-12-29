@@ -1235,6 +1235,7 @@
     "buyer": "买家",
     "admin": "管理员",
     "sendError": "发送消息错误",
+    "tryAgain": "请重试",
     "connectionError": "连接错误",
     "reconnecting": "重新连接中...",
     "online": "在线",
@@ -1242,6 +1243,8 @@
     "translate": "翻译",
     "showTranslation": "显示翻译",
     "showOriginal": "显示原文",
-    "translatedText": "已翻译"
+    "translatedText": "已翻译",
+    "vendorChat": "与供应商聊天",
+    "priceNotSpecified": "价格未指定"
   }
 }

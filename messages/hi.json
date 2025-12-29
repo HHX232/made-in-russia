@@ -1231,6 +1231,7 @@
     "buyer": "खरीदार",
     "admin": "व्यवस्थापक",
     "sendError": "संदेश भेजने में त्रुटि",
+    "tryAgain": "कृपया पुनः प्रयास करें",
     "connectionError": "कनेक्शन त्रुटि",
     "reconnecting": "पुन: कनेक्ट हो रहा है...",
     "online": "ऑनलाइन",
@@ -1238,7 +1239,9 @@
     "translate": "अनुवाद करें",
     "showTranslation": "अनुवाद दिखाएं",
     "showOriginal": "मूल दिखाएं",
-    "translatedText": "अनुवादित"
+    "translatedText": "अनुवादित",
+    "vendorChat": "विक्रेता के साथ चैट",
+    "priceNotSpecified": "मूल्य निर्दिष्ट नहीं"
   }
 
 }
