@@ -320,6 +320,7 @@
   },
   "VendorPage": {
     "notHave":"Описание не добавлено",
+    "NotHave":"Описание не добавлено",
     "errorCreatingQuestion":"Ошибка создания вопроса",
     "saving":"Сохранить",
     "mediaSavedSuccessfully":"Медиа успешно сохранен",

@@ -307,6 +307,7 @@
   },
   "VendorPage": {
     "notHave": "未添加描述",
+    "NotHave": "未添加描述",
     "errorCreatingQuestion": "创建问题时出错",
     "saving": "保存",
     "mediaSavedSuccessfully": "媒体保存成功",

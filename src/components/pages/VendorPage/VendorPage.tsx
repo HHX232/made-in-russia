@@ -1521,7 +1521,7 @@ const VendorPageComponent: FC<IVendorPageProps> = ({
                         readOnly={!isPageForVendor}
                       />
                     ) : (
-                      <p>{t('NotHave')}</p>
+                      <p>{t('notHave')}</p>
                     )}
                     <div className={styles.vendor__description__photos}>
                       <div
