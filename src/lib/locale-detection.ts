@@ -47,21 +47,19 @@ export async function getCurrentLocale(): Promise<SupportedLocale> {
         return nextLocaleCookie as SupportedLocale
       }
 
-      // 2. Определение по Accept-Language заголовку
-      const acceptLanguageHeader = headersList.get('Accept-Language')
-      if (acceptLanguageHeader) {
-        const preferredLocale = parseAcceptLanguage(acceptLanguageHeader)
-        if (preferredLocale) {
-          return preferredLocale
-        }
-      }
-
-      // 3. Определение по поддомену
       const host = headersList.get('host')
       if (host) {
         const subdomainLocale = parseSubdomain(host)
         if (subdomainLocale) {
           return subdomainLocale
+        }
+      }
+
+      const acceptLanguageHeader = headersList.get('Accept-Language')
+      if (acceptLanguageHeader) {
+        const preferredLocale = parseAcceptLanguage(acceptLanguageHeader)
+        if (preferredLocale) {
+          return preferredLocale
         }
       }
 
@@ -79,20 +77,18 @@ export async function getCurrentLocale(): Promise<SupportedLocale> {
         return nextLocaleCookie as SupportedLocale
       }
 
-      // 2. Определение по navigator.language
-      if (navigator.language) {
-        const preferredLocale = parseAcceptLanguage(navigator.language)
-        if (preferredLocale) {
-          return preferredLocale
-        }
-      }
-
-      // 3. Определение по поддомену
       const hostname = window.location.hostname
       if (hostname) {
         const subdomainLocale = parseSubdomain(hostname)
         if (subdomainLocale) {
           return subdomainLocale
+        }
+      }
+
+      if (navigator.language) {
+        const preferredLocale = parseAcceptLanguage(navigator.language)
+        if (preferredLocale) {
+          return preferredLocale
         }
       }
 

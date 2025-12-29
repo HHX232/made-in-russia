@@ -1232,6 +1232,7 @@
     "buyer": "Buyer",
     "admin": "Admin",
     "sendError": "Error sending message",
+    "tryAgain": "Please try again",
     "connectionError": "Connection error",
     "reconnecting": "Reconnecting...",
     "online": "Online",

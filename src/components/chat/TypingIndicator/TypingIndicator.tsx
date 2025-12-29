@@ -1,14 +1,18 @@
 'use client'
 
+import {useMemo} from 'react'
 import {useAppSelector} from '@/hooks/redux'
 import styles from './TypingIndicator.module.scss'
+
+const EMPTY_ARRAY: never[] = []
 
 interface TypingIndicatorProps {
   chatId: number
 }
 
 export const TypingIndicator: React.FC<TypingIndicatorProps> = ({chatId}) => {
-  const typingUsers = useAppSelector((state) => state.chat.typingUsers[chatId] || [])
+  const typingUsersRaw = useAppSelector((state) => state.chat.typingUsers[chatId])
+  const typingUsers = useMemo(() => typingUsersRaw ?? EMPTY_ARRAY, [typingUsersRaw])
 
   if (typingUsers.length === 0) {
     return null

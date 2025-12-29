@@ -8,6 +8,23 @@ export const getCurrentLanguage = (): string => {
     if (cookieValue) {
       return cookieValue
     }
+    const hostname = window.location.hostname
+    const parts = hostname.split('.')
+    if (parts.length > 2) {
+      const subdomain = parts[0]
+      switch (subdomain) {
+        case 'cn':
+          return 'zh'
+        case 'en':
+          return 'en'
+        case 'in':
+        case 'hi':
+          return 'hi'
+      }
+    }
+    if (parts.length === 2 && parts[0] === 'exporteru') {
+      return 'ru'
+    }
 
     const pathname = window.location.pathname
     const langMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)/)

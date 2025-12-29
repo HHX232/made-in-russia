@@ -2,10 +2,12 @@
 
 import {useState, useRef, useCallback} from 'react'
 import {useDispatch} from 'react-redux'
+import {useTranslations} from 'next-intl'
 import {chatService} from '@/services/chat/chat.service'
 import {webSocketClient} from '@/lib/websocket-client'
 import {addMessage} from '@/store/slices/chatSlice'
 import {toast} from 'sonner'
+import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import styles from './MessageInput.module.scss'
 
 interface MessageInputProps {
@@ -14,6 +16,7 @@ interface MessageInputProps {
 }
 
 export const MessageInput: React.FC<MessageInputProps> = ({chatId, onMessageSent}) => {
+  const t = useTranslations('chat')
   const dispatch = useDispatch()
   const [content, setContent] = useState('')
   const [attachments, setAttachments] = useState<File[]>([])
@@ -21,31 +24,37 @@ export const MessageInput: React.FC<MessageInputProps> = ({chatId, onMessageSent
   const fileInputRef = useRef<HTMLInputElement>(null)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
+  const sendMessage = async () => {
     if (!content.trim() && attachments.length === 0) return
     if (isSending) return
 
     setIsSending(true)
     try {
-      // Отправляем сообщение и сразу добавляем в стор (оптимистичное обновление)
       const sentMessage = await chatService.sendMessage({chatId, content, attachments})
-      // Добавляем сообщение в стор сразу после ответа от сервера
-      // Это гарантирует отображение даже если WebSocket не работает
       dispatch(addMessage(sentMessage))
       setContent('')
       setAttachments([])
-      // Прокручиваем вниз после отправки сообщения
       setTimeout(() => onMessageSent?.(), 50)
     } catch (error) {
       console.error('Failed to send message:', error)
-      toast.error('Ошибка при отправке сообщения', {
-        description: 'Попробуйте еще раз',
+      toast.error(t('sendError'), {
+        description: t('tryAgain'),
         style: {background: '#AC2525'}
       })
     } finally {
       setIsSending(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await sendMessage()
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage()
     }
   }
 
@@ -97,14 +106,18 @@ export const MessageInput: React.FC<MessageInputProps> = ({chatId, onMessageSent
           accept='image/*,.pdf,.doc,.docx'
         />
 
-        <input
-          type='text'
-          className={styles.textInput}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+        <TextAreaUI
+          extraClass={styles.textAreaWrapper}
+          placeholder={t('typeMessage')}
+          currentValue={content}
+          onSetValue={setContent}
+          onKeyDown={handleKeyDown}
           onKeyUp={handleTyping}
-          placeholder='Введите сообщение...'
           disabled={isSending}
+          autoResize
+          minRows={1}
+          maxRows={6}
+          minHeight={44}
         />
 
         <button type='submit' className={styles.sendButton} disabled={isSending}>

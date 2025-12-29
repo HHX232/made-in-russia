@@ -100,7 +100,9 @@ const chatSlice = createSlice({
       if (!state.messages[chatId]) {
         state.messages[chatId] = []
       }
-      state.messages[chatId] = [...action.payload.messages, ...state.messages[chatId]]
+      const existingIds = new Set(state.messages[chatId].map((msg) => msg.id))
+      const newMessages = action.payload.messages.filter((msg) => !existingIds.has(msg.id))
+      state.messages[chatId] = [...newMessages, ...state.messages[chatId]]
     },
 
     setLoading(state, action: PayloadAction<boolean>) {

@@ -226,9 +226,11 @@ export const ChatWindow: React.FC = () => {
       dispatch(setMessages({chatId: activeChat.id, messages: response.messages.reverse()}))
       dispatch(markChatAsRead(activeChat.id))
       setHasMore(response.hasMore)
-      setTimeout(() => {
-        scrollToBottomInstant()
-      }, 100)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToBottom()
+        })
+      })
     } catch (error) {
       console.error('Failed to load messages:', error)
     } finally {
@@ -286,7 +288,14 @@ export const ChatWindow: React.FC = () => {
     return () => container.removeEventListener('scroll', handleMessagesScroll)
   }, [handleMessagesScroll])
 
-  const scrollToBottomInstant = () => {
+  const scrollToBottom = () => {
+    const container = messagesContainerRef.current
+    if (container) {
+      container.scrollTop = container.scrollHeight
+    }
+  }
+
+  const scrollToBottomSmooth = () => {
     const container = messagesContainerRef.current
     if (container) {
       container.scrollTo({
@@ -317,7 +326,7 @@ export const ChatWindow: React.FC = () => {
         )}
       </div>
 
-      <MessageInput chatId={activeChat.id} onMessageSent={scrollToBottomInstant} />
+      <MessageInput chatId={activeChat.id} onMessageSent={scrollToBottomSmooth} />
     </div>
   )
 }
