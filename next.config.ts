@@ -37,6 +37,7 @@ const nextConfig: NextConfig = {
       'exporteru.com',
       'en.exporteru.com',
       'cn.exporteru.com',
+      'in.exporteru.com',
       'i.pravatar.cc'
     ]
   },
@@ -65,6 +66,11 @@ const nextConfig: NextConfig = {
               https://exporteru.com
               https://en.exporteru.com
               https://cn.exporteru.com
+              https://in.exporteru.com
+              wss://exporteru.com
+              wss://en.exporteru.com
+              wss://cn.exporteru.com
+              wss://in.exporteru.com
               https://exporteru.b-cdn.net
               https://www.google.com
               https://www.gstatic.com;
