@@ -127,6 +127,7 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
   const {setCurrentLang} = useActions()
   const middleBoxRef = useRef<HTMLDivElement | null>(null)
   const topBoxRef = useRef<HTMLDivElement | null>(null)
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false)
 
   const {currentLangValue} = useTypedSelector((state) => state.currentLangSlice)
   const [isPending, startTransition] = useTransition()
@@ -216,6 +217,10 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
     const newLocale = languageToLocale[language] as TLocale
     setCookieLocale(newLocale)
     setActiveLanguage(language)
+
+    // Закрываем выпадающее меню
+    setIsLanguageDropdownOpen(false)
+
     startTransition(() => {
       router.refresh()
     })
@@ -501,6 +506,8 @@ const Header: FC<HeaderProps> = ({categories, useSticky = true}) => {
 
                 <DropList
                   closeOnMouseLeave={true}
+                  isOpen={isLanguageDropdownOpen}
+                  onOpenChange={setIsLanguageDropdownOpen}
                   hideOnWindowScroll={true}
                   extraStyle={{zIndex: '1001'}}
                   arrowClassName={styles.hide_arrow}
