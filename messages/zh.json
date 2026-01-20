@@ -716,6 +716,7 @@
     }
   },
   "CardComponent": {
+      "no_currency": "价格需咨询",
     "defaultTitle": "优惠产品",
     "cardImageAlt": "产品图片",
     "saw": "查看",
@@ -1188,6 +1189,7 @@
       "login": "登录"
     },
   "ReviewsToNumber":{
+    "priceOnRequest": "价格需咨询",
     "count":"{count} 条评论",
     "mg": "{count} 毫克",
     "g": "{count} 克",

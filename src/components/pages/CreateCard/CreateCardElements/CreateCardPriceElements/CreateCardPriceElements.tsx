@@ -93,6 +93,16 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       })
     )
 
+    const [isPriceNumeric, setIsPriceNumeric] = useState(true)
+    useEffect(() => {
+      if (pricesMatrix && pricesMatrix.length > 0) {
+        const priceValue = pricesMatrix[0][0] // Первое значение в первой строке (цена)
+        const isNumeric = !isNaN(Number(priceValue)) && priceValue.trim() !== ''
+        setIsPriceNumeric(isNumeric)
+      } else {
+        setIsPriceNumeric(true)
+      }
+    }, [pricesMatrix])
     const [characteristicsKey, setCharacteristicsKey] = useState(0)
     const [deliveryKey, setDeliveryKey] = useState(0)
     const [packagingKey, setPackagingKey] = useState(0)
@@ -188,7 +198,6 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       setPackagingKey((prev) => prev + 1)
     }, [currentLanguage])
 
-    // Обработчик для матрицы цен (теперь с 3 колонками: price, currency, unit)
     const handlePriceSetValue = (rowIndex: number, inputIndex: number, value: string) => {
       const newMatrix = [...pricesMatrix]
 
@@ -199,11 +208,36 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
       newMatrix[rowIndex][inputIndex] = value
       setPricesMatrix(newMatrix)
 
-      // Преобразуем в формат для родительского компонента, ВСЕГДА добавляя quantity: '1'
+      // Проверяем, является ли новое значение цены числом
+      if (rowIndex === 0 && inputIndex === 0) {
+        const isNumeric = !isNaN(Number(value)) && value.trim() !== ''
+        setIsPriceNumeric(isNumeric)
+
+        // Если цена не числовая, очищаем зависимые поля И ошибки
+        if (!isNumeric) {
+          setDiscountPrice('')
+          updatePriceInfo({
+            language: currentLanguage,
+            field: 'daysBeforeSale',
+            value: ''
+          })
+          updatePriceInfo({
+            language: currentLanguage,
+            field: 'minimalVolume',
+            value: ''
+          })
+
+          // Очищаем ошибки в родительском компоненте
+          // Передаем пустую строку в onSetPricesArray, чтобы родитель мог обработать
+          // и очистить ошибку minimalVolume
+        }
+      }
+
+      // Преобразуем в формат для родительского компонента
       const formattedPrices = newMatrix
         .filter((row) => row.some((cell) => cell.trim()))
         .map((row) => ({
-          quantity: '1', // ВСЕГДА единица
+          quantity: '1',
           priceWithoutDiscount: row[0] || '',
           priceWithDiscount: discountPrice || '',
           currency: row[1] || '',
@@ -428,7 +462,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 useNewTheme
                 inputsInRowCount={3}
                 maxRows={1}
-                extra__rows__grid={`${styles.extra__rows__grid} ${!!pricesError && styles.extra_error_class}`}
+                extra__rows__grid={`${styles.extra__rows__grid} ${!isPriceNumeric ? styles.disabled_price_fields : ''} ${!!pricesError && styles.extra_error_class}`}
                 extraButtonPlusClass={styles.extra__plus__button__class}
                 extraGlobalClass={styles.delete__minus__button}
                 dropdownOptions={preparedDropdownOptions}
@@ -448,6 +482,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                 <TextInputUI
                   idForLabel='cy-minimalVolume'
                   inputType='number'
+                  disabled={!isPriceNumeric}
                   extraClass={`${minVolumeError && styles.extra__error_class} ${styles.center_text}`}
                   currentValue={currentData.priceInfo.minimalVolume}
                   onSetValue={handleMinVolumeChange}
@@ -478,6 +513,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                   <TextInputUI
                     idForLabel='cy-priceWithDiscount'
                     inputType='number'
+                    disabled={!isPriceNumeric}
                     currentValue={discountPrice}
                     onSetValue={handleDiscountPriceChange}
                     theme='newWhite'
@@ -489,6 +525,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
                   <TextInputUI
                     idForLabel='cy-daysBeforeSale'
                     inputType='number'
+                    disabled={!isPriceNumeric}
                     currentValue={currentData.priceInfo.daysBeforeSale}
                     onSetValue={handleSaleDateChange}
                     theme='newWhite'

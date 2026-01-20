@@ -264,11 +264,38 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (prices: any[]) => {
       setPricesArray(prices)
-      if (errors.pricesArray) {
-        setErrors((prev) => ({...prev, pricesArray: ''}))
+
+      // Проверяем, является ли цена числовой
+      if (prices && prices.length > 0) {
+        const firstPrice = prices[0]
+        const priceValue = firstPrice?.priceWithoutDiscount || ''
+        const isPriceNumeric = !isNaN(Number(priceValue)) && priceValue.trim() !== ''
+
+        // Если цена не числовая, очищаем ошибки связанных полей
+        if (!isPriceNumeric) {
+          setErrors((prev) => ({
+            ...prev,
+            pricesArray: '',
+            minimalVolume: ''
+          }))
+        } else {
+          // Если цена числовая, очищаем только ошибку pricesArray при наличии всех данных
+          if (errors.pricesArray && firstPrice.priceWithoutDiscount && firstPrice.currency && firstPrice.unit) {
+            setErrors((prev) => ({...prev, pricesArray: ''}))
+          }
+        }
+      } else {
+        // Если массив цен пуст, очищаем обе ошибки
+        if (errors.pricesArray || errors.minimalVolume) {
+          setErrors((prev) => ({
+            ...prev,
+            pricesArray: '',
+            minimalVolume: ''
+          }))
+        }
       }
     },
-    [errors.pricesArray]
+    [errors.pricesArray, errors.minimalVolume]
   )
 
   useEffect(() => {
@@ -599,7 +626,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
             </div>
             {/* CreateCardPriceElements */}
             <CreateCardPriceElements
-              inputType={['text', 'number', 'number', 'dropdown', 'dropdown']}
+              inputType={['dropdown', 'dropdown', 'dropdown', 'dropdown', 'dropdown']}
               pricesArray={pricesArray.map((item) => [
                 item.quantity,
                 item.priceWithoutDiscount,
@@ -608,6 +635,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                 item.unit
               ])}
               dropdownPricesOptions={[
+                ['По запросу'],
                 ['RUB', 'USD', 'CNY'],
                 [
                   t('mg'),
@@ -631,7 +659,7 @@ const CreateCard: FC<CreateCardProps> = ({initialData}) => {
                   t('bag')
                 ]
               ]}
-              canCreateNewOption={[false, true]}
+              canCreateNewOption={[true, false, true]}
               currentLanguage={currentLangState}
               minVolumeError={errors.minimalVolume}
               onSetPricesArray={handlePricesArrayChange}

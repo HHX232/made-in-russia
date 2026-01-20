@@ -63,10 +63,23 @@ export const validateField = (
         return translations('onePriceError')
       }
 
+      const firstPrice = pricesArray[0]
+      const priceValue = firstPrice?.priceWithoutDiscount || firstPrice?.value?.toString() || ''
+
+      // Проверяем, является ли цена числом
+      const isPriceNumeric = !isNaN(Number(priceValue)) && priceValue.trim() !== ''
+
+      // Если цена НЕ числовая (например, "По запросу"), пропускаем валидацию полей
+      if (!isPriceNumeric) {
+        console.log('Price is not numeric, skipping validation')
+        return ''
+      }
+
+      // Если цена числовая, проверяем все обязательные поля
       const maxEmptyFields = Math.max(
         ...pricesArray.map((price) => {
           let emptyCount = 0
-          if (!price.value) emptyCount++
+          if (!price.value && !price.priceWithoutDiscount) emptyCount++
           if (!price.unit?.trim()) emptyCount++
           if (!price.currency?.trim()) emptyCount++
           return emptyCount
@@ -76,14 +89,17 @@ export const validateField = (
       if (maxEmptyFields === 0) {
         return ''
       } else if (maxEmptyFields === 1) {
-        const emptyField = pricesArray.find((p) => !p.value || !p.unit?.trim() || !p.currency?.trim())
+        const emptyField = pricesArray.find(
+          (p) => (!p.value && !p.priceWithoutDiscount) || !p.unit?.trim() || !p.currency?.trim()
+        )
 
-        if (!emptyField?.value) return translations('priceValueRequired')
+        if (!emptyField?.value && !emptyField?.priceWithoutDiscount) return translations('priceValueRequired')
         if (!emptyField?.unit?.trim()) return translations('priceUnitRequired')
         if (!emptyField?.currency?.trim()) return translations('priceCurrencyRequired')
       } else {
         return translations('priceFieldsRequired')
       }
+      return ''
 
     case 'description':
       const descError = !description || description?.trim().length === 0 ? translations('descriptionError') : ''
@@ -102,14 +118,32 @@ export const validateField = (
       console.log('Хай - deliveryTerms validation result:', deliveryError)
       return deliveryError
 
-    case 'selectedCategory': // Добавлен новый case
+    case 'selectedCategory':
       console.log('Хай - selectedCategory validation, selectedCategory:', selectedCategory)
       const categoryError = !selectedCategory ? translations('categoryError') : ''
       console.log('Хай - selectedCategory validation result:', categoryError)
       return categoryError
 
-    case 'minimalVolume': // Добавлен новый case
+    case 'minimalVolume':
       console.log('Хай - minimalVolume validation, minimalVolume:', minimalVolume)
+
+      // Проверяем pricesArray, чтобы определить, числовая ли цена
+      if (!pricesArray || pricesArray.length === 0) {
+        return ''
+      }
+
+      const firstPriceForVolume = pricesArray[0]
+      const priceValueForVolume =
+        firstPriceForVolume?.priceWithoutDiscount || firstPriceForVolume?.value?.toString() || ''
+      const isPriceNumericForVolume = !isNaN(Number(priceValueForVolume)) && priceValueForVolume.trim() !== ''
+
+      // Если цена НЕ числовая, пропускаем валидацию минимального объема
+      if (!isPriceNumericForVolume) {
+        console.log('Хай - minimalVolume validation skipped (price not numeric)')
+        return ''
+      }
+
+      // Если цена числовая, проверяем минимальный объем
       if (!minimalVolume || minimalVolume.trim() === '') {
         const volumeError = translations('minimalVolumeError')
         console.log('Хай - minimalVolume validation result (empty):', volumeError)
@@ -123,6 +157,7 @@ export const validateField = (
       }
       console.log('Хай - minimalVolume validation result: valid')
       return ''
+
     default:
       return ''
   }
@@ -313,6 +348,15 @@ export const submitFormCardData = async ({
   console.log('pricesArray:', pricesArray)
   console.log('Хай - preparing data object')
   console.log('Хай - deliveryTermIds will be:', selectedDeliveryIds)
+
+  // Проверяем, является ли цена строкой (не числом)
+  const firstPrice = pricesArray[0]
+  const priceValue = firstPrice?.priceWithoutDiscount || ''
+  const isPriceNumeric = !isNaN(Number(priceValue)) && priceValue.trim() !== ''
+  const isNullPrice = !isPriceNumeric // Если цена НЕ числовая, значит это "По запросу"
+
+  console.log('isPriceNumeric:', isPriceNumeric, 'isNullPrice:', isNullPrice, 'priceValue:', priceValue)
+
   const pricesArrayForSubmit = pricesArray.map((item) => ({
     ...item,
     quantity: parseQuantityRange(item.quantity)
@@ -350,23 +394,34 @@ export const submitFormCardData = async ({
     hi: descriptions.hi?.furtherDescription || descriptions.hi?.additionalDescription || null
   }
 
-  // Prepare prices data
-  const prices = pricesArrayForSubmit.map((price) => ({
-    quantityFrom: typeof price.quantity === 'object' ? price.quantity.from.toString() : price.quantity,
-    quantityTo: typeof price.quantity === 'object' ? price?.quantity?.to?.toString() : price.quantity,
-    currency: price.currency,
-    unit: price.unit,
-    price: parseFloat(price.priceWithoutDiscount),
-    discount:
-      price.priceWithDiscount && price.priceWithoutDiscount
-        ? Math.round(
-            ((parseFloat(price.priceWithoutDiscount) - parseFloat(price.priceWithDiscount)) /
-              parseFloat(price.priceWithoutDiscount)) *
-              100 *
-              100
-          ) / 100
-        : 0
-  }))
+  const prices = isNullPrice
+    ? [
+        {
+          quantityFrom: '7777',
+          quantityTo: '7777',
+          currency: 'notNumberCurrency',
+          unit: 'тонна',
+          price: 777777777777,
+          discount: 0
+        }
+      ]
+    : pricesArrayForSubmit.map((price) => ({
+        quantityFrom: typeof price.quantity === 'object' ? price.quantity.from.toString() : price.quantity,
+        quantityTo: typeof price.quantity === 'object' ? price?.quantity?.to?.toString() : price.quantity,
+        currency: price.currency,
+        unit: price.unit,
+        price: parseFloat(price.priceWithoutDiscount),
+        discount:
+          price.priceWithDiscount && price.priceWithoutDiscount
+            ? Math.round(
+                ((parseFloat(price.priceWithoutDiscount) - parseFloat(price.priceWithDiscount)) /
+                  parseFloat(price.priceWithoutDiscount)) *
+                  100 *
+                  100
+              ) / 100
+            : 0
+      }))
+
   console.log('цена от и до:', prices)
 
   // Prepare similar products array
@@ -496,10 +551,13 @@ export const submitFormCardData = async ({
     faq,
     deliveryMethodDetails,
     packageOptions,
-    minimumOrderQuantity: parseInt(multyLangObjectForPrices[langFromPathname || 'en']?.priceInfo?.minimalVolume || '1'),
-    discountExpirationDate: parseInt(
-      multyLangObjectForPrices[langFromPathname || 'en']?.priceInfo?.daysBeforeSale || '30'
-    ),
+    // Если цена "По запросу", используем значения по умолчанию
+    minimumOrderQuantity: isNullPrice
+      ? 1
+      : parseInt(multyLangObjectForPrices[langFromPathname || 'en']?.priceInfo?.minimalVolume || '1'),
+    discountExpirationDate: isNullPrice
+      ? 30
+      : parseInt(multyLangObjectForPrices[langFromPathname || 'en']?.priceInfo?.daysBeforeSale || '30'),
 
     // Add old media fields only for updates
     ...(isUpdate && {
@@ -525,12 +583,18 @@ export const submitFormCardData = async ({
   console.log('Data to be sent:', JSON.stringify(data, null, 2))
   console.log('Product media files count:', uploadedFiles.length)
   console.log('Old product media:', oldProductMedia)
+  console.log('isNullPrice:', isNullPrice)
 
-  // API call
+  // API call - добавляем nullPrice=true в query параметры, если цена "По запросу"
   const method = isUpdate ? 'PUT' : 'POST'
-  const url = isUpdate
+  const baseUrl = isUpdate
     ? `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/products/${initialData?.id}`
     : `${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/products`
+
+  // Добавляем query параметр nullPrice=true, если цена не числовая
+  const url = isNullPrice ? `${baseUrl}?nullPrice=true` : baseUrl
+
+  console.log('Final URL:', url)
 
   try {
     const response = await fetch(url, {

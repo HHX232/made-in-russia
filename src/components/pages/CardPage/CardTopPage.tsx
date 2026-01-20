@@ -319,6 +319,9 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     const tTop = useTranslations('CardTopPage')
     const t2 = useTranslations('ReviewsToNumber')
 
+    // Проверяем, является ли цена "По запросу"
+    const isNullPrice = cardData?.prices[0]?.currency?.toLocaleLowerCase() === 'no_currency'
+
     const getMinimalValueText = () => {
       const quantity = cardData?.minimumOrderQuantity || 1
       const unitSlug = cardData?.prices[0]?.unitSlug
@@ -347,24 +350,31 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
           </svg>
           <div className={styles.gray__dot}></div>
           <a href='#reviews-title' className={styles.reviews__count}>
-            {/* {cardData?.reviewsCount} {t('revues')} */}
             {t2('count', {count: cardData?.reviewsCount ?? 0})}
           </a>
         </div>
         <div className={styles.prices__box__new}>
-          <p className={styles.main__price}>
-            {tTop('from')} {cardData?.prices[0].discountedPrice} {cardData?.prices[0].currency}/
-            {cardData?.prices[0].unit}
-          </p>
-          {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
-            <p className={styles.original__price}>
-              {cardData?.prices[0].originalPrice} {cardData?.prices[0].currency}/{cardData?.prices[0].unit}
-            </p>
-          )}
-          {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
-            <p className={styles.disc__days}>
-              {cardData?.daysBeforeDiscountExpires} {tTop('daysBeforeDiscountExpires')}
-            </p>
+          {isNullPrice ? (
+            // Если цена "По запросу"
+            <p className={styles.main__price}>{t2('priceOnRequest')}</p>
+          ) : (
+            // Если цена числовая
+            <>
+              <p className={styles.main__price}>
+                {tTop('from')} {cardData?.prices[0].discountedPrice} {cardData?.prices[0].currency}/
+                {cardData?.prices[0].unit}
+              </p>
+              {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
+                <p className={styles.original__price}>
+                  {cardData?.prices[0].originalPrice} {cardData?.prices[0].currency}/{cardData?.prices[0].unit}
+                </p>
+              )}
+              {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
+                <p className={styles.disc__days}>
+                  {cardData?.daysBeforeDiscountExpires} {tTop('daysBeforeDiscountExpires')}
+                </p>
+              )}
+            </>
           )}
         </div>
         <div className={styles.buttons__box__new}>
@@ -407,10 +417,15 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             titleFontSize='16'
             listGap='10'
             items={[
-              {
-                title: tTop('minimalValue'),
-                value: getMinimalValueText()
-              },
+              // Показываем минимальное значение только если цена числовая
+              ...(!isNullPrice
+                ? [
+                    {
+                      title: tTop('minimalValue'),
+                      value: getMinimalValueText()
+                    }
+                  ]
+                : []),
               {title: tTop('articul'), value: cardData?.article || ''},
               ...(cardData?.characteristics?.map((el) => ({
                 title: el.name,
