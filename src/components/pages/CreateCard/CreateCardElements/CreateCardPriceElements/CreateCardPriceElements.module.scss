@@ -25,6 +25,9 @@
 //     padding: 12px 21px;
 //   }
 // }
+.extra__disabled_input {
+  opacity: 0.5 !important;
+}
 
 .extra__rows__grid {
   & > label > div:last-child > input {

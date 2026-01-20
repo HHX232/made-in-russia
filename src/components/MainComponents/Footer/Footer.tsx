@@ -355,7 +355,7 @@ const Footer: FC<IFooterProps> = ({extraClass, extraStyle, useFixedFooter, minMe
               in.exporteru.com
             </a>
           </div>
-          <p className={`${styles.footer__copyright}`}>© 2021-2025 Exporteru</p>
+          <p className={`${styles.footer__copyright}`}>© 2021-2026 Exporteru</p>
         </div>
       </div>
     </footer>

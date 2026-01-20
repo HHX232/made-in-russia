@@ -35,6 +35,7 @@ interface ButtonSizes {
 interface RowsInputsProps {
   hideTitles?: boolean
   useNewTheme?: boolean
+  extraDropLabels?: string[][]
   useOneWord?: boolean
   extra__rows__grid?: string
   specialCreatePlaceholder?: string
@@ -116,6 +117,7 @@ interface DropdownProps {
   useClipOnSpan?: boolean
   extraDropClass?: string
   useOneWord?: boolean
+  extraDropLabel?: string | undefined
 }
 
 const Dropdown = ({
@@ -131,7 +133,8 @@ const Dropdown = ({
   useClip = true,
   extraDropClass,
   useClipOnSpan = false,
-  useOneWord = false
+  useOneWord = false,
+  extraDropLabel
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [customValue, setCustomValue] = useState('')
@@ -338,7 +341,8 @@ const Dropdown = ({
                   className={`${styles.dropdown__option} ${styles.dropdown__option__create}`}
                   onClick={handleCreateNew}
                 >
-                  + {miniTranslates?.[currentLang as keyof typeof miniTranslates] || 'en'}
+                  {extraDropLabel ? '' : '+'}{' '}
+                  {extraDropLabel || miniTranslates?.[currentLang as keyof typeof miniTranslates] || 'en'}
                 </div>
               )}
               {options.length > 0 && <div className={styles.dropdown__separator} />}
@@ -363,6 +367,7 @@ interface SortableRowProps {
   id: string
   extra__rows__grid?: string
   rowIndex: number
+  extraDropLabels?: string[]
   row: string[]
   titles: string[]
   extraTextareaClass?: string
@@ -404,6 +409,7 @@ const SortableRow = ({
   rowIndex,
   extraTextareaClass,
   row,
+  extraDropLabels,
   titles,
   inputsInRowCount,
   extraClass,
@@ -468,6 +474,7 @@ const SortableRow = ({
           value={value}
           useClip={!lastElemet}
           options={options}
+          extraDropLabel={extraDropLabels?.[inputIndex]}
           useOneWord={useOneWord}
           extraDropClass={(lastElemet && styles.extraDropClass) || ''}
           placeholder={titles[inputIndex] || 'Выберите значение'}
@@ -594,6 +601,7 @@ const SortableRow = ({
 
 const RowsInputs = ({
   titles,
+
   initialRowsCount = 1,
   inputsInRowCount = 2,
   maxRows = 10,
@@ -635,7 +643,8 @@ const RowsInputs = ({
   extraPlaceholder,
   extra__rows__grid,
   useOneWord = false,
-  maxLength
+  maxLength,
+  extraDropLabels
 }: RowsInputsProps) => {
   const t = useTranslations('rowsImputs')
   const [rows, setRows] = useState<string[][]>(() => {
@@ -879,6 +888,7 @@ const RowsInputs = ({
 
                 return (
                   <SortableRow
+                    extraDropLabels={extraDropLabels?.[rowIndex]}
                     useOneWord={useOneWord}
                     totalRows={currentRows.length}
                     useNewTheme={useNewTheme}
