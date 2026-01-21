@@ -459,6 +459,7 @@ const CreateCardPriceElements = memo<CreateCardPriceElementsProps>(
             </div>
             <div style={{display: 'flex', flexDirection: 'column', width: '100%', gap: '20px'}}>
               <RowsInputs
+                onlyNumbersList={[[true, false, false, false]]}
                 useNewTheme
                 inputsInRowCount={3}
                 extraDropLabels={[['Укажите цену']]}
