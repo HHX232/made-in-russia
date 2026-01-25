@@ -24,6 +24,8 @@ export const ChatWindow: React.FC = () => {
   const dispatch = useAppDispatch()
   const activeChat = useAppSelector((state) => state.chat.activeChat)
   const currentUserId = useAppSelector((state) => state.user.user?.id)
+  const currentUserRole = useAppSelector((state) => state.user.user?.role)
+  const isAdmin = currentUserRole === 'Admin'
   const messages = useAppSelector((state) => (activeChat ? state.chat.messages[activeChat.id] || [] : []))
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
@@ -311,7 +313,7 @@ export const ChatWindow: React.FC = () => {
 
   return (
     <div className={styles.chatWindow}>
-      <ChatHeader chat={activeChat} />
+      <ChatHeader chat={activeChat} isAdmin={isAdmin} />
 
       <div className={styles.messagesContainer} ref={messagesContainerRef}>
         {isLoading ? (

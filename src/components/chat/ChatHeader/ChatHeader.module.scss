@@ -89,3 +89,16 @@
   color: #5f6368;
   font-size: 12px;
 }
+
+.participantLink {
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background-color: #0047ba;
+    color: white;
+  }
+}

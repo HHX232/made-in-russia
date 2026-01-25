@@ -2,7 +2,7 @@
 
 import {useEffect, useState, useRef, useMemo, useCallback} from 'react'
 import {useDispatch} from 'react-redux'
-import {useTranslations} from 'next-intl'
+import {useTranslations, useLocale} from 'next-intl'
 import {useSearchParams} from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/MainComponents/Header/Header'
@@ -17,6 +17,7 @@ import styles from './ChatsPage.module.scss'
 
 export const ChatsPage = () => {
   const t = useTranslations('chat')
+  const locale = useLocale()
   const dispatch = useDispatch()
   const searchParams = useSearchParams()
   const {chats, activeChat} = useTypedSelector((state) => state.chat)
@@ -57,7 +58,7 @@ export const ChatsPage = () => {
       dispatch(setActiveChat(null))
     }
 
-    loadChats()
+    loadChats(activeChatIdRef.current)
 
     const subscribeToNotifications = () => {
       if (!webSocketClient.client || !webSocketClient.client.connected) {
@@ -88,7 +89,7 @@ export const ChatsPage = () => {
 
     return () => {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [locale])
 
   const loadChats = async (preserveActiveChatId?: number) => {
     try {
