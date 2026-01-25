@@ -6,13 +6,15 @@ import {chatService} from '@/services/chat/chat.service'
 import styles from './MessageItem.module.scss'
 import {useTranslations} from 'next-intl'
 import {useLocale} from 'next-intl'
+import Link from 'next/link'
 
 interface MessageItemProps {
   message: ChatMessage
   isOwnMessage: boolean
+  isAdmin?: boolean
 }
 
-export const MessageItem: React.FC<MessageItemProps> = ({message, isOwnMessage}) => {
+export const MessageItem: React.FC<MessageItemProps> = ({message, isOwnMessage, isAdmin = false}) => {
   const t = useTranslations('chat')
   const locale = useLocale()
   const [translatedText, setTranslatedText] = useState<string | null>(null)
@@ -85,13 +87,36 @@ export const MessageItem: React.FC<MessageItemProps> = ({message, isOwnMessage})
 
   const displayText = showOriginal ? message.content : translatedText || message.content
 
+  const profileLink = `/data-vendor/${message.senderId}`
+
   return (
     <div className={`${styles.messageItem} ${isOwnMessage ? styles.own : styles.other}`}>
-      {!isOwnMessage && message.senderAvatar && (
-        <img src={message.senderAvatar} alt={message.senderName} className={styles.avatar} />
-      )}
+      {!isOwnMessage ? (
+        <>
+          {isAdmin ? (
+            <>
+              {message.senderAvatar && (
+                <Link href={profileLink} className={styles.avatarLink}>
+                  <img src={message.senderAvatar} alt={message.senderName} className={styles.avatar} />
+                </Link>
+              )}
+            </>
+          ) : (
+            message.senderAvatar && (
+              <img src={message.senderAvatar} alt={message.senderName} className={styles.avatar} />
+            )
+          )}
+        </>
+      ) : null}
       <div className={styles.messageContent}>
-        {!isOwnMessage && <div className={styles.senderName}>{message.senderName}</div>}
+        {!isOwnMessage &&
+          (isAdmin ? (
+            <Link href={profileLink} className={styles.senderNameLink}>
+              {message.senderName}
+            </Link>
+          ) : (
+            <div className={styles.senderName}>{message.senderName}</div>
+          ))}
         <div className={styles.text}>{displayText}</div>
         {message.attachments && message.attachments.length > 0 && (
           <div className={styles.attachments}>
@@ -118,7 +143,13 @@ export const MessageItem: React.FC<MessageItemProps> = ({message, isOwnMessage})
               disabled={isTranslating}
               title={translatedText ? (showOriginal ? t('showTranslation') : t('showOriginal')) : t('translate')}
             >
-              {isTranslating ? '...' : translatedText ? (showOriginal ? '🌐' : '↩️') : '🌐'}
+              {isTranslating ? (
+                '...'
+              ) : translatedText && !showOriginal ? (
+                '↩️'
+              ) : (
+                <img src='/iconsNew/translate.svg' alt='translate' className={styles.translateIcon} />
+              )}
             </button>
           )}
         </div>
