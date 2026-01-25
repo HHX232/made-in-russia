@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import {DeliveryMethod, Product} from '@/services/products/product.types'
-import {memo, useId, useState} from 'react'
+import {memo, useEffect, useId, useState} from 'react'
 import Image, {StaticImageData} from 'next/image'
 import styles from './card.module.scss'
 import {createPriceWithDot} from '@/utils/createPriceWithDot'
@@ -220,7 +220,9 @@ const Card = memo<ICardProps>(
         })
       }
     }
-
+    useEffect(() => {
+      console.log(fullProduct)
+    }, [fullProduct])
     const deleteProduct = async (id: string) => {
       const loadingToast = toast.loading('processing...')
       try {
@@ -390,7 +392,7 @@ const Card = memo<ICardProps>(
                     </span>
                   )}
                   <span className={`${styles.product_card__price_real}`}>
-                    {fixProductPrice(discountedPrice)} {priceCurrency}
+                    {`${priceCurrency.toLocaleLowerCase() !== 'no_currency' ? fixProductPrice(discountedPrice) : t('no_currency')} ${priceCurrency.toLocaleLowerCase() !== 'no_currency' ? priceCurrency : ''}`}
                   </span>
                 </div>
 

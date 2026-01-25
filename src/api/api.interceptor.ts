@@ -18,21 +18,17 @@ instance.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${accessToken || 'stasic smotri'}`
   }
 
-  if (!config.headers?.['Accept-Language']) {
-    const currentHeaders = getContentType()
-    // Use Object.assign or set individual headers instead of spread operator
-    Object.assign(config.headers, currentHeaders)
-  }
+  const currentHeaders = getContentType()
+  config.headers['Accept-Language'] = currentHeaders['Accept-Language']
 
   return config
 })
 
 // Добавляем интерцептор для axiosClassic тоже
 axiosClassic.interceptors.request.use((config) => {
-  if (!config.headers?.['Accept-Language']) {
-    const currentHeaders = getContentType()
-    Object.assign(config.headers, currentHeaders)
-  }
+  // Всегда обновляем Accept-Language на основе текущего языка
+  const currentHeaders = getContentType()
+  config.headers['Accept-Language'] = currentHeaders['Accept-Language']
 
   return config
 })

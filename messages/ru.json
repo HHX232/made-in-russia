@@ -735,6 +735,7 @@
     }
   },
   "CardComponent": {
+    "no_currency": "Цена по запросу",
     "defaultTitle": "Выгодный товар",
     "cardImageAlt": "Изображение товара",
     "saw": "Просмотреть",
@@ -1206,6 +1207,8 @@
     "login":"Вход"
   },
   "ReviewsToNumber":{
+    "priceOnRequest": "Цена по запросу",
+    
     "count":"{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}}",
     "mg": "{count, plural, one {{count} миллиграмм} few {{count} миллиграмма} many {{count} миллиграмм} other {{count} миллиграмма}}",
     "g": "{count, plural, one {{count} грамм} few {{count} грамма} many {{count} грамм} other {{count} грамма}}",

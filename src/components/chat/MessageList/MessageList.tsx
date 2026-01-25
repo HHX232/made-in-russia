@@ -11,11 +11,18 @@ interface MessageListProps {
 
 export const MessageList: React.FC<MessageListProps> = ({messages}) => {
   const currentUserId = useAppSelector((state) => state.user.user?.id)
+  const currentUserRole = useAppSelector((state) => state.user.user?.role)
+  const isAdmin = currentUserRole === 'Admin'
 
   return (
     <div className={styles.messageList}>
       {messages.map((message) => (
-        <MessageItem key={message.id} message={message} isOwnMessage={message.senderId === currentUserId} />
+        <MessageItem
+          key={message.id}
+          message={message}
+          isOwnMessage={message.senderId === currentUserId}
+          isAdmin={isAdmin}
+        />
       ))}
     </div>
   )

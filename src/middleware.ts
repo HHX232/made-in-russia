@@ -5,6 +5,7 @@ import Cookies from 'js-cookie'
 import {User} from './services/users.types'
 import ICardFull from './services/card/card.types'
 import {securityMiddleware} from './middlewares/security'
+import {handleCategoryRedirect} from './middlewares/categoryRedirect'
 
 // Функция для определения локали по поддомену
 const getLocaleFromSubdomain = (hostname: string): string | null => {
@@ -150,6 +151,11 @@ export async function middleware(request: NextRequest) {
     const {pathname} = request.nextUrl
 
     const pathnameWithoutLocale = pathname.replace(/^\/(ru|en|zh|hi)/, '') || '/'
+
+    const categoryRedirect = handleCategoryRedirect(request, pathnameWithoutLocale)
+    if (categoryRedirect) {
+      return categoryRedirect
+    }
 
     console.log('🌐 Реальный hostname из headers:', hostnameFromHeaders)
     // Определяем локаль по поддомену

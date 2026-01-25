@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <path d="M2 4C2 2.89543 2.89543 2 4 2H12L8 12L12 22H4C2.89543 22 2 21.1046 2 20V4Z" fill="#4285F4"/>
+  <text x="5" y="14" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white">G</text>
+
+  <path d="M12 2H20C21.1046 2 22 2.89543 22 4V20C22 21.1046 21.1046 22 20 22H12L16 12L12 2Z" fill="#E8EAED"/>
+
+  <path d="M14 8H20M17 8V10M14.5 10C14.5 10 15 12 17 14C19 12 19.5 10 19.5 10M15 16L17 14L19 16" stroke="#5F6368" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

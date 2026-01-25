@@ -713,6 +713,7 @@
     }
   },
   "CardComponent": {
+    "no_currency": "अनुरोध पर मूल्य",
     "defaultTitle": "बढ़िया सौदा",
     "cardImageAlt": "उत्पाद छवि",
     "saw": "देखें",
@@ -1184,6 +1185,7 @@
       "login": "लॉगिन"
     },
   "ReviewsToNumber":{
+    "priceOnRequest": "अनुरोध पर मूल्य",
     "count":"{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}",
     "mg": "{count, plural, one {{count} मिलीग्राम} other {{count} मिलीग्राम}}",
     "g": "{count, plural, one {{count} ग्राम} other {{count} ग्राम}}",

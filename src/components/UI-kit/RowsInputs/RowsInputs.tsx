@@ -33,8 +33,11 @@ interface ButtonSizes {
 }
 
 interface RowsInputsProps {
+  onlyCharsList?: boolean[][]
+  onlyNumbersList?: boolean[][]
   hideTitles?: boolean
   useNewTheme?: boolean
+  extraDropLabels?: string[][]
   useOneWord?: boolean
   extra__rows__grid?: string
   specialCreatePlaceholder?: string
@@ -116,6 +119,26 @@ interface DropdownProps {
   useClipOnSpan?: boolean
   extraDropClass?: string
   useOneWord?: boolean
+  extraDropLabel?: string | undefined
+}
+
+interface DropdownProps {
+  value: string
+  options: string[]
+  placeholder: string
+  onSelect: (value: string) => void
+  hasError?: boolean
+  inputId: string
+  canCreateNew?: boolean
+  showClear?: boolean
+  readOnly?: boolean
+  useClip?: boolean
+  useClipOnSpan?: boolean
+  extraDropClass?: string
+  useOneWord?: boolean
+  extraDropLabel?: string | undefined
+  onlyNumbers?: boolean
+  onlyChars?: boolean
 }
 
 const Dropdown = ({
@@ -131,7 +154,10 @@ const Dropdown = ({
   useClip = true,
   extraDropClass,
   useClipOnSpan = false,
-  useOneWord = false
+  useOneWord = false,
+  extraDropLabel,
+  onlyNumbers = false,
+  onlyChars = false
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [customValue, setCustomValue] = useState('')
@@ -165,6 +191,18 @@ const Dropdown = ({
     const isInViewport = rect.top >= 0 && rect.left >= 0 && rect.bottom <= viewportHeight && rect.right <= viewportWidth
 
     return isInViewport
+  }
+
+  const validateInput = (inputValue: string): string => {
+    if (onlyNumbers) {
+      // Разрешаем только цифры, точку и минус (для отрицательных чисел и десятичных)
+      return inputValue.replace(/[^\d.-]/g, '')
+    }
+    if (onlyChars) {
+      // Разрешаем только буквы и пробелы
+      return inputValue.replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, '')
+    }
+    return inputValue
   }
 
   useEffect(() => {
@@ -238,30 +276,27 @@ const Dropdown = ({
     setIsCreatingNew(true)
   }
 
-  const handleCustomSubmit = () => {
+  const handleCustomInputChange = (newValue: string) => {
     if (readOnly) return
-    if (customValue.trim()) {
-      onSelect(customValue.trim())
-      setIsOpen(false)
-      setIsCreatingNew(false)
-      setCustomValue('')
-    }
+    const validatedValue = validateInput(newValue)
+    setCustomValue(validatedValue)
+    // Сразу устанавливаем значение в родительский компонент
+    onSelect(validatedValue)
   }
 
   const handleCustomKeyPress = (e: React.KeyboardEvent) => {
     if (readOnly) return
     if (e.key === 'Enter') {
       e.preventDefault()
-      handleCustomSubmit()
+      // Закрываем dropdown и сбрасываем режим создания
+      setIsOpen(false)
+      setIsCreatingNew(false)
+      setCustomValue('')
     } else if (e.key === 'Escape') {
       setIsCreatingNew(false)
       setCustomValue('')
+      onSelect('') // Сбрасываем значение при отмене
     }
-  }
-
-  const handleCustomCancel = () => {
-    setIsCreatingNew(false)
-    setCustomValue('')
   }
 
   return (
@@ -302,43 +337,16 @@ const Dropdown = ({
                     extraClass={styles.extra__text__input}
                     placeholder={t('enterValue')}
                     currentValue={customValue}
-                    onSetValue={(value) => setCustomValue(value)}
+                    onSetValue={handleCustomInputChange}
                   />
-                  <div
-                    style={{
-                      display: 'flex',
-                      width: '100%',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginTop: '5px'
-                    }}
-                    className={styles.dropdown__custom__buttons}
-                  >
-                    <button
-                      style={{margin: '0 auto'}}
-                      type='button'
-                      onClick={handleCustomSubmit}
-                      className={styles.dropdown__custom__button__confirm}
-                      disabled={!customValue.trim()}
-                    >
-                      ✓
-                    </button>
-                    <button
-                      style={{margin: '0 auto'}}
-                      type='button'
-                      onClick={handleCustomCancel}
-                      className={styles.dropdown__custom__button__cancel}
-                    >
-                      ✕
-                    </button>
-                  </div>
                 </div>
               ) : (
                 <div
                   className={`${styles.dropdown__option} ${styles.dropdown__option__create}`}
                   onClick={handleCreateNew}
                 >
-                  + {miniTranslates?.[currentLang as keyof typeof miniTranslates] || 'en'}
+                  {extraDropLabel ? '' : '+'}{' '}
+                  {extraDropLabel || miniTranslates?.[currentLang as keyof typeof miniTranslates] || 'en'}
                 </div>
               )}
               {options.length > 0 && <div className={styles.dropdown__separator} />}
@@ -363,11 +371,14 @@ interface SortableRowProps {
   id: string
   extra__rows__grid?: string
   rowIndex: number
+  extraDropLabels?: string[]
   row: string[]
   titles: string[]
   extraTextareaClass?: string
   inputsInRowCount: number
   idNames?: string[]
+  onlyCharsList?: boolean[]
+  onlyNumbersList: boolean[]
   extraPlaceholder?: string
   extraClass?: string
   isLastRow: boolean
@@ -404,6 +415,7 @@ const SortableRow = ({
   rowIndex,
   extraTextareaClass,
   row,
+  extraDropLabels,
   titles,
   inputsInRowCount,
   extraClass,
@@ -432,7 +444,9 @@ const SortableRow = ({
   totalRows,
   extra__rows__grid,
   useOneWord,
-  maxLength
+  maxLength,
+  onlyCharsList,
+  onlyNumbersList
 }: SortableRowProps) => {
   const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id})
   const shouldShowDnD = showDnDButton && !isOnlyShow && totalRows > 1
@@ -468,6 +482,9 @@ const SortableRow = ({
           value={value}
           useClip={!lastElemet}
           options={options}
+          extraDropLabel={extraDropLabels?.[inputIndex]}
+          onlyChars={onlyCharsList?.[inputIndex]}
+          onlyNumbers={onlyNumbersList?.[inputIndex]}
           useOneWord={useOneWord}
           extraDropClass={(lastElemet && styles.extraDropClass) || ''}
           placeholder={titles[inputIndex] || 'Выберите значение'}
@@ -594,6 +611,7 @@ const SortableRow = ({
 
 const RowsInputs = ({
   titles,
+
   initialRowsCount = 1,
   inputsInRowCount = 2,
   maxRows = 10,
@@ -635,7 +653,10 @@ const RowsInputs = ({
   extraPlaceholder,
   extra__rows__grid,
   useOneWord = false,
-  maxLength
+  maxLength,
+  extraDropLabels,
+  onlyCharsList,
+  onlyNumbersList
 }: RowsInputsProps) => {
   const t = useTranslations('rowsImputs')
   const [rows, setRows] = useState<string[][]>(() => {
@@ -879,6 +900,7 @@ const RowsInputs = ({
 
                 return (
                   <SortableRow
+                    extraDropLabels={extraDropLabels?.[rowIndex]}
                     useOneWord={useOneWord}
                     totalRows={currentRows.length}
                     useNewTheme={useNewTheme}
@@ -886,6 +908,8 @@ const RowsInputs = ({
                     extra__rows__grid={extra__rows__grid}
                     extraTextareaClass={extraTextareaClass}
                     inputsTheme={inputsTheme}
+                    onlyNumbersList={onlyNumbersList?.[rowIndex] || []}
+                    onlyCharsList={onlyCharsList?.[rowIndex] || []}
                     extraButtonMinusClass={extraButtonMinusClass}
                     inputType={inputType}
                     id={rowId}

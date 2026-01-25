@@ -7,9 +7,10 @@ import Link from 'next/link'
 
 interface ChatHeaderProps {
   chat: Chat
+  isAdmin?: boolean
 }
 
-export const ChatHeader: React.FC<ChatHeaderProps> = ({chat}) => {
+export const ChatHeader: React.FC<ChatHeaderProps> = ({chat, isAdmin = false}) => {
   const t = useTranslations('chat')
 
   const formatPrice = (price: number | null) => {
@@ -70,11 +71,22 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({chat}) => {
         </div>
       </Link>
       <div className={styles.participants}>
-        {participantsWithLabels.map((p) => (
-          <span key={p.id} className={styles.participant} title={p.userName}>
-            {p.label}
-          </span>
-        ))}
+        {participantsWithLabels.map((p) =>
+          isAdmin ? (
+            <Link
+              key={p.id}
+              href={`/data-vendor/${p.userId}`}
+              className={`${styles.participant} ${styles.participantLink}`}
+              title={p.userName}
+            >
+              {p.label}: {p.userName}
+            </Link>
+          ) : (
+            <span key={p.id} className={styles.participant} title={p.userName}>
+              {p.label}
+            </span>
+          )
+        )}
       </div>
     </div>
   )

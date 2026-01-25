@@ -712,6 +712,7 @@
     }
   },
   "CardComponent": {
+      "no_currency": "Price on request",
     "defaultTitle": "Great deal",
     "cardImageAlt": "Product image",
     "saw": "View",
@@ -1185,6 +1186,8 @@
   },
 
   "ReviewsToNumber":{
+    "priceOnRequest": "Price on request",
+  
     "count":"{count, plural, one {{count} review} other {{count} reviews}}",
     "mg": "{count, plural, one {{count} milligram} other {{count} milligrams}}",
     "g": "{count, plural, one {{count} gram} other {{count} grams}}",
