@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {axiosClassic} from '@/api/api.interceptor'
 import HomePage from '@/components/pages/HomePage/HomePage'
 import {getCurrentLocale} from '@/lib/locale-detection'
 import {Product} from '@/services/products/product.types'
@@ -29,18 +28,22 @@ interface IGeneralResponse {
 }
 
 async function getInitialData(locale: string) {
-  const {data} = await axiosClassic.get<IGeneralResponse>('/general', {
+  const newData: IGeneralResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL_SECOND}/api/v1/general`, {
     headers: {
       'Accept-Language': locale,
-      'x-locale': locale
+      'x-locale': locale,
+      'x-accept-language': locale
     }
-  })
-  return data
+  }).then((res) => res.json())
+
+  return newData
 }
 
 export default async function Home() {
   const locale = await getCurrentLocale()
+
   const {products, categories, advertisements} = await getInitialData(locale)
+  console.log('getCurrentLocale', locale, advertisements)
   return (
     <HomePage
       ads={advertisements ?? []}

@@ -279,13 +279,40 @@ interface PromoProps {
 }
 
 const extractOrderNumber = (text: string): {order: number; cleanText: string} => {
-  const match = text.match(/^(\d+)\s+(.*)/)
-  if (match) {
+  // Словарь китайских цифр
+  const chineseNumbers: {[key: string]: number} = {
+    一: 1,
+    二: 2,
+    三: 3,
+    四: 4,
+    五: 5,
+    六: 6,
+    七: 7,
+    八: 8,
+    九: 9,
+    十: 10,
+    零: 0,
+    〇: 0
+  }
+
+  // Проверяем арабские цифры в начале с пробелом или без
+  const arabicMatch = text.match(/^(\d+)\s*(.*)/)
+  if (arabicMatch && arabicMatch[2]) {
     return {
-      order: parseInt(match[1], 10),
-      cleanText: match[2]
+      order: parseInt(arabicMatch[1], 10),
+      cleanText: arabicMatch[2]
     }
   }
+
+  // Проверяем китайские цифры в начале
+  const firstChar = text.charAt(0)
+  if (firstChar in chineseNumbers) {
+    return {
+      order: chineseNumbers[firstChar],
+      cleanText: text.substring(1)
+    }
+  }
+
   return {
     order: Infinity,
     cleanText: text
