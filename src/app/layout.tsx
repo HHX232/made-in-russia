@@ -23,6 +23,7 @@ import FavoritesProvider from '@/providers/FavoritesProvider'
 import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
 import {Viewport} from 'next'
+import YandexMetrika from '@/components/YandexMetrika/YandexMetrika'
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const locale = await getCurrentLocale()
@@ -31,6 +32,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
     <>
       <html lang={locale}>
         <body style={{overflowY: 'auto', height: '100%', position: 'relative'}}>
+          <YandexMetrika />
           <NProgressProvider />
 
           <DefaultProvider>
