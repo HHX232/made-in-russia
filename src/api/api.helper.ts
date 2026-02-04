@@ -48,7 +48,7 @@ export const getContentType = (overrideLang?: string) => {
   return headers
 }
 
-type TAllLang = 'ru' | 'en' | 'zh'
+type TAllLang = 'ru' | 'en' | 'zh' | 'hi'
 
 export const getAbsoluteLanguage = async (): Promise<TAllLang> => {
   const isServer = typeof window === 'undefined'

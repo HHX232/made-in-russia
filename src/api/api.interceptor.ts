@@ -19,16 +19,32 @@ instance.interceptors.request.use((config) => {
   }
 
   const currentHeaders = getContentType()
-  config.headers['Accept-Language'] = currentHeaders['Accept-Language']
+
+  if (!config.headers['Accept-Language'] && currentHeaders['Accept-Language']) {
+    config.headers['Accept-Language'] = currentHeaders['Accept-Language']
+  }
+
+  if (!config.headers['x-language'] && currentHeaders['Accept-Language']) {
+    config.headers['x-language'] = currentHeaders['Accept-Language']
+  }
 
   return config
 })
 
-// Добавляем интерцептор для axiosClassic тоже
 axiosClassic.interceptors.request.use((config) => {
-  // Всегда обновляем Accept-Language на основе текущего языка
   const currentHeaders = getContentType()
-  config.headers['Accept-Language'] = currentHeaders['Accept-Language']
+
+  config.headers['Content-Type'] = currentHeaders['Content-Type']
+  config.headers['X-Requested-With'] = currentHeaders['X-Requested-With']
+  config.headers['Accept'] = currentHeaders['Accept']
+
+  if (!config.headers['Accept-Language'] && currentHeaders['Accept-Language']) {
+    config.headers['Accept-Language'] = currentHeaders['Accept-Language']
+  }
+
+  if (!config.headers['x-language'] && currentHeaders['Accept-Language']) {
+    config.headers['x-language'] = currentHeaders['Accept-Language']
+  }
 
   return config
 })

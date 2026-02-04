@@ -27,10 +27,6 @@ const ACCEPT_LANGUAGE_MAP: Record<string, SupportedLocale> = {
   'hi-IN': 'hi'
 }
 
-/**
- * Универсальная функция для определения текущей локали
- * Работает как на сервере (middleware, API routes), так и на клиенте
- */
 export async function getCurrentLocale(): Promise<SupportedLocale> {
   if (typeof window === 'undefined') {
     // Серверная среда - используем серверные импорты

@@ -12,6 +12,7 @@ export default async function CategoriesPage() {
   let categories
   try {
     categories = await CategoriesService.getAll(locale || 'en')
+    console.log('all categories', locale, categories)
   } catch {
     categories = undefined
   }
