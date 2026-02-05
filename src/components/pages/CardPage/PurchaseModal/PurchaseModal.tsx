@@ -46,6 +46,10 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
 }) => {
   const {user} = useTypedSelector((state) => state.user)
   const t = useTranslations('CardPage.PurchaseModal')
+  const t2 = useTranslations('ReviewsToNumber')
+
+  // Проверяем, является ли цена "По запросу"
+  const isNullPrice = prices[0]?.currency?.toLocaleLowerCase() === 'no_currency'
 
   // Функция для очистки дублирующихся кодов стран
   const cleanPhoneNumber = (phone: string): string => {
@@ -318,7 +322,10 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               {priceCalculation.selectedPrice.from !== priceCalculation.selectedPrice.to && (
                 <div className={styles.priceRange}>
                   {t('priceInfo.range')}: {priceCalculation.selectedPrice.from}
-                  {priceCalculation.selectedPrice.to === 999999 ? '+' : `-${priceCalculation.selectedPrice.to}`}{' '}
+                  {!isNullPrice && priceCalculation.selectedPrice.to === 999999
+                    ? '+'
+                    : `-${priceCalculation.selectedPrice.to}`}{' '}
+                  {isNullPrice && t2('priceOnRequest')}
                   {priceCalculation.selectedPrice.unit}
                 </div>
               )}
@@ -328,12 +335,16 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
                 <div className={styles.priceValue}>
                   {priceCalculation.hasDiscount && (
                     <span className={styles.originalPrice}>
-                      {priceCalculation.selectedPrice.originalPrice.toString()}
+                      {!isNullPrice && priceCalculation.selectedPrice.originalPrice.toString()}
+                      {isNullPrice && t2('priceOnRequest')}
                     </span>
                   )}
-                  <span className={styles.currentPrice}>{priceCalculation.unitPrice.toString()}</span>
+                  <span className={styles.currentPrice}>
+                    {!isNullPrice && priceCalculation.unitPrice.toString()}
+                    {isNullPrice && t2('priceOnRequest')}
+                  </span>
                   <span className={styles.currency}>
-                    {priceCalculation.selectedPrice.currency}/{priceCalculation.selectedPrice.unit}
+                    {!isNullPrice && priceCalculation.selectedPrice.currency}/{priceCalculation.selectedPrice.unit}
                   </span>
                 </div>
               </div>
@@ -341,7 +352,8 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
               <div className={styles.totalPrice}>
                 <span className={styles.totalLabel}>{t('priceInfo.totalPrice')}:</span>
                 <span className={styles.totalValue}>
-                  {priceCalculation.totalPrice.toString()} {priceCalculation.selectedPrice.currency}
+                  {!isNullPrice && priceCalculation.totalPrice.toString()} {isNullPrice && t2('priceOnRequest')}
+                  {!isNullPrice && priceCalculation.selectedPrice.currency}
                 </span>
               </div>
             </div>

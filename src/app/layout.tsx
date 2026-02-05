@@ -23,16 +23,68 @@ import FavoritesProvider from '@/providers/FavoritesProvider'
 import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
 import {Viewport} from 'next'
-import YandexMetrika from '@/components/YandexMetrika/YandexMetrika'
+import Script from 'next/script'
+import {headers} from 'next/headers'
+
+const PRIVATE_ROUTES = ['/vendor', '/profile', '/admin']
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const locale = await getCurrentLocale()
   const messages = await getMessages()
+
+  // Получаем текущий путь
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || ''
+
+  // Проверяем, является ли роут приватным
+  const isPrivateRoute = PRIVATE_ROUTES.some((route) => pathname === route || pathname.startsWith(route + '/'))
+
   return (
     <>
       <html lang={locale}>
         <body style={{overflowY: 'auto', height: '100%', position: 'relative'}}>
-          <YandexMetrika />
+          {/* Yandex Metrika - только для публичных страниц */}
+          {!isPrivateRoute && (
+            <>
+              <Script
+                id='yandex-metrika'
+                strategy='afterInteractive'
+                dangerouslySetInnerHTML={{
+                  __html: `
+                    (function(m,e,t,r,i,k,a){
+                      m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+                      m[i].l=1*new Date();
+                      for (var j = 0; j < document.scripts.length; j++) {
+                        if (document.scripts[j].src === r) { return; }
+                      }
+                      k=e.createElement(t),a=e.getElementsByTagName(t)[0],
+                      k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+                    })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=106611450', 'ym');
+
+                    ym(106611450, 'init', {
+                      ssr: true,
+                      webvisor: true,
+                      clickmap: true,
+                      ecommerce: "dataLayer",
+                      accurateTrackBounce: true,
+                      trackLinks: true
+                    });
+                  `
+                }}
+              />
+
+              <noscript>
+                <div>
+                  <img
+                    src='https://mc.yandex.ru/watch/106611450'
+                    style={{position: 'absolute', left: '-9999px'}}
+                    alt=''
+                  />
+                </div>
+              </noscript>
+            </>
+          )}
+
           <NProgressProvider />
 
           <DefaultProvider>
@@ -49,7 +101,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
                 theme={'dark'}
                 position={'top-right'}
                 duration={3500}
-              />{' '}
+              />
             </NextIntlClientProvider>
           </DefaultProvider>
 
@@ -93,18 +145,13 @@ export async function generateMetadata() {
           type: 'image/png'
         }
       ],
-
-      // Другие важные форматы
       other: [
-        // Для старых устройств
         {
           rel: 'apple-touch-icon-precomposed',
           url: '/apple-touch-icon-c-144x144.png',
           sizes: '144x144',
           type: 'image/png'
         },
-
-        // Для Windows
         {
           rel: 'msapplication-TileImage',
           url: '/mstile-c-144x144.png'
@@ -114,8 +161,6 @@ export async function generateMetadata() {
           url: '/mstile-c-150x150.png',
           sizes: '150x150'
         },
-
-        // Базовые favicon
         {
           rel: 'icon',
           type: 'image/png',
@@ -128,11 +173,6 @@ export async function generateMetadata() {
           sizes: '32x32',
           url: '/favicon-c-32x32.png'
         }
-        // {
-        //   rel: 'icon',
-        //   type: 'image/x-icon',
-        //   url: '/favicon.ico'
-        // }
       ]
     }
   }

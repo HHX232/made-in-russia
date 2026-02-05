@@ -123,6 +123,9 @@ const publicRoutes = ['/login', '/register']
 export async function middleware(request: NextRequest) {
   console.log('🚀 Middleware запущен для пути:', request.nextUrl.pathname)
 
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', request.nextUrl.pathname)
+  console.log('x-pathname', request.nextUrl.pathname)
   const hostnameFromHeaders = request.headers.get('host')
   console.log('🥰 Реальный hostname из headers:', hostnameFromHeaders)
   const acceptLanguageFromRequest = request.headers.get('accept-language')
