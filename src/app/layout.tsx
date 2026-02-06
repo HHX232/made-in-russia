@@ -32,18 +32,15 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   const locale = await getCurrentLocale()
   const messages = await getMessages()
 
-  // Получаем текущий путь
   const headersList = await headers()
   const pathname = headersList.get('x-pathname') || ''
 
-  // Проверяем, является ли роут приватным
   const isPrivateRoute = PRIVATE_ROUTES.some((route) => pathname === route || pathname.startsWith(route + '/'))
 
   return (
     <>
       <html lang={locale}>
         <body style={{overflowY: 'auto', height: '100%', position: 'relative'}}>
-          {/* Yandex Metrika - только для публичных страниц */}
           {!isPrivateRoute && (
             <>
               <Script

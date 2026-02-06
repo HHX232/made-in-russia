@@ -93,7 +93,6 @@
 
 // const withNextIntl = createNextIntlPlugin()
 // export default withNextIntl(withBundleAnalyzer(nextConfig))
-
 import type {NextConfig} from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
 import bundleAnalyzer from '@next/bundle-analyzer'
@@ -140,10 +139,10 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://exporteru.b-cdn.net https://telegram.org https://www.google.com https://www.gstatic.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://exporteru.b-cdn.net https://telegram.org https://www.google.com https://www.gstatic.com https://mc.yandex.ru",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https: https://exporteru.b-cdn.net https://telegram.org",
-              "connect-src 'self' http://localhost:8080 ws://localhost:8080 https://exporteru.com https://en.exporteru.com https://cn.exporteru.com https://exporteru.b-cdn.net https://www.google.com https://www.gstatic.com",
+              "img-src 'self' data: blob: https: https://exporteru.b-cdn.net https://telegram.org https://mc.yandex.ru",
+              "connect-src 'self' http://localhost:8080 ws://localhost:8080 https://exporteru.com https://en.exporteru.com https://cn.exporteru.com https://exporteru.b-cdn.net https://www.google.com https://www.gstatic.com https://mc.yandex.ru",
               "frame-src 'self' https://telegram.org https://oauth.telegram.org https://www.google.com https://www.gstatic.com",
               "font-src 'self' https://fonts.gstatic.com"
             ].join('; ')
