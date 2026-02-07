@@ -23,8 +23,9 @@ import FavoritesProvider from '@/providers/FavoritesProvider'
 import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
 import {Viewport} from 'next'
-import Script from 'next/script'
 import {headers} from 'next/headers'
+import YandexMetrikaContainer from '@/components/YandexMetrikaInitializer/YandexMetrikaContainer/YandexMetrikaContainer'
+import {Suspense} from 'react'
 
 const PRIVATE_ROUTES = ['/vendor', '/profile', '/admin']
 
@@ -41,46 +42,13 @@ export default async function RootLayout({children}: {children: React.ReactNode}
     <>
       <html lang={locale}>
         <body style={{overflowY: 'auto', height: '100%', position: 'relative'}}>
-          {!isPrivateRoute && (
-            <>
-              <Script
-                id='yandex-metrika'
-                strategy='afterInteractive'
-                dangerouslySetInnerHTML={{
-                  __html: `
-                    (function(m,e,t,r,i,k,a){
-                      m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-                      m[i].l=1*new Date();
-                      for (var j = 0; j < document.scripts.length; j++) {
-                        if (document.scripts[j].src === r) { return; }
-                      }
-                      k=e.createElement(t),a=e.getElementsByTagName(t)[0],
-                      k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-                    })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=106611450', 'ym');
-
-                    ym(106611450, 'init', {
-                      ssr: true,
-                      webvisor: true,
-                      clickmap: true,
-                      ecommerce: "dataLayer",
-                      accurateTrackBounce: true,
-                      trackLinks: true
-                    });
-                  `
-                }}
-              />
-
-              <noscript>
-                <div>
-                  <img
-                    src='https://mc.yandex.ru/watch/106611450'
-                    style={{position: 'absolute', left: '-9999px'}}
-                    alt=''
-                  />
-                </div>
-              </noscript>
-            </>
-          )}
+          <head>
+            {!isPrivateRoute && (
+              <Suspense>
+                <YandexMetrikaContainer enabled />
+              </Suspense>
+            )}
+          </head>
 
           <NProgressProvider />
 
