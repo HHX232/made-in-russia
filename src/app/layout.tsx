@@ -24,8 +24,10 @@ import {WebSocketProvider} from '@/providers/WebSocketProvider'
 import LatestViewsProvider from '@/providers/LatestViewsProvider'
 import {Viewport} from 'next'
 import {headers} from 'next/headers'
-import YandexMetrikaContainer from '@/components/YandexMetrikaInitializer/YandexMetrikaContainer/YandexMetrikaContainer'
+
+import {YMInitializer} from 'react-yandex-metrika'
 import {Suspense} from 'react'
+import {YM_COUNTER_ID} from '@/constants/yandex'
 
 const PRIVATE_ROUTES = ['/vendor', '/profile', '/admin']
 
@@ -36,20 +38,13 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   const headersList = await headers()
   const pathname = headersList.get('x-pathname') || ''
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const isPrivateRoute = PRIVATE_ROUTES.some((route) => pathname === route || pathname.startsWith(route + '/'))
 
   return (
     <>
       <html lang={locale}>
         <body style={{overflowY: 'auto', height: '100%', position: 'relative'}}>
-          <head>
-            {!isPrivateRoute && (
-              <Suspense>
-                <YandexMetrikaContainer enabled />
-              </Suspense>
-            )}
-          </head>
-
           <NProgressProvider />
 
           <DefaultProvider>
@@ -71,6 +66,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           </DefaultProvider>
 
           <div id='modal_portal'></div>
+          <Suspense>
+            <YMInitializer accounts={[YM_COUNTER_ID]} options={{webvisor: true}} version='2' />
+          </Suspense>
         </body>
       </html>
     </>
