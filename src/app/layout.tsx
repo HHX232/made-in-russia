@@ -25,9 +25,7 @@ import LatestViewsProvider from '@/providers/LatestViewsProvider'
 import {Viewport} from 'next'
 import {headers} from 'next/headers'
 
-import {YMInitializer} from 'react-yandex-metrika'
-import {Suspense} from 'react'
-import {YM_COUNTER_ID} from '@/constants/yandex'
+import YandexMetrika from '@/components/YandexMetrika/YandexMetrika'
 
 const PRIVATE_ROUTES = ['/vendor', '/profile', '/admin']
 
@@ -66,9 +64,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           </DefaultProvider>
 
           <div id='modal_portal'></div>
-          <Suspense>
-            <YMInitializer accounts={[YM_COUNTER_ID]} options={{webvisor: true}} version='2' />
-          </Suspense>
+          <YandexMetrika />
         </body>
       </html>
     </>
