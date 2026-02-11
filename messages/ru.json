@@ -16,12 +16,12 @@
     "catalog": "Каталог",
     "searchLoading": "Поиск...",
     "noResultsCatalog": "По вашему запросу ничего не найдено",
-    "showAllResults":"Показать все",
-    "hideAllResults":"Свернуть",
-    "searchError":"Ошибка при поиске"
+    "showAllResults": "Показать все",
+    "hideAllResults": "Свернуть",
+    "searchError": "Ошибка при поиске"
   },
-  "dropdown":{
-    "enterValue":"Значение..."
+  "dropdown": {
+    "enterValue": "Значение..."
   },
   "Footer": {
     "ugreement": "Пользовательское соглашение",
@@ -53,8 +53,8 @@
     "loading": "Загрузка..."
   },
   "RegisterUserPage": {
-    "iSuccessWith":"Я согласен с пользовательским соглашением и ",
-    "policy":"политикой конфиденциальности",
+    "iSuccessWith": "Я согласен с пользовательским соглашением и ",
+    "policy": "политикой конфиденциальности",
     "register": "Далее",
     "userAlreadyRegistered": "Пользователь уже зарегистрирован",
     "userAlreadyRegisteredText": "Пользователь {email} уже зарегистрирован.",
@@ -101,7 +101,6 @@
     "next": "Далее",
     "emailNext": "Проверка электронной почты",
     "confirm": "Подтвердить",
-
     "inn": "ИНН компании",
     "innPlaceholder": "Введите ИНН компании",
     "innError": "ИНН должен содержать минимум 9 цифр",
@@ -111,35 +110,30 @@
     "companyNamePlaceholder": "Введите название компании...",
     "companyNameError": "Название компании должно содержать минимум 3 символа",
     "companyTel": "Контактный телефон",
-
     "corporateEmail": "Корпоративная почта",
     "corporateEmailPlaceholder": "Введите корпоративную почту...",
     "categories": "Категории товаров",
     "categoriesPlaceholder": "Выберите категории товаров...",
     "categoriesSubtext": "Выберите основные категории товаров, с которыми работает ваша компания",
     "chooseAccountType": "Выберите тип аккаунта",
-      "selectRoleDescription": "Выберите подходящую роль для регистрации",
-      "buyerDescription": "Ищу товары  для покупки",
-      "vendorDescription": "Предлагаю товары для продажи",
-      "canChangeType": "Вы сможете изменить тип аккаунта позже в настройках",
-       "Azerbaijan": "Азербайджан",
-  "Armenia": "Армения",
-
-  "Egypt": "Египет",
-  "India": "Индия",
-  "Iran": "Иран",
-
-  "Kyrgyzstan": "Киргизия",
-
-  "Moldova": "Молдавия",
-  "UAE": "ОАЭ",
-
-  "Tajikistan": "Таджикистан",
-  "Turkmenistan": "Туркменистан",
-  "Turkey": "Турция",
-  "Uzbekistan": "Узбекистан",
-  "SouthAfrica": "ЮАР",
-  "Other": "Другое"
+    "selectRoleDescription": "Выберите подходящую роль для регистрации",
+    "buyerDescription": "Ищу товары  для покупки",
+    "vendorDescription": "Предлагаю товары для продажи",
+    "canChangeType": "Вы сможете изменить тип аккаунта позже в настройках",
+    "Azerbaijan": "Азербайджан",
+    "Armenia": "Армения",
+    "Egypt": "Египет",
+    "India": "Индия",
+    "Iran": "Иран",
+    "Kyrgyzstan": "Киргизия",
+    "Moldova": "Молдавия",
+    "UAE": "ОАЭ",
+    "Tajikistan": "Таджикистан",
+    "Turkmenistan": "Туркменистан",
+    "Turkey": "Турция",
+    "Uzbekistan": "Узбекистан",
+    "SouthAfrica": "ЮАР",
+    "Other": "Другое"
   },
   "MinimalHeader": {
     "category": "Категории",
@@ -164,49 +158,45 @@
     "becomePartner": "Стать партнером"
   },
   "ProfilePage": {
-    
-  "azerbaijan": "Азербайджан",
-  "Azerbaijan": "Азербайджан",
-  "armenia": "Армения",
-  "Armenia": "Армения",
-
-  "Belarus": "Беларусь",
-  "egypt": "Египет",
-  "Egypt": "Египет",
-  "india": "Индия",
-  "India": "Индия",
-  "iran": "Иран",
-  "Iran": "Иран",
-  "Kazakhstan": "Казахстан",
-  "kyrgyzstan": "Киргизия",
-  "Kyrgyzstan": "Киргизия",
-  "China": "Китай",
-  "moldova": "Молдавия",
-  "Moldova": "Молдавия",
-  "uae": "ОАЭ",
-  "UAE": "ОАЭ",
-  "Uae": "ОАЭ",
-  "Russia": "Россия",
-  "tajikistan": "Таджикистан",
-  "Tajikistan": "Таджикистан",
-  "turkmenistan": "Туркменистан",
-  "Turkmenistan": "Туркменистан",
-  "turkey": "Турция",
-  "Turkey": "Турция",
-  "uzbekistan": "Узбекистан",
-  "Uzbekistan": "Узбекистан",
-  "southafrica": "ЮАР",
-  "SouthAfrica": "ЮАР",
-  "other": "Другое",
-  "Other": "Другое",
-
+    "azerbaijan": "Азербайджан",
+    "Azerbaijan": "Азербайджан",
+    "armenia": "Армения",
+    "Armenia": "Армения",
+    "Belarus": "Беларусь",
+    "egypt": "Египет",
+    "Egypt": "Египет",
+    "india": "Индия",
+    "India": "Индия",
+    "iran": "Иран",
+    "Iran": "Иран",
+    "Kazakhstan": "Казахстан",
+    "kyrgyzstan": "Киргизия",
+    "Kyrgyzstan": "Киргизия",
+    "China": "Китай",
+    "moldova": "Молдавия",
+    "Moldova": "Молдавия",
+    "uae": "ОАЭ",
+    "UAE": "ОАЭ",
+    "Uae": "ОАЭ",
+    "Russia": "Россия",
+    "tajikistan": "Таджикистан",
+    "Tajikistan": "Таджикистан",
+    "turkmenistan": "Туркменистан",
+    "Turkmenistan": "Туркменистан",
+    "turkey": "Турция",
+    "Turkey": "Турция",
+    "uzbekistan": "Узбекистан",
+    "Uzbekistan": "Узбекистан",
+    "southafrica": "ЮАР",
+    "SouthAfrica": "ЮАР",
+    "other": "Другое",
+    "Other": "Другое",
     "personalCabinet": "Личный кабинет",
     "personalData": "Личные данные",
     "registrationDate": "Дата регистрации",
     "myReviews": "Мои отзывы",
     "myChats": "Мои чаты",
     "noFavorites": "Нет избранных товаров",
-
     "belarus": "Беларусь",
     "беларусь": "Беларусь",
     "kazakhstan": "Казахстан",
@@ -215,7 +205,6 @@
     "китай": "Китай",
     "russia": "Россия",
     "россия": "Россия",
-
     "createAvatarSuccess": "Успешно создан аватар!",
     "deleteAvatarSuccess": "Успешно удален аватар!",
     "createAvatarError": "Ошибка создания аватара!",
@@ -254,9 +243,8 @@
     "deletedError": "Ошибка удаления!",
     "deleting": "Удаление...",
     "defaultError": "Ошибка!",
-
     "ProfileForm": {
-      "savePassword":"Сохранить пароль",
+      "savePassword": "Сохранить пароль",
       "address": "Адрес",
       "addressPlaceholder": "Введите адрес",
       "belarus": "Беларусь",
@@ -286,12 +274,10 @@
       "innError": "ИНН должен содержать минимум 9 цифр",
       "congratulations": "Поздравляем!"
     },
-
     "ProfilePageBottomDelivery": {
       "title": " Мои комментарии",
       "noReviews": "Нет отзывов"
     },
-
     "ProfilePageBottomHelp": {
       "title": " Частые вопросы",
       "service": "Сервис и помощь",
@@ -301,12 +287,10 @@
       "questNotFoundValue": "Просмотрите раздел позже, или напишите в тех поддержку!"
     }
   },
-
   "ProfilePageBottomDelivery": {
     "title": " Мои комментарии",
     "noReviews": "Нет отзывов"
   },
-
   "ProfilePageBottomHelp": {
     "title": " Частые вопросы",
     "service": "Сервис и помощь",
@@ -319,13 +303,13 @@
     "addRow": "Добавить строку"
   },
   "VendorPage": {
-    "notHave":"Описание не добавлено",
-    "NotHave":"Описание не добавлено",
-    "errorCreatingQuestion":"Ошибка создания вопроса",
-    "saving":"Сохранить",
-    "mediaSavedSuccessfully":"Медиа успешно сохранен",
-    "noWriten":"Не заполнено",
-    "deletedSuccess":"Успешно удалено!",
+    "notHave": "Описание не добавлено",
+    "NotHave": "Описание не добавлено",
+    "errorCreatingQuestion": "Ошибка создания вопроса",
+    "saving": "Сохранить",
+    "mediaSavedSuccessfully": "Медиа успешно сохранен",
+    "noWriten": "Не заполнено",
+    "deletedSuccess": "Успешно удалено!",
     "myAccount": "Мой профиль",
     "registrationDate": "Дата регистрации",
     "enterLogin": "Логин",
@@ -341,13 +325,12 @@
     "rating": "Рейтинг",
     "description": "Описание",
     "photos": "Фото",
-    "noPhotos":" Фото не добавлены",
+    "noPhotos": " Фото не добавлены",
     "contacts": "Контакты",
     "mySessions": "Мои сессии",
     "reviews": "Отзывы",
     "faq": "Частые вопросы",
     "createProduct": "Создать товар",
-
     "deviceType": "Тип устройства",
     "browser": "Браузер",
     "os": "Операционная система",
@@ -355,7 +338,6 @@
     "wannaGetOut": "Вы уверены что хотите выйти?",
     "logout": "Выйти",
     "cancel": "Отмена",
-
     "descriptionPlaceholder": "Описание компании",
     "invalidEmail": "Электронная почта должна содержать символы @ и .",
     "invalidPhone": "Номер телефона должен содержать не менее 7 символов",
@@ -404,7 +386,7 @@
       "fields": {
         "name": "Имя",
         "email": "Email",
-         "firstName": "Введите ваше имя",
+        "firstName": "Введите ваше имя",
         "comment": "Комментарий к заказу",
         "phone": "Номер телефона",
         "quantity": "Количество"
@@ -434,11 +416,11 @@
       }
     },
     "CardTopPage": {
-        "minimalValue":"Минимальный объем поставки",
+      "minimalValue": "Минимальный объем поставки",
       "reviews": {
-    "count": "{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}"
-  },
-      "error":"Ошибка!",
+        "count": "{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}"
+      },
+      "error": "Ошибка!",
       "from": "от",
       "errorUpdatingFavorites": "Ошибка при обновлении избранного. Зарегистрируйтесь или войдите в свой аккаунт",
       "daysBeforeDiscountExpires": "дней до завершения акции",
@@ -468,7 +450,6 @@
       "byNow": "Купить сейчас",
       "deliveryMethodsInfo": "Информация о доставке",
       "packagingOptions": "Варианты упаковки",
-
       "technicalCharacteristics": "Технические характеристики:",
       "companyDescription": "Информация о поставщике",
       "locationInfo": "Информация о местонахождении",
@@ -489,21 +470,20 @@
       "days": "{count, plural, one {день} few {дня} many {дней} other {дней}}"
     },
     "CardBottomPage": {
-      "noQuestions":"Вопросы и быстрые ответы на них пока не добавлены",
-      "similar":"Похожие товары",
-      "similarNotFound":"Похожие товары не найдены",
-      "send":"Отправить",
+      "noQuestions": "Вопросы и быстрые ответы на них пока не добавлены",
+      "similar": "Похожие товары",
+      "similarNotFound": "Похожие товары не найдены",
+      "send": "Отправить",
       "success": "Успешно!",
       "successPublished": "Отзыв отправлен на модерацию",
       "errorPublished": "Ошибка при публикации отзыва",
-      "newDayerror":"Вы должны быть авторизованы и возраст вашего аккаунта должен составлять более 7 дней",
+      "newDayerror": "Вы должны быть авторизованы и возраст вашего аккаунта должен составлять более 7 дней",
       "errorPublishedText": "Перед публикаией необходимо связаться с продавцом, и чтобы возраст аккаунта составлял не менее 7 дней",
       "revues": "Отзывы",
       "questions": "Вопросы",
       "noComments": "Пока нет отзывов. Станьте первым!",
       "pleaseCreateComment": "Пожалуйста, расскажите о вашем опыте с этим товаром",
       "writeCommentPlaceholder": "Напишите отзыв...",
-
       "defaultError": "Ошибка",
       "fileUploadErrorType": "Файл {fileName} имеет неподдерживаемый формат",
       "fileUploadErrorTypeSubtext": "Файл имеет неподдерживаемый формат",
@@ -515,11 +495,11 @@
     }
   },
   "CardTopPage": {
-      "minimalValue":"Минимальный объем поставки",
+    "minimalValue": "Минимальный объем поставки",
     "reviews": {
-    "count": "{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}"
-  },
-    "error":"Ошибка!",
+      "count": "{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}"
+    },
+    "error": "Ошибка!",
     "from": "от",
     "errorUpdatingFavorites": "Ошибка при обновлении избранного. Зарегистрируйтесь или войдите в свой аккаунт",
     "daysBeforeDiscountExpires": "дней до завершения акции",
@@ -562,21 +542,20 @@
     "days": "{count, plural, one {день} few {дня} many {дней} other {дня}}"
   },
   "CardBottomPage": {
-     "noQuestions":"Вопросы и быстрые ответы на них пока не добавлены",
-     "similar":"Похожие товары",
-     "similarNotFound":"Похожие товары не найдены",
-    "send":"Отправить",
+    "noQuestions": "Вопросы и быстрые ответы на них пока не добавлены",
+    "similar": "Похожие товары",
+    "similarNotFound": "Похожие товары не найдены",
+    "send": "Отправить",
     "success": "Успешно!",
     "successPublished": "Отзыв отправлен на модерацию",
     "errorPublished": "Ошибка при публикации отзыва",
-    "newDayerror":"Вы должны быть авторизованы и возраст вашего аккаунта должен составлять более 7 дней",
+    "newDayerror": "Вы должны быть авторизованы и возраст вашего аккаунта должен составлять более 7 дней",
     "errorPublishedText": "Перед публикаией необходимо связаться с продавцом, и чтобы возраст аккаунта составлял не менее 7 дней",
     "revues": "Отзывы",
     "questions": "Вопросы",
     "noComments": "Пока нет отзывов. Станьте первым!",
     "pleaseCreateComment": "Пожалуйста, расскажите о вашем опыте с этим товаром",
     "writeCommentPlaceholder": "Напишите отзыв...",
-
     "defaultError": "Ошибка",
     "fileUploadErrorType": "Файл {fileName} имеет неподдерживаемый формат",
     "fileUploadErrorTypeSubtext": "Файл имеет неподдерживаемый формат",
@@ -591,18 +570,18 @@
     "mainText": "Страница не найдена или удалена. Проверьте правильность URL или вернитесь на главную."
   },
   "createCard": {
-    "minimalVolumeError":"Необходимо указать минимальный объем",
+    "minimalVolumeError": "Необходимо указать минимальный объем",
     "deliveryTermsError": "Необходимо добавить минимум 1 вариант поставки",
-  "titleError": "Необходимо указать наименование товара",
-  "categoryError": "Необходимо выбрать категорию товара",
-  "minimumImages": "Необходимо добавить минимум 1 изображение товара",
-  "onePriceError": "Необходимо указать стоимость товара, валюту, единицу измерения",
-  "characteristicError": "Необходимо добавить минимум 1 характеристику",
-  "descriptionError": "Необходимо добавить описание товара",
-  "priceValueRequired": "Цена товара не может быть пустой",
-  "priceUnitRequired": "Единица измерения товара не может быть пустой",
-  "priceCurrencyRequired": "Валюта товара не может быть пустой",
-  "priceFieldsRequired": "Необходимо заполнить все поля цены",
+    "titleError": "Необходимо указать наименование товара",
+    "categoryError": "Необходимо выбрать категорию товара",
+    "minimumImages": "Необходимо добавить минимум 1 изображение товара",
+    "onePriceError": "Необходимо указать стоимость товара, валюту, единицу измерения",
+    "characteristicError": "Необходимо добавить минимум 1 характеристику",
+    "descriptionError": "Необходимо добавить описание товара",
+    "priceValueRequired": "Цена товара не может быть пустой",
+    "priceUnitRequired": "Единица измерения товара не может быть пустой",
+    "priceCurrencyRequired": "Валюта товара не может быть пустой",
+    "priceFieldsRequired": "Необходимо заполнить все поля цены",
     "mg": "миллиграмм",
     "g": "грамм",
     "kg": "килограмм",
@@ -667,7 +646,7 @@
     "unit": "Единица измерения",
     "characteristickTable": "Таблица описания и характеристик",
     "title": "Возможные виды доставки",
-    "characteristicTitle":"Наименования характеристики",
+    "characteristicTitle": "Наименования характеристики",
     "characteristic": "Характеристика",
     "characteristicPlaceholder": " Характеристика, ТУ, ГОСТ, ОСТ и тд",
     "infoAboutPrices": "Информация о скидке",
@@ -680,7 +659,7 @@
     "packagingOptions": "Варианты упаковки",
     "price": "Цена",
     "rail": "Железнодорожная доставка",
-    "auto": "Автомобильная доставка", 
+    "auto": "Автомобильная доставка",
     "sea": "Морская доставка",
     "air": "Авиа доставка"
   },
@@ -750,7 +729,7 @@
     "PENDING": "Модерация",
     "APPROVED": "Одобрено",
     "REJECTED": "Отклонено",
-    "errorUpdatingFavorites":"Ошибка при обновлении избранного. Зарегистрируйтесь или войдите в свой аккаунт"
+    "errorUpdatingFavorites": "Ошибка при обновлении избранного. Зарегистрируйтесь или войдите в свой аккаунт"
   },
   "Privacy": {
     "back": " Вернуться назад",
@@ -937,7 +916,6 @@
     "clearAll": "Очистить всё",
     "ready": "Готово"
   },
-
   "ResetPasswordPage": {
     "title": "Восстановление пароля",
     "confirmationTitle": "Подтверждение",
@@ -1033,7 +1011,7 @@
   },
   "MetaTags": {
     "MainPage": {
-      "title":"Экспорт из России: Сырьевые товары, с/х продукция и ресурсы | Exporteru",
+      "title": "Экспорт из России: Сырьевые товары, с/х продукция и ресурсы | Exporteru",
       "firstText": "B2B-платформа для поиска российского сырья, агропродукции и природных ресурсов. Прямые контакты с производителями зерна, леса, металлов, удобрений и энергоносителей. Организация экспорта",
       "secondText": "сервис для экспорта товаров из России. Предлагаем поддержку на всех этапах: подбор контрагентов, переговоры, заключение сделок. Работаем напрямую с поставщиками и международными покупателями"
     }
@@ -1046,8 +1024,7 @@
     "companies": "Компании",
     "inn": "ИНН",
     "experience": "Опыт",
-  "years": "{count, plural, one {год} few {года} many {лет} other {лет}}"
-
+    "years": "{count, plural, one {год} few {года} many {лет} other {лет}}"
   },
   "PopularCategories": {
     "more": "Подробнее",
@@ -1117,18 +1094,19 @@
     "reset": "Сбросить"
   },
   "CardsCatalogNew": {
-    "nohavecards":"Товары данной категории еще не добавлены",
+    "nohavecards": "Товары данной категории еще не добавлены",
     "notFound": "Не найдено",
     "popularProducts": "Популярные товары",
     "viewAll": "Смотреть все"
   },
   "CardsCatalogWithPagination": {
-    "noHaveVendorCards":"Товары продавца еще не добавлены",
+    "noHaveVendorCards": "Товары продавца еще не добавлены",
     "notFound": "Товары не найдены",
     "prevPage": "Предыдущая страница",
     "nextPage": "Следующая страница",
     "loadingCards": "Загрузка товаров...",
-    "viewAll": "Смотреть все"
+    "viewAll": "Смотреть все",
+    "createNewCard": "Добавить свой товар"
   },
   "LoginSlider": {
     "slide1Title": "Проверенные поставщики по всей России",
@@ -1142,7 +1120,7 @@
   },
   "CreateImagesInput": {
     "makePreview": "Сделать главной",
-    "preview":"Главная фотография",
+    "preview": "Главная фотография",
     "uploadError": "Ошибка загрузки данных",
     "invalidFileTypes": "Недопустимые типы файлов: {fileNames}",
     "fileSizeExceeded": "Превышен размер файлов (макс. {maxSizeMB} МБ): {fileNames}",
@@ -1160,56 +1138,55 @@
     "invalidFileTypes": "Недопустимые типы файлов: {fileNames}",
     "fileSizeExceeded": "Превышен размер файлов (макс. {maxSizeMB} МБ): {fileNames}"
   },
-  "previewText":{
+  "previewText": {
     "makePreview": "Сделать главной",
-    "preview":"Главная фотография"
+    "preview": "Главная фотография"
   },
-  "vendorCatalog":{
-    "vendorProducts":"Товары продавца"
+  "vendorCatalog": {
+    "vendorProducts": "Товары продавца"
   },
-  "VendorMeta":{
-    "title":"Экспортер"
+  "VendorMeta": {
+    "title": "Экспортер"
   },
-  "metaTitles":{
-    "login":"Вход",
-    "register":"Регистрация",
-    "profile":"Профиль",
-    "create":"Создать товар",
-    "about":"О нас",
-    "help":"Поддержка"
+  "metaTitles": {
+    "login": "Вход",
+    "register": "Регистрация",
+    "profile": "Профиль",
+    "create": "Создать товар",
+    "about": "О нас",
+    "help": "Поддержка"
   },
-  "mdEditor":{
-    "hidePrev":"Скрыть предпросмотр",
-    "showPrev":"Предпросмотр",
-    "horizontalLine":"Горизонтальная линия",
-    "numerickList":"Нумерованный список",
-    "markList":"Маркированный список",
-    "underline":"Подчеркнутый",
-    "curs":"Курсив",
-    "bold":"Жирный",
-    "preview":"Предпросмотр",
-    "previewPlaceholder":"Здесь появится предпросмотр...",
-    "dontHaveDescr":"Описание не добавлено"
+  "mdEditor": {
+    "hidePrev": "Скрыть предпросмотр",
+    "showPrev": "Предпросмотр",
+    "horizontalLine": "Горизонтальная линия",
+    "numerickList": "Нумерованный список",
+    "markList": "Маркированный список",
+    "underline": "Подчеркнутый",
+    "curs": "Курсив",
+    "bold": "Жирный",
+    "preview": "Предпросмотр",
+    "previewPlaceholder": "Здесь появится предпросмотр...",
+    "dontHaveDescr": "Описание не добавлено"
   },
-  "comment":{
-    "approved":"Подтверждено",
-    "pending":"Модерация",
-    "rejected":"Отклонено",
-    "success":"Успешно удалено!",
-    "error":"Ошибка при удалении!"
+  "comment": {
+    "approved": "Подтверждено",
+    "pending": "Модерация",
+    "rejected": "Отклонено",
+    "success": "Успешно удалено!",
+    "error": "Ошибка при удалении!"
   },
-  "cropEditor":{
-    "sbros":"Сбросить",
-    "cancel":"Отмена",
-    "submit":"Применить"
+  "cropEditor": {
+    "sbros": "Сбросить",
+    "cancel": "Отмена",
+    "submit": "Применить"
   },
-  "MobileNavigation":{
-    "login":"Вход"
+  "MobileNavigation": {
+    "login": "Вход"
   },
-  "ReviewsToNumber":{
+  "ReviewsToNumber": {
     "priceOnRequest": "Цена по запросу",
-    
-    "count":"{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}}",
+    "count": "{count, plural, one {{count} отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}}",
     "mg": "{count, plural, one {{count} миллиграмм} few {{count} миллиграмма} many {{count} миллиграмм} other {{count} миллиграмма}}",
     "g": "{count, plural, one {{count} грамм} few {{count} грамма} many {{count} грамм} other {{count} грамма}}",
     "kg": "{count, plural, one {{count} килограмм} few {{count} килограмма} many {{count} килограмм} other {{count} килограмма}}",

@@ -452,14 +452,28 @@ const CardsCatalog: FC<CardsCatalogProps> = ({
           )}
           <div
             style={{
-              padding: '60px 20px',
+              padding: '60px 20px 20px 20px',
               textAlign: 'center',
               fontSize: '18px',
               color: '#666',
-              marginBottom: '50px'
+              marginBottom: '1px'
             }}
           >
             {t('nohavecards')}
+          </div>
+          <div
+            style={{
+              padding: '0px 20px 20px 20px',
+              textAlign: 'center',
+              fontSize: '18px',
+              color: '#666',
+              fontWeight: '500',
+              marginBottom: '50px'
+            }}
+          >
+            <Link style={{fontSize: '18px'}} href='/create-card'>
+              {t('createNewCard')}
+            </Link>
           </div>
         </div>
       </section>

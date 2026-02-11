@@ -17,7 +17,16 @@ export default function YandexMetrika() {
 
   return (
     <Suspense fallback={null}>
-      <YMInitializer accounts={[YM_COUNTER_ID]} options={{webvisor: true}} version='2' />
+      <YMInitializer
+        accounts={[YM_COUNTER_ID]}
+        options={{
+          webvisor: true,
+          clickmap: true,
+          trackLinks: true,
+          curateTrackBounce: true
+        }}
+        version='2'
+      />
     </Suspense>
   )
 }
