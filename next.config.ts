@@ -139,17 +139,16 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://yastatic.net https://exporteru.b-cdn.net https://telegram.org https://www.google.com https://www.gstatic.com https://*.yandex.ru https://*.yandex.com https://*.yandex.net",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https: https://exporteru.b-cdn.net https://telegram.org https://*.yandex.ru https://*.yandex.com https://*.yandex.net",
-              "connect-src 'self' http://localhost:8080 ws://localhost:8080 wss://localhost:8080 https://exporteru.com https://en.exporteru.com https://cn.exporteru.com https://exporteru.b-cdn.net https://www.google.com https://www.gstatic.com https://*.yandex.ru https://*.yandex.com https://*.yandex.net wss://*.yandex.ru wss://*.yandex.com wss://*.yandex.net",
-              "frame-src 'self' https://telegram.org https://oauth.telegram.org https://www.google.com https://www.gstatic.com",
-              "font-src 'self' https://fonts.gstatic.com",
-              "media-src 'self' https:",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://yastatic.net https://exporteru.b-cdn.net https://telegram.org https://www.google.com https://www.gstatic.com https://*.yandex.ru https://*.yandex.com https://*.yandex.net http://*.yandex.ru http://*.yandex.com http://*.yandex.net",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.yandex.ru https://*.yandex.com https://*.yandex.net",
+              "img-src 'self' data: blob: https: https://exporteru.b-cdn.net https://telegram.org https://*.yandex.ru https://*.yandex.com https://*.yandex.net http://*.yandex.ru http://*.yandex.com http://*.yandex.net",
+              "connect-src 'self' http://localhost:8080 ws://localhost:8080 wss://localhost:8080 https://exporteru.com https://en.exporteru.com https://cn.exporteru.com https://exporteru.b-cdn.net https://www.google.com https://www.gstatic.com https://*.yandex.ru https://*.yandex.com https://*.yandex.net http://*.yandex.ru http://*.yandex.com http://*.yandex.net ws://*.yandex.ru ws://*.yandex.com ws://*.yandex.net wss://*.yandex.ru wss://*.yandex.com wss://*.yandex.net",
+              "frame-src 'self' https://telegram.org https://oauth.telegram.org https://www.google.com https://www.gstatic.com https://*.yandex.ru https://*.yandex.com https://*.yandex.net",
+              "font-src 'self' https://fonts.gstatic.com https://*.yandex.ru https://*.yandex.com https://*.yandex.net",
+              "media-src 'self' https: https://*.yandex.ru https://*.yandex.com https://*.yandex.net http://*.yandex.ru http://*.yandex.com http://*.yandex.net",
               "object-src 'none'",
               "base-uri 'self'",
-              "form-action 'self'",
-              'upgrade-insecure-requests'
+              "form-action 'self'"
             ].join('; ')
           }
         ]
