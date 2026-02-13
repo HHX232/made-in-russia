@@ -139,14 +139,12 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://exporteru.b-cdn.net https://telegram.org https://www.google.com https://www.gstatic.com https://mc.yandex.ru",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://yastatic.net https://exporteru.b-cdn.net https://telegram.org https://www.google.com https://www.gstatic.com https://*.yandex.ru https://*.yandex.com https://*.yandex.net",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https: https://exporteru.b-cdn.net https://telegram.org https://mc.yandex.ru",
-              // Добавьте wss:// для WebSocket соединений
-              "connect-src 'self' http://localhost:8080 ws://localhost:8080 wss://localhost:8080 https://exporteru.com https://en.exporteru.com https://cn.exporteru.com https://exporteru.b-cdn.net https://www.google.com https://www.gstatic.com https://mc.yandex.ru wss://mc.yandex.ru",
+              "img-src 'self' data: blob: https: https://exporteru.b-cdn.net https://telegram.org https://*.yandex.ru https://*.yandex.com https://*.yandex.net",
+              "connect-src 'self' http://localhost:8080 ws://localhost:8080 wss://localhost:8080 https://exporteru.com https://en.exporteru.com https://cn.exporteru.com https://exporteru.b-cdn.net https://www.google.com https://www.gstatic.com https://*.yandex.ru https://*.yandex.com https://*.yandex.net wss://*.yandex.ru wss://*.yandex.com wss://*.yandex.net",
               "frame-src 'self' https://telegram.org https://oauth.telegram.org https://www.google.com https://www.gstatic.com",
               "font-src 'self' https://fonts.gstatic.com",
-              // Также можно добавить эти директивы для полноты
               "media-src 'self' https:",
               "object-src 'none'",
               "base-uri 'self'",
