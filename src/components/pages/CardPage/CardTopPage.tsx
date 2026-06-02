@@ -322,6 +322,28 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     // Проверяем, является ли цена "По запросу"
     const isNullPrice = cardData?.prices[0]?.currency?.toLocaleLowerCase() === 'no_currency'
 
+    const VALID_UNIT_SLUGS = new Set([
+      'mg',
+      'g',
+      'kg',
+      'c',
+      't',
+      'ml',
+      'l',
+      'hl',
+      'm3',
+      'm2',
+      'cm2',
+      'pcs',
+      'pack',
+      'm',
+      'cm',
+      'pair',
+      'set',
+      'box',
+      'bag'
+    ])
+
     const getMinimalValueText = () => {
       const quantity = cardData?.minimumOrderQuantity || 1
       const unitSlug = cardData?.prices[0]?.unitSlug
@@ -330,11 +352,11 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
         return quantity.toString()
       }
 
-      try {
-        return t2(unitSlug, {count: quantity})
-      } catch (error) {
+      if (!VALID_UNIT_SLUGS.has(unitSlug)) {
         return `${quantity} ${unitSlug}`
       }
+
+      return t2(unitSlug, {count: quantity})
     }
 
     return (

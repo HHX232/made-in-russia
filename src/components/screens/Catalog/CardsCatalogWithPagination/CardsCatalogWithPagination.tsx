@@ -594,7 +594,7 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
 
         {/* Пагинация */}
         {!showSkeleton && !isEmpty && totalPages > 1 && (
-          <div className={styled.catalog__pagination}>
+          <div className={`${styled.catalog__pagination} ${isForAdmin ? styled.catalog__pagination_admin : ''}`}>
             <div className={styled.exp_pagination}>
               <button
                 onClick={handlePrevClick}

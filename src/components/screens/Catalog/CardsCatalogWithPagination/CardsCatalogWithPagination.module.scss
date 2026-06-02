@@ -393,6 +393,10 @@
   padding-top: 28px;
   margin-bottom: 36px;
 
+  &.catalog__pagination_admin {
+    padding-top: 70px;
+  }
+
   @media (max-width: 576px) {
     padding-top: 20px;
     margin-bottom: 24px;
