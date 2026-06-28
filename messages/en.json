@@ -15,17 +15,17 @@
     "catalog": "Catalog",
     "searchLoading": "Searching...",
     "noResultsCatalog": "Nothing found for your query",
-     "showAllResults": "Show all", 
+    "showAllResults": "Show all",
     "hideAllResults": "Collapse",
-     "searchError": "Search error"
+    "searchError": "Search error"
   },
   "Footer": {
     "ugreement": "User Agreement",
     "privacy": "Privacy Policy",
     "contact": "Contact us"
   },
-  "dropdown":{
-     "enterValue": "Value..."
+  "dropdown": {
+    "enterValue": "Value..."
   },
   "Filters": {
     "filtersTitle": "Filters",
@@ -53,26 +53,26 @@
   },
   "RegisterUserPage": {
     "Azerbaijan": "Azerbaijan",
-  "Armenia": "Armenia",
-  "Egypt": "Egypt",
-  "India": "India",
-  "Iran": "Iran",
-  "Kyrgyzstan": "Kyrgyzstan",
-  "Moldova": "Moldova",
-  "UAE": "United Arab Emirates",
-  "Tajikistan": "Tajikistan",
-  "Turkmenistan": "Turkmenistan",
-  "Turkey": "Turkey",
-  "Uzbekistan": "Uzbekistan",
-  "SouthAfrica": "South Africa",
-  "Other": "Other",
-     "chooseAccountType": "Choose account type",
-      "selectRoleDescription": "Select the appropriate role for registration",
-      "buyerDescription": "Looking for products to buy",
-      "vendorDescription": "Offering products for sale",
-      "canChangeType": "You can change your account type later in settings",
+    "Armenia": "Armenia",
+    "Egypt": "Egypt",
+    "India": "India",
+    "Iran": "Iran",
+    "Kyrgyzstan": "Kyrgyzstan",
+    "Moldova": "Moldova",
+    "UAE": "United Arab Emirates",
+    "Tajikistan": "Tajikistan",
+    "Turkmenistan": "Turkmenistan",
+    "Turkey": "Turkey",
+    "Uzbekistan": "Uzbekistan",
+    "SouthAfrica": "South Africa",
+    "Other": "Other",
+    "chooseAccountType": "Choose account type",
+    "selectRoleDescription": "Select the appropriate role for registration",
+    "buyerDescription": "Looking for products to buy",
+    "vendorDescription": "Offering products for sale",
+    "canChangeType": "You can change your account type later in settings",
     "iSuccessWith": "I agree with the user agreement and ",
-"policy": "privacy policy",
+    "policy": "privacy policy",
     "register": "Next",
     "adressPlaceholder": "Enter address...",
     "adress": "Company address",
@@ -157,38 +157,38 @@
     "becomePartner": "Become a partner"
   },
   "ProfilePage": {
-  "azerbaijan": "Azerbaijan",
-  "Azerbaijan": "Azerbaijan",
-  "armenia": "Armenia",
-  "Armenia": "Armenia",
-  "Belarus": "Belarus",
-  "egypt": "Egypt",
-  "Egypt": "Egypt",
-  "india": "India",
-  "India": "India",
-  "iran": "Iran",
-  "Iran": "Iran",
-  "Kazakhstan": "Kazakhstan",
-  "kyrgyzstan": "Kyrgyzstan",
-  "Kyrgyzstan": "Kyrgyzstan",
-  "China": "China",
-  "moldova": "Moldova",
-  "Moldova": "Moldova",
-  "uae": "United Arab Emirates",
-  "UAE": "United Arab Emirates",
-  "Russia": "Russia",
-  "tajikistan": "Tajikistan",
-  "Tajikistan": "Tajikistan",
-  "turkmenistan": "Turkmenistan",
-  "Turkmenistan": "Turkmenistan",
-  "turkey": "Turkey",
-  "Turkey": "Turkey",
-  "uzbekistan": "Uzbekistan",
-  "Uzbekistan": "Uzbekistan",
-  "southafrica": "South Africa",
-  "SouthAfrica": "South Africa",
-  "other": "Other",
-  "Other": "Other",
+    "azerbaijan": "Azerbaijan",
+    "Azerbaijan": "Azerbaijan",
+    "armenia": "Armenia",
+    "Armenia": "Armenia",
+    "Belarus": "Belarus",
+    "egypt": "Egypt",
+    "Egypt": "Egypt",
+    "india": "India",
+    "India": "India",
+    "iran": "Iran",
+    "Iran": "Iran",
+    "Kazakhstan": "Kazakhstan",
+    "kyrgyzstan": "Kyrgyzstan",
+    "Kyrgyzstan": "Kyrgyzstan",
+    "China": "China",
+    "moldova": "Moldova",
+    "Moldova": "Moldova",
+    "uae": "United Arab Emirates",
+    "UAE": "United Arab Emirates",
+    "Russia": "Russia",
+    "tajikistan": "Tajikistan",
+    "Tajikistan": "Tajikistan",
+    "turkmenistan": "Turkmenistan",
+    "Turkmenistan": "Turkmenistan",
+    "turkey": "Turkey",
+    "Turkey": "Turkey",
+    "uzbekistan": "Uzbekistan",
+    "Uzbekistan": "Uzbekistan",
+    "southafrica": "South Africa",
+    "SouthAfrica": "South Africa",
+    "other": "Other",
+    "Other": "Other",
     "noFavorites": "No favorite products",
     "personalCabinet": "Personal Account",
     "personalData": "Personal data",
@@ -305,9 +305,9 @@
     "NotHave": "Description not added",
     "errorCreatingQuestion": "Error creating question",
     "saving": "Save",
-     "mediaSavedSuccessfully": "Media saved successfully",
+    "mediaSavedSuccessfully": "Media saved successfully",
     "noWriten": "Not filled",
-    "deletedSuccess":"Successfully deleted!",
+    "deletedSuccess": "Successfully deleted!",
     "myAccount": "My Profile",
     "registrationDate": "Registration date",
     "enterLogin": "Login",
@@ -323,7 +323,7 @@
     "rating": "Rating",
     "description": "Description",
     "photos": "Photos",
-      "noPhotos": "No photos added",
+    "noPhotos": "No photos added",
     "contacts": "Contacts",
     "mySessions": "My sessions",
     "reviews": "Reviews",
@@ -382,21 +382,21 @@
     "PurchaseModal": {
       "title": "Place order",
       "fields": {
-      "name": "Name",
-      "email": "Email",
-      "firstName": "Enter your name",
-      "comment": "Order comment",
-      "phone": "Phone number",
-      "quantity": "Quantity"
-    },
-    "placeholders": {
-      "name": "Enter your name",
-      "firstName": "Enter your name",
-      "comment": "Order comment",
-      "email": "example@email.com",
-      "phone": "+7 (999) 123-45-67",
-      "quantity": "Minimum {minimum}"
-    },
+        "name": "Name",
+        "email": "Email",
+        "firstName": "Enter your name",
+        "comment": "Order comment",
+        "phone": "Phone number",
+        "quantity": "Quantity"
+      },
+      "placeholders": {
+        "name": "Enter your name",
+        "firstName": "Enter your name",
+        "comment": "Order comment",
+        "email": "example@email.com",
+        "phone": "+7 (999) 123-45-67",
+        "quantity": "Minimum {minimum}"
+      },
       "errors": {
         "nameRequired": "Name is required",
         "emailRequired": "Email is required",
@@ -416,9 +416,9 @@
     "CardTopPage": {
       "minimalValue": "Minimum supply volume",
       "reviews": {
-    "count": "{count, plural, one {{count} review} other {{count} reviews}}"
-  },
-      "error":"Error!",
+        "count": "{count, plural, one {{count} review} other {{count} reviews}}"
+      },
+      "error": "Error!",
       "from": "from",
       "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account",
       "daysBeforeDiscountExpires": "days until promotion ends",
@@ -471,7 +471,7 @@
       "noQuestions": "Questions and quick answers have not been added yet",
       "similar": "Similar products",
       "similarNotFound": "Similar products not found",
-       "send": "Send",
+      "send": "Send",
       "success": "Success!",
       "newDayerror": "You must be authorized and your account age must be more than 7 days",
       "successPublished": "Review sent for moderation",
@@ -492,7 +492,6 @@
       "publishing": "Publishing..."
     }
   },
-
   "NotFoundPage": {
     "goBack": "Return to home",
     "mainText": "Page not found or deleted. Check the URL or return to home."
@@ -500,9 +499,10 @@
   "CardTopPage": {
     "minimalValue": "Minimum supply volume",
     "reviews": {
-    "count": "{count, plural, one {{count} review} other {{count} reviews}}"
-  },
-    "error":"Error!",
+      "count": "{count, plural, one {{count} review} other {{count} reviews}}"
+    },
+    "technicalCharacteristics": "Technical specifications:",
+    "error": "Error!",
     "from": "from",
     "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account",
     "daysBeforeDiscountExpires": "days until promotion ends",
@@ -535,20 +535,20 @@
   },
   "CardMiddlePage": {
     "description": "Description",
-      "technicalCharacteristics": "Technical specifications:",
-      "companyDescription": "Supplier information",
-     "locationInfo": "Location Information",
-      "deliveryDescription": "Delivery type",
-      "deliveryTerms": "Incoterms delivery terms",
-      "emptyAddress": "address not specified",
-      "INN": "TIN",
-      "days": "{count, plural, one {day} other {days}}"
+    "technicalCharacteristics": "Technical specifications:",
+    "companyDescription": "Supplier information",
+    "locationInfo": "Location Information",
+    "deliveryDescription": "Delivery type",
+    "deliveryTerms": "Incoterms delivery terms",
+    "emptyAddress": "address not specified",
+    "INN": "TIN",
+    "days": "{count, plural, one {day} other {days}}"
   },
   "CardBottomPage": {
     "noQuestions": "Questions and quick answers have not been added yet",
     "similar": "Similar products",
     "similarNotFound": "Similar products not found",
-     "send": "Send",
+    "send": "Send",
     "success": "Success!",
     "newDayerror": "You must be authorized and your account age must be more than 7 days",
     "successPublished": "Review sent for moderation",
@@ -570,9 +570,9 @@
   },
   "createCard": {
     "priceValueRequired": "Product price cannot be empty",
-  "priceUnitRequired": "Product unit of measurement cannot be empty",
-  "priceCurrencyRequired": "Product currency cannot be empty",
-  "priceFieldsRequired": "All price fields must be filled",
+    "priceUnitRequired": "Product unit of measurement cannot be empty",
+    "priceCurrencyRequired": "Product currency cannot be empty",
+    "priceFieldsRequired": "All price fields must be filled",
     "deliveryTermsError": "At least 1 delivery option must be added",
     "titleError": "Product name must be specified",
     "categoryError": "Product category must be selected",
@@ -658,7 +658,7 @@
     "price": "Price",
     "rail": "Railway Delivery",
     "auto": "Road Delivery",
-    "sea": "Sea Delivery", 
+    "sea": "Sea Delivery",
     "air": "Air Delivery"
   },
   "CreateCardProductCategory": {
@@ -712,7 +712,7 @@
     }
   },
   "CardComponent": {
-      "no_currency": "Price on request",
+    "no_currency": "Price on request",
     "defaultTitle": "Great deal",
     "cardImageAlt": "Product image",
     "saw": "View",
@@ -727,7 +727,7 @@
     "PENDING": "Moderation",
     "APPROVED": "Approved",
     "REJECTED": "Rejected",
-    "errorUpdatingFavorites":"Error updating favorites. Please register or log in to your account"
+    "errorUpdatingFavorites": "Error updating favorites. Please register or log in to your account"
   },
   "Privacy": {
     "back": "Go back",
@@ -1092,7 +1092,7 @@
     "reset": "Reset"
   },
   "CardsCatalogNew": {
-        "nohavecards": "Products in this category have not been added yet",
+    "nohavecards": "Products in this category have not been added yet",
     "notFound": "Not found",
     "popularProducts": "Popular products",
     "viewAll": "View all"
@@ -1108,19 +1108,16 @@
   "LoginSlider": {
     "slide1Title": "Verified Suppliers Across Russia",
     "slide1Description": "Work only with reliable companies that have passed quality and reputation checks.",
-
     "slide2Title": "Personal Manager for Your Company",
     "slide2Description": "Your personal specialist will help find solutions and speed up cooperation.",
-
     "slide3Title": "Access to Wholesale Prices",
     "slide3Description": "Get the best offers directly from manufacturers and save on purchases.",
-
     "slide4Title": "Unique Resource Database",
     "slide4Description": "Thousands of suppliers united to help you easily find the right goods and services."
   },
   "CreateImagesInput": {
     "makePreview": "Set as main",
-   "preview": "Main photo",
+    "preview": "Main photo",
     "uploadError": "Data upload error",
     "invalidFileTypes": "Invalid file types: {fileNames}",
     "fileSizeExceeded": "File size exceeded (max {maxSizeMB} MB): {fileNames}",
@@ -1138,22 +1135,22 @@
     "invalidFileTypes": "Invalid file types: {fileNames}",
     "fileSizeExceeded": "File size exceeded (max {maxSizeMB} MB): {fileNames}"
   },
-  "previewText":{
+  "previewText": {
     "makePreview": "Set as main",
     "preview": "Main photo"
   },
   "vendorCatalog": {
-      "vendorProducts": "Seller's products"
-    },
-    "VendorMeta":{
-    "title":"Exporter"
+    "vendorProducts": "Seller's products"
+  },
+  "VendorMeta": {
+    "title": "Exporter"
   },
   "metaTitles": {
     "login": "Login",
     "register": "Registration",
     "profile": "Profile",
-     "create": "Create product",
-      "about": "About us",
+    "create": "Create product",
+    "about": "About us",
     "help": "Support"
   },
   "mdEditor": {
@@ -1170,25 +1167,23 @@
     "dontHaveDescr": "Description not added"
   },
   "comment": {
-      "approved": "Approved",
-      "pending": "Moderation",
-      "rejected": "Rejected",
-      "success": "Successfully deleted!",
-      "error": "Error deleting!"
-    },
-  "cropEditor": {
-  "sbros": "Reset",
-  "cancel": "Cancel",
-  "submit": "Apply"
-},
- "MobileNavigation": {
-      "login": "Login"
+    "approved": "Approved",
+    "pending": "Moderation",
+    "rejected": "Rejected",
+    "success": "Successfully deleted!",
+    "error": "Error deleting!"
   },
-
-  "ReviewsToNumber":{
+  "cropEditor": {
+    "sbros": "Reset",
+    "cancel": "Cancel",
+    "submit": "Apply"
+  },
+  "MobileNavigation": {
+    "login": "Login"
+  },
+  "ReviewsToNumber": {
     "priceOnRequest": "Price on request",
-  
-    "count":"{count, plural, one {{count} review} other {{count} reviews}}",
+    "count": "{count, plural, one {{count} review} other {{count} reviews}}",
     "mg": "{count, plural, one {{count} milligram} other {{count} milligrams}}",
     "g": "{count, plural, one {{count} gram} other {{count} grams}}",
     "kg": "{count, plural, one {{count} kilogram} other {{count} kilograms}}",
@@ -1247,5 +1242,4 @@
     "showOriginal": "Show original",
     "translatedText": "Translated"
   }
-
 }

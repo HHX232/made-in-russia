@@ -17,7 +17,7 @@
     "noResultsCatalog": "आपकी क्वेरी के लिए कुछ नहीं मिला",
     "showAllResults": "सभी दिखाएं",
     "hideAllResults": "छुपाएं",
-     "searchError": "खोज त्रुटि"
+    "searchError": "खोज त्रुटि"
   },
   "Footer": {
     "ugreement": "उपयोगकर्ता समझौता",
@@ -53,19 +53,19 @@
   },
   "RegisterUserPage": {
     "Azerbaijan": "अज़रबैजान",
-  "Armenia": "आर्मेनिया",
-  "Egypt": "मिस्र",
-  "India": "भारत",
-  "Iran": "ईरान",
-  "Kyrgyzstan": "किर्गिज़स्तान",
-  "Moldova": "मोल्दोवा",
-  "UAE": "संयुक्त अरब अमीरात",
-  "Tajikistan": "ताजिकिस्तान",
-  "Turkmenistan": "तुर्कमेनिस्तान",
-  "Turkey": "तुर्की",
-  "Uzbekistan": "उज़्बेकिस्तान",
-  "SouthAfrica": "दक्षिण अफ्रीका",
-  "Other": "अन्य",
+    "Armenia": "आर्मेनिया",
+    "Egypt": "मिस्र",
+    "India": "भारत",
+    "Iran": "ईरान",
+    "Kyrgyzstan": "किर्गिज़स्तान",
+    "Moldova": "मोल्दोवा",
+    "UAE": "संयुक्त अरब अमीरात",
+    "Tajikistan": "ताजिकिस्तान",
+    "Turkmenistan": "तुर्कमेनिस्तान",
+    "Turkey": "तुर्की",
+    "Uzbekistan": "उज़्बेकिस्तान",
+    "SouthAfrica": "दक्षिण अफ्रीका",
+    "Other": "अन्य",
     "chooseAccountType": "खाता प्रकार चुनें",
     "selectRoleDescription": "पंजीकरण के लिए उपयुक्त भूमिका चुनें",
     "buyerDescription": "खरीदने के लिए उत्पाद खोज रहे हैं",
@@ -157,38 +157,38 @@
     "becomePartner": "भागीदार बनें"
   },
   "ProfilePage": {
-  "azerbaijan": "अज़रबैजान",
-  "Azerbaijan": "अज़रबैजान",
-  "armenia": "आर्मेनिया",
-  "Armenia": "आर्मेनिया",
-  "Belarus": "बेलारूस",
-  "egypt": "मिस्र",
-  "Egypt": "मिस्र",
-  "india": "भारत",
-  "India": "भारत",
-  "iran": "ईरान",
-  "Iran": "ईरान",
-  "Kazakhstan": "कज़ाख़स्तान",
-  "kyrgyzstan": "किर्गिज़स्तान",
-  "Kyrgyzstan": "किर्गिज़स्तान",
-  "China": "चीन",
-  "moldova": "मोल्दोवा",
-  "Moldova": "मोल्दोवा",
-  "uae": "संयुक्त अरब अमीरात",
-  "UAE": "संयुक्त अरब अमीरात",
-  "Russia": "रूस",
-  "tajikistan": "ताजिकिस्तान",
-  "Tajikistan": "ताजिकिस्तान",
-  "turkmenistan": "तुर्कमेनिस्तान",
-  "Turkmenistan": "तुर्कमेनिस्तान",
-  "turkey": "तुर्की",
-  "Turkey": "तुर्की",
-  "uzbekistan": "उज़्बेकिस्तान",
-  "Uzbekistan": "उज़्बेकिस्तान",
-  "southafrica": "दक्षिण अफ्रीका",
-  "SouthAfrica": "दक्षिण अफ्रीका",
-  "other": "अन्य",
-  "Other": "अन्य",
+    "azerbaijan": "अज़रबैजान",
+    "Azerbaijan": "अज़रबैजान",
+    "armenia": "आर्मेनिया",
+    "Armenia": "आर्मेनिया",
+    "Belarus": "बेलारूस",
+    "egypt": "मिस्र",
+    "Egypt": "मिस्र",
+    "india": "भारत",
+    "India": "भारत",
+    "iran": "ईरान",
+    "Iran": "ईरान",
+    "Kazakhstan": "कज़ाख़स्तान",
+    "kyrgyzstan": "किर्गिज़स्तान",
+    "Kyrgyzstan": "किर्गिज़स्तान",
+    "China": "चीन",
+    "moldova": "मोल्दोवा",
+    "Moldova": "मोल्दोवा",
+    "uae": "संयुक्त अरब अमीरात",
+    "UAE": "संयुक्त अरब अमीरात",
+    "Russia": "रूस",
+    "tajikistan": "ताजिकिस्तान",
+    "Tajikistan": "ताजिकिस्तान",
+    "turkmenistan": "तुर्कमेनिस्तान",
+    "Turkmenistan": "तुर्कमेनिस्तान",
+    "turkey": "तुर्की",
+    "Turkey": "तुर्की",
+    "uzbekistan": "उज़्बेकिस्तान",
+    "Uzbekistan": "उज़्बेकिस्तान",
+    "southafrica": "दक्षिण अफ्रीका",
+    "SouthAfrica": "दक्षिण अफ्रीका",
+    "other": "अन्य",
+    "Other": "अन्य",
     "noFavorites": "कोई पसंदीदा उत्पाद नहीं",
     "personalCabinet": "व्यक्तिगत खाता",
     "personalData": "व्यक्तिगत डेटा",
@@ -382,21 +382,21 @@
     "PurchaseModal": {
       "title": "ऑर्डर दें",
       "fields": {
-      "name": "नाम",
-      "email": "ईमेल",
-      "firstName": "अपना नाम दर्ज करें",
-      "comment": "आर्डर टिप्पणी",
-      "phone": "फ़ोन नंबर",
-      "quantity": "मात्रा"
-    },
-    "placeholders": {
-      "name": "अपना नाम दर्ज करें",
-      "firstName": "अपना नाम दर्ज करें",
-      "comment": "आर्डर टिप्पणी",
-      "email": "example@email.com",
-      "phone": "+7 (999) 123-45-67",
-      "quantity": "न्यूनतम {minimum}"
-    },
+        "name": "नाम",
+        "email": "ईमेल",
+        "firstName": "अपना नाम दर्ज करें",
+        "comment": "आर्डर टिप्पणी",
+        "phone": "फ़ोन नंबर",
+        "quantity": "मात्रा"
+      },
+      "placeholders": {
+        "name": "अपना नाम दर्ज करें",
+        "firstName": "अपना नाम दर्ज करें",
+        "comment": "आर्डर टिप्पणी",
+        "email": "example@email.com",
+        "phone": "+7 (999) 123-45-67",
+        "quantity": "न्यूनतम {minimum}"
+      },
       "errors": {
         "nameRequired": "नाम आवश्यक है",
         "emailRequired": "ईमेल आवश्यक है",
@@ -415,10 +415,9 @@
     },
     "CardTopPage": {
       "minimalValue": "न्यूनतम आपूर्ति मात्रा",
-
       "reviews": {
-    "count": "{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}"
-  },
+        "count": "{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}"
+      },
       "error": "त्रुटि!",
       "from": "से",
       "errorUpdatingFavorites": "पसंदीदा अपडेट करने में त्रुटि",
@@ -470,7 +469,6 @@
     },
     "CardBottomPage": {
       "noQuestions": "प्रश्न और त्वरित उत्तर अभी तक नहीं जोड़े गए हैं",
-
       "similar": "समान उत्पाद",
       "similarNotFound": "समान उत्पाद नहीं मिले",
       "send": "भेजें",
@@ -499,10 +497,11 @@
     "mainText": "पृष्ठ नहीं मिला या हटा दिया गया।"
   },
   "CardTopPage": {
+    "technicalCharacteristics": "तकनीकी विशिष्टताएं:",
     "minimalValue": "न्यूनतम आपूर्ति मात्रा",
     "reviews": {
-    "count": "{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}"
-  },
+      "count": "{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}"
+    },
     "error": "त्रुटि!",
     "from": "से",
     "errorUpdatingFavorites": "पसंदीदा अपडेट करने में त्रुटि",
@@ -638,7 +637,7 @@
     "daysBeforeSale": "प्रचार समाप्त होने तक दिन",
     "daysBeforeSaleNotMinus": "दिनों की संख्या सकारात्मक होनी चाहिए",
     "minimalVolume": "न्यूनतम ऑर्डर वॉल्यूम",
-     "pricesList": "उत्पाद मूल्य",
+    "pricesList": "उत्पाद मूल्य",
     "elementCount": "इकाइयों की संख्या",
     "originalPrice": "बिना छूट के मूल्य",
     "priceWithDiscount": "छूट के साथ मूल्य",
@@ -730,7 +729,6 @@
     "REJECTED": "अस्वीकृत",
     "errorUpdatingFavorites": "पसंदीदा अपडेट करने में त्रुटि"
   },
-  
   "Privacy": {
     "back": " पीछे लौटें",
     "download": " फ़ाइल \"व्यक्तिगत डेटा के प्रसंस्करण की नीति\" डाउनलोड करें",
@@ -865,8 +863,7 @@
         "12-3": "नीति का वर्तमान संस्करण इंटरनेट पर https://exporteru.com/privacy/ पर उपलब्ध है।"
       }
     }
-  }
-,
+  },
   "Agreement": {
     "titles": {
       "1": "उपयोगकर्ता समझौता",
@@ -1170,23 +1167,23 @@
     "dontHaveDescr": "विवरण जोड़ा नहीं गया"
   },
   "comment": {
-      "approved": "स्वीकृत",
-      "pending": "मॉडरेशन",
-      "rejected": "अस्वीकृत",
-      "success": "सफलतापूर्वक हटाया गया!",
-      "error": "हटाने में त्रुटि!"
-    },
+    "approved": "स्वीकृत",
+    "pending": "मॉडरेशन",
+    "rejected": "अस्वीकृत",
+    "success": "सफलतापूर्वक हटाया गया!",
+    "error": "हटाने में त्रुटि!"
+  },
   "cropEditor": {
-  "sbros": "रीसेट",
-  "cancel": "रद्द करें",
-  "submit": "लागू करें"
-},
-"MobileNavigation": {
-      "login": "लॉगिन"
-    },
-  "ReviewsToNumber":{
+    "sbros": "रीसेट",
+    "cancel": "रद्द करें",
+    "submit": "लागू करें"
+  },
+  "MobileNavigation": {
+    "login": "लॉगिन"
+  },
+  "ReviewsToNumber": {
     "priceOnRequest": "अनुरोध पर मूल्य",
-    "count":"{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}",
+    "count": "{count, plural, one {{count} समीक्षा} other {{count} समीक्षाएँ}}",
     "mg": "{count, plural, one {{count} मिलीग्राम} other {{count} मिलीग्राम}}",
     "g": "{count, plural, one {{count} ग्राम} other {{count} ग्राम}}",
     "kg": "{count, plural, one {{count} किलोग्राम} other {{count} किलोग्राम}}",
@@ -1245,5 +1242,4 @@
     "vendorChat": "विक्रेता के साथ चैट",
     "priceNotSpecified": "मूल्य निर्दिष्ट नहीं"
   }
-
 }
