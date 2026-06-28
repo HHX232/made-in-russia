@@ -1,7 +1,7 @@
 'use client'
 import {store} from '@/store/store'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
-import {useState, useEffect, ReactNode} from 'react'
+import {useState, ReactNode} from 'react'
 import {Provider as ReduxProvider} from 'react-redux'
 
 // Типизированная обертка для Redux Provider
@@ -11,7 +11,6 @@ const Provider = ({children, ...props}: any) => {
 }
 
 export default function DefaultProvider({children}: {children: ReactNode}) {
-  const [isClient, setIsClient] = useState(false)
   const [queryClient] = useState(
     new QueryClient({
       defaultOptions: {
@@ -22,13 +21,9 @@ export default function DefaultProvider({children}: {children: ReactNode}) {
     })
   )
 
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
   return (
     <QueryClientProvider client={queryClient}>
-      <Provider store={store}>{isClient ? children : children}</Provider>
+      <Provider store={store}>{children}</Provider>
     </QueryClientProvider>
   )
 }

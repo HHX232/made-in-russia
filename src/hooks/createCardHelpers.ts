@@ -259,14 +259,14 @@ export const setInitialStorageValue = ({
     language: 'zh',
     packaging:
       initialData?.packagingOptions?.map((el) => ({
-        title: el.nameTranslations.zh || el.name,
-        price: el.price.toString()
+        title: el?.nameTranslations.zh || el.name,
+        price: el?.price?.toString()
       })) || []
   })
   updatePriceInfo({
     language: 'ru',
     field: 'daysBeforeSale',
-    value: initialData?.daysBeforeDiscountExpires.toString() || ''
+    value: initialData?.daysBeforeDiscountExpires?.toString() || ''
   })
   updatePriceInfo({
     language: 'ru',
@@ -276,7 +276,7 @@ export const setInitialStorageValue = ({
   updatePriceInfo({
     language: 'en',
     field: 'daysBeforeSale',
-    value: initialData?.daysBeforeDiscountExpires.toString() || ''
+    value: initialData?.daysBeforeDiscountExpires?.toString() || ''
   })
   updatePriceInfo({
     language: 'en',
@@ -286,7 +286,7 @@ export const setInitialStorageValue = ({
   updatePriceInfo({
     language: 'zh',
     field: 'daysBeforeSale',
-    value: initialData?.daysBeforeDiscountExpires.toString() || ''
+    value: initialData?.daysBeforeDiscountExpires?.toString() || ''
   })
   updatePriceInfo({
     language: 'zh',
