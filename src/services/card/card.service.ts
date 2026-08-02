@@ -1,3 +1,4 @@
+import axios from 'axios'
 import {axiosClassic} from '@/api/api.interceptor'
 import ICardFull, {PaginatedResponse, Review} from './card.types'
 import {Product} from '../products/product.types'
@@ -34,6 +35,11 @@ const cardService = {
   },
   async getFullCardById(id: string | number, currentLang?: string, hasTranslations?: boolean) {
     const accessToken = await getAccessTokenServer()
+    console.log('accessToken on server (getFullCardById)', accessToken)
+    console.log(
+      'FULL REQUEST URL (getFullCardById)',
+      axiosClassic.defaults.baseURL + `/products/${id}${hasTranslations ? '?hasTranslations=true' : ''}`
+    )
     try {
       const res = await axiosClassic.get<ICardFull>(
         `/products/${id}${hasTranslations ? '?hasTranslations=true' : ''}`,
@@ -53,6 +59,17 @@ const cardService = {
         error: null
       }
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.error(
+          'getFullCardById failed:',
+          'status =',
+          err.response?.status,
+          'body =',
+          err.response?.data,
+          'hadAccessToken =',
+          Boolean(accessToken)
+        )
+      }
       return {
         data: null,
         isLoading: false,

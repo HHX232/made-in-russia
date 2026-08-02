@@ -43,7 +43,7 @@ export default async function Home() {
   const locale = await getCurrentLocale()
 
   const {products, categories, advertisements} = await getInitialData(locale)
-  console.log('getCurrentLocale', locale, advertisements)
+  // console.log('getCurrentLocale', locale, advertisements)
   return (
     <HomePage
       ads={advertisements ?? []}

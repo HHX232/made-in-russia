@@ -100,6 +100,9 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false)
   const statusDropdownRef = useRef<HTMLDivElement>(null)
 
+  // Плавающая пагинация (только для админки)
+  const [isFloatingPaginationOpen, setIsFloatingPaginationOpen] = useState(true)
+
   // Состояние для модального окна смены владельца
   const [selectedProductForOwnerChange, setSelectedProductForOwnerChange] = useState<Product | null>(null)
   const [isOwnerModalOpen, setIsOwnerModalOpen] = useState(false)
@@ -657,6 +660,91 @@ const CardsCatalogWithPagination: FC<CardsCatalogWithPaginationProps> = ({
           </div>
         )}
       </div>
+
+      {/* Плавающая пагинация справа (только админка) */}
+      {isForAdmin && !showSkeleton && !isEmpty && totalPages > 1 && (
+        <div
+          className={`${styled.floating_pagination} ${
+            isFloatingPaginationOpen ? styled.floating_pagination_open : styled.floating_pagination_closed
+          }`}
+        >
+          <button
+            className={styled.floating_pagination__toggle}
+            onClick={() => setIsFloatingPaginationOpen((prev) => !prev)}
+            aria-label={isFloatingPaginationOpen ? t('prevPage') : t('nextPage')}
+          >
+            <svg
+              width='14'
+              height='14'
+              viewBox='0 0 16 16'
+              fill='none'
+              style={{
+                transform: isFloatingPaginationOpen ? 'rotate(0deg)' : 'rotate(180deg)',
+                transition: 'transform 0.25s ease'
+              }}
+            >
+              <path
+                d='M10 4L6 8L10 12'
+                stroke='currentColor'
+                strokeWidth='1.5'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+          </button>
+
+          <div className={styled.floating_pagination__panel}>
+            <button
+              onClick={handlePrevClick}
+              disabled={currentPage === 0}
+              className={`${styled.floating_pagination__link} ${
+                currentPage === 0 ? styled.floating_pagination__link_disabled : ''
+              }`}
+              aria-label={t('prevPage')}
+            >
+              ‹
+            </button>
+
+            <div className={styled.floating_pagination__list}>
+              {pageNumbers.map((page, index) => {
+                if (page === '...') {
+                  return (
+                    <span key={`floating-ellipsis-${index}`} className={styled.floating_pagination__ellipsis}>
+                      ...
+                    </span>
+                  )
+                }
+
+                const pageNum = page as number
+                const isActive = pageNum - 1 === currentPage
+
+                return (
+                  <button
+                    key={`floating-${pageNum}`}
+                    onClick={() => handlePageChange(pageNum - 1)}
+                    className={`${styled.floating_pagination__link} ${
+                      isActive ? styled.floating_pagination__link_active : ''
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              })}
+            </div>
+
+            <button
+              onClick={handleNextClick}
+              disabled={currentPage === totalPages - 1}
+              className={`${styled.floating_pagination__link} ${
+                currentPage === totalPages - 1 ? styled.floating_pagination__link_disabled : ''
+              }`}
+              aria-label={t('nextPage')}
+            >
+              ›
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Модальное окно смены владельца */}
       {isOwnerModalOpen && selectedProductForOwnerChange && (

@@ -11,6 +11,40 @@ export interface ProductQueryParams {
   [key: string]: any
 }
 
+// Spring Boot 3.x по умолчанию кладёт метаданные пагинации во вложенный объект
+// "page" ({size, number, totalElements, totalPages}) вместо плоских полей верхнего
+// уровня, которые ожидает остальной код. Приводим ответ к старому плоскому формату.
+interface RawPageMeta {
+  size?: number
+  number?: number
+  totalElements?: number
+  totalPages?: number
+}
+
+const normalizePageResponse = <T extends ProductPageResponse>(raw: T & {page?: RawPageMeta}): T => {
+  const page = raw?.page
+
+  if (!page) {
+    return raw
+  }
+
+  const totalPages = page.totalPages ?? raw.totalPages ?? 0
+  const number = page.number ?? raw.number ?? 0
+  const content = raw.content ?? []
+
+  return {
+    ...raw,
+    size: page.size ?? raw.size,
+    number,
+    totalElements: page.totalElements ?? raw.totalElements,
+    totalPages,
+    last: raw.last ?? number >= totalPages - 1,
+    first: raw.first ?? number === 0,
+    numberOfElements: raw.numberOfElements ?? content.length,
+    empty: raw.empty ?? content.length === 0
+  }
+}
+
 const ProductService = {
   async getAll(
     params: ProductQueryParams = {},
@@ -39,7 +73,7 @@ const ProductService = {
           Authorization: `Bearer ${accessToken || ''}`
         }
       })
-      data = response.data
+      data = normalizePageResponse(response.data)
     } else {
       const response = await axiosClassic<ProductPageResponse>({
         url: PRODUCTS,
@@ -51,7 +85,7 @@ const ProductService = {
           Authorization: `Bearer ${accessToken || ''}`
         }
       })
-      data = response.data
+      data = normalizePageResponse(response.data)
     }
 
     return data

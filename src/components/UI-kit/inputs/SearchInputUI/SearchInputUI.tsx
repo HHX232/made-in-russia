@@ -184,9 +184,9 @@ const SearchInputUI: FC<ISearchProps> = ({placeholder, disabled, vendorId, useNe
     }
   }, [locale, debouncedSearchText])
 
-  useEffect(() => {
-    console.log('hints', hints)
-  }, [hints])
+  // useEffect(() => {
+  //   console.log('hints', hints)
+  // }, [hints])
 
   // Разделяем подсказки на категории с товарами и без
   const emptyCategories = hints.filter((hint) => hint.products.length === 0)

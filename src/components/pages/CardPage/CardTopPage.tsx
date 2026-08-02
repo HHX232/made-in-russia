@@ -20,6 +20,7 @@ import ServiceFavorites from '@/services/favorite/favorite.service'
 import {chatService} from '@/services/chat/chat.service'
 import {useRouter} from 'next/navigation'
 import {Heart} from 'lucide-react'
+import {resolveUnitLabel, VALID_UNIT_SLUGS} from '@/utils/resolveUnitLabel'
 
 interface IPriceItem {
   title: string | ReactNode
@@ -322,27 +323,8 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
     // Проверяем, является ли цена "По запросу"
     const isNullPrice = cardData?.prices[0]?.currency?.toLocaleLowerCase() === 'no_currency'
 
-    const VALID_UNIT_SLUGS = new Set([
-      'mg',
-      'g',
-      'kg',
-      'c',
-      't',
-      'ml',
-      'l',
-      'hl',
-      'm3',
-      'm2',
-      'cm2',
-      'pcs',
-      'pack',
-      'm',
-      'cm',
-      'pair',
-      'set',
-      'box',
-      'bag'
-    ])
+    const getUnitLabel = (unit: string | undefined, unitSlug: string | undefined) =>
+      resolveUnitLabel(unit, unitSlug, locale, (slug) => t2(slug, {count: 1}).replace(/^\d+\s*/, ''))
 
     const getMinimalValueText = () => {
       const quantity = cardData?.minimumOrderQuantity || 1
@@ -384,11 +366,12 @@ export const CardTopPage = ({isLoading, cardData}: {isLoading: boolean; cardData
             <>
               <p className={styles.main__price}>
                 {tTop('from')} {cardData?.prices[0].discountedPrice} {cardData?.prices[0].currency}/
-                {cardData?.prices[0].unit}
+                {getUnitLabel(cardData?.prices[0].unit, cardData?.prices[0].unitSlug)}
               </p>
               {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (
                 <p className={styles.original__price}>
-                  {cardData?.prices[0].originalPrice} {cardData?.prices[0].currency}/{cardData?.prices[0].unit}
+                  {cardData?.prices[0].originalPrice} {cardData?.prices[0].currency}/
+                  {getUnitLabel(cardData?.prices[0].unit, cardData?.prices[0].unitSlug)}
                 </p>
               )}
               {cardData?.prices[0].originalPrice !== cardData?.prices[0].discountedPrice && (

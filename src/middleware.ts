@@ -829,6 +829,65 @@ export async function middleware(request: NextRequest) {
       )
     }
 
+    // Обработка страницы товара /card/[id] — тихий рефреш протухшего accessToken
+    if (pathnameWithoutLocale === '/card' || pathnameWithoutLocale.startsWith('/card/')) {
+      console.log('🛍️ Обнаружен маршрут /card:', pathname)
+
+      let accessTokenValid = false
+
+      if (accessToken) {
+        try {
+          await instance.get<User>('/me', {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!
+            }
+          })
+          accessTokenValid = true
+          console.log('✅ accessToken на /card валиден')
+        } catch (error) {
+          console.error('❗ accessToken на /card невалиден:', error)
+        }
+      }
+
+      if (!accessTokenValid && refreshToken) {
+        try {
+          const {data: tokenData} = await axiosClassic.patch<{accessToken: string}>(
+            '/me/current-session/refresh',
+            {refreshToken},
+            {headers: {'X-Internal-Request': process.env.INTERNAL_REQUEST_SECRET!}}
+          )
+
+          console.log('✅ accessToken обновлён для /card')
+
+          // Обновляем cookie в самом request, чтобы серверные компоненты
+          // этого же запроса сразу увидели свежий токен
+          request.cookies.set('accessToken', tokenData.accessToken)
+          const response = NextResponse.next({request: {headers: request.headers}})
+          response.cookies.set('accessToken', tokenData.accessToken, {maxAge: 60 * 60 * 24 * 7})
+          return setLocaleInResponse(
+            response,
+            localeFromSubdomain || 'en',
+            shouldSetLocaleCookie,
+            acceptLanguageFromRequest
+          )
+        } catch (e) {
+          console.error('❌ Не удалось обновить токен на /card:', e)
+          const response = NextResponse.next()
+          setLocaleInResponse(response, localeFromSubdomain || 'en', shouldSetLocaleCookie, acceptLanguageFromRequest)
+          return removeTokensFromResponse(response)
+        }
+      }
+
+      const response = NextResponse.next()
+      return setLocaleInResponse(
+        response,
+        localeFromSubdomain || 'en',
+        shouldSetLocaleCookie,
+        acceptLanguageFromRequest
+      )
+    }
+
     if (pathname.startsWith('/data-vendor/')) {
       console.log('🚀 Middleware запущен для пути data-vendor:', request.nextUrl.pathname)
 

@@ -16,20 +16,19 @@ import BreadForCard from './breadForCard/breadForCard'
 // import SEOHeader from '@/components/MainComponents/SEOHeader/SEOHeader'
 
 async function CardContent({id}: {id: string}) {
-  let cardData: ICardFull
   const locale = await getCurrentLocale()
 
-  try {
-    const {data} = await cardService.getFullCardById(id, locale)
-    cardData = data as ICardFull
-    // console.log('cardData server', cardData)
-    if (!cardData) {
-      notFound()
-    }
-  } catch (error) {
+  const {data, isError, error} = await cardService.getFullCardById(id, locale)
+
+  if (isError) {
     console.error('Error fetching card data:', error)
+  }
+
+  if (!data) {
     notFound()
   }
+
+  const cardData = data as ICardFull
 
   return (
     <>

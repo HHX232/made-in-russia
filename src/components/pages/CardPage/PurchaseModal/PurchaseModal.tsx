@@ -3,9 +3,10 @@ import ModalWindowDefault from '@/components/UI-kit/modals/ModalWindowDefault/Mo
 import styles from './PurchaseModal.module.scss'
 import TextInputUI from '@/components/UI-kit/inputs/TextInputUI/TextInputUI'
 import {useTypedSelector} from '@/hooks/useTypedSelector'
-import {useTranslations} from 'next-intl'
+import {useLocale, useTranslations} from 'next-intl'
 import TextAreaUI from '@/components/UI-kit/TextAreaUI/TextAreaUI'
 import Image from 'next/image'
+import {resolveUnitLabel} from '@/utils/resolveUnitLabel'
 
 interface DiscountPriceRange {
   from: number
@@ -14,6 +15,7 @@ interface DiscountPriceRange {
   discountedPrice: number
   currency: string
   unit: string
+  unitSlug: string
 }
 
 interface IPurchaseModalProps {
@@ -47,9 +49,13 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
   const {user} = useTypedSelector((state) => state.user)
   const t = useTranslations('CardPage.PurchaseModal')
   const t2 = useTranslations('ReviewsToNumber')
+  const locale = useLocale()
 
   // Проверяем, является ли цена "По запросу"
   const isNullPrice = prices[0]?.currency?.toLocaleLowerCase() === 'no_currency'
+
+  const getUnitLabel = (unit: string | undefined, unitSlug: string | undefined) =>
+    resolveUnitLabel(unit, unitSlug, locale, (slug) => t2(slug, {count: 1}).replace(/^\d+\s*/, ''))
 
   // Функция для очистки дублирующихся кодов стран
   const cleanPhoneNumber = (phone: string): string => {
@@ -326,7 +332,7 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
                     ? '+'
                     : `-${priceCalculation.selectedPrice.to}`}{' '}
                   {isNullPrice && t2('priceOnRequest')}
-                  {priceCalculation.selectedPrice.unit}
+                  {getUnitLabel(priceCalculation.selectedPrice.unit, priceCalculation.selectedPrice.unitSlug)}
                 </div>
               )}
 
@@ -344,7 +350,8 @@ const PurchaseModal: React.FC<IPurchaseModalProps> = ({
                     {isNullPrice && t2('priceOnRequest')}
                   </span>
                   <span className={styles.currency}>
-                    {!isNullPrice && priceCalculation.selectedPrice.currency}/{priceCalculation.selectedPrice.unit}
+                    {!isNullPrice && priceCalculation.selectedPrice.currency}/
+                    {getUnitLabel(priceCalculation.selectedPrice.unit, priceCalculation.selectedPrice.unitSlug)}
                   </span>
                 </div>
               </div>

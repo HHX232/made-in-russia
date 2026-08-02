@@ -3,7 +3,7 @@
     "title": "Hello world!",
     "profile": "Go to profile page",
     "search": "Search the site",
-    "login": "Login and </br> registration",
+    "login": "Login and <br/> registration",
     "category": "Categories",
     "reviews": "Dashboard",
     "delivery": "Delivery",
