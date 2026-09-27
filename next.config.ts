@@ -128,7 +128,8 @@ const nextConfig: NextConfig = {
       'cn.exporteru.com',
       'i.pravatar.cc',
       'via.placeholder.com',
-      's3.firstvds.ru'
+      's3.firstvds.ru',
+      'firsts3.ru'
     ]
   },
 
