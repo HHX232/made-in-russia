@@ -1,6 +1,6 @@
 import instance, {axiosClassic} from '@/api/api.interceptor'
 import {PRODUCTS} from './product.types'
-import {Product, ProductPageResponse} from './product.types'
+import {PageResponse, Product, ProductPageResponse} from './product.types'
 
 export interface ProductQueryParams {
   page?: number
@@ -21,7 +21,9 @@ interface RawPageMeta {
   totalPages?: number
 }
 
-const normalizePageResponse = <T extends ProductPageResponse>(raw: T & {page?: RawPageMeta}): T => {
+export const normalizePageResponse = <T extends Omit<PageResponse<unknown>, 'pageable' | 'sort'>>(
+  raw: T & {page?: RawPageMeta}
+): T => {
   const page = raw?.page
 
   if (!page) {

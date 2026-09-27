@@ -3,6 +3,7 @@ import {FC, useState, useRef, useEffect} from 'react'
 import styles from './AdminReviewsPage.module.scss'
 import Comment from '@/components/UI-kit/elements/Comment/Comment'
 import instance from '@/api/api.interceptor'
+import {normalizePageResponse} from '@/services/products/product.service'
 import {useCurrentLanguage} from '@/hooks/useCurrentLanguage'
 
 // Типы для отзывов и пользователей
@@ -151,7 +152,7 @@ const AdminReviewsPage: FC = () => {
           'x-language': currentLang
         }
       })
-      const data: ReviewsResponse = response.data as ReviewsResponse
+      const data = normalizePageResponse(response.data as ReviewsResponse)
 
       setReviews((prev) => {
         // Объединяем старый и новый массив отзывов
